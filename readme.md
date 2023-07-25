@@ -1,6 +1,6 @@
 ### Playroom for Unity
 
 #### To run:
-- Clone and open in project in Unity
-- Switch to WebGl in buildSettings
+- Clone and open project in Unity
+- Switch to WebGl in build Settings
 - Build and Run
