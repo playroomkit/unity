@@ -21,8 +21,9 @@ mergeInto(LibraryManager.library, {
     ]).then(() => {
 
       console.log('All CDNs have been loaded.');
-      var { onPlayerJoin, insertCoin, isHost, myPlayer } = Playroom;
-      insertCoin();
+
+      // example usecase
+      Playroom.insertCoin();
 
     }).catch((error) => {
       console.error('Error loading CDNs:', error);
@@ -38,12 +39,6 @@ mergeInto(LibraryManager.library, {
   InsertCoin: function () {
     Playroom.insertCoin();
   },
- 
-  // SetState: function (srt) {
-  //   Playroom.setState();
-  // },
-
- 
 
 
 });
