@@ -20,10 +20,9 @@ mergeInto(LibraryManager.library, {
       embedScript('https://unpkg.com/playroomkit/multiplayer.umd.js')
     ]).then(() => {
 
-      console.log('All CDNs have been loaded.');
 
-      // example usecase
-      Playroom.insertCoin();
+      console.log('All CDNs have been loaded');
+      // Playroom.insertCoin();
 
     }).catch((error) => {
       console.error('Error loading CDNs:', error);
@@ -32,13 +31,43 @@ mergeInto(LibraryManager.library, {
 
   // for testing
   Jump: function (str) {
-    console.log(UTF8ToString(str));
+    console.log(UTF8ToString(str))
   },
 
   // Function to call insertCoin from Unity
   InsertCoin: function () {
+    if (!window.Playroom) {
+      console.error('Playroom library is not loaded. Please make sure to call LoadPlayroom first.');
+      return;
+    }
+
     Playroom.insertCoin();
   },
 
+  SetState: function (key, value) {
+    console.log("key", UTF8ToString(key), "value", value)
+    Playroom.setState(UTF8ToString(key), value);
+  },
+
+  GetState: function (key) {
+    if (!window.Playroom) {
+      console.error('Playroom library is not loaded. Please make sure to call LoadPlayroom first.');
+      return;
+    }
+
+    // retrun value to unity
+    return Playroom.getState(UTF8ToString(key));
+
+  },
+
+  IsHost: function () {
+    if (!window.Playroom) {
+      console.error('Playroom library is not loaded. Please make sure to call LoadPlayroom first.');
+      return;
+    }
+
+    // retrun value to unity
+    return Playroom.isHost();
+  },
 
 });
