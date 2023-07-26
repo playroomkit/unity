@@ -14,40 +14,10 @@ public class PlayroomKit : MonoBehaviour
     public static extern void InsertCoin();
 
     [DllImport("__Internal")]
-    private static extern void SetStateInternal(string key, string value);
-
-    public static void SetState<T>(string key, T value)
-    {
-        if (IsRunningInBrowser())
-        {
-            // Convert the value to a string representation (JSON) and call the non-generic SetState method
-            string valueStr = JsonUtility.ToJson(value);
-            SetStateInternal(key, valueStr);
-        }
-        else
-        {
-            Debug.LogWarning("SetState Mock");
-        }
-    }
-
+    public static extern void SetState(string key, int value);
 
     [DllImport("__Internal")]
-    private static extern string GetStateInternal(string key);
-
-    public static T GetState<T>(string key)
-    {
-        if (IsRunningInBrowser())
-        {
-            // Call the non-generic GetState method and convert the result to the desired type
-            string valueStr = GetStateInternal(key).ToString();
-            return JsonUtility.FromJson<T>(valueStr);
-        }
-        else
-        {
-            Debug.LogWarning("GetState Mock");
-            return default;
-        }
-    }
+    public static extern int GetState(string key);
 
     [DllImport("__Internal")]
     public static extern bool IsHost();
