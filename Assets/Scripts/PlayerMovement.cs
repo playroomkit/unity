@@ -46,6 +46,11 @@ public class PlayerMovement : MonoBehaviour
             Debug.LogWarning("InsertCoin Mock");
         }
 
+
+        PlayroomKit.SetState("valueGameString", "Game Started State");
+
+
+
         rb2D = GetComponent<Rigidbody2D>();
         text.text = "a = " + a + " b = " + b;
     }
@@ -70,8 +75,11 @@ public class PlayerMovement : MonoBehaviour
         {
             rb2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
 
-            // test
-            Debug.Log("this player is host: " + PlayroomKit.IsHost());
+            // test: Works!
+            // Debug.Log("this player is host: " + PlayroomKit.IsHost());
+
+            Debug.Log("valueGameString: " + PlayroomKit.GetState<string>("valueGameString"));
+
         }
     }
 
@@ -82,14 +90,14 @@ public class PlayerMovement : MonoBehaviour
     {
         a++;
         Debug.Log("a = " + a);
-        PlayroomKit.SetState("valX", a);
+        PlayroomKit.SetState<int>("valX", a);
         text.text = "a = " + a + " b = " + b;
     }
 
     public void TestGetState()
     {
         Debug.Log("b = " + b);
-        b = PlayroomKit.GetState("valX");
+        b = PlayroomKit.GetState<int>("valX");
         Debug.Log("b after getState:  " + b);
         text.text = "new b = " + b;
     }
