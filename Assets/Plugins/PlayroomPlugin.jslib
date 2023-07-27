@@ -29,36 +29,99 @@ mergeInto(LibraryManager.library, {
     });
   },
 
-  // for testing
-  Jump: function (str) {
-    console.log(UTF8ToString(str))
-  },
 
   // Function to call insertCoin from Unity
-  InsertCoin: function () {
+  InsertCoin: function (functionPtr) {
     if (!window.Playroom) {
       console.error('Playroom library is not loaded. Please make sure to call LoadPlayroom first.');
       return;
     }
 
-    Playroom.insertCoin();
+    Playroom.insertCoin().then(() => {
+
+      dynCall("v", functionPtr, []);
+
+    }).catch((error) => {
+      console.error('Error inserting coin:', error);
+    });
   },
 
+  // for numbers / bools
   SetState: function (key, value) {
+    if (!window.Playroom) {
+      console.error('Playroom library is not loaded. Please make sure to call LoadPlayroom first.');
+      return;
+    }
     console.log("key", UTF8ToString(key), "value", value)
     Playroom.setState(UTF8ToString(key), value);
   },
 
-  GetState: function (key) {
+  SetStateString: function (key, stringVal) {
+    if (!window.Playroom) {
+      console.error('Playroom library is not loaded. Please make sure to call LoadPlayroom first.');
+      return;
+    }
+    console.log("key", UTF8ToString(key), "value", UTF8ToString(stringVal))
+    Playroom.setState(UTF8ToString(key), UTF8ToString(stringVal));
+  },
+
+
+  // for numbers
+  GetStateInt: function (key) {
     if (!window.Playroom) {
       console.error('Playroom library is not loaded. Please make sure to call LoadPlayroom first.');
       return;
     }
 
-    // retrun value to unity
     return Playroom.getState(UTF8ToString(key));
+  },
+
+  GetStateFloat: function (key) {
+    if (!window.Playroom) {
+      console.error('Playroom library is not loaded. Please make sure to call LoadPlayroom first.');
+      return;
+    }
+
+    var returnVal = Playroom.getState(UTF8ToString(key));
+    console.log("float coming from unity: ", returnVal)
+
+    return Playroom.getState(UTF8ToString(key));
+  },
+
+  GetStateString: function (key) {
+    if (!window.Playroom) {
+      console.error('Playroom library is not loaded. Please make sure to call LoadPlayroom first.');
+      return;
+    }
+    console.log("key", UTF8ToString(key), "value", Playroom.getState(UTF8ToString(key)))
+
+    // retrun value to unity
+    var returnStr = Playroom.getState(UTF8ToString(key));
+
+    console.log("returnStr: ", returnStr)
+
+    var bufferSize = lengthBytesUTF8(returnStr) + 1;
+    var buffer = _malloc(bufferSize);
+    stringToUTF8(returnStr, buffer, bufferSize);
+    return buffer;
 
   },
+
+  SetStateDictionary: function (key, jsonValues) {
+    if (!window.Playroom) {
+      console.error('Playroom library is not loaded. Please make sure to call LoadPlayroom first.');
+      return;
+    }
+
+    // Parse the JSON string back into a JavaScript object
+    console.log("jsonValues from unity", UTF8ToString(jsonValues))
+    
+    // var values = JSON.parse(jsonValues);
+    // console.log("key", UTF8ToString(key), "values", values);
+    // Playroom.setState(UTF8ToString(key), values);
+  },
+
+
 
   IsHost: function () {
     if (!window.Playroom) {
@@ -69,5 +132,12 @@ mergeInto(LibraryManager.library, {
     // retrun value to unity
     return Playroom.isHost();
   },
+
+  // send float value to unity 
+  GETFloat: function (abc) {
+
+    console.log("abc: ", abc)
+
+  }
 
 });

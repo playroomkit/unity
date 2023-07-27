@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "codes.aureola.simplejson": {
+      "version": "file:C:/Users/intag/Desktop/SimpleJSON-Unity-master",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.unity.2d.animation": {
       "version": "7.0.6",
       "depth": 1,
