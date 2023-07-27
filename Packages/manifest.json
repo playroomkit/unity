@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "codes.aureola.simplejson": "file:C:/Users/intag/Desktop/SimpleJSON-Unity-master",
+    "codes.aureola.simplejson": "https://github.com/aureola-codes/SimpleJSON-Unity.git",
     "com.unity.collab-proxy": "1.15.18",
     "com.unity.feature.2d": "1.0.0",
     "com.unity.ide.rider": "3.0.15",
