@@ -10,6 +10,8 @@ using SimpleJSON;
 public class PlayroomKit : MonoBehaviour
 {
 
+    public GameObject playerPrefab;
+
     [DllImport("__Internal")]
     public static extern void GETFloat(float value);
 
@@ -19,19 +21,12 @@ public class PlayroomKit : MonoBehaviour
     [DllImport("__Internal")]
     public static extern void InsertCoin(Action callback);
 
-    [MonoPInvokeCallback(typeof(Action))]
-    public static void CallBackInsertCoin()
-    {
-        //This fires from javascript
-        Debug.Log("Insert Coin Callback Fired from Javascript defined in Unity");
-    }
-
 
     [DllImport("__Internal")]
     public static extern bool IsHost();
 
     [DllImport("__Internal")]
-    public static extern void SetStateString(string key, string value);
+    private static extern void SetStateString(string key, string value);
 
     [DllImport("__Internal")]
     public static extern void SetState(string key, int value);
@@ -41,6 +36,11 @@ public class PlayroomKit : MonoBehaviour
 
     [DllImport("__Internal")]
     public static extern void SetState(string key, bool value);
+
+    public static void SetState(string key, string value)
+    {
+        SetStateString(key, value);
+    }
 
     [DllImport("__Internal")]
     public static extern string GetStateString(string key);
@@ -54,6 +54,10 @@ public class PlayroomKit : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void SetStateDictionary(string key, string jsonValues);
 
+    [DllImport("__Internal")]
+    public static extern void OnPlayerJoin(Action callback);
+
+    
 
     private static void SetStateHelper<T>(string key, Dictionary<string, T> values)
     {
@@ -99,25 +103,6 @@ public class PlayroomKit : MonoBehaviour
 
 
 
-
-    // public static void SetState(string key, Dictionary<string, int> values)
-    // {
-
-    //     JSONNode jsonNode = new JSONObject();
-
-    //     // Add key-value pairs to the JSON object
-    //     foreach (var kvp in values)
-    //     {
-    //         jsonNode[kvp.Key] = new JSONNumber(kvp.Value);
-    //     }
-
-    //     // Serialize the JSON object to a string
-    //     string jsonString = jsonNode.ToString();
-
-    //     // Output the JSON string
-    //     Debug.Log("Serialized JSON: " + jsonString);
-    //     SetStateDictionary(key, jsonString);
-    // }
 
 
 

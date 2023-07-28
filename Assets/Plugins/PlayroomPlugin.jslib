@@ -30,6 +30,7 @@ mergeInto(LibraryManager.library, {
   },
 
 
+
   // Function to call insertCoin from Unity
   InsertCoin: function (functionPtr) {
     if (!window.Playroom) {
@@ -114,8 +115,8 @@ mergeInto(LibraryManager.library, {
     }
 
     // Parse the JSON string back into a JavaScript object
-    console.log("jsonValues from unity", UTF8ToString(jsonValues))
-    
+    console.log("jsonValues from unity: ", UTF8ToString(jsonValues))
+
     // var values = JSON.parse(jsonValues);
     // console.log("key", UTF8ToString(key), "values", values);
     // Playroom.setState(UTF8ToString(key), values);
@@ -132,6 +133,30 @@ mergeInto(LibraryManager.library, {
     // retrun value to unity
     return Playroom.isHost();
   },
+
+  OnPlayerJoin: function (functionPtr) {
+    if (!window.Playroom) {
+      console.error('Playroom library is not loaded. Please make sure to call LoadPlayroom first.');
+      return;
+    }
+
+    Playroom.onPlayerJoin((player) => {
+
+      console.log(`${player.id} joined!`);
+      dynCall("v", functionPtr, [player]);
+
+    });
+  },
+
+  // HasLuanched: function () {
+  //   if (!window.Playroom) {
+  //     console.error('Playroom library is not loaded. Please make sure to call LoadPlayroom first.');
+  //     return false;
+  //   }
+
+  //   return Playroom.hasLaunched;
+  // },
+
 
   // send float value to unity 
   GETFloat: function (abc) {
