@@ -3,52 +3,43 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using AOT;
+using System.Runtime.InteropServices;
 
 public class Manager : MonoBehaviour
 {
 
-    // public GameObject playerPrefab;
-
     static bool coinInserted = false;
-    bool playRoomLoaded = false;
-
-    bool playerJoined = false;
-
 
     int a = 0;
     int b = 0;
+
+    public static string playerID;
 
     [SerializeField] private Text text;
 
 
     Dictionary<string, int> myDictionary;
 
+    static GameObject player;
+
 
     void Awake()
     {
         if (PlayroomKit.IsRunningInBrowser())
         {
-            PlayroomKit.LoadPlayroom();
-            playRoomLoaded = true;
+            coinInserted = true;
+            PlayroomKit.InsertCoin(CallBackInsertCoin);
 
         }
         else
         {
-            playRoomLoaded = true;
+            // coinInserted = true;
             Debug.LogWarning("Playroom Loaded!");
         }
-
     }
 
     void Start()
     {
-        if (playRoomLoaded)
-        {
-            Debug.Log(playRoomLoaded);
-            PlayroomKit.InsertCoin(CallBackInsertCoin);
-        }
-
-
         myDictionary = new Dictionary<string, int>
         {
             { "x", 100 },
@@ -60,32 +51,43 @@ public class Manager : MonoBehaviour
 
     }
 
-
     void Update()
     {
-        if (coinInserted && !playerJoined)
-        {
-            playerJoined = true;
-            Debug.Log("Player Joined!");
-            PlayroomKit.OnPlayerJoin(OnPlayerJoinCallback);
-        }
 
     }
+
+    public void GetProfile()
+    {
+        string hexColor = PlayroomKit.GetProfileByPlayerId(playerID);
+
+        Debug.Log("Getting this hexColor: " + hexColor);
+
+        ColorUtility.TryParseHtmlString(hexColor, out Color color1);
+        player.GetComponent<SpriteRenderer>().color = color1;
+    }
+
+
 
     [MonoPInvokeCallback(typeof(Action))]
     public static void CallBackInsertCoin()
     {
-        coinInserted = true;
         Debug.Log("Insert Coin Callback Fired from Javascript defined in Unity: " + coinInserted);
+        PlayroomKit.OnPlayerJoin(CallbackOnPlayerJoin);
     }
 
 
-    [MonoPInvokeCallback(typeof(Action))]
-    public static void OnPlayerJoinCallback()
+
+    [MonoPInvokeCallback(typeof(Action<string>))]
+    public static void CallbackOnPlayerJoin(string id)
     {
 
-        Instantiate(Resources.Load("player"), new Vector3(UnityEngine.Random.Range(-5, 5), UnityEngine.Random.Range(-5, 5), 0), Quaternion.identity);
-        Debug.Log("Player Instantiated!");
+
+        playerID = id;
+        Debug.Log("Getting this playerID: " + playerID);
+        // load Resources.Load("player") 
+
+
+        player = (GameObject)Instantiate(Resources.Load("player"), new Vector3(0, 0, 0), Quaternion.identity);
     }
 
 
@@ -99,7 +101,6 @@ public class Manager : MonoBehaviour
 
         PlayroomKit.SetState("valX", a);
 
-        PlayroomKit.SetState("floatKey", 3.14f);
 
         PlayroomKit.SetState("stringKey", "hello");
 
@@ -115,8 +116,6 @@ public class Manager : MonoBehaviour
         Debug.Log("b = " + b);
 
         b = PlayroomKit.GetStateInt("valX");
-
-        Debug.Log("Getting a float: " + PlayroomKit.GetStateFloat("floatKey"));
 
         Debug.Log("Getting a bool: " + PlayroomKit.GetStateBool("boolKey"));
 

@@ -15,8 +15,8 @@ public class PlayroomKit : MonoBehaviour
     [DllImport("__Internal")]
     public static extern void GETFloat(float value);
 
-    [DllImport("__Internal")]
-    public static extern void LoadPlayroom();
+    // [DllImport("__Internal")]
+    // public static extern void LoadPlayroom();
 
     [DllImport("__Internal")]
     public static extern void InsertCoin(Action callback);
@@ -54,10 +54,13 @@ public class PlayroomKit : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void SetStateDictionary(string key, string jsonValues);
 
-    [DllImport("__Internal")]
-    public static extern void OnPlayerJoin(Action callback);
 
     
+    [DllImport("__Internal")]
+    public static extern void OnPlayerJoin(Action<string> callback);
+
+    [DllImport("__Internal")]
+    public static extern string GetProfileByPlayerId(string playerID);
 
     private static void SetStateHelper<T>(string key, Dictionary<string, T> values)
     {
@@ -102,14 +105,6 @@ public class PlayroomKit : MonoBehaviour
 
 
 
-
-
-
-
-
-
-
-
     public static bool GetStateBool(string key)
     {
         if (GetStateInt(key) == 1)
@@ -127,6 +122,8 @@ public class PlayroomKit : MonoBehaviour
         }
 
     }
+
+    
 
 
 

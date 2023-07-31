@@ -1,7 +1,6 @@
 mergeInto(LibraryManager.library, {
 
-  // Function to load the required external JavaScript files including Playroom
-  LoadPlayroom: function () {
+  InsertCoin: function (callback) {
     function embedScript(src) {
       return new Promise((resolve, reject) => {
         var script = document.createElement('script');
@@ -22,7 +21,20 @@ mergeInto(LibraryManager.library, {
 
 
       console.log('All CDNs have been loaded');
-      // Playroom.insertCoin();
+
+      if (!window.Playroom) {
+        console.error('Playroom library is not loaded. Please make sure to call LoadPlayroom first.');
+        return;
+      }
+
+      Playroom.insertCoin().then(() => {
+
+        dynCall("v", callback, []);
+
+      }).catch((error) => {
+        console.error('Error inserting coin:', error);
+      });
+
 
     }).catch((error) => {
       console.error('Error loading CDNs:', error);
@@ -31,21 +43,6 @@ mergeInto(LibraryManager.library, {
 
 
 
-  // Function to call insertCoin from Unity
-  InsertCoin: function (functionPtr) {
-    if (!window.Playroom) {
-      console.error('Playroom library is not loaded. Please make sure to call LoadPlayroom first.');
-      return;
-    }
-
-    Playroom.insertCoin().then(() => {
-
-      dynCall("v", functionPtr, []);
-
-    }).catch((error) => {
-      console.error('Error inserting coin:', error);
-    });
-  },
 
   // for numbers / bools
   SetState: function (key, value) {
@@ -140,23 +137,65 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
+
     Playroom.onPlayerJoin((player) => {
+      // Call the C# callback function with the player.id as a string parameter
 
-      console.log(`${player.id} joined!`);
-      dynCall("v", functionPtr, [player]);
-
+      var id = player.id;
+      console.log("id: ", id)
+      var bufferSize = lengthBytesUTF8(id) + 1;
+      var buffer = _malloc(bufferSize);
+      stringToUTF8(id, buffer, bufferSize);
+      dynCall("vi", functionPtr, [buffer]);
     });
+
   },
 
-  // HasLuanched: function () {
-  //   if (!window.Playroom) {
-  //     console.error('Playroom library is not loaded. Please make sure to call LoadPlayroom first.');
-  //     return false;
-  //   }
 
-  //   return Playroom.hasLaunched;
-  // },
+  GetProfileByPlayerId: function (playerId) {
+    const players = window._multiplayer.getPlayers();
 
+    // Check if players is an object
+    if (typeof players !== 'object' || players === null) {
+      console.error('The "players" variable is not an object:', players);
+      return null;
+    }
+
+    console.log("Players: ", players);
+
+    const playerState = players[UTF8ToString(playerId)];
+
+    if (!playerState) {
+      console.error('Player with ID', UTF8ToString(playerId), 'not found.');
+      return null;
+    }
+
+    console.log("PlayerState", playerState);
+
+    // Assuming that the player state object has a "getProfile" method
+    if (typeof playerState.getProfile === 'function') {
+      const profile = playerState.getProfile();
+      console.log("Log profile: ", profile);
+
+      var returnStr = profile.color.hexString;
+      var bufferSize = lengthBytesUTF8(returnStr) + 1;
+      var buffer = _malloc(bufferSize);
+      stringToUTF8(returnStr, buffer, bufferSize);
+      return buffer;
+    } else {
+      console.error('The player state object does not have a "getProfile" method.');
+      return null;
+    }
+  },
+
+
+  getStateByPlayerStateId: function (playerStateId, key, value) {
+    window._multiplayer.getPlayers().find(playerState => playerState.id === playerStateId).getState(key, value);
+  },
+
+  setStateByPlayerStateId: function (playerStateId, key, value) {
+    window._multiplayer.getPlayers().find(playerState => playerState.id === playerStateId).setState(key, value);
+  },
 
   // send float value to unity 
   GETFloat: function (abc) {
