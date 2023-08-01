@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using AOT;
-using System.Runtime.InteropServices;
+
+
 
 public class Manager : MonoBehaviour
 {
@@ -20,7 +21,7 @@ public class Manager : MonoBehaviour
 
     Dictionary<string, int> myDictionary;
 
-    static GameObject player;
+    static GameObject myplayer;
 
 
     void Awake()
@@ -51,19 +52,14 @@ public class Manager : MonoBehaviour
 
     }
 
-    void Update()
-    {
-
-    }
-
     public void GetProfile()
     {
-        string hexColor = PlayroomKit.GetProfileByPlayerId(playerID);
+        string hexColor = PlayroomKit.Player.GetProfileByPlayerId(playerID);
 
         Debug.Log("Getting this hexColor: " + hexColor);
 
         ColorUtility.TryParseHtmlString(hexColor, out Color color1);
-        player.GetComponent<SpriteRenderer>().color = color1;
+        myplayer.GetComponent<SpriteRenderer>().color = color1;
     }
 
 
@@ -72,22 +68,19 @@ public class Manager : MonoBehaviour
     public static void CallBackInsertCoin()
     {
         Debug.Log("Insert Coin Callback Fired from Javascript defined in Unity: " + coinInserted);
-        PlayroomKit.OnPlayerJoin(CallbackOnPlayerJoin);
+        PlayroomKit.OnPlayerJoin(PlayerCallback);
     }
 
-
-
-    [MonoPInvokeCallback(typeof(Action<string>))]
-    public static void CallbackOnPlayerJoin(string id)
+    public static void PlayerCallback(PlayroomKit.Player player)
     {
 
+        Debug.Log("EXTRA CALLBACK: " + player.playerId);
 
-        playerID = id;
-        Debug.Log("Getting this playerID: " + playerID);
-        // load Resources.Load("player") 
+        player.SetState("score", 0);
 
 
-        player = (GameObject)Instantiate(Resources.Load("player"), new Vector3(0, 0, 0), Quaternion.identity);
+        // spawn a player in the scene
+        myplayer = (GameObject)Instantiate(Resources.Load("player"), new Vector3(0, 0, 0), Quaternion.identity);
     }
 
 
@@ -97,17 +90,6 @@ public class Manager : MonoBehaviour
         a++;
         Debug.Log("a = " + a);
 
-        PlayroomKit.SetState("myDictionary", myDictionary);
-
-        PlayroomKit.SetState("valX", a);
-
-
-        PlayroomKit.SetState("stringKey", "hello");
-
-        PlayroomKit.SetState("boolKey", true);
-
-
-
         text.text = "a = " + a + " b = " + b;
     }
 
@@ -115,11 +97,21 @@ public class Manager : MonoBehaviour
     {
         Debug.Log("b = " + b);
 
-        b = PlayroomKit.GetStateInt("valX");
 
-        Debug.Log("Getting a bool: " + PlayroomKit.GetStateBool("boolKey"));
+        // // Debug.Log("GETING FLOAT: " + PlayroomKit.GETFloat());
 
-        Debug.Log("Getting a String: " + PlayroomKit.GetStateString("stringKey"));
+        // Debug.Log("Getting a int: " + PlayroomKit.Player.GetPlayerStateIntById(playerID, "score"));
+
+        // Debug.Log("Getting a float: " + PlayroomKit.Player.GetPlayerStateFloatById(playerID, "abc"));
+
+        // Debug.Log("Getting a bool: " + PlayroomKit.Player.GetPlayerStateBoolById(playerID, "bool"));
+
+        // Debug.Log("Getting a String: " + PlayroomKit.Player.GetPlayerStateStringById(playerID, "string"));
+
+
+        // b = PlayroomKit.Player.GetPlayerStateIntById(playerID, "score");
+
+
 
         text.text = "new b = " + b;
     }

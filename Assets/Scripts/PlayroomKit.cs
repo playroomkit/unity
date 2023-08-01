@@ -6,17 +6,75 @@ using System;
 using SimpleJSON;
 
 
-
-public class PlayroomKit : MonoBehaviour
+public class PlayroomKit
 {
 
-    public GameObject playerPrefab;
+    public class Player
+    {
+        public string playerId;
+
+
+        public void SetState(string key, int value)
+        {
+            Debug.Log("player id in setstate unity: " + playerId);
+            SetPlayerStateByPlayerId(playerId, key, value);
+        }
+
+        [DllImport("__Internal")]
+        private static extern string SetPlayerStateByPlayerId(string playerID, string key, int value);
+
+        [DllImport("__Internal")]
+        private static extern string SetPlayerStateByPlayerId(string playerID, string key, float value);
+
+        [DllImport("__Internal")]
+        private static extern string SetPlayerStateByPlayerId(string playerID, string key, bool value);
+
+        [DllImport("__Internal")]
+        private static extern string SetPlayerStateStringById(string playerID, string key, string value);
+
+
+        [DllImport("__Internal")]
+        public static extern string GetProfileByPlayerId(string playerID);
+
+        [DllImport("__Internal")]
+        public static extern int GetPlayerStateIntById(string playerID, string key);
+
+        [DllImport("__Internal")]
+        public static extern float GetPlayerStateFloatById(string playerID, string key);
+
+        [DllImport("__Internal")]
+        public static extern string GetPlayerStateStringById(string playerID, string key);
+
+        public static bool GetPlayerStateBoolById(string playerID, string key)
+        {
+            if (GetPlayerStateIntById(playerID, key) == 1)
+            {
+                return true;
+            }
+            else if (GetPlayerStateIntById(playerID, key) == 0)
+            {
+                return false;
+            }
+            else
+            {
+                Debug.LogError("GetPlayerStateByPlayerId: " + key + " is not a bool");
+                return false;
+            }
+
+        }
+
+    }
+
+    private static Player currentPlayer = new Player();
+
+    public static string playerId;
 
     [DllImport("__Internal")]
-    public static extern void GETFloat(float value);
+    public static extern float GETFloat();
 
-    // [DllImport("__Internal")]
-    // public static extern void LoadPlayroom();
+    [DllImport("__Internal")]
+    public static extern void SETFloat(float value);
+
 
     [DllImport("__Internal")]
     public static extern void InsertCoin(Action callback);
@@ -55,12 +113,28 @@ public class PlayroomKit : MonoBehaviour
     private static extern void SetStateDictionary(string key, string jsonValues);
 
 
-    
     [DllImport("__Internal")]
-    public static extern void OnPlayerJoin(Action<string> callback);
+    private static extern void OnPlayerJoinInternal(Action<string> callback);
 
-    [DllImport("__Internal")]
-    public static extern string GetProfileByPlayerId(string playerID);
+    [MonoPInvokeCallback(typeof(Action<string>))]
+    private static void WrapperCallback(string id)
+    {
+        Debug.Log("id from jslib: " + id);
+        currentPlayer.playerId = id;
+        Debug.Log("ID in curentPlayer: " + currentPlayer.playerId);
+    }
+
+
+    public static void OnPlayerJoin(Action<Player> playerCallBack)
+    {
+
+        OnPlayerJoinInternal(WrapperCallback);
+        Debug.Log("OnPlayerJoin: " + currentPlayer.playerId);
+
+        // TODO: delay the callback to make sure the playerId is set before calling the callback
+        // playerCallBack?.Invoke(currentPlayer);
+    }
+
 
     private static void SetStateHelper<T>(string key, Dictionary<string, T> values)
     {
@@ -123,7 +197,7 @@ public class PlayroomKit : MonoBehaviour
 
     }
 
-    
+
 
 
 
