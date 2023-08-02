@@ -26,6 +26,11 @@ public class PlayerMovement : MonoBehaviour
     {
         Movement();
         Jump();
+
+        // if(PlayroomKit.IsHost) {
+        //     // 
+        // }
+
     }
 
     void Movement()

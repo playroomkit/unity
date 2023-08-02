@@ -63,7 +63,6 @@ mergeInto(LibraryManager.library, {
     Playroom.setState(UTF8ToString(key), UTF8ToString(stringVal));
   },
 
-
   // for numbers
   GetStateInt: function (key) {
     if (!window.Playroom) {
@@ -109,15 +108,28 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    console.log("jsonValues from unity: ", UTF8ToString(jsonValues))
-    playerState.set(UTF8ToString(key), JSON.parse(UTF8ToString(jsonValues)));
-
-
-    // TODO: implement GetStateDictionary 
+    console.log("jsonValues from unity: ", JSON.parse(UTF8ToString(jsonValues)))
+    Playroom.setState(UTF8ToString(key), JSON.parse(UTF8ToString(jsonValues)));
 
 
   },
 
+  GetStateDictionary: function (key) {
+    if (!window.Playroom) {
+      console.error('Playroom library is not loaded. Please make sure to call LoadPlayroom first.');
+      return;
+    }
+
+    var obj = Playroom.getState(UTF8ToString(key));
+
+    console.log("obj from get state dictionary: ", obj)
+
+    var jsonString = JSON.stringify(obj);
+    var bufferSize = lengthBytesUTF8(jsonString) + 1;
+    var buffer = _malloc(bufferSize);
+    stringToUTF8(jsonString, buffer, bufferSize);
+    return buffer;
+  },
 
 
   IsHost: function () {
@@ -236,6 +248,72 @@ mergeInto(LibraryManager.library, {
       return null;
     }
   },
+
+  SetPlayerStateDictionary: function (playerId, key, jsonValues) {
+    const players = window._multiplayer.getPlayers();
+
+    // Check if players is an object
+    if (typeof players !== 'object' || players === null) {
+      console.error('The "players" variable is not an object:', players);
+      return null;
+    }
+
+    const playerState = players[UTF8ToString(playerId)];
+
+    if (!playerState) {
+      console.error('Player with ID', UTF8ToString(playerId), 'not found.');
+      return null;
+    }
+
+    // Assuming that the player state object has a "getProfile" method
+    if (typeof playerState.setState === 'function') {
+      playerState.setState(UTF8ToString(key), JSON.parse(UTF8ToString(jsonValues)));
+      console.log(`setting state: ${UTF8ToString(key)} for playerID: ${UTF8ToString(playerId)} with value of ${UTF8ToString(jsonValues)}`);
+    }
+    else {
+      console.error('The player state object does not have a "setState" method.');
+      return null;
+    }
+  },
+
+  GetPlayerStateDictionary: function (playerId, key) {
+    const players = window._multiplayer.getPlayers();
+
+    // Check if players is an object
+    if (typeof players !== 'object' || players === null) {
+      console.error('The "players" variable is not an object:', players);
+      return null;
+    }
+
+    const playerState = players[UTF8ToString(playerId)];
+
+    if (!playerState) {
+      console.error('Player with ID', UTF8ToString(playerId), 'not found.');
+      return null;
+    }
+
+    // Assuming that the player state object has a "setState" method
+    if (typeof playerState.setState === 'function') {
+      var obj = playerState.getState(UTF8ToString(key));
+
+      console.log("obj from get state dictionary: ", obj)
+
+      var jsonString = JSON.stringify(obj);
+      var bufferSize = lengthBytesUTF8(jsonString) + 1;
+      var buffer = _malloc(bufferSize);
+      stringToUTF8(jsonString, buffer, bufferSize);
+      return buffer;
+
+
+
+    }
+    else {
+      console.error('The player state object does not have a "setState" method.');
+      return null;
+    }
+  },
+
+
 
 
   GetPlayerStateIntById: function (playerId, key) {

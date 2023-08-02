@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using AOT;
 
 
-
 public class Manager : MonoBehaviour
 {
 
@@ -19,9 +18,11 @@ public class Manager : MonoBehaviour
     [SerializeField] private Text text;
 
 
-    Dictionary<string, int> myDictionary;
+    Dictionary<string, float> myDictionary;
 
     static GameObject myplayer;
+
+    PlayroomKit.Player player;
 
 
     void Awake()
@@ -41,12 +42,12 @@ public class Manager : MonoBehaviour
 
     void Start()
     {
-        myDictionary = new Dictionary<string, int>
-        {
-            { "x", 100 },
-            { "y", 200 },
-            { "z", 300 }
-        };
+        // myDictionary = new Dictionary<string, float>
+        // {
+        //     { "x", 10.5f },
+        //     { "y", 200.6f },
+        //     { "z", 1.6f }
+        // };
 
         text.text = "a = " + a + " b = " + b;
 
@@ -74,13 +75,22 @@ public class Manager : MonoBehaviour
     public static void PlayerCallback(PlayroomKit.Player player)
     {
 
-        Debug.Log("EXTRA CALLBACK: " + player.playerId);
-
+        
         player.SetState("score", 0);
 
+        Debug.Log(player.id);
+        playerID = player.id;
 
         // spawn a player in the scene
-        myplayer = (GameObject)Instantiate(Resources.Load("player"), new Vector3(0, 0, 0), Quaternion.identity);
+        myplayer = (GameObject)Instantiate(Resources.Load("player"), new Vector3(-4, 4, 0), Quaternion.identity);
+
+        Dictionary<string, float> position = new Dictionary<string, float>
+        {
+            { "x", myplayer.transform.position.x },
+            { "y", myplayer.transform.position.y },
+            { "z", myplayer.transform.position.z }
+        };
+        player.SetState("position", position);
     }
 
 
@@ -90,28 +100,22 @@ public class Manager : MonoBehaviour
         a++;
         Debug.Log("a = " + a);
 
+        
+        // Debug.Log("Getting score for the Player = " + player.SetState(playerID, "score"));
+
         text.text = "a = " + a + " b = " + b;
     }
 
     public void TestGetState()
     {
         Debug.Log("b = " + b);
+        PlayroomKit.Player player = new PlayroomKit.Player();
 
+        Dictionary<string, float> newPos = player.GetStateFloat(playerID, "position");
 
-        // // Debug.Log("GETING FLOAT: " + PlayroomKit.GETFloat());
-
-        // Debug.Log("Getting a int: " + PlayroomKit.Player.GetPlayerStateIntById(playerID, "score"));
-
-        // Debug.Log("Getting a float: " + PlayroomKit.Player.GetPlayerStateFloatById(playerID, "abc"));
-
-        // Debug.Log("Getting a bool: " + PlayroomKit.Player.GetPlayerStateBoolById(playerID, "bool"));
-
-        // Debug.Log("Getting a String: " + PlayroomKit.Player.GetPlayerStateStringById(playerID, "string"));
-
-
-        // b = PlayroomKit.Player.GetPlayerStateIntById(playerID, "score");
-
-
+        Debug.Log("Getting POSX = " + newPos["x"]);
+        Debug.Log("Getting POSY = " + newPos["Y"]);
+        Debug.Log("Getting POSZ = " + newPos["Z"]);
 
         text.text = "new b = " + b;
     }
