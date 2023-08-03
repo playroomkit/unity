@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using AOT;
+using Playroom;
 
 
 public class Manager : MonoBehaviour
@@ -109,13 +110,12 @@ public class Manager : MonoBehaviour
     public void TestGetState()
     {
         Debug.Log("b = " + b);
-        PlayroomKit.Player player = new PlayroomKit.Player();
-
+        
         Dictionary<string, float> newPos = player.GetStateFloat(playerID, "position");
 
         Debug.Log("Getting POSX = " + newPos["x"]);
-        Debug.Log("Getting POSY = " + newPos["Y"]);
-        Debug.Log("Getting POSZ = " + newPos["Z"]);
+        Debug.Log("Getting POSY = " + newPos["y"]);
+        Debug.Log("Getting POSZ = " + newPos["z"]);
 
         text.text = "new b = " + b;
     }
