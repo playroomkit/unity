@@ -110,7 +110,6 @@ namespace Playroom
         public static Dictionary<string, float> GetStateFloatDict(string key)
         {
             string jsonString = GetStateDictionary(key);
-            Debug.Log("jsonString: " + jsonString);
             return ParseJsonToDictionary<float>(jsonString);
         }
 
@@ -131,7 +130,6 @@ namespace Playroom
             string jsonString = jsonObject.ToString();
 
             // Output the JSON string
-            Debug.Log("Serialized JSON: " + jsonString);
             SetStateDictionary(key, jsonString);
         }
 
@@ -191,7 +189,6 @@ namespace Playroom
 
             public void SetState(string key, int value)
             {
-                Debug.Log("player id in setstate unity: " + id);
                 SetPlayerStateByPlayerId(id, key, value);
             }
 
@@ -266,7 +263,6 @@ namespace Playroom
             public Dictionary<string, float> GetStateFloat(string id, string key)
             {
                 string jsonString = GetPlayerStateDictionary(id, key);
-                Debug.Log("jsonString: " + jsonString);
                 return ParseJsonToDictionary<float>(jsonString);
             }
 
@@ -318,7 +314,6 @@ namespace Playroom
                 string jsonString = jsonObject.ToString();
 
                 // Output the JSON string
-                Debug.Log("Serialized JSON: " + jsonString);
                 SetPlayerStateDictionary(id, key, jsonString);
             }
 

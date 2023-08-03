@@ -76,7 +76,7 @@ public class Manager : MonoBehaviour
     public static void PlayerCallback(PlayroomKit.Player player)
     {
 
-        
+
         player.SetState("score", 0);
 
         Debug.Log(player.id);
@@ -101,7 +101,7 @@ public class Manager : MonoBehaviour
         a++;
         Debug.Log("a = " + a);
 
-        
+
         // Debug.Log("Getting score for the Player = " + player.SetState(playerID, "score"));
 
         text.text = "a = " + a + " b = " + b;
@@ -110,7 +110,7 @@ public class Manager : MonoBehaviour
     public void TestGetState()
     {
         Debug.Log("b = " + b);
-        
+
         Dictionary<string, float> newPos = player.GetStateFloat(playerID, "position");
 
         Debug.Log("Getting POSX = " + newPos["x"]);
