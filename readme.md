@@ -1,1 +1,1 @@
-### Playroom for Unity
+### PlayroomKit for Unity

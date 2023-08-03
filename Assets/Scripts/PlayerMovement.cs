@@ -45,12 +45,8 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             rb2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            
+
 
         }
     }
-
-
-
-
 }
