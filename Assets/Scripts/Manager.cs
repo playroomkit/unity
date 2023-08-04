@@ -43,13 +43,7 @@ public class Manager : MonoBehaviour
 
     void Start()
     {
-        // myDictionary = new Dictionary<string, float>
-        // {
-        //     { "x", 10.5f },
-        //     { "y", 200.6f },
-        //     { "z", 1.6f }
-        // };
-
+        
         text.text = "a = " + a + " b = " + b;
 
     }
@@ -111,7 +105,7 @@ public class Manager : MonoBehaviour
     {
         Debug.Log("b = " + b);
 
-        Dictionary<string, float> newPos = player.GetStateFloat(playerID, "position");
+        Dictionary<string, float> newPos = player.GetStateFloat(player.id, "position");
 
         Debug.Log("Getting POSX = " + newPos["x"]);
         Debug.Log("Getting POSY = " + newPos["y"]);

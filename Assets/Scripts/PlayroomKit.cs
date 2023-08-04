@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using AOT;
 using System;
 using SimpleJSON;
+using Unity.VisualScripting;
 
 namespace Playroom
 {
@@ -14,7 +15,7 @@ namespace Playroom
 
         [DllImport("__Internal")]
         private static extern void OnPlayerJoinInternal(Action<string> callback);
-
+        
         private static Action<Player> onPlayerJoinCallback = null;
 
         [MonoPInvokeCallback(typeof(Action<string>))]
@@ -29,7 +30,7 @@ namespace Playroom
         {
             onPlayerJoinCallback = playerCallback;
             OnPlayerJoinInternal(WrapperCallback);
-        }
+        }  
 
         [DllImport("__Internal")]
         public static extern bool IsHost();
@@ -182,10 +183,30 @@ namespace Playroom
         {
             public string id;
 
+           
             public Player(string id)
             {
                 this.id = id;
             }
+            
+            [DllImport("__Internal")]
+            private static extern void OnQuitInternal(string id, Action callback);
+        
+            private static Action OnQuitCallback = null;
+
+            [MonoPInvokeCallback(typeof(Action))]
+            private static void WrapperCallback()
+            {
+                OnQuitCallback?.Invoke();
+            }
+
+            public void OnQuit(string id, Action callback)
+            {
+                OnQuitCallback = callback;
+                OnQuitInternal(id, WrapperCallback);
+            } 
+           
+
 
             public void SetState(string key, int value)
             {
@@ -317,7 +338,9 @@ namespace Playroom
                 SetPlayerStateDictionary(id, key, jsonString);
             }
 
-
+            
+            
+            
         }
 
     }

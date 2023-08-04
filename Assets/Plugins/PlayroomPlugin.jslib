@@ -79,6 +79,7 @@ mergeInto(LibraryManager.library, {
     });
   },
 
+ 
   /* ----- MULTIPLAYER GETTERS AND SETTERS  ↓ ----- */
 
   /**
@@ -467,4 +468,37 @@ mergeInto(LibraryManager.library, {
       return null;
     }
   },
+
+  //Player Quit:  
+
+  OnQuitInternal: function(playerId, callback) {
+    const players = window._multiplayer.getPlayers();
+
+    // Check if players is an object
+    if (typeof players !== "object" || players === null) {
+      console.error('The "players" variable is not an object:', players);
+      return null;
+    }
+
+    const playerState = players[UTF8ToString(playerId)];
+
+    if (!playerState) {
+      console.error("Player with ID", UTF8ToString(playerId), "not found.");
+      return null;
+    }
+
+    // Assuming that the player state object has a "setState" method
+    if (typeof playerState.onQuit === "function") {
+      playerState.onQuit(() => {
+        dynCall("v", callback, []);
+      });
+    } else {
+      console.error(
+        'The player state object does not have a "setState" method.'
+      );
+      return null;
+    }
+  }
+
+
 });
