@@ -40,11 +40,10 @@ namespace Playroom
 
         [DllImport("__Internal")]
         private static extern string MyPlayerInternal();
-
-        [DllImport("__Internal")]
-        public static extern string MyPlayer()
+        
+        public static Player MyPlayer()
         {
-            return new Player(MyPlayerInternal())
+            return new Player(MyPlayerInternal());
         }
 
         [DllImport("__Internal")]
@@ -194,29 +193,50 @@ namespace Playroom
         public class Player
         {
             public string id;
+            
+            private static int totalObjects = 0;
 
            
             public Player(string id)
             {
                 this.id = id;
+                totalObjects++;
             }
             
             [DllImport("__Internal")]
             private static extern void OnQuitInternal(string id, Action callback);
-        
-            private static Action OnQuitCallback = null;
+
+            private static Action[] OnQuitCallbacks = null;
 
             [MonoPInvokeCallback(typeof(Action))]
             private static void WrapperCallback()
             {
-                OnQuitCallback?.Invoke();
+                if (OnQuitCallbacks != null)
+                {
+                    foreach (var callback in OnQuitCallbacks)
+                    {
+                        callback?.Invoke();
+                    }
+                }
             }
 
-            public void OnQuit(string id, Action callback)
+            public void OnQuit(string PlayerID, Action callback)
             {
-                OnQuitCallback = callback;
-                OnQuitInternal(id, WrapperCallback);
-            } 
+                // Add the new callback to the list
+                if (OnQuitCallbacks == null)
+                {
+                    OnQuitCallbacks = new Action[] { callback };
+                }
+                else
+                {
+                    var tempCallbacks = new List<Action>(OnQuitCallbacks);
+                    tempCallbacks.Add(callback);
+                    OnQuitCallbacks = tempCallbacks.ToArray();
+                }
+
+                OnQuitInternal(PlayerID, WrapperCallback);
+            }
+
            
 
 
