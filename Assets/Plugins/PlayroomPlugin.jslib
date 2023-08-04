@@ -76,7 +76,7 @@ mergeInto(LibraryManager.library, {
    * @description Retrieves the current local player.
    * @returns {string} The current player's ID.
    */
-  MyPlayer: function () {
+  MyPlayerInternal: function () {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
