@@ -35,6 +35,18 @@ namespace Playroom
         public static extern bool IsHost();
 
         [DllImport("__Internal")]
+        public static extern bool IsStreamMode();
+
+        [DllImport("__Internal")]
+        private static extern string MyPlayerInternal();
+
+        [DllImport("__Internal")]
+        public static extern string MyPlayer()
+        {
+            return new Player(MyPlayerInternal())
+        }
+
+        [DllImport("__Internal")]
         private static extern void SetStateString(string key, string value);
 
         [DllImport("__Internal")]
