@@ -58,6 +58,35 @@ mergeInto(LibraryManager.library, {
   },
 
   /**
+   * @description Checks whether the local game is running in stream mode.
+   * @returns {boolean} True if the local game is running in stream mode, otherwise false.
+   */
+    IsStreamMode: function () {
+      if (!window.Playroom) {
+        console.error(
+          "Playroom library is not loaded. Please make sure to call InsertCoin first."
+        );
+        return;
+      }
+      return Playroom.isStreamMode();
+    },
+
+
+  /**
+   * @description Retrieves the current local player.
+   * @returns {string} The current player's ID.
+   */
+  MyPlayerInternal: function () {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+    return Playroom.myPlayer().id;
+  },
+
+  /**
    * @description Registers a callback to be executed when a new player joins the game.
    * @param {function} functionPtr - A C# callback function that receives the player's ID as a string parameter.
    */
