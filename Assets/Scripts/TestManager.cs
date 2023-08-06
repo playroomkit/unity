@@ -6,7 +6,7 @@ using AOT;
 using Playroom;
 
 
-public class Manager : MonoBehaviour
+public class TestManager : MonoBehaviour
 {
 
     static bool coinInserted = false;
@@ -83,7 +83,6 @@ public class Manager : MonoBehaviour
         {
             { "x", myplayer.transform.position.x },
             { "y", myplayer.transform.position.y },
-            { "z", myplayer.transform.position.z }
         };
         player.SetState("position", position);
     }
@@ -92,13 +91,21 @@ public class Manager : MonoBehaviour
     // for buttons
     public void TestSetState()
     {
-        a++;
-        Debug.Log("a = " + a);
+        // a++;
+        // Debug.Log("a = " + a);
+        //
+        //
+        // // Debug.Log("Getting score for the Player = " + player.SetState(playerID, "score"));
+        //
+        // text.text = "a = " + a + " b = " + b;
+        
+        player.OnQuit(player.id, testcallback);
+        
+    }
 
-
-        // Debug.Log("Getting score for the Player = " + player.SetState(playerID, "score"));
-
-        text.text = "a = " + a + " b = " + b;
+    void testcallback()
+    {
+        Debug.Log("Player left the game" + player.id);
     }
 
     public void TestGetState()

@@ -3,7 +3,7 @@ mergeInto(LibraryManager.library, {
    * @description Inserts a coin into the game by loading the required scripts and initializing the Playroom.
    * @param {function} callback - A callback function to execute after the Playroom is loaded.
    */
-  InsertCoin: function (callback) {
+  InsertCoinInternal: function (callback) {
     function embedScript(src) {
       return new Promise((resolve, reject) => {
         var script = document.createElement("script");

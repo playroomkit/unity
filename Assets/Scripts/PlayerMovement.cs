@@ -25,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         Movement();
-        Jump();
+        /*Jump();*/
 
         // if(PlayroomKit.IsHost) {
         //     // 
