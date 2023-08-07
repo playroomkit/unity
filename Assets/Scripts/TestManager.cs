@@ -43,20 +43,12 @@ public class TestManager : MonoBehaviour
 
     void Start()
     {
-        
+        PlayroomKit.OnPlayerJoin(PlayerCallback);
         text.text = "a = " + a + " b = " + b;
 
     }
 
-    public void GetProfile()
-    {
-        string hexColor = PlayroomKit.Player.GetProfileByPlayerId(playerID);
-
-        Debug.Log("Getting this hexColor: " + hexColor);
-
-        ColorUtility.TryParseHtmlString(hexColor, out Color color1);
-        myplayer.GetComponent<SpriteRenderer>().color = color1;
-    }
+   
 
 
 
@@ -64,61 +56,50 @@ public class TestManager : MonoBehaviour
     public static void CallBackInsertCoin()
     {
         Debug.Log("Insert Coin Callback Fired from Javascript defined in Unity: " + coinInserted);
-        PlayroomKit.OnPlayerJoin(PlayerCallback);
+        
     }
 
     public static void PlayerCallback(PlayroomKit.Player player)
     {
-
-
-        player.SetState("score", 0);
-
-        Debug.Log(player.id);
-        playerID = player.id;
-
         // spawn a player in the scene
         myplayer = (GameObject)Instantiate(Resources.Load("player"), new Vector3(-4, 4, 0), Quaternion.identity);
-
-        Dictionary<string, float> position = new Dictionary<string, float>
-        {
-            { "x", myplayer.transform.position.x },
-            { "y", myplayer.transform.position.y },
-        };
-        player.SetState("position", position);
     }
-
-
-    // for buttons
+    
+    /*public void GetProfile()
+    {
+        string hexColor = PlayroomKit.Player.GetProfileByPlayerId(playerID);
+    
+        Debug.Log("Getting this hexColor: " + hexColor);
+    
+        ColorUtility.TryParseHtmlString(hexColor, out Color color1);
+        myplayer.GetComponent<SpriteRenderer>().color = color1;
+    }
+    
+    
+    // // for buttons
     public void TestSetState()
     {
-        // a++;
-        // Debug.Log("a = " + a);
-        //
-        //
-        // // Debug.Log("Getting score for the Player = " + player.SetState(playerID, "score"));
-        //
-        // text.text = "a = " + a + " b = " + b;
+        a++;
+        Debug.Log("a = " + a);
         
-        player.OnQuit(player.id, testcallback);
         
+        // Debug.Log("Getting score for the Player = " + player.SetState(playerID, "score"));
+        
+        text.text = "a = " + a + " b = " + b;
     }
-
-    void testcallback()
-    {
-        Debug.Log("Player left the game" + player.id);
-    }
-
+    
+    
     public void TestGetState()
     {
         Debug.Log("b = " + b);
-
+    
         Dictionary<string, float> newPos = player.GetStateFloat(player.id, "position");
-
+    
         Debug.Log("Getting POSX = " + newPos["x"]);
         Debug.Log("Getting POSY = " + newPos["y"]);
         Debug.Log("Getting POSZ = " + newPos["z"]);
-
+    
         text.text = "new b = " + b;
-    }
+    }*/
 
 }

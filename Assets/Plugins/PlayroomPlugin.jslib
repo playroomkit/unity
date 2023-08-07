@@ -1,4 +1,4 @@
-mergeInto(LibraryManager.library, { 
+mergeInto(LibraryManager.library, {
   /**
    * @description Inserts a coin into the game by loading the required scripts and initializing the Playroom.
    * @param {function} callback - A callback function to execute after the Playroom is loaded.
@@ -61,16 +61,15 @@ mergeInto(LibraryManager.library, {
    * @description Checks whether the local game is running in stream mode.
    * @returns {boolean} True if the local game is running in stream mode, otherwise false.
    */
-    IsStreamMode: function () {
-      if (!window.Playroom) {
-        console.error(
-          "Playroom library is not loaded. Please make sure to call InsertCoin first."
-        );
-        return;
-      }
-      return Playroom.isStreamMode();
-    },
-
+  IsStreamMode: function () {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+    return Playroom.isStreamMode();
+  },
 
   /**
    * @description Retrieves the current local player.
@@ -108,7 +107,6 @@ mergeInto(LibraryManager.library, {
     });
   },
 
- 
   /* ----- MULTIPLAYER GETTERS AND SETTERS  ↓ ----- */
 
   /**
@@ -498,9 +496,9 @@ mergeInto(LibraryManager.library, {
     }
   },
 
-  //Player Quit:  
+  //Player Quit:
 
-  OnQuitInternal: function(playerId, callback) {
+  OnQuitInternal: function (playerId, callback) {
     const players = window._multiplayer.getPlayers();
 
     // Check if players is an object
@@ -527,7 +525,5 @@ mergeInto(LibraryManager.library, {
       );
       return null;
     }
-  }
-
-
+  },
 });
