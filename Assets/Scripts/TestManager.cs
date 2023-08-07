@@ -21,9 +21,9 @@ public class TestManager : MonoBehaviour
 
     Dictionary<string, float> myDictionary;
 
-    static GameObject myplayer;
+    static GameObject playerObj;
 
-    PlayroomKit.Player player;
+    static PlayroomKit.Player myPlayer;
 
 
     void Awake()
@@ -36,27 +36,16 @@ public class TestManager : MonoBehaviour
         }
         else
         {
-            // coinInserted = true;
             Debug.LogWarning("Playroom Loaded!");
         }
     }
 
     void Start()
     {
-        
         text.text = "a = " + a + " b = " + b;
-
     }
 
-    public void GetProfile()
-    {
-        string hexColor = PlayroomKit.Player.GetProfileByPlayerId(playerID);
-
-        Debug.Log("Getting this hexColor: " + hexColor);
-
-        ColorUtility.TryParseHtmlString(hexColor, out Color color1);
-        myplayer.GetComponent<SpriteRenderer>().color = color1;
-    }
+   
 
 
 
@@ -67,58 +56,53 @@ public class TestManager : MonoBehaviour
         PlayroomKit.OnPlayerJoin(PlayerCallback);
     }
 
+
+    static void Foo()
+    {
+        Debug.Log("Foo Called");
+    }
+
     public static void PlayerCallback(PlayroomKit.Player player)
     {
-
-
-        player.SetState("score", 0);
-
-        Debug.Log(player.id);
-        playerID = player.id;
-
+        myPlayer = player;
         // spawn a player in the scene
-        myplayer = (GameObject)Instantiate(Resources.Load("player"), new Vector3(-4, 4, 0), Quaternion.identity);
-
-        Dictionary<string, float> position = new Dictionary<string, float>
-        {
-            { "x", myplayer.transform.position.x },
-            { "y", myplayer.transform.position.y },
-        };
-        player.SetState("position", position);
+        playerObj = (GameObject)Instantiate(Resources.Load("player"), new Vector3(-4, 4, 0), Quaternion.identity);
+        myPlayer.OnQuit(Foo);
     }
+    
+    public void GetProfile()
+    {
+       var myProfile = myPlayer.GetProfile();
 
-
-    // for buttons
+        Debug.Log(myProfile.name);
+        
+        ColorUtility.TryParseHtmlString(myProfile.color.hexString, out Color color1);
+        playerObj.GetComponent<SpriteRenderer>().color = color1;
+        
+    }
+    
+    // // for buttons
+    /*
     public void TestSetState()
     {
-        // a++;
-        // Debug.Log("a = " + a);
-        //
-        //
-        // // Debug.Log("Getting score for the Player = " + player.SetState(playerID, "score"));
-        //
-        // text.text = "a = " + a + " b = " + b;
+        a++;
+        Debug.Log("a = " + a);
         
-        player.OnQuit(player.id, testcallback);
         
-    }
+        // Debug.Log("Getting score for the Player = " + player.SetState(playerID, "score"));
+        
+        text.text = "a = " + a + " b = " + b;
+    }*/
 
-    void testcallback()
+
+    static void bar()
     {
-        Debug.Log("Player left the game" + player.id);
+        Debug.Log("Bar Called");
     }
-
-    public void TestGetState()
+    
+    public void TestQuitCallback()
     {
-        Debug.Log("b = " + b);
-
-        Dictionary<string, float> newPos = player.GetStateFloat(player.id, "position");
-
-        Debug.Log("Getting POSX = " + newPos["x"]);
-        Debug.Log("Getting POSY = " + newPos["y"]);
-        Debug.Log("Getting POSZ = " + newPos["z"]);
-
-        text.text = "new b = " + b;
+        PlayroomKit.GetPlayer(myPlayer.id).OnQuit(bar);
     }
 
 }

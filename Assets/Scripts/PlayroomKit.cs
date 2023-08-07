@@ -4,15 +4,16 @@
     using AOT;
     using System;
     using SimpleJSON;
-
+    
     namespace Playroom
     {
         public class PlayroomKit
         {
 
+            public static Dictionary<string, Player> Players = new Dictionary<string, Player>();
+
             private static Action InsertCoinCallback = null;
             
-
             [DllImport("__Internal")]
             private static extern void InsertCoinInternal(Action callback);
             
@@ -34,18 +35,45 @@
             private static Action<Player> onPlayerJoinCallback = null;
 
             [MonoPInvokeCallback(typeof(Action<string>))]
-            private static void WrapperCallback(string id)
+            private static void OnPlayerJoinWrapperCallback(string id)
             {
-                Player player = new Player(id);
-
+                Player player = GetPlayer(id);
                 onPlayerJoinCallback?.Invoke(player);
             }
 
             public static void OnPlayerJoin(Action<Player> playerCallback)
             {
                 onPlayerJoinCallback = playerCallback;
-                OnPlayerJoinInternal(WrapperCallback);
+                OnPlayerJoinInternal(OnPlayerJoinWrapperCallback);
             }  
+            
+            public static Dictionary<string, Player> GetPlayers()
+            {
+                return Players;
+            }
+            
+            public static Player GetPlayer(string playerId)
+            {
+                try
+                {
+                    if(Players.ContainsKey(playerId)) 
+                    {
+                        return Players[playerId];
+                    }
+                    else
+                    {
+                        Player player = new Player(playerId);
+                        Players.Add(playerId, player);
+                        return player;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Error in Get Player: " + e.Message);
+                    throw;
+                }
+                
+            }
 
             [DllImport("__Internal")]
             public static extern bool IsHost();
@@ -193,6 +221,8 @@
                 return dictionary;
             }
 
+            
+            
             // it checks if the game is running in the browser or in the editor
             public static bool IsRunningInBrowser()
             {
@@ -207,9 +237,27 @@
             // Player class
             public class Player
             {
+                
+                [System.Serializable]
+                public class ColorData
+                {
+                    public int r;
+                    public int g;
+                    public int b;
+                    public string hexString;
+                    public int hex;
+                }
+
+                [System.Serializable]
+                public class Profile
+                {
+                    public ColorData color;
+                    public string name;
+                    public string photo;
+                }
+                
+                
                 public string id;
-                
-                
                 private static int totalObjects = 0;
 
                
@@ -217,15 +265,24 @@
                 {
                     this.id = id;
                     totalObjects++;
+
+                    OnQuitCallbacks.Add(OnQuitDefaultCallback) ;
+                    OnQuitInternal(this.id, OnQuitWrapperCallback);
                 }
                 
                 [DllImport("__Internal")]
                 private static extern void OnQuitInternal(string id, Action callback);
 
-                private static Action[] OnQuitCallbacks = null;
-
+                private static List<Action> OnQuitCallbacks = new List<Action>();
+                
+                
+                private void OnQuitDefaultCallback()
+                {
+                    Players.Remove(id);
+                }
+                
                 [MonoPInvokeCallback(typeof(Action))]
-                private static void WrapperCallback()
+                private static void OnQuitWrapperCallback()
                 {
                     if (OnQuitCallbacks != null)
                     {
@@ -236,26 +293,12 @@
                     }
                 }
 
-                public void OnQuit(string PlayerID, Action callback)
+                public void OnQuit(Action callback)
                 {
-                    // Add the new callback to the list
-                    if (OnQuitCallbacks == null)
-                    {
-                        OnQuitCallbacks = new Action[] { callback };
-                    }
-                    else
-                    {
-                        var tempCallbacks = new List<Action>(OnQuitCallbacks);
-                        tempCallbacks.Add(callback);
-                        OnQuitCallbacks = tempCallbacks.ToArray();
-                    }
-
-                    OnQuitInternal(PlayerID, WrapperCallback);
+                    OnQuitCallbacks.Add(callback);
                 }
 
-               
-
-
+                
                 public void SetState(string key, int value)
                 {
                     SetPlayerStateByPlayerId(id, key, value);
@@ -349,8 +392,16 @@
                 private static extern void SetPlayerStateStringById(string playerID, string key, string value);
 
                 [DllImport("__Internal")]
-                public static extern string GetProfileByPlayerId(string playerID);  // returning hexColor
+                private static extern string GetProfileByPlayerId(string playerID);  
 
+                public Profile GetProfile()
+                {
+                    string jsonString = GetProfileByPlayerId(id);
+                    Profile profileData = JsonUtility.FromJson<Profile>(jsonString);
+                    return profileData;
+                }
+                
+                
                 [DllImport("__Internal")]
                 private static extern int GetPlayerStateIntById(string playerID, string key);
 
@@ -386,7 +437,41 @@
                     SetPlayerStateDictionary(id, key, jsonString);
                 }
 
-                
+                private static Dictionary<string, object> JsonNodeToDictionary(string jsonString)
+                {
+                    JSONNode jsonNode = JSON.Parse(jsonString);
+                    Dictionary<string, object> dict = new Dictionary<string, object>();
+
+                    foreach (KeyValuePair<string, JSONNode> kvp in jsonNode.AsObject)
+                    {
+                        if (kvp.Value.IsObject)
+                        {
+                            dict[kvp.Key] = JsonNodeToDictionary(kvp.Value.Value); 
+                        }
+                        else if (kvp.Value.IsArray)
+                        {
+                            List<object> list = new List<object>();
+                            foreach (JSONNode childNode in kvp.Value.AsArray)
+                            {
+                                if (childNode.IsObject)
+                                {
+                                    list.Add(JsonNodeToDictionary(childNode.Value)); // Pass childNode.Value
+                                }
+                                else
+                                {
+                                    list.Add(childNode.Value);
+                                }
+                            }
+                            dict[kvp.Key] = list;
+                        }
+                        else
+                        {
+                            dict[kvp.Key] = kvp.Value.Value;
+                        }
+                    }
+
+                    return dict;
+                }
                 
                 
             }
