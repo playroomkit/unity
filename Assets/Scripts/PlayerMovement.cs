@@ -26,11 +26,6 @@ public class PlayerMovement : MonoBehaviour
     {
         Movement();
         /*Jump();*/
-
-        // if(PlayroomKit.IsHost) {
-        //     // 
-        // }
-
     }
 
     void Movement()
@@ -42,11 +37,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) )
         {
             rb2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-
-
         }
     }
 }

@@ -38,9 +38,6 @@
             private static void OnPlayerJoinWrapperCallback(string id)
             {
                 Player player = GetPlayer(id);
-                
-                Debug.Log(player.id);
-                
                 onPlayerJoinCallback?.Invoke(player);
             }
 
@@ -68,7 +65,6 @@
                     {
                         Player player = new Player(playerId);
                         Players.Add(playerId, player);
-                        Debug.Log(player.id);
                         return player;
                     }
                 }
@@ -241,8 +237,6 @@
             public class Player
             {
                 public string id;
-                
-                
                 private static int totalObjects = 0;
 
                
@@ -288,7 +282,7 @@
 
                 public void OnQuit(Action callback)
                 {
-                        OnQuitCallbacks.Add(callback);
+                    OnQuitCallbacks.Add(callback);
                 }
 
                 
