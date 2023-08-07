@@ -249,8 +249,8 @@ mergeInto(LibraryManager.library, {
     if (typeof playerState.getProfile === "function") {
       const profile = playerState.getProfile();
 
-      // currently sending only the color only!
-      var returnStr = profile.color.hexString;
+      var returnStr = JSON.stringify(profile);
+
       var bufferSize = lengthBytesUTF8(returnStr) + 1;
       var buffer = _malloc(bufferSize);
       stringToUTF8(returnStr, buffer, bufferSize);

@@ -4,7 +4,7 @@
     using AOT;
     using System;
     using SimpleJSON;
-
+    
     namespace Playroom
     {
         public class PlayroomKit
@@ -221,6 +221,8 @@
                 return dictionary;
             }
 
+            
+            
             // it checks if the game is running in the browser or in the editor
             public static bool IsRunningInBrowser()
             {
@@ -235,6 +237,26 @@
             // Player class
             public class Player
             {
+                
+                [System.Serializable]
+                public class ColorData
+                {
+                    public int r;
+                    public int g;
+                    public int b;
+                    public string hexString;
+                    public int hex;
+                }
+
+                [System.Serializable]
+                public class Profile
+                {
+                    public ColorData color;
+                    public string name;
+                    public string photo;
+                }
+                
+                
                 public string id;
                 private static int totalObjects = 0;
 
@@ -370,8 +392,16 @@
                 private static extern void SetPlayerStateStringById(string playerID, string key, string value);
 
                 [DllImport("__Internal")]
-                public static extern string GetProfileByPlayerId(string playerID);  // returning hexColor
+                private static extern string GetProfileByPlayerId(string playerID);  
 
+                public Profile GetProfile()
+                {
+                    string jsonString = GetProfileByPlayerId(id);
+                    Profile profileData = JsonUtility.FromJson<Profile>(jsonString);
+                    return profileData;
+                }
+                
+                
                 [DllImport("__Internal")]
                 private static extern int GetPlayerStateIntById(string playerID, string key);
 
@@ -407,7 +437,41 @@
                     SetPlayerStateDictionary(id, key, jsonString);
                 }
 
-                
+                private static Dictionary<string, object> JsonNodeToDictionary(string jsonString)
+                {
+                    JSONNode jsonNode = JSON.Parse(jsonString);
+                    Dictionary<string, object> dict = new Dictionary<string, object>();
+
+                    foreach (KeyValuePair<string, JSONNode> kvp in jsonNode.AsObject)
+                    {
+                        if (kvp.Value.IsObject)
+                        {
+                            dict[kvp.Key] = JsonNodeToDictionary(kvp.Value.Value); 
+                        }
+                        else if (kvp.Value.IsArray)
+                        {
+                            List<object> list = new List<object>();
+                            foreach (JSONNode childNode in kvp.Value.AsArray)
+                            {
+                                if (childNode.IsObject)
+                                {
+                                    list.Add(JsonNodeToDictionary(childNode.Value)); // Pass childNode.Value
+                                }
+                                else
+                                {
+                                    list.Add(childNode.Value);
+                                }
+                            }
+                            dict[kvp.Key] = list;
+                        }
+                        else
+                        {
+                            dict[kvp.Key] = kvp.Value.Value;
+                        }
+                    }
+
+                    return dict;
+                }
                 
                 
             }
