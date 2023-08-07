@@ -58,7 +58,6 @@
                 {
                     if(Players.ContainsKey(playerId)) 
                     {
-                        Debug.Log(Players[playerId]);
                         return Players[playerId];
                     }
                     else
@@ -258,19 +257,11 @@
                 private void OnQuitDefaultCallback()
                 {
                     Players.Remove(id);
-                    
-                    Debug.Log("List of all players after OnQuitDefaultCallback:  ");
-                    foreach (var playerId in Players.Keys)
-                    {
-                        Debug.Log("player: " + playerId);
-                    }
-                    
                 }
                 
                 [MonoPInvokeCallback(typeof(Action))]
                 private static void OnQuitWrapperCallback()
                 {
-                    Debug.Log("OnQuitWrapperCallback called");
                     if (OnQuitCallbacks != null)
                     {
                         foreach (var callback in OnQuitCallbacks)
