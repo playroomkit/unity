@@ -43,7 +43,7 @@ public class TestManager : MonoBehaviour
 
     void Start()
     {
-        PlayroomKit.OnPlayerJoin(PlayerCallback);
+        
         text.text = "a = " + a + " b = " + b;
 
     }
@@ -56,6 +56,7 @@ public class TestManager : MonoBehaviour
     public static void CallBackInsertCoin()
     {
         Debug.Log("Insert Coin Callback Fired from Javascript defined in Unity: " + coinInserted);
+        PlayroomKit.OnPlayerJoin(PlayerCallback);
         
     }
 

@@ -47,9 +47,7 @@
             public static void OnPlayerJoin(Action<Player> playerCallback)
             {
                 onPlayerJoinCallback = playerCallback;
-                OnPlayerJoinWrapperCallback("momin12345");
-                // OnPlayerJoinInternal(OnPlayerJoinWrapperCallback);
-
+                OnPlayerJoinInternal(OnPlayerJoinWrapperCallback);
             }  
             
             public static Dictionary<string, Player> GetPlayers()
@@ -69,9 +67,7 @@
                     else
                     {
                         Player player = new Player(playerId);
-
                         Players.Add(playerId, player);
-                    
                         Debug.Log(player.id);
                         return player;
                     }
