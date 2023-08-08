@@ -28,10 +28,21 @@ public class TestManager : MonoBehaviour
 
     void Awake()
     {
+        
+        PlayroomKit.InitOptions options = new PlayroomKit.InitOptions
+        {
+            streamMode = true
+        };
+        
         if (PlayroomKit.IsRunningInBrowser())
         {
             coinInserted = true;
-            PlayroomKit.InsertCoin(CallBackInsertCoin);
+
+            PlayroomKit.InsertCoin(() =>
+            {
+                Debug.Log("Insert Coin Callback Fired from Javascript defined in Unity: " + coinInserted);
+                PlayroomKit.OnPlayerJoin(PlayerCallback);
+            }, options);
 
         }
         else
@@ -49,12 +60,11 @@ public class TestManager : MonoBehaviour
 
 
 
-    [MonoPInvokeCallback(typeof(Action))]
-    public static void CallBackInsertCoin()
-    {
-        Debug.Log("Insert Coin Callback Fired from Javascript defined in Unity: " + coinInserted);
-        PlayroomKit.OnPlayerJoin(PlayerCallback);
-    }
+    // [MonoPInvokeCallback(typeof(Action))]
+    // public static void CallBackInsertCoin()
+    // {
+    //     
+    // }
 
 
     static void Foo()
