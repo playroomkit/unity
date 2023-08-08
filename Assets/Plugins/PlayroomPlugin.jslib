@@ -3,7 +3,7 @@ mergeInto(LibraryManager.library, {
    * @description Inserts a coin into the game by loading the required scripts and initializing the Playroom.
    * @param {function} callback - A callback function to execute after the Playroom is loaded.
    */
-  InsertCoinInternal: function (optionsJson, callback) {
+  InsertCoinInternal: function (callback, optionsJson) {
 
    
     var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : null;

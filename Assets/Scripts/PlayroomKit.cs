@@ -24,7 +24,7 @@
             private static Action InsertCoinCallback = null;
             
             [DllImport("__Internal")]
-            private static extern void InsertCoinInternal(string options,Action callback);
+            private static extern void InsertCoinInternal(Action callback, string options);
             
             [MonoPInvokeCallback(typeof(Action))]
             private static void InvokeInsertCoin()
@@ -37,7 +37,7 @@
             {
                 InsertCoinCallback = callback;
                 string optionsJson = SerializeInitOptions(options);
-                InsertCoinInternal(optionsJson, InvokeInsertCoin);  
+                InsertCoinInternal(InvokeInsertCoin, optionsJson);  
             } 
             
             private static string SerializeInitOptions(InitOptions options)
