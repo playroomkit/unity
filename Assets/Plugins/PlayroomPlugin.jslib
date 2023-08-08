@@ -100,7 +100,6 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    console.log("Me: ", Playroom.me());
     var myPlayerID = Playroom.me().id;
     var bufferSize = lengthBytesUTF8(myPlayerID) + 1;
     var buffer = _malloc(bufferSize);
@@ -145,9 +144,8 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    if (reliable === 1) reliable = true;
-    else reliable = false;
-
+    reliable = !!reliable
+    
     Playroom.setState(UTF8ToString(key), value, reliable);
   },
 
@@ -164,8 +162,8 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    if (reliable === 1) reliable = true;
-    else reliable = false;
+    reliable = !!reliable
+    
 
     Playroom.setState(UTF8ToString(key), UTF8ToString(stringVal), reliable);
   },
@@ -183,8 +181,8 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    if (reliable === 1) reliable = true;
-    else reliable = false;
+    reliable = !!reliable
+    
 
     Playroom.setState(
       UTF8ToString(key),
@@ -311,8 +309,8 @@ mergeInto(LibraryManager.library, {
   SetPlayerStateByPlayerId: function (playerId, key, value, reliable) {
     const players = window._multiplayer.getPlayers();
 
-    if (reliable === 1) reliable = true;
-    else reliable = false;
+    reliable = !!reliable
+    
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
@@ -345,8 +343,8 @@ mergeInto(LibraryManager.library, {
   SetPlayerStateStringById: function (playerId, key, value, reliable) {
     const players = window._multiplayer.getPlayers();
 
-    if (reliable === 1) reliable = true;
-    else reliable = false;
+    reliable = !!reliable
+    
 
 
     if (typeof players !== "object" || players === null) {
@@ -379,8 +377,8 @@ mergeInto(LibraryManager.library, {
   SetPlayerStateDictionary: function (playerId, key, jsonValues, reliable) {
     const players = window._multiplayer.getPlayers();
 
-    if (reliable === 1) reliable = true;
-    else reliable = false;
+    reliable = !!reliable
+    
 
     // Check if players is an object
     if (typeof players !== "object" || players === null) {
