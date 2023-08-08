@@ -4,11 +4,6 @@ mergeInto(LibraryManager.library, {
    * @param {function} callback - A callback function to execute after the Playroom is loaded.
    */
   InsertCoinInternal: function (callback, optionsJson) {
-
-   
-    var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : null;
-    
-
     function embedScript(src) {
       return new Promise((resolve, reject) => {
         var script = document.createElement("script");
@@ -34,6 +29,8 @@ mergeInto(LibraryManager.library, {
         }
 
         console.info("Playroom has loaded.");
+
+        var options = optionsJson ? JSON.parse(optionsJson) : {};
 
         Playroom.insertCoin(options)
           .then(() => {
@@ -87,7 +84,28 @@ mergeInto(LibraryManager.library, {
       );
       return;
     }
-    return Playroom.myPlayer().id;
+
+    var myPlayerID = Playroom.myPlayer().id;
+    var bufferSize = lengthBytesUTF8(myPlayerID) + 1;
+    var buffer = _malloc(bufferSize);
+    stringToUTF8(myPlayerID, buffer, bufferSize);
+    return buffer;
+  },
+
+  MeInternal: function () {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    console.log("Me: ", Playroom.me());
+    var myPlayerID = Playroom.me().id;
+    var bufferSize = lengthBytesUTF8(myPlayerID) + 1;
+    var buffer = _malloc(bufferSize);
+    stringToUTF8(myPlayerID, buffer, bufferSize);
+    return buffer;
   },
 
   /**
@@ -119,14 +137,18 @@ mergeInto(LibraryManager.library, {
    * @param {string} key - The key to set in the game state.
    * @param {number | boolean} value - The value to associate with the key, such as position or health.
    */
-  SetState: function (key, value) {
+  SetState: function (key, value, reliable) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
       );
       return;
     }
-    Playroom.setState(UTF8ToString(key), value);
+
+    if (reliable === 1) reliable = true;
+    else reliable = false;
+
+    Playroom.setState(UTF8ToString(key), value, reliable);
   },
 
   /**
@@ -134,14 +156,18 @@ mergeInto(LibraryManager.library, {
    * @param {string} key - The key to set in the game state.
    * @param {string} stringVal - The string value to associate with the key.
    */
-  SetStateString: function (key, stringVal) {
+  SetStateString: function (key, stringVal, reliable) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
       );
       return;
     }
-    Playroom.setState(UTF8ToString(key), UTF8ToString(stringVal));
+
+    if (reliable === 1) reliable = true;
+    else reliable = false;
+
+    Playroom.setState(UTF8ToString(key), UTF8ToString(stringVal), reliable);
   },
 
   /**
@@ -149,14 +175,22 @@ mergeInto(LibraryManager.library, {
    * @param {string} key - The key to set in the game state.
    * @param {string} jsonValues - The JSON representation of the dictionary value to associate with the key.
    */
-  SetStateDictionary: function (key, jsonValues) {
+  SetStateDictionary: function (key, jsonValues, reliable) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
       );
       return;
     }
-    Playroom.setState(UTF8ToString(key), JSON.parse(UTF8ToString(jsonValues)));
+
+    if (reliable === 1) reliable = true;
+    else reliable = false;
+
+    Playroom.setState(
+      UTF8ToString(key),
+      JSON.parse(UTF8ToString(jsonValues)),
+      reliable
+    );
   },
 
   /**
@@ -274,8 +308,11 @@ mergeInto(LibraryManager.library, {
    * @param {string} key - The key to set in the player's state.
    * @param {number | boolean} value - The value to associate with the key in the player's state.
    */
-  SetPlayerStateByPlayerId: function (playerId, key, value) {
+  SetPlayerStateByPlayerId: function (playerId, key, value, reliable) {
     const players = window._multiplayer.getPlayers();
+
+    if (reliable === 1) reliable = true;
+    else reliable = false;
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
@@ -290,7 +327,7 @@ mergeInto(LibraryManager.library, {
 
     // Assuming that the player state object has a "setState" method
     if (typeof playerState.setState === "function") {
-      playerState.setState(UTF8ToString(key), value);
+      playerState.setState(UTF8ToString(key), value, reliable);
     } else {
       console.error(
         'The player state object does not have a "setState" method.'
@@ -305,8 +342,12 @@ mergeInto(LibraryManager.library, {
    * @param {string} key - The key to set in the player's state.
    * @param {string} value - The string value to associate with the key in the player's state.
    */
-  SetPlayerStateStringById: function (playerId, key, value) {
+  SetPlayerStateStringById: function (playerId, key, value, reliable) {
     const players = window._multiplayer.getPlayers();
+
+    if (reliable === 1) reliable = true;
+    else reliable = false;
+
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
@@ -320,7 +361,7 @@ mergeInto(LibraryManager.library, {
     }
 
     if (typeof playerState.setState === "function") {
-      playerState.setState(UTF8ToString(key), UTF8ToString(value));
+      playerState.setState(UTF8ToString(key), UTF8ToString(value), reliable);
     } else {
       console.error(
         'The player state object does not have a "setState" method.'
@@ -335,8 +376,11 @@ mergeInto(LibraryManager.library, {
    * @param {string} key - The key to set in the player's state.
    * @param {string} jsonValues - The JSON representation of the dictionary value to associate with the key in the player's state.
    */
-  SetPlayerStateDictionary: function (playerId, key, jsonValues) {
+  SetPlayerStateDictionary: function (playerId, key, jsonValues, reliable) {
     const players = window._multiplayer.getPlayers();
+
+    if (reliable === 1) reliable = true;
+    else reliable = false;
 
     // Check if players is an object
     if (typeof players !== "object" || players === null) {
@@ -352,10 +396,7 @@ mergeInto(LibraryManager.library, {
     }
 
     if (typeof playerState.setState === "function") {
-      playerState.setState(
-        UTF8ToString(key),
-        JSON.parse(UTF8ToString(jsonValues))
-      );
+      playerState.setState(UTF8ToString(key), JSON.parse(UTF8ToString(jsonValues)), reliable);
     } else {
       console.error(
         'The player state object does not have a "setState" method.'

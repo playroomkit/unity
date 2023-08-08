@@ -36,7 +36,11 @@
             public static void InsertCoin(Action callback, InitOptions options = null)
             {
                 InsertCoinCallback = callback;
-                string optionsJson = SerializeInitOptions(options);
+                string optionsJson = null;
+                if (options != null)
+                {
+                    optionsJson = SerializeInitOptions(options);
+                }
                 InsertCoinInternal(InvokeInsertCoin, optionsJson);  
             } 
             
@@ -107,48 +111,60 @@
             
             public static Player MyPlayer()
             {
-                return new Player(MyPlayerInternal());
+                string id = MyPlayerInternal();
+                return GetPlayer(id);
+            }
+            
+            [DllImport("__Internal")]
+            private static extern string MeInternal();
+            
+            public static Player Me()
+            {
+                string id = MeInternal();
+                return GetPlayer(id);
+            }
+            
+           
+
+            [DllImport("__Internal")]
+            private static extern void SetStateString(string key, string value, bool reliable = false);
+
+            [DllImport("__Internal")]
+            public static extern void SetState(string key, int value, bool reliable = false);
+
+            [DllImport("__Internal")]
+            public static extern void SetState(string key, float value, bool reliable = false);
+
+            [DllImport("__Internal")]
+            public static extern void SetState(string key, bool value, bool reliable = false);
+
+            public static void SetState(string key, string value, bool reliable = false)
+            {
+                SetStateString(key, value, reliable);
             }
 
             [DllImport("__Internal")]
-            private static extern void SetStateString(string key, string value);
+            private static extern void SetStateDictionary(string key, string jsonValues, bool reliable = false);
 
-            [DllImport("__Internal")]
-            public static extern void SetState(string key, int value);
 
-            [DllImport("__Internal")]
-            public static extern void SetState(string key, float value);
-
-            [DllImport("__Internal")]
-            public static extern void SetState(string key, bool value);
-
-            public static void SetState(string key, string value)
+            public static void SetState(string key, Dictionary<string, int> values, bool reliable = false)
             {
-                SetStateString(key, value);
+                SetStateHelper(key, values, reliable);
             }
 
-            [DllImport("__Internal")]
-            private static extern void SetStateDictionary(string key, string jsonValues);
-
-
-            public static void SetState(string key, Dictionary<string, int> values)
+            public static void SetState(string key, Dictionary<string, float> values, bool reliable = false)
             {
-                SetStateHelper(key, values);
+                SetStateHelper(key, values, reliable);
             }
 
-            public static void SetState(string key, Dictionary<string, float> values)
+            public static void SetState(string key, Dictionary<string, bool> values, bool reliable = false)
             {
-                SetStateHelper(key, values);
+                SetStateHelper(key, values, reliable);
             }
 
-            public static void SetState(string key, Dictionary<string, bool> values)
+            public static void SetState(string key, Dictionary<string, string> values, bool reliable = false)
             {
-                SetStateHelper(key, values);
-            }
-
-            public static void SetState(string key, Dictionary<string, string> values)
-            {
-                SetStateHelper(key, values);
+                SetStateHelper(key, values, reliable);
             }
 
 
@@ -190,7 +206,7 @@
             }
 
             // helper functions:
-            private static void SetStateHelper<T>(string key, Dictionary<string, T> values)
+            private static void SetStateHelper<T>(string key, Dictionary<string, T> values, bool reliable = false)
             {
                 JSONObject jsonObject = new JSONObject();
 
@@ -206,7 +222,7 @@
                 string jsonString = jsonObject.ToString();
 
                 // Output the JSON string
-                SetStateDictionary(key, jsonString);
+                SetStateDictionary(key, jsonString, reliable);
             }
 
             private static Dictionary<string, T> ParseJsonToDictionary<T>(string jsonString)
@@ -320,24 +336,24 @@
                 }
 
                 
-                public void SetState(string key, int value)
+                public void SetState(string key, int value, bool reliable = false)
                 {
-                    SetPlayerStateByPlayerId(id, key, value);
+                    SetPlayerStateByPlayerId(id, key, value, reliable);
                 }
 
-                public void SetState(string key, float value)
+                public void SetState(string key, float value, bool reliable = false)
                 {
-                    SetPlayerStateByPlayerId(id, key, value);
+                    SetPlayerStateByPlayerId(id, key, value, reliable);
                 }
 
-                public void SetState(string key, bool value)
+                public void SetState(string key, bool value, bool reliable = false)
                 {
-                    SetPlayerStateByPlayerId(id, key, value);
+                    SetPlayerStateByPlayerId(id, key, value, reliable);
                 }
 
-                public void SetState(string key, string value)
+                public void SetState(string key, string value, bool reliable = false)
                 {
-                    SetPlayerStateStringById(id, key, value);
+                    SetPlayerStateStringById(id, key, value, reliable);
                 }
 
                 public int GetStateInt(string key)
@@ -373,24 +389,24 @@
 
                 }
 
-                public void SetState(string key, Dictionary<string, int> values)
+                public void SetState(string key, Dictionary<string, int> values, bool reliable = false)
                 {
-                    SetStateHelper(id, key, values);
+                    SetStateHelper(id, key, values, reliable);
                 }
 
-                public void SetState(string key, Dictionary<string, float> values)
+                public void SetState(string key, Dictionary<string, float> values, bool reliable = false)
                 {
-                    SetStateHelper(id, key, values);
+                    SetStateHelper(id, key, values, reliable);
                 }
 
-                public void SetState(string key, Dictionary<string, bool> values)
+                public void SetState(string key, Dictionary<string, bool> values, bool reliable = false)
                 {
-                    SetStateHelper(id, key, values);
+                    SetStateHelper(id, key, values, reliable);
                 }
 
-                public void SetState(string key, Dictionary<string, string> values)
+                public void SetState(string key, Dictionary<string, string> values, bool reliable = false)
                 {
-                    SetStateHelper(id, key, values);
+                    SetStateHelper(id, key, values, reliable);
                 }
 
                 public Dictionary<string, float> GetStateFloat(string id, string key)
@@ -401,16 +417,16 @@
 
 
                 [DllImport("__Internal")]
-                private static extern void SetPlayerStateByPlayerId(string playerID, string key, int value);
+                private static extern void SetPlayerStateByPlayerId(string playerID, string key, int value, bool reliable = false);
 
                 [DllImport("__Internal")]
-                private static extern void SetPlayerStateByPlayerId(string playerID, string key, float value);
+                private static extern void SetPlayerStateByPlayerId(string playerID, string key, float value, bool reliable = false);
 
                 [DllImport("__Internal")]
-                private static extern void SetPlayerStateByPlayerId(string playerID, string key, bool value);
+                private static extern void SetPlayerStateByPlayerId(string playerID, string key, bool value, bool reliable = false);
 
                 [DllImport("__Internal")]
-                private static extern void SetPlayerStateStringById(string playerID, string key, string value);
+                private static extern void SetPlayerStateStringById(string playerID, string key, string value, bool reliable = false);
 
                 [DllImport("__Internal")]
                 private static extern string GetProfileByPlayerId(string playerID);  
@@ -434,12 +450,12 @@
 
                 // Helpers
                 [DllImport("__Internal")]
-                private static extern void SetPlayerStateDictionary(string playerID, string key, string jsonValues);
+                private static extern void SetPlayerStateDictionary(string playerID, string key, string jsonValues, bool reliable = false);
 
                 [DllImport("__Internal")]
                 private static extern string GetPlayerStateDictionary(string playerID, string key);
 
-                private void SetStateHelper<T>(string id, string key, Dictionary<string, T> values)
+                private void SetStateHelper<T>(string id, string key, Dictionary<string, T> values, bool reliable = false)
                 {
                     JSONObject jsonObject = new JSONObject();
 
@@ -455,46 +471,8 @@
                     string jsonString = jsonObject.ToString();
 
                     // Output the JSON string
-                    SetPlayerStateDictionary(id, key, jsonString);
+                    SetPlayerStateDictionary(id, key, jsonString, reliable);
                 }
-
-                private static Dictionary<string, object> JsonNodeToDictionary(string jsonString)
-                {
-                    JSONNode jsonNode = JSON.Parse(jsonString);
-                    Dictionary<string, object> dict = new Dictionary<string, object>();
-
-                    foreach (KeyValuePair<string, JSONNode> kvp in jsonNode.AsObject)
-                    {
-                        if (kvp.Value.IsObject)
-                        {
-                            dict[kvp.Key] = JsonNodeToDictionary(kvp.Value.Value); 
-                        }
-                        else if (kvp.Value.IsArray)
-                        {
-                            List<object> list = new List<object>();
-                            foreach (JSONNode childNode in kvp.Value.AsArray)
-                            {
-                                if (childNode.IsObject)
-                                {
-                                    list.Add(JsonNodeToDictionary(childNode.Value)); // Pass childNode.Value
-                                }
-                                else
-                                {
-                                    list.Add(childNode.Value);
-                                }
-                            }
-                            dict[kvp.Key] = list;
-                        }
-                        else
-                        {
-                            dict[kvp.Key] = kvp.Value.Value;
-                        }
-                    }
-
-                    return dict;
-                }
-                
-                
             }
 
         }

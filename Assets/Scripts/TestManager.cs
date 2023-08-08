@@ -29,21 +29,18 @@ public class TestManager : MonoBehaviour
     void Awake()
     {
         
-        PlayroomKit.InitOptions options = new PlayroomKit.InitOptions
-        {
-            streamMode = true
-        };
+        // PlayroomKit.InitOptions options = new PlayroomKit.InitOptions
+        // {
+        //     streamMode = true
+        // };
         
         if (PlayroomKit.IsRunningInBrowser())
         {
-            coinInserted = true;
-
             PlayroomKit.InsertCoin(() =>
             {
                 Debug.Log("Insert Coin Callback Fired from Javascript defined in Unity: " + coinInserted);
                 PlayroomKit.OnPlayerJoin(PlayerCallback);
-            }, options);
-
+            });
         }
         else
         {
@@ -60,11 +57,7 @@ public class TestManager : MonoBehaviour
 
 
 
-    // [MonoPInvokeCallback(typeof(Action))]
-    // public static void CallBackInsertCoin()
-    // {
-    //     
-    // }
+    
 
 
     static void Foo()
@@ -76,13 +69,16 @@ public class TestManager : MonoBehaviour
     {
         myPlayer = player;
         // spawn a player in the scene
+        
+        myPlayer.SetState("Score", 10, true);
+        
         playerObj = (GameObject)Instantiate(Resources.Load("player"), new Vector3(-4, 4, 0), Quaternion.identity);
         myPlayer.OnQuit(Foo);
     }
     
     public void GetProfile()
     {
-       var myProfile = myPlayer.GetProfile();
+        var myProfile = myPlayer.GetProfile();
 
         Debug.Log(myProfile.name);
         
@@ -92,17 +88,18 @@ public class TestManager : MonoBehaviour
     }
     
     // // for buttons
-    /*
+  
     public void TestSetState()
     {
         a++;
         Debug.Log("a = " + a);
         
         
-        // Debug.Log("Getting score for the Player = " + player.SetState(playerID, "score"));
-        
+        PlayroomKit.SetState("test", a, true);
         text.text = "a = " + a + " b = " + b;
-    }*/
+        
+        
+    }
 
 
     static void bar()
@@ -110,9 +107,18 @@ public class TestManager : MonoBehaviour
         Debug.Log("Bar Called");
     }
     
-    public void TestQuitCallback()
+    public void TestGetState()
     {
-        PlayroomKit.GetPlayer(myPlayer.id).OnQuit(bar);
+
+        b = PlayroomKit.GetStateInt("test");
+
+        int c = myPlayer.GetStateInt("score");
+        Debug.Log("score  " + c);
+            
+        text.text = "a = " + a + " b = " + b;
+    
+        PlayroomKit.Player plr  = PlayroomKit.Me();
+
     }
 
 }
