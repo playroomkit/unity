@@ -12,10 +12,19 @@
 
             public static Dictionary<string, Player> Players = new Dictionary<string, Player>();
 
+            
+            [System.Serializable]
+            public class InitOptions
+            {
+                public bool streamMode = false;
+                public bool allowGamepads = false;
+                public string baseUrl = "";
+            }
+
             private static Action InsertCoinCallback = null;
             
             [DllImport("__Internal")]
-            private static extern void InsertCoinInternal(Action callback);
+            private static extern void InsertCoinInternal(Action callback, string options);
             
             [MonoPInvokeCallback(typeof(Action))]
             private static void InvokeInsertCoin()
@@ -23,11 +32,23 @@
                 InsertCoinCallback?.Invoke();
             }
 
-            public static void InsertCoin(Action callback)
+            // optional InitOptions
+            public static void InsertCoin(Action callback, InitOptions options = null)
             {
                 InsertCoinCallback = callback;
-                InsertCoinInternal(InvokeInsertCoin);
+                string optionsJson = SerializeInitOptions(options);
+                InsertCoinInternal(InvokeInsertCoin, optionsJson);  
             } 
+            
+            private static string SerializeInitOptions(InitOptions options)
+            {
+                if (options == null)
+                {
+                    return null;
+                }
+
+                return JsonUtility.ToJson(options);
+            }
 
             [DllImport("__Internal")]
             private static extern void OnPlayerJoinInternal(Action<string> callback);
