@@ -4,7 +4,6 @@
     using AOT;
     using System;
     using SimpleJSON;
-    using Unity.VisualScripting;
     using Random = UnityEngine;
     
     namespace Playroom
@@ -14,7 +13,7 @@
 
 
             public static Dictionary<string, object> MockDictionary = new();
-            public static Dictionary<string, Player> Players = new Dictionary<string, Player>();
+            public static Dictionary<string, Player> Players = new();
             
             [System.Serializable]
             public class InitOptions
