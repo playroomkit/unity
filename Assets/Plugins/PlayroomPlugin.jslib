@@ -49,7 +49,7 @@ mergeInto(LibraryManager.library, {
    * @description Checks whether the player is the host of the game.
    * @returns {boolean} True if the local player is the host, otherwise false.
    */
-  IsHost: function () {
+  IsHostInternal: function () {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
@@ -136,7 +136,7 @@ mergeInto(LibraryManager.library, {
    * @param {string} key - The key to set in the game state.
    * @param {number | boolean} value - The value to associate with the key, such as position or health.
    */
-  SetState: function (key, value, reliable) {
+  SetStateInternal: function (key, value, reliable) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
@@ -196,7 +196,7 @@ mergeInto(LibraryManager.library, {
    * @param {string} key - The key to retrieve the integer value from the game state.
    * @returns {number | null} The integer value associated with the key, or null if the key is not found.
    */
-  GetStateInt: function (key) {
+  GetStateIntInternal: function (key) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
@@ -211,7 +211,7 @@ mergeInto(LibraryManager.library, {
    * @param {string} key - The key to retrieve the floating-point value from the game state.
    * @returns {number | null} The floating-point value associated with the key, or null if the key is not found.
    */
-  GetStateFloat: function (key) {
+  GetStateFloatInternal: function (key) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
@@ -227,7 +227,7 @@ mergeInto(LibraryManager.library, {
    * @param {string} key - The key to retrieve the string value from the game state.
    * @returns {string | null} The string value associated with the key, or null if the key is not found.
    */
-  GetStateString: function (key) {
+  GetStateStringInternal: function (key) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
@@ -246,7 +246,7 @@ mergeInto(LibraryManager.library, {
    * @param {string} key - The key to retrieve the dictionary value from the game state.
    * @returns {string | null} The JSON representation of the dictionary value associated with the key, or null if the key is not found.
    */
-  GetStateDictionary: function (key) {
+  GetStateDictionaryInternal: function (key) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
