@@ -11,9 +11,10 @@
         public class PlayroomKit
         {
 
-
-            public static Dictionary<string, object> MockDictionary = new();
             public static Dictionary<string, Player> Players = new();
+
+            private const string PlayerId = "testPlayer5";
+            public static Dictionary<string, object> MockDictionary = new();
             
             [System.Serializable]
             public class InitOptions
@@ -83,7 +84,7 @@
                 else
                 {
                     Debug.Log("On Player Join");
-                    Player testPlayer = GetPlayer("testPlayer5");
+                    Player testPlayer = GetPlayer(PlayerId);
                     playerCallback?.Invoke(testPlayer);
                 }
             }  
