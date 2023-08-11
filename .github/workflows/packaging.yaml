@@ -10,10 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    # - run: |
-    #     find Assets/Editor/ -name \*.meta > metaList
-    #     find Assets/Scripts/ -name \*.meta >> metaList
-    #     echo metaList
+    - run: |
+        find Assets/Scripts/ -name \*.meta > metaList
+        echo metaList
 
     - run: mkdir output
 
@@ -23,7 +22,7 @@ jobs:
     - uses: pCYSl5EDgo/create-unitypackage@master
       with:
         package-path: 'output/playroomkit.unitypackage'
-        # include-files: metaList
+        include-files: metaList
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
