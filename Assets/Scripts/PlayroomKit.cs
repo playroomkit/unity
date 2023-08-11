@@ -14,7 +14,7 @@
             public static Dictionary<string, Player> Players = new();
 
             private const string PlayerId = "testPlayer5";
-            private static bool  mockStremMode;
+            private static bool  mockIsStreamMode;
             public static Dictionary<string, object> MockDictionary = new();
             
             [System.Serializable]
@@ -52,7 +52,7 @@
 
                     if (options != null && options.streamMode == true)
                     {
-                        mockStremMode = options.streamMode;
+                        mockIsStreamMode = options.streamMode;
                     }
                     
                     callback?.Invoke();
@@ -159,7 +159,7 @@
                 }
                 else
                 {
-                    return mockStremMode;
+                    return mockIsStreamMode;
                 }
             }
 
