@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
-
+    
 
     [SerializeField] private float speed;
     [SerializeField] private float jumpForce = 5f;
@@ -25,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         Movement();
-        /*Jump();*/
+        Jump();
     }
 
     void Movement()

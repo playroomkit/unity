@@ -4,14 +4,18 @@
     using AOT;
     using System;
     using SimpleJSON;
+    using Random = UnityEngine;
     
     namespace Playroom
     {
         public class PlayroomKit
         {
 
-            public static Dictionary<string, Player> Players = new Dictionary<string, Player>();
+            public static Dictionary<string, Player> Players = new();
 
+            private const string PlayerId = "testPlayer5";
+            private static bool  mockIsStreamMode;
+            public static Dictionary<string, object> MockDictionary = new();
             
             [System.Serializable]
             public class InitOptions
@@ -35,13 +39,24 @@
             // optional InitOptions
             public static void InsertCoin(Action callback, InitOptions options = null)
             {
-                InsertCoinCallback = callback;
-                string optionsJson = null;
-                if (options != null)
+                if(IsRunningInBrowser())
                 {
-                    optionsJson = SerializeInitOptions(options);
+                    InsertCoinCallback = callback;
+                    string optionsJson = null;
+                    if (options != null) optionsJson = SerializeInitOptions(options);
+                    InsertCoinInternal(InvokeInsertCoin, optionsJson);  
                 }
-                InsertCoinInternal(InvokeInsertCoin, optionsJson);  
+                else
+                {
+                    Debug.Log("Coin Inserted");
+
+                    if (options != null && options.streamMode == true)
+                    {
+                        mockIsStreamMode = options.streamMode;
+                    }
+                    
+                    callback?.Invoke();
+                }
             } 
             
             private static string SerializeInitOptions(InitOptions options)
@@ -68,8 +83,17 @@
 
             public static void OnPlayerJoin(Action<Player> playerCallback)
             {
-                onPlayerJoinCallback = playerCallback;
-                OnPlayerJoinInternal(OnPlayerJoinWrapperCallback);
+                if (IsRunningInBrowser())
+                {
+                    onPlayerJoinCallback = playerCallback;
+                    OnPlayerJoinInternal(OnPlayerJoinWrapperCallback);
+                }
+                else
+                {
+                    Debug.Log("On Player Join");
+                    Player testPlayer = GetPlayer(PlayerId);
+                    playerCallback?.Invoke(testPlayer);
+                }
             }  
             
             public static Dictionary<string, Player> GetPlayers()
@@ -79,32 +103,65 @@
             
             public static Player GetPlayer(string playerId)
             {
-                try
+                if (IsRunningInBrowser())
                 {
-                    if(Players.ContainsKey(playerId)) 
+                    try
                     {
-                        return Players[playerId];
+                        if(Players.ContainsKey(playerId)) 
+                        {
+                            return Players[playerId];
+                        }
+                        else
+                        {
+                            Player player = new Player(playerId);
+                            Players.Add(playerId, player);
+                            return player;
+                        }
                     }
-                    else
+                    catch (Exception e)
                     {
-                        Player player = new Player(playerId);
-                        Players.Add(playerId, player);
-                        return player;
+                        Debug.LogError("Error in Get Player: " + e.Message);
+                        throw;
                     }
                 }
-                catch (Exception e)
+                else
                 {
-                    Debug.LogError("Error in Get Player: " + e.Message);
-                    throw;
+                    Player testPlayer = new Player("testPlayer5");
+                    return testPlayer;
                 }
                 
             }
 
             [DllImport("__Internal")]
-            public static extern bool IsHost();
+            private static extern bool IsHostInternal();
 
+            public static bool IsHost()
+            {
+                if (IsRunningInBrowser())
+                {
+                    return IsHostInternal();
+                }
+                else
+                {
+                    // mock player is host
+                    return true;
+                }
+            }
+            
             [DllImport("__Internal")]
-            public static extern bool IsStreamMode();
+            private static extern bool IsStreamModeInternal();
+
+            public static bool IsStreamMode()
+            {
+                if (IsRunningInBrowser())
+                {
+                    return IsStreamModeInternal();
+                }
+                else
+                {
+                    return mockIsStreamMode;
+                }
+            }
 
             [DllImport("__Internal")]
             private static extern string MyPlayerInternal();
@@ -123,24 +180,71 @@
                 string id = MeInternal();
                 return GetPlayer(id);
             }
+
             
-           
 
             [DllImport("__Internal")]
             private static extern void SetStateString(string key, string value, bool reliable = false);
 
             [DllImport("__Internal")]
-            public static extern void SetState(string key, int value, bool reliable = false);
+            private static extern void SetStateInternal(string key, int value, bool reliable = false);
 
             [DllImport("__Internal")]
-            public static extern void SetState(string key, float value, bool reliable = false);
+            private static extern void SetStateInternal(string key, float value, bool reliable = false);
 
             [DllImport("__Internal")]
-            public static extern void SetState(string key, bool value, bool reliable = false);
+            private static extern void SetStateInternal(string key, bool value, bool reliable = false);
 
             public static void SetState(string key, string value, bool reliable = false)
             {
-                SetStateString(key, value, reliable);
+                if (IsRunningInBrowser())
+                {
+                    SetStateString(key, value, reliable);
+                }
+                else
+                {
+                    Debug.Log($"State Set! Key: {key}, Value: {value}");
+                    MockSetState(key, value);
+                }
+            }
+            
+            public static void SetState(string key, int value, bool reliable = false)
+            {
+                if (IsRunningInBrowser())
+                {
+                    SetStateInternal(key, value, reliable);
+                }
+                else
+                {
+                    Debug.Log($"State Set! Key: {key}, Value: {value}");
+                    MockSetState(key, value);
+                }
+            }
+            
+            public static void SetState(string key, float value, bool reliable = false)
+            {
+                if (IsRunningInBrowser())
+                {
+                    SetStateInternal(key, value, reliable);
+                }
+                else
+                {
+                    Debug.Log($"State Set! Key: {key}, Value: {value}");
+                    MockSetState(key, value);
+                }
+            }            
+            
+            public static void SetState(string key, bool value, bool reliable = false)
+            {
+                if (IsRunningInBrowser())
+                {
+                    SetStateInternal(key, value, reliable);
+                }
+                else
+                {
+                    Debug.Log($"State Set! Key: {key}, Value: {value}");
+                    MockSetState(key, value);
+                }
             }
 
             [DllImport("__Internal")]
@@ -149,63 +253,170 @@
 
             public static void SetState(string key, Dictionary<string, int> values, bool reliable = false)
             {
-                SetStateHelper(key, values, reliable);
+                if (IsRunningInBrowser())
+                {
+                    SetStateHelper(key, values, reliable);
+                }
+                else
+                {
+                    Debug.Log($"State Set! Key: {key}, Value: {values}");
+                    MockSetState(key, values);
+                }
             }
 
             public static void SetState(string key, Dictionary<string, float> values, bool reliable = false)
             {
-                SetStateHelper(key, values, reliable);
+                if (IsRunningInBrowser())
+                {
+                    SetStateHelper(key, values, reliable);
+                }
+                else
+                {
+                    Debug.Log($"State Set! Key: {key}, Value: {values}");
+                    MockSetState(key, values);
+                }
             }
 
             public static void SetState(string key, Dictionary<string, bool> values, bool reliable = false)
             {
-                SetStateHelper(key, values, reliable);
+                if (IsRunningInBrowser())
+                {
+                    SetStateHelper(key, values, reliable);
+                }
+                else
+                {
+                    Debug.Log($"State Set! Key: {key}, Value: {values}");
+                    MockSetState(key, values);
+                }
             }
 
             public static void SetState(string key, Dictionary<string, string> values, bool reliable = false)
             {
-                SetStateHelper(key, values, reliable);
+                if (IsRunningInBrowser())
+                {
+                    SetStateHelper(key, values, reliable);
+                }
+                else
+                {
+                    Debug.Log($"State Set! Key: {key}, Value: {values}");
+                    MockSetState(key, values);
+                }
             }
 
 
             // GETTERS
             [DllImport("__Internal")]
-            public static extern string GetStateString(string key);
+            private static extern string GetStateStringInternal(string key);
 
-            [DllImport("__Internal")]
-            public static extern int GetStateInt(string key);
-
-            [DllImport("__Internal")]
-            public static extern float GetStateFloat(string key);
-
-            public static bool GetStateBool(string key)
+            private static string GetStateString(string key)
             {
-                if (GetStateInt(key) == 1)
+                if (IsRunningInBrowser())
                 {
-                    return true;
-                }
-                else if (GetStateInt(key) == 0)
-                {
-                    return false;
+                    return GetStateStringInternal(key);
                 }
                 else
                 {
-                    Debug.LogError("GetStateBool: " + key + " is not a bool");
-                    return false;
+                    return MockGetState<string>(key);
                 }
-
             }
 
             [DllImport("__Internal")]
-            private static extern string GetStateDictionary(string key);
+            private static extern int GetStateIntInternal(string key);
 
-            public static Dictionary<string, float> GetStateFloatDict(string key)
+            public static int GetStateInt(string key)
             {
-                string jsonString = GetStateDictionary(key);
-                return ParseJsonToDictionary<float>(jsonString);
+                if (IsRunningInBrowser())
+                {
+                    return GetStateIntInternal(key);
+                }
+                else
+                {
+                    return MockGetState<int>(key);
+                }
+            }
+            
+            [DllImport("__Internal")]
+            private static extern float GetStateFloatInternal(string key);
+
+            public static float GetStateFloat(string key)
+            {
+                if (IsRunningInBrowser())
+                {
+                    return GetStateFloat(key);
+                }
+                else
+                {
+                    return MockGetState<float>(key);
+                }
             }
 
-            // helper functions:
+            public static bool GetStateBool(string key)
+            {
+                if (IsRunningInBrowser())
+                {
+                    var stateValue = GetStateInt(key);
+                    return stateValue == 1 ? true :
+                        stateValue == 0 ? false :
+                        throw new InvalidOperationException($"GetStateBool: {key} is not a bool");
+                }
+                else
+                {
+                    return MockGetState<bool>(key);
+                }
+
+                
+            }
+
+            public static T GetState<T>(string key)
+            {
+                if (IsRunningInBrowser())
+                {
+                    if (typeof(T) == typeof(int))
+                    {
+                        return (T)(object)GetStateIntInternal(key);
+                    }
+                    else if (typeof(T) == typeof(float))
+                    {
+                        return (T)(object)GetStateFloatInternal(key);
+                    }
+                    else if(typeof(T) == typeof(bool))
+                    {
+                        return (T)(object)GetStateBool(key);
+                    }
+                    else if(typeof(T) == typeof(string))
+                    {
+                        return (T)(object)GetStateString(key);
+                    }
+                    else
+                    {
+                        Debug.LogError($"GetState<{typeof(T)}> is not supported.");
+                        return default;
+                    }
+                }
+                else
+                {
+                    return MockGetState<T>(key);
+                }
+            } 
+            
+            
+            [DllImport("__Internal")]
+            private static extern string GetStateDictionaryInternal(string key);
+            
+            public static Dictionary<string, T> GetStateDict<T>(string key)
+            {
+                if (IsRunningInBrowser())
+                {
+                    string jsonString = GetStateDictionaryInternal(key);
+                    return ParseJsonToDictionary<T>(jsonString);
+                }
+                else
+                {
+                    return MockGetState<Dictionary<string, T>>(key);
+                }
+            }
+            
+            // Utils:
             private static void SetStateHelper<T>(string key, Dictionary<string, T> values, bool reliable = false)
             {
                 JSONObject jsonObject = new JSONObject();
@@ -263,14 +474,41 @@
             // it checks if the game is running in the browser or in the editor
             public static bool IsRunningInBrowser()
             {
-    #if UNITY_WEBGL && !UNITY_EDITOR
-            return true;
-    #else
-                return false;
-    #endif
+                #if UNITY_WEBGL && !UNITY_EDITOR
+                        return true;
+                #else
+                            return false;
+                #endif
+            }
+            
+            private static void MockSetState(string key, object value)
+            {
+                if (MockDictionary.ContainsKey(key))
+                {
+                    MockDictionary[key] = value;
+                }
+                else
+                {
+                    MockDictionary.Add(key, value);
+                }
             }
 
+            private static T MockGetState<T>(string key)
+            {
+                if (MockDictionary.TryGetValue(key, out object value) && value is T typedValue)
+                {
+                    return typedValue;
+                }
+                else
+                {
+                    Debug.LogError($"No {key} in States or value is not of type {typeof(T)}");
+                    return default;
+                }
+            }
 
+            
+            
+            
             // Player class
             public class Player
             {
@@ -303,8 +541,15 @@
                     this.id = id;
                     totalObjects++;
 
-                    OnQuitCallbacks.Add(OnQuitDefaultCallback) ;
-                    OnQuitInternal(this.id, OnQuitWrapperCallback);
+                    if (IsRunningInBrowser())
+                    {
+                        OnQuitCallbacks.Add(OnQuitDefaultCallback);
+                        OnQuitInternal(this.id, OnQuitWrapperCallback);
+                    }
+                    else
+                    {
+                        Debug.Log("Test Player");
+                    }
                 }
                 
                 [DllImport("__Internal")]
@@ -338,75 +583,169 @@
                 
                 public void SetState(string key, int value, bool reliable = false)
                 {
-                    SetPlayerStateByPlayerId(id, key, value, reliable);
+                    if (IsRunningInBrowser())
+                    {
+                        SetPlayerStateByPlayerId(id, key, value, reliable);
+                    }
+                    else
+                    {
+                        Debug.Log($"PlayerState Set! Key: {key}, Value: {value}");
+                        MockSetState(key, value);
+                    }
                 }
+
+                
 
                 public void SetState(string key, float value, bool reliable = false)
                 {
-                    SetPlayerStateByPlayerId(id, key, value, reliable);
+                    if (IsRunningInBrowser())
+                    {
+                        SetPlayerStateByPlayerId(id, key, value, reliable);
+                    }
+                    else
+                    {
+                        Debug.Log($"PlayerState Set! Key: {key}, Value: {value}");
+                        MockSetState(key, value);
+                    }
                 }
 
                 public void SetState(string key, bool value, bool reliable = false)
                 {
-                    SetPlayerStateByPlayerId(id, key, value, reliable);
+                    if (IsRunningInBrowser())
+                    {
+                        SetPlayerStateByPlayerId(id, key, value, reliable);
+                    }
+                    else
+                    {
+                        Debug.Log($"PlayerState Set! Key: {key}, Value: {value}");
+                        MockSetState(key, value);
+                    }
                 }
 
                 public void SetState(string key, string value, bool reliable = false)
                 {
-                    SetPlayerStateStringById(id, key, value, reliable);
+                    if (IsRunningInBrowser())
+                    {
+                        SetPlayerStateStringById(id, key, value, reliable);
+                    }
+                    else
+                    {
+                        Debug.Log($"PlayerState Set! Key: {key}, Value: {value}");
+                        MockSetState(key, value);
+                    }
                 }
 
                 public int GetStateInt(string key)
                 {
-                    return GetPlayerStateIntById(id, key);
+                    if (IsRunningInBrowser())
+                    {
+                        return GetPlayerStateIntById(id, key);
+                    }
+                    else
+                    {
+                        return MockGetState<int>(key);
+                    }
                 }
 
                 public float GetStateFloat(string key)
                 {
-                    return GetPlayerStateFloatById(id, key);
+                    if (IsRunningInBrowser())
+                    {
+                        return GetPlayerStateFloatById(id, key);
+                    }
+                    else
+                    {
+                        return MockGetState<float>(key);
+                    }
                 }
 
                 public string GetStateString(string key)
                 {
-                    return GetPlayerStateStringById(id, key);
+                    if (IsRunningInBrowser())
+                    {
+                        return GetPlayerStateStringById(id, key);
+                    }
+                    else
+                    {
+                        return MockGetState<string>(key);
+                    }
                 }
 
                 public bool GetStateBool(string key)
                 {
-                    if (GetPlayerStateIntById(id, key) == 1)
+                    if (IsRunningInBrowser())
                     {
-                        return true;
-                    }
-                    else if (GetPlayerStateIntById(id, key) == 0)
-                    {
-                        return false;
+                        if (GetPlayerStateIntById(id, key) == 1)
+                        {
+                            return true;
+                        }
+                        else if (GetPlayerStateIntById(id, key) == 0)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            Debug.LogError("GetPlayerStateByPlayerId: " + key + " is not a bool");
+                            return false;
+                        }
                     }
                     else
                     {
-                        Debug.LogError("GetPlayerStateByPlayerId: " + key + " is not a bool");
-                        return false;
+                        return MockGetState<bool>(key);
                     }
 
                 }
 
                 public void SetState(string key, Dictionary<string, int> values, bool reliable = false)
                 {
-                    SetStateHelper(id, key, values, reliable);
+                    if (IsRunningInBrowser())
+                    {
+                        SetStateHelper(id, key, values, reliable);
+                    }
+                    else
+                    {
+                        Debug.Log($"PlayerState Set! Key: {key}, Value: {values}");
+                        MockSetState(key, values);
+                    }
                 }
 
                 public void SetState(string key, Dictionary<string, float> values, bool reliable = false)
                 {
-                    SetStateHelper(id, key, values, reliable);
+                    if (IsRunningInBrowser())
+                    {
+                        SetStateHelper(id, key, values, reliable);
+                    }
+                    else
+                    {
+                        Debug.Log($"PlayerState Set! Key: {key}, Value: {values}");
+                        MockSetState(key, values);
+                    }
                 }
 
                 public void SetState(string key, Dictionary<string, bool> values, bool reliable = false)
                 {
-                    SetStateHelper(id, key, values, reliable);
+                    if (IsRunningInBrowser())
+                    {
+                        SetStateHelper(id, key, values, reliable);
+                    }
+                    else
+                    {
+                        Debug.Log($"PlayerState Set! Key: {key}, Value: {values}");
+                        MockSetState(key, values);
+                    }
                 }
 
                 public void SetState(string key, Dictionary<string, string> values, bool reliable = false)
                 {
-                    SetStateHelper(id, key, values, reliable);
+                    if (IsRunningInBrowser())
+                    {
+                        SetStateHelper(id, key, values, reliable);
+                    }
+                    else
+                    {
+                        Debug.Log($"PlayerState Set! Key: {key}, Value: {values}");
+                        MockSetState(key, values);
+                    }
                 }
 
                 public Dictionary<string, float> GetStateFloat(string id, string key)
@@ -433,9 +772,32 @@
 
                 public Profile GetProfile()
                 {
-                    string jsonString = GetProfileByPlayerId(id);
-                    Profile profileData = JsonUtility.FromJson<Profile>(jsonString);
-                    return profileData;
+                    if (IsRunningInBrowser())
+                    {
+                        string jsonString = GetProfileByPlayerId(id);
+                        Profile profileData = JsonUtility.FromJson<Profile>(jsonString);
+                        return profileData;
+                    }
+                    else
+                    {
+                        ColorData testColor = new ColorData()
+                        {
+                            r = 166,
+                            g = 0,
+                            b = 142,
+                            hexString = "#a6008e",
+                        };
+
+
+                        Profile testProfile = new Profile()
+                        {
+                            name = "CoolPlayTest",
+                            color = testColor,
+                            photo = "testPhoto",
+                        };
+                        return testProfile;
+
+                    }
                 }
                 
                 
@@ -476,5 +838,6 @@
             }
 
         }
-
+        
     }
+    
