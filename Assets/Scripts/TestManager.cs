@@ -32,6 +32,9 @@ public class TestManager : MonoBehaviour
         {
             Debug.Log("Insert Coin Callback Fired from Javascript defined in Unity: " + coinInserted);
             PlayroomKit.OnPlayerJoin(PlayerCallback);
+        }, new PlayroomKit.InitOptions()
+        {
+            streamMode = true
         });
     
     }
@@ -41,6 +44,8 @@ public class TestManager : MonoBehaviour
         text.text = "a = " + a + " b = " + b;
 
         Debug.Log("Is Host: "+ PlayroomKit.IsHost());
+        
+        Debug.Log(PlayroomKit.IsStreamMode());
     }
 
 
