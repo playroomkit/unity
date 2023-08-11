@@ -14,6 +14,7 @@
             public static Dictionary<string, Player> Players = new();
 
             private const string PlayerId = "testPlayer5";
+            private static bool  mockStremMode;
             public static Dictionary<string, object> MockDictionary = new();
             
             [System.Serializable]
@@ -48,6 +49,12 @@
                 else
                 {
                     Debug.Log("Coin Inserted");
+
+                    if (options != null && options.streamMode == true)
+                    {
+                        mockStremMode = options.streamMode;
+                    }
+                    
                     callback?.Invoke();
                 }
             } 
@@ -152,7 +159,7 @@
                 }
                 else
                 {
-                    return true;
+                    return mockStremMode;
                 }
             }
 
