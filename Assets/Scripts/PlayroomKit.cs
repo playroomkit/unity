@@ -13,7 +13,7 @@
 
             public static Dictionary<string, Player> Players = new();
 
-            private const string PlayerId = "testPlayer5";
+            private const string PlayerId = "mockPlayer";
             private static bool  mockIsStreamMode;
             public static Dictionary<string, object> MockDictionary = new();
             
@@ -126,7 +126,7 @@
                 }
                 else
                 {
-                    Player testPlayer = new Player("testPlayer5");
+                    Player testPlayer = new Player("mockPlayer");
                     return testPlayer;
                 }
                 
