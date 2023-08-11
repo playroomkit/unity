@@ -142,7 +142,19 @@
             }
             
             [DllImport("__Internal")]
-            public static extern bool IsStreamMode();
+            private static extern bool IsStreamModeInternal();
+
+            public static bool IsStreamMode()
+            {
+                if (IsRunningInBrowser())
+                {
+                    return IsStreamModeInternal();
+                }
+                else
+                {
+                    return true;
+                }
+            }
 
             [DllImport("__Internal")]
             private static extern string MyPlayerInternal();
