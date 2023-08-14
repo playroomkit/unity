@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     private static List<PlayroomKit.Player> players = new();
     private static Object playerObj;
     private static Transform playerTransform;
-    [SerializeField] private float moveSpeed = 8f;
+
 
 
     private void Start()
