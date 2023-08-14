@@ -1,3 +1,4 @@
+using Playroom;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour

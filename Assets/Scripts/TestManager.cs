@@ -69,8 +69,7 @@ public class TestManager : MonoBehaviour
     {
         var myProfile = myPlayer.GetProfile();
 
-        Debug.Log(myProfile.name);
-        
+
         ColorUtility.TryParseHtmlString(myProfile.color.hexString, out Color color1);
         playerObj.GetComponent<SpriteRenderer>().color = color1;
         
