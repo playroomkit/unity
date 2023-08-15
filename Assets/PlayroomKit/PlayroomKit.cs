@@ -126,7 +126,7 @@
                 }
                 else
                 {
-                    Player testPlayer = new Player("mockPlayer");
+                    Player testPlayer = new Player(playerId);
                     return testPlayer;
                 }
                 
@@ -168,17 +168,20 @@
             
             public static Player MyPlayer()
             {
-                string id = MyPlayerInternal();
-                return GetPlayer(id);
+                if (IsRunningInBrowser())
+                {
+                    string id = MyPlayerInternal();
+                    return GetPlayer(id);
+                }
+                else
+                {
+                    return GetPlayer(PlayerId);
+                }
             }
-            
-            [DllImport("__Internal")]
-            private static extern string MeInternal();
             
             public static Player Me()
             {
-                string id = MeInternal();
-                return GetPlayer(id);
+                return MyPlayer();
             }
 
             
@@ -188,13 +191,14 @@
 
             [DllImport("__Internal")]
             private static extern void SetStateInternal(string key, int value, bool reliable = false);
+            
 
             [DllImport("__Internal")]
-            private static extern void SetStateInternal(string key, float value, bool reliable = false);
-
+            private static extern void SetStateInternal(string key, bool value, bool reliable = false);         
+            
             [DllImport("__Internal")]
-            private static extern void SetStateInternal(string key, bool value, bool reliable = false);
-
+            private static extern void SetStateFloatInternal(string key, string floatAsString, bool reliable = false);
+            
             public static void SetState(string key, string value, bool reliable = false)
             {
                 if (IsRunningInBrowser())
@@ -225,7 +229,8 @@
             {
                 if (IsRunningInBrowser())
                 {
-                    SetStateInternal(key, value, reliable);
+                    string floatAsString = value.ToString();
+                    SetStateFloatInternal(key, floatAsString, reliable);
                 }
                 else
                 {
@@ -342,7 +347,9 @@
             {
                 if (IsRunningInBrowser())
                 {
-                    return GetStateFloat(key);
+
+                    return GetStateFloatInternal(key);
+                    
                 }
                 else
                 {
@@ -373,11 +380,11 @@
                 {
                     if (typeof(T) == typeof(int))
                     {
-                        return (T)(object)GetStateIntInternal(key);
+                        return (T)(object)GetStateInt(key);
                     }
                     else if (typeof(T) == typeof(float))
                     {
-                        return (T)(object)GetStateFloatInternal(key);
+                        return (T)(object)GetStateFloat(key);
                     }
                     else if(typeof(T) == typeof(bool))
                     {
@@ -514,11 +521,12 @@
             {
                 
                 [System.Serializable]
-                public class ColorData
+                public class Color
                 {
                     public int r;
                     public int g;
                     public int b;
+                    
                     public string hexString;
                     public int hex;
                 }
@@ -526,7 +534,7 @@
                 [System.Serializable]
                 public class Profile
                 {
-                    public ColorData color;
+                    public Color color;                    
                     public string name;
                     public string photo;
                 }
@@ -600,7 +608,7 @@
                 {
                     if (IsRunningInBrowser())
                     {
-                        SetPlayerStateByPlayerId(id, key, value, reliable);
+                        SetPlayerStateFloatByPlayerId(id, key, value.ToString(), reliable);
                     }
                     else
                     {
@@ -634,8 +642,53 @@
                         MockSetState(key, value);
                     }
                 }
+                
+                public T GetState<T>(string key)
+                {
+                    if (IsRunningInBrowser())
+                    {
+                        if (typeof(T) == typeof(int))
+                        {
+                            return (T)(object)GetPlayerStateIntById(id, key);
+                        }
+                        else if (typeof(T) == typeof(float))
+                        {
+                            return (T)(object)GetPlayerStateFloatById(id,key);
+                        }
+                        else if(typeof(T) == typeof(bool))
+                        {
+                            return (T)(object)GetStateBool(key);
+                        }
+                        else if(typeof(T) == typeof(string))
+                        {
+                            return (T)(object)GetPlayerStateStringById(id,key);
+                        }
+                        else
+                        {
+                            Debug.LogError($"GetState<{typeof(T)}> is not supported.");
+                            return default;
+                        }
+                    }
+                    else
+                    {
+                        return MockGetState<T>(key);
+                    }
+                } 
 
-                public int GetStateInt(string key)
+                public Dictionary<string, T> GetStateDict<T>(string key)
+                {
+                    if (IsRunningInBrowser())
+                    {
+                        string jsonString = GetPlayerStateDictionary(id,key);
+                        return ParseJsonToDictionary<T>(jsonString);
+                    }
+                    else
+                    {
+                        return MockGetState<Dictionary<string, T>>(key);
+                    }
+                }
+                
+                public int GetPlayerStateInt(string key)
                 {
                     if (IsRunningInBrowser())
                     {
@@ -647,7 +700,7 @@
                     }
                 }
 
-                public float GetStateFloat(string key)
+                public float GetPlayerStateFloat(string key)
                 {
                     if (IsRunningInBrowser())
                     {
@@ -659,7 +712,7 @@
                     }
                 }
 
-                public string GetStateString(string key)
+                public string GetPlayerStateString(string key)
                 {
                     if (IsRunningInBrowser())
                     {
@@ -671,7 +724,7 @@
                     }
                 }
 
-                public bool GetStateBool(string key)
+                public bool GetPlayerStateBool(string key)
                 {
                     if (IsRunningInBrowser())
                     {
@@ -696,6 +749,7 @@
 
                 }
 
+                // Dictionaries:
                 public void SetState(string key, Dictionary<string, int> values, bool reliable = false)
                 {
                     if (IsRunningInBrowser())
@@ -759,7 +813,7 @@
                 private static extern void SetPlayerStateByPlayerId(string playerID, string key, int value, bool reliable = false);
 
                 [DllImport("__Internal")]
-                private static extern void SetPlayerStateByPlayerId(string playerID, string key, float value, bool reliable = false);
+                private static extern void SetPlayerStateFloatByPlayerId(string playerID, string key, string value, bool reliable = false);
 
                 [DllImport("__Internal")]
                 private static extern void SetPlayerStateByPlayerId(string playerID, string key, bool value, bool reliable = false);
@@ -780,7 +834,7 @@
                     }
                     else
                     {
-                        ColorData testColor = new ColorData()
+                        Color testColor = new()
                         {
                             r = 166,
                             g = 0,

@@ -144,9 +144,31 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    reliable = !!reliable
-    
+    reliable = !!reliable;
+
     Playroom.setState(UTF8ToString(key), value, reliable);
+  },
+
+   /**
+   * @description Sets a key-value pair in the game state with a float value.
+   * @param {string} key - The key to set in the game state.
+   * @param {number | boolean} value - The value to associate with the key, such as position or health.
+   */
+  SetStateFloatInternal: function (key, value, reliable) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    reliable = !!reliable;
+
+    Playroom.setState(
+      UTF8ToString(key),
+      parseFloat(UTF8ToString(value)),
+      reliable
+    );
   },
 
   /**
@@ -162,8 +184,7 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    reliable = !!reliable
-    
+    reliable = !!reliable;
 
     Playroom.setState(UTF8ToString(key), UTF8ToString(stringVal), reliable);
   },
@@ -181,8 +202,7 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    reliable = !!reliable
-    
+    reliable = !!reliable;
 
     Playroom.setState(
       UTF8ToString(key),
@@ -209,7 +229,7 @@ mergeInto(LibraryManager.library, {
   /**
    * @description Retrieves a floating-point value from the game state using the provided key.
    * @param {string} key - The key to retrieve the floating-point value from the game state.
-   * @returns {number | null} The floating-point value associated with the key, or null if the key is not found.
+   * @returns {string | null} The floating-point value associated with the key, or null if the key is not found.
    */
   GetStateFloatInternal: function (key) {
     if (!window.Playroom) {
@@ -218,8 +238,8 @@ mergeInto(LibraryManager.library, {
       );
       return;
     }
-    var flt = Playroom.getState(UTF8ToString(key));
-    return flt;
+
+    return Playroom.getState(UTF8ToString(key));
   },
 
   /**
@@ -309,8 +329,7 @@ mergeInto(LibraryManager.library, {
   SetPlayerStateByPlayerId: function (playerId, key, value, reliable) {
     const players = window._multiplayer.getPlayers();
 
-    reliable = !!reliable
-    
+    reliable = !!reliable;
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
@@ -334,6 +353,33 @@ mergeInto(LibraryManager.library, {
     }
   },
 
+  SetPlayerStateFloatByPlayerId: function (playerId, key, value, reliable) {
+    const players = window._multiplayer.getPlayers();
+
+    reliable = !!reliable;
+
+    if (typeof players !== "object" || players === null) {
+      console.error('The "players" variable is not an object:', players);
+      return null;
+    }
+    const playerState = players[UTF8ToString(playerId)];
+
+    if (!playerState) {
+      console.error("Player with ID", UTF8ToString(playerId), "not found.");
+      return null;
+    }
+
+    // Assuming that the player state object has a "setState" method
+    if (typeof playerState.setState === "function") {
+      playerState.setState(UTF8ToString(key), parseFloat(UTF8ToString(value)), reliable);
+    } else {
+      console.error(
+        'The player state object does not have a "setState" method.'
+      );
+      return null;
+    }
+  },
+
   /**
    * @description Sets a key-value pair in a specific player's state with a string value.
    * @param {string} playerId - The ID of the player whose state to update.
@@ -343,9 +389,7 @@ mergeInto(LibraryManager.library, {
   SetPlayerStateStringById: function (playerId, key, value, reliable) {
     const players = window._multiplayer.getPlayers();
 
-    reliable = !!reliable
-    
-
+    reliable = !!reliable;
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
@@ -377,8 +421,7 @@ mergeInto(LibraryManager.library, {
   SetPlayerStateDictionary: function (playerId, key, jsonValues, reliable) {
     const players = window._multiplayer.getPlayers();
 
-    reliable = !!reliable
-    
+    reliable = !!reliable;
 
     // Check if players is an object
     if (typeof players !== "object" || players === null) {
@@ -394,7 +437,11 @@ mergeInto(LibraryManager.library, {
     }
 
     if (typeof playerState.setState === "function") {
-      playerState.setState(UTF8ToString(key), JSON.parse(UTF8ToString(jsonValues)), reliable);
+      playerState.setState(
+        UTF8ToString(key),
+        JSON.parse(UTF8ToString(jsonValues)),
+        reliable
+      );
     } else {
       console.error(
         'The player state object does not have a "setState" method.'
