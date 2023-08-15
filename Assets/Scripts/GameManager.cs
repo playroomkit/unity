@@ -52,8 +52,9 @@ public class GameManager : MonoBehaviour
         players.Add(player);
         playerObj = (GameObject)Instantiate(Resources.Load("Player"), new Vector3(-4, 4, 0), Quaternion.identity);
         
-        var myProfile = player.GetProfile();
-        ColorUtility.TryParseHtmlString(myProfile.color.hexString, out Color color1);
+        var profile = player.GetProfile().color;
+        
+        ColorUtility.TryParseHtmlString(profile.hexString, out Color color1);
         playerObj.GetComponent<SpriteRenderer>().color = color1;
         
         playerTransform = playerObj.GetComponent<Transform>().transform;

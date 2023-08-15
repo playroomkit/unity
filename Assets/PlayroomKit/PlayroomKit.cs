@@ -526,6 +526,7 @@
                     public int r;
                     public int g;
                     public int b;
+                    
                     public string hexString;
                     public int hex;
                 }
@@ -533,7 +534,7 @@
                 [System.Serializable]
                 public class Profile
                 {
-                    public Color color;
+                    public Color color;                    
                     public string name;
                     public string photo;
                 }
