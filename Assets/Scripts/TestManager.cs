@@ -8,118 +8,17 @@ using Playroom;
 
 public class TestManager : MonoBehaviour
 {
-
-    static bool coinInserted = false;
-
-    int a = 0;
-    int b = 0;
-
-    public static string playerID;
-
-    [SerializeField] private Text text;
-
-
-    Dictionary<string, float> myDictionary;
-
-    static GameObject playerObj;
-
-    static PlayroomKit.Player myPlayer;
-
-
-    void Awake()
-    {
-        PlayroomKit.InsertCoin(() =>
-        {
-            Debug.Log("Insert Coin Callback Fired from Javascript defined in Unity: " + coinInserted);
-            PlayroomKit.OnPlayerJoin(PlayerCallback);
-        }, new PlayroomKit.InitOptions()
-        {
-            streamMode = true
-        });
     
-    }
-
-    void Start()
+    public void SetStateTest()
     {
-        text.text = "a = " + a + " b = " + b;
+        PlayroomKit.SetState("test", 3.14f);
 
-        Debug.Log("Is Host: "+ PlayroomKit.IsHost());
-        
-        Debug.Log(PlayroomKit.IsStreamMode());
-    }
-
-
-    static void Foo()
-    {
-        Debug.Log("Foo Called");
-    }
-
-    public static void PlayerCallback(PlayroomKit.Player player)
-    {
-        myPlayer = player;
-        // spawn a player in the scene
-        
-        myPlayer.SetState("Score", 10, true);
-        
-        playerObj = (GameObject)Instantiate(Resources.Load("player"), new Vector3(-4, 4, 0), Quaternion.identity);
-        // myPlayer.OnQuit(Foo);
-    }
-    
-    public void GetProfile()
-    {
-        var myProfile = myPlayer.GetProfile();
-
-
-        ColorUtility.TryParseHtmlString(myProfile.color.hexString, out Color color1);
-        playerObj.GetComponent<SpriteRenderer>().color = color1;
-        
-    }
-    
-    // // for buttons
-  
-    public void TestSetState()
-    {
-        a++;
-        Debug.Log("a = " + a);
-        
-        
-        PlayroomKit.SetState("test", a, true);
-        text.text = "a = " + a + " b = " + b;
-
-        Dictionary<string, float> currenPos = new()
-        {
-            { "x", playerObj.transform.position.x},
-            { "y", playerObj.transform.position.y}
-        };
-
-        PlayroomKit.SetState("pos", currenPos);
         
     }
 
-
-    static void bar()
+    public void GetState()
     {
-        Debug.Log("Bar Called");
-    }
-    
-    public void TestGetState()
-    {
-
-        b = PlayroomKit.GetState<int>("test");
-        
-        // int c = myPlayer.GetStateInt("score");
-        // Debug.Log("score  " + c);
-            
-        text.text = "a = " + a + " b = " + b;
-
-         Dictionary<string, float> newPosDic = PlayroomKit.GetStateDict<float>("pos");
-        
-         Vector3 newPos = new Vector3(newPosDic["x"], newPosDic["y"], 0);
-
-         playerObj.transform.position = newPos;
-         
-         // PlayroomKit.Player plr  = PlayroomKit.Me();
-
+        Debug.Log("Getting Float: " + PlayroomKit.GetState<float>("test"));
     }
 
 }

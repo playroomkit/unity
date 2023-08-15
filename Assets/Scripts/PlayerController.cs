@@ -8,12 +8,12 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Move();
+        // Move();
     }
 
-    private void Move()
+    public void Move()
     {
-        var dirX = new Vector2(Input.GetAxisRaw("Horizontal"), 0);
-        transform.Translate(dirX * (moveSpeed * Time.deltaTime));
+        var dirX = Input.GetAxisRaw("Horizontal");
+        transform.Translate(new Vector3(dirX,0,0) * (moveSpeed * Time.deltaTime));
     }
 }

@@ -179,9 +179,6 @@
                 }
             }
             
-            [DllImport("__Internal")]
-            private static extern string MeInternal();
-            
             public static Player Me()
             {
                 return MyPlayer();
