@@ -23,8 +23,7 @@ jobs:
       with:
         package-path: 'output/playroomkit.unitypackage'
         include-files: metaList
-    - name: Upload Artifact
-      - uses: actions/upload-artifact@v3
-        with:
-          name: playroomkit.unitypackage
-          path: output/playroomkit.unitypackage
+    - uses: actions/upload-artifact@v3
+      with:
+        name: playroomkit.unitypackage
+        path: output/playroomkit.unitypackage
