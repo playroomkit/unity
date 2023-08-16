@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Playroom;
@@ -14,7 +15,7 @@ public class GameManager : MonoBehaviour
     private static PlayerController playerContoller;
 
 
-    private void Start()
+    private void Awake()
     {
         PlayroomKit.InsertCoin(() =>
         {
@@ -22,13 +23,20 @@ public class GameManager : MonoBehaviour
         });
     }
 
+  
     private void Update()
     {
-        playerContoller.Move();
+        
+        PlayroomKit.Player myPlayer = PlayroomKit.MyPlayer();
+        int myIndex = players.IndexOf(myPlayer);
+        
+        Debug.LogWarning(myIndex);
+
         if (PlayroomKit.IsHost())
         {
             foreach (var player in players)
             {
+                playerContoller.Move();
                 player.SetState("pos", playerTransform.position.x);
             }
         }
@@ -52,10 +60,9 @@ public class GameManager : MonoBehaviour
         players.Add(player);
         playerObj = (GameObject)Instantiate(Resources.Load("Player"), new Vector3(-4, 4, 0), Quaternion.identity);
         
-        var profile = player.GetProfile().color;
-        
-        ColorUtility.TryParseHtmlString(profile.hexString, out Color color1);
-        playerObj.GetComponent<SpriteRenderer>().color = color1;
+        var profileColor = player.GetProfile().Color;
+
+        playerObj.GetComponent<SpriteRenderer>().color = profileColor;
         
         playerTransform = playerObj.GetComponent<Transform>().transform;
         playerContoller = playerObj.GetComponent<PlayerController>();
