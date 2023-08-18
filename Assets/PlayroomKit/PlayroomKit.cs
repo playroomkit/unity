@@ -4,7 +4,8 @@ using System.Runtime.InteropServices;
 using AOT;
 using System;
 using SimpleJSON;
-using Random = UnityEngine;
+
+
 
 namespace Playroom
 {
@@ -634,23 +635,30 @@ namespace Playroom
         // Player class
         public class Player
         {
-            [Serializable]
-            public class Color
-            {
-                public int r;
-                public int g;
-                public int b;
-                public string hexString;
-                public int hex;
-            }
+            
 
             [Serializable]
             public class Profile
             {
-                public Color colorData;
+                [NonSerialized]
+                public UnityEngine.Color color;
+
+                public JsonColor jsonColor;
                 public string name;
                 public string photo;
-                public UnityEngine.Color Color => new(colorData.r / 255f, colorData.g / 255f, colorData.b / 255f);
+                
+                [Serializable]
+                public class JsonColor
+                {
+                    public int r;
+                    public int g;
+                    public int b;
+                    public string hexString;
+                    public int hex;
+                }
+                
+              
+                
             }
 
 
@@ -1050,12 +1058,33 @@ namespace Playroom
             [DllImport("__Internal")]
             private static extern string GetProfileByPlayerId(string playerID);
 
+            private static Profile ParseProfile(string json)
+            {
+                var jsonNode = JSON.Parse(json);
+                var profileData = new Profile();
+                profileData.jsonColor = new Profile.JsonColor
+                {
+                    r = jsonNode["color"]["r"].AsInt,
+                    g = jsonNode["color"]["g"].AsInt,
+                    b = jsonNode["color"]["b"].AsInt,
+                    hexString = jsonNode["color"]["hexString"].Value,
+                    hex = jsonNode["color"]["hex"].AsInt
+                };
+
+                ColorUtility.TryParseHtmlString(profileData.jsonColor.hexString, out UnityEngine.Color color1);
+                profileData.color = color1;
+                profileData.name = jsonNode["name"].Value;
+                profileData.photo = jsonNode["photo"].Value;
+
+                return profileData;
+            }
+            
             public Profile GetProfile()
             {
                 if (IsRunningInBrowser())
                 {
                     var jsonString = GetProfileByPlayerId(id);
-                    var profileData = JsonUtility.FromJson<Profile>(jsonString);
+                    var profileData = ParseProfile(jsonString);
                     return profileData;
                 }
                 else
@@ -1067,18 +1096,21 @@ namespace Playroom
                     }
                     else
                     {
-                        Color mockColor = new()
+                        Profile.JsonColor mockJsonColor = new()
                         {
                             r = 166,
                             g = 0,
                             b = 142,
                             hexString = "#a6008e"
                         };
+                        ColorUtility.TryParseHtmlString(mockJsonColor.hexString, out UnityEngine.Color color1);
                         var testProfile = new Profile()
                         {
+                            color = color1,
                             name = "CoolPlayTest",
-                            colorData = mockColor,
+                            jsonColor = mockJsonColor,
                             photo = "testPhoto"
+                            
                         };
                         return testProfile;
                     }

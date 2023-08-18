@@ -26,17 +26,11 @@ public class GameManager : MonoBehaviour
   
     private void Update()
     {
-        
-        PlayroomKit.Player myPlayer = PlayroomKit.MyPlayer();
-        int myIndex = players.IndexOf(myPlayer);
-        
-        Debug.LogWarning(myIndex);
-
+        playerContoller.Move();
         if (PlayroomKit.IsHost())
         {
             foreach (var player in players)
             {
-                playerContoller.Move();
                 player.SetState("pos", playerTransform.position.x);
             }
         }
@@ -55,20 +49,17 @@ public class GameManager : MonoBehaviour
     public static void AddPlayer(PlayroomKit.Player player)
     {
 
-    
-        
         players.Add(player);
         playerObj = (GameObject)Instantiate(Resources.Load("Player"), new Vector3(-4, 4, 0), Quaternion.identity);
-        
-        var profileColor = player.GetProfile().Color;
 
-        playerObj.GetComponent<SpriteRenderer>().color = profileColor;
+        var profile = player.GetProfile();
+
+
+        playerObj.GetComponent<SpriteRenderer>().color = profile.color;
         
         playerTransform = playerObj.GetComponent<Transform>().transform;
         playerContoller = playerObj.GetComponent<PlayerController>();
         
+        Debug.Log(profile.name + " Joined the game!");
     }
-
-
-    
 }
