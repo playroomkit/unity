@@ -12,17 +12,20 @@ namespace Playroom
 {
     public class PlayroomKit
     {
+        
+        private static bool isPlayRoomInitialized;
+        
+        
         /// <summary>
-        /// required Mock Mode:
+        /// Required Mock Mode:
         /// </summary>
-        private static bool isInitializedMockMode;
-
         private const string PlayerId = "mockPlayer";
         private static bool mockIsStreamMode;
         public static Dictionary<string, object> MockDictionary = new();
 
 
         public static Dictionary<string, Player> Players = new();
+
 
         [Serializable]
         public class InitOptions
@@ -48,6 +51,7 @@ namespace Playroom
         {
             if (IsRunningInBrowser())
             {
+                isPlayRoomInitialized = true;
                 InsertCoinCallback = callback;
                 string optionsJson = null;
                 if (options != null) optionsJson = SerializeInitOptions(options);
@@ -55,7 +59,7 @@ namespace Playroom
             }
             else
             {
-                isInitializedMockMode = true;
+                isPlayRoomInitialized = true;
 
 
                 Debug.Log("Coin Inserted");
@@ -94,7 +98,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                 }
@@ -109,55 +113,34 @@ namespace Playroom
 
         public static Dictionary<string, Player> GetPlayers()
         {
+            if (!isPlayRoomInitialized)
+                Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
+
             return Players;
         }
 
         public static Player GetPlayer(string playerId)
         {
-            if (IsRunningInBrowser())
+            if (!isPlayRoomInitialized)
             {
-                try
-                {
-                    if (Players.ContainsKey(playerId))
-                    {
-                        return Players[playerId];
-                    }
-                    else
-                    {
-                        var player = new Player(playerId);
-                        Players.Add(playerId, player);
-                        return player;
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError("Error in Get Player: " + e.Message);
-                    throw;
-                }
+                Debug.LogError(IsRunningInBrowser()
+                    ? "PlayroomKit is not loaded!. Please make sure to call InsertCoin first."
+                    : "[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                return default;
+            }
+
+            if (Players.TryGetValue(playerId, out var player))
+            {
+                return player;
             }
             else
             {
-                if (!isInitializedMockMode)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return default;
-                }
-                else
-                {
-                    if (Players.ContainsKey(playerId))
-                    {   
-                        return Players[playerId];
-                    }
-                    else
-                    {
-                        var player = new Player(playerId);
-                        Players.Add(playerId, player);
-                        return player;
-                    }
-                    
-                }
+                player = new Player(playerId);
+                Players.Add(playerId, player);
+                return player;
             }
         }
+
 
         [DllImport("__Internal")]
         private static extern bool IsHostInternal();
@@ -170,7 +153,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return false;
@@ -193,7 +176,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return false;
@@ -217,7 +200,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return null;
@@ -256,7 +239,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                 }
@@ -276,7 +259,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                 }
@@ -297,7 +280,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                 }
@@ -317,7 +300,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                 }
@@ -341,7 +324,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                 }
@@ -361,7 +344,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                 }
@@ -381,7 +364,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                 }
@@ -401,7 +384,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                 }
@@ -426,7 +409,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return default;
@@ -449,7 +432,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return default;
@@ -472,7 +455,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return default;
@@ -495,7 +478,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return false;
@@ -535,7 +518,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return default;
@@ -560,7 +543,7 @@ namespace Playroom
             }
             else
             {
-                if (!isInitializedMockMode)
+                if (!isPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return default;
@@ -689,7 +672,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isInitializedMockMode)
+                    if (!isPlayRoomInitialized)
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     else
                         Debug.Log("Mock Player Created");
@@ -704,6 +687,10 @@ namespace Playroom
 
             private void OnQuitDefaultCallback()
             {
+                if (!isPlayRoomInitialized)
+                {
+                }
+
                 Players.Remove(id);
             }
 
@@ -717,7 +704,10 @@ namespace Playroom
 
             public void OnQuit(Action callback)
             {
-                OnQuitCallbacks.Add(callback);
+                if (!isPlayRoomInitialized)
+                    Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
+                else
+                    OnQuitCallbacks.Add(callback);
             }
 
 
@@ -729,7 +719,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isInitializedMockMode)
+                    if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     }
@@ -750,7 +740,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isInitializedMockMode)
+                    if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     }
@@ -770,7 +760,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isInitializedMockMode)
+                    if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     }
@@ -790,7 +780,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isInitializedMockMode)
+                    if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     }
@@ -830,7 +820,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isInitializedMockMode)
+                    if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                         return default;
@@ -851,7 +841,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isInitializedMockMode)
+                    if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                         return default;
@@ -871,7 +861,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isInitializedMockMode)
+                    if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                         return default;
@@ -891,7 +881,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isInitializedMockMode)
+                    if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                         return default;
@@ -911,7 +901,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isInitializedMockMode)
+                    if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                         return default;
@@ -943,7 +933,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isInitializedMockMode)
+                    if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                         return default;
@@ -964,7 +954,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isInitializedMockMode)
+                    if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     }
@@ -984,7 +974,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isInitializedMockMode)
+                    if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     }
@@ -1004,7 +994,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isInitializedMockMode)
+                    if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     }
@@ -1024,7 +1014,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isInitializedMockMode)
+                    if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     }
@@ -1072,7 +1062,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isInitializedMockMode)
+                    if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                         return default;
@@ -1089,7 +1079,7 @@ namespace Playroom
                         var testProfile = new Profile()
                         {
                             name = "CoolPlayTest",
-                            colorData =  mockColor,
+                            colorData = mockColor,
                             photo = "testPhoto"
                         };
                         return testProfile;

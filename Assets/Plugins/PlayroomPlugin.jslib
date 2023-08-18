@@ -149,7 +149,7 @@ mergeInto(LibraryManager.library, {
     Playroom.setState(UTF8ToString(key), value, reliable);
   },
 
-   /**
+  /**
    * @description Sets a key-value pair in the game state with a float value.
    * @param {string} key - The key to set in the game state.
    * @param {number | boolean} value - The value to associate with the key, such as position or health.
@@ -371,7 +371,11 @@ mergeInto(LibraryManager.library, {
 
     // Assuming that the player state object has a "setState" method
     if (typeof playerState.setState === "function") {
-      playerState.setState(UTF8ToString(key), parseFloat(UTF8ToString(value)), reliable);
+      playerState.setState(
+        UTF8ToString(key),
+        parseFloat(UTF8ToString(value)),
+        reliable
+      );
     } else {
       console.error(
         'The player state object does not have a "setState" method.'
