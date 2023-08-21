@@ -695,8 +695,8 @@ namespace Playroom
             {
                 if (!isPlayRoomInitialized)
                 {
+                    Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
                 }
-
                 Players.Remove(id);
             }
 

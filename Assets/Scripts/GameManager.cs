@@ -1,18 +1,14 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 using Playroom;
-using ColorUtility = UnityEngine.ColorUtility;
-using Object = UnityEngine.Object;
-
+using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    private static List<PlayroomKit.Player> players = new();
-    private static GameObject playerObj;
-    private static Transform playerTransform;
-    
-    private static PlayerController playerContoller;
+    private static readonly List<PlayroomKit.Player> players = new();
+    private static readonly List<GameObject> playerGameObjects = new();
+
+    private static readonly List<string> playerID = new();
+    [SerializeField] private int score = 0;
 
 
     private void Awake()
@@ -20,46 +16,71 @@ public class GameManager : MonoBehaviour
         PlayroomKit.InsertCoin(() =>
         {
             PlayroomKit.OnPlayerJoin(AddPlayer);
+            PlayroomKit.SetState("score", score);
         });
     }
 
-  
     private void Update()
     {
-        playerContoller.Move();
-        if (PlayroomKit.IsHost())
+
+        
+        var myPlayer = PlayroomKit.MyPlayer();
+        var index = players.IndexOf(myPlayer);
+
+         playerGameObjects[index].GetComponent<PlayerController>().Move();
+         players[index].SetState("pos", playerGameObjects[index].GetComponent<Transform>().position.x);
+
+        for (var i = 0; i < players.Count; i++)
         {
-            foreach (var player in players)
+            var pos = players[i].GetState<float>("pos");
+            if (playerGameObjects != null)
+                playerGameObjects[i].GetComponent<Transform>().position = new Vector3(
+                    pos, playerGameObjects[i].GetComponent<Transform>().position.y, 0f);
+
+            if (PlayroomKit.IsHost())
             {
-                player.SetState("pos", playerTransform.position.x);
+                if (playerGameObjects[i].GetComponent<Transform>().position.x >= 0f)
+                {
+                    score += 10;
+                    PlayroomKit.SetState("score", score);
+                }
             }
-        }
-        else
-        {
-            foreach (var player in players)
+            else
             {
-                var pos = player.GetState<float>("pos");
-                var position = playerTransform.position;
-                position = new Vector3(pos, position.y, position.z);
-                playerTransform.position = position;
+                Debug.Log(PlayroomKit.GetState<int>("score"));
             }
+            
         }
     }
 
     public static void AddPlayer(PlayroomKit.Player player)
     {
+        GameObject playerObj = (GameObject)Instantiate(Resources.Load("Player"),
+            new Vector3(Random.Range(-4, 4), Random.Range(1, 5), 0), Quaternion.identity);
+        
+        playerObj.GetComponent<SpriteRenderer>().color = player.GetProfile().color;
+        Debug.Log(player.GetProfile().name + " Joined the game!");
+        
+        
+        string playerId = player.id;
+        
+        player.OnQuit((() =>
+        {
+            PlayroomKit.Player playerWhoLeft = players.Find((player) => player.id == playerId);
+            Debug.LogWarning(  playerWhoLeft.GetProfile().name + " Left the game");
+            Destroy(playerObj);
+            // var newPlayer = PlayroomKit.MyPlayer();
+            // var index = players.IndexOf(newPlayer);
+            // Destroy(playerGameObjects[index]);
+        }));
 
+       
+        playerID.Add(player.id);
         players.Add(player);
-        playerObj = (GameObject)Instantiate(Resources.Load("Player"), new Vector3(-4, 4, 0), Quaternion.identity);
-
-        var profile = player.GetProfile();
-
-
-        playerObj.GetComponent<SpriteRenderer>().color = profile.color;
+        playerGameObjects.Add(playerObj);
         
-        playerTransform = playerObj.GetComponent<Transform>().transform;
-        playerContoller = playerObj.GetComponent<PlayerController>();
         
-        Debug.Log(profile.name + " Joined the game!");
+        
     }
+
 }
