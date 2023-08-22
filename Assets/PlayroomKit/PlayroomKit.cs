@@ -630,7 +630,7 @@ namespace Playroom
             }
         }
 
-        [DllImport("__Internal")]
+        [MonoPInvokeCallback(typeof(Action))]
         private static extern void _OnQuitInternalHandler(string playerId) {
             // find the player, call its WrapperCallback
             if (Players.TryGetValue(playerId, out Player player))
@@ -639,7 +639,7 @@ namespace Playroom
             }
             else
             {
-                Debug.LogError("[OnQuitInternalCallback] Couldn't find player with id " + playerId)
+                Debug.LogError("[_OnQuitInternalHandler] Couldn't find player with id " + playerId)
             }
         }
 
@@ -685,7 +685,6 @@ namespace Playroom
                 if (IsRunningInBrowser())
                 {
                     OnQuitCallbacks.Add(OnQuitDefaultCallback);
-                    // OnQuitInternal(this.id, OnQuitWrapperCallback);
                 }
                 else
                 {
@@ -696,10 +695,7 @@ namespace Playroom
                 }
             }
 
-            // Can't be init'd here.
-            // remove static here
             private List<Action> OnQuitCallbacks = new();
-
 
             private void OnQuitDefaultCallback()
             {
@@ -711,7 +707,6 @@ namespace Playroom
             }
 
             [MonoPInvokeCallback(typeof(Action))]
-            // remove static here
             public void OnQuitWrapperCallback()
             {
                 if (OnQuitCallbacks != null)
