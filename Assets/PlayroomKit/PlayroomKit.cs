@@ -684,7 +684,7 @@ namespace Playroom
 
                 if (IsRunningInBrowser())
                 {
-                    OnQuitCallbacks.Add(OnQuitDefaultCallback);
+                    // OnQuitCallbacks.Add(OnQuitDefaultCallback);
                 }
                 else
                 {
@@ -695,8 +695,9 @@ namespace Playroom
                 }
             }
 
-            private List<Action> OnQuitCallbacks = new();
+            private List<Action<string>> OnQuitCallbacks = new();
 
+            
             private void OnQuitDefaultCallback()
             {
                 if (!isPlayRoomInitialized)
@@ -712,10 +713,10 @@ namespace Playroom
             {
                 if (OnQuitCallbacks != null)
                     foreach (var callback in OnQuitCallbacks)
-                        callback?.Invoke();
+                        callback?.Invoke(id);
             }
 
-            public void OnQuit(Action callback)
+            public void OnQuit(Action<string> callback)
             {
                 if (!isPlayRoomInitialized)
                     Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");

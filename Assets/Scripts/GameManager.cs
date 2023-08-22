@@ -1,18 +1,21 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
+using AOT;
 using Playroom;
-using ColorUtility = UnityEngine.ColorUtility;
-using Object = UnityEngine.Object;
-
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
-    private static List<PlayroomKit.Player> players = new();
-    private static GameObject playerObj;
-    private static Transform playerTransform;
-    
-    private static PlayerController playerContoller;
+    private static readonly List<PlayroomKit.Player> players = new();
+    private static readonly List<GameObject> playerGameObjects = new();
+
+
+    private static Dictionary<string, GameObject> PlayerDict = new(); 
+
+
+    [SerializeField] private int score = 0;
+   
 
 
     private void Awake()
@@ -20,46 +23,74 @@ public class GameManager : MonoBehaviour
         PlayroomKit.InsertCoin(() =>
         {
             PlayroomKit.OnPlayerJoin(AddPlayer);
+            PlayroomKit.SetState("score", score);
         });
     }
 
-  
     private void Update()
     {
-        playerContoller.Move();
-        if (PlayroomKit.IsHost())
+
+        
+        var myPlayer = PlayroomKit.MyPlayer();
+        var index = players.IndexOf(myPlayer);
+
+         playerGameObjects[index].GetComponent<PlayerController>().Move();
+         players[index].SetState("pos", playerGameObjects[index].GetComponent<Transform>().position.x);
+
+        for (var i = 0; i < players.Count; i++)
         {
-            foreach (var player in players)
-            {
-                player.SetState("pos", playerTransform.position.x);
+
+            if (players[i] != null){
+                var pos = players[i].GetState<float>("pos");
+                if (playerGameObjects != null)
+                    playerGameObjects[i].GetComponent<Transform>().position = new Vector3(
+                        pos, playerGameObjects[i].GetComponent<Transform>().position.y, 0f);
             }
-        }
-        else
-        {
-            foreach (var player in players)
+
+            if (PlayroomKit.IsHost())
             {
-                var pos = player.GetState<float>("pos");
-                var position = playerTransform.position;
-                position = new Vector3(pos, position.y, position.z);
-                playerTransform.position = position;
+                if (playerGameObjects[i].GetComponent<Transform>().position.x >= 0f)
+                {
+                    score += 10;
+                    PlayroomKit.SetState("score", score);
+                }
             }
+            else
+            {
+                Debug.Log(PlayroomKit.GetState<int>("score"));
+            }
+            
         }
     }
 
     public static void AddPlayer(PlayroomKit.Player player)
     {
+        GameObject playerObj = (GameObject)Instantiate(Resources.Load("Player"),
+            new Vector3(Random.Range(-4, 4), Random.Range(1, 5), 0), Quaternion.identity);
+        
+        
+        playerObj.GetComponent<SpriteRenderer>().color = player.GetProfile().color;
+        Debug.Log(player.GetProfile().name + " Joined the game!" + "id: " +  player.id);
 
+        PlayerDict.Add(player.id, playerObj);
         players.Add(player);
-        playerObj = (GameObject)Instantiate(Resources.Load("Player"), new Vector3(-4, 4, 0), Quaternion.identity);
-
-        var profile = player.GetProfile();
+        playerGameObjects.Add(playerObj);
 
 
-        playerObj.GetComponent<SpriteRenderer>().color = profile.color;
+        player.OnQuit(RemovePlayer);
+    }
+
+    [MonoPInvokeCallback(typeof(Action<string>))]
+    private static void RemovePlayer(string playerID)
+    {
+        if (PlayerDict.TryGetValue(playerID, out GameObject player))
+        {
+            Destroy(player);
+        }
+        else
+        {
+            Debug.LogWarning("player not in dict");
+        }
         
-        playerTransform = playerObj.GetComponent<Transform>().transform;
-        playerContoller = playerObj.GetComponent<PlayerController>();
-        
-        Debug.Log(profile.name + " Joined the game!");
     }
 }
