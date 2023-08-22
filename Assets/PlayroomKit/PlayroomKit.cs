@@ -37,7 +37,7 @@ namespace Playroom
         private static Action InsertCoinCallback = null;
 
         [DllImport("__Internal")]
-        private static extern void InsertCoinInternal(Action callback, string options);
+        private static extern void InsertCoinInternal(Action callback, string options, Action<string> onQuitInternalCallback);
 
         [MonoPInvokeCallback(typeof(Action))]
         private static void InvokeInsertCoin()
@@ -54,12 +54,11 @@ namespace Playroom
                 InsertCoinCallback = callback;
                 string optionsJson = null;
                 if (options != null) optionsJson = SerializeInitOptions(options);
-                InsertCoinInternal(InvokeInsertCoin, optionsJson);
+                InsertCoinInternal(InvokeInsertCoin, optionsJson, __OnQuitInternalHandler);
             }
             else
             {
                 isPlayRoomInitialized = true;
-
 
                 Debug.Log("Coin Inserted");
 
@@ -631,6 +630,18 @@ namespace Playroom
             }
         }
 
+        [MonoPInvokeCallback(typeof(Action<string>))]
+        private static void __OnQuitInternalHandler(string playerId) {
+            if (Players.TryGetValue(playerId, out Player player))
+            {
+               
+                player.OnQuitWrapperCallback();
+            }
+            else
+            {
+                Debug.LogError("[__OnQuitInternalHandler] Couldn't find player with id " + playerId);
+            }
+        }
 
         // Player class
         public class Player
@@ -673,8 +684,7 @@ namespace Playroom
 
                 if (IsRunningInBrowser())
                 {
-                    OnQuitCallbacks.Add(OnQuitDefaultCallback);
-                    OnQuitInternal(this.id, OnQuitWrapperCallback);
+                    // OnQuitCallbacks.Add(OnQuitDefaultCallback);
                 }
                 else
                 {
@@ -685,30 +695,28 @@ namespace Playroom
                 }
             }
 
-            [DllImport("__Internal")]
-            private static extern void OnQuitInternal(string id, Action callback);
+            private List<Action<string>> OnQuitCallbacks = new();
 
-            private static List<Action> OnQuitCallbacks = new();
-
-
+            
             private void OnQuitDefaultCallback()
             {
                 if (!isPlayRoomInitialized)
                 {
+                    Debug.LogError("Playroom not initialized yet! Please call InsertCoin.");
                 }
 
                 Players.Remove(id);
             }
 
             [MonoPInvokeCallback(typeof(Action))]
-            private static void OnQuitWrapperCallback()
+            public void OnQuitWrapperCallback()
             {
                 if (OnQuitCallbacks != null)
                     foreach (var callback in OnQuitCallbacks)
-                        callback?.Invoke();
+                        callback?.Invoke(id);
             }
 
-            public void OnQuit(Action callback)
+            public void OnQuit(Action<string> callback)
             {
                 if (!isPlayRoomInitialized)
                     Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");

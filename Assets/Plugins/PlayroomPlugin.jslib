@@ -2,8 +2,9 @@ mergeInto(LibraryManager.library, {
   /**
    * @description Inserts a coin into the game by loading the required scripts and initializing the Playroom.
    * @param {function} callback - A callback function to execute after the Playroom is loaded.
+   * @param {function} onQuitInternalCallback - (internal) This C# callback function calls an OnQuit wrapper on C# side, with the player's ID.
    */
-  InsertCoinInternal: function (callback, optionsJson) {
+  InsertCoinInternal: function (callback, optionsJson, onQuitInternalCallback) {
     function embedScript(src) {
       return new Promise((resolve, reject) => {
         var script = document.createElement("script");
@@ -35,10 +36,22 @@ mergeInto(LibraryManager.library, {
         Playroom.insertCoin(options)
           .then(() => {
             dynCall("v", callback, []);
+        
+            Playroom.onPlayerJoin((player) => {
+              var id = player.id;
+              var bufferSize = lengthBytesUTF8(id) + 1;
+              var buffer = _malloc(bufferSize);
+              stringToUTF8(id, buffer, bufferSize);
+              player.onQuit(() => {
+                dynCall("vi", onQuitInternalCallback, [buffer]);
+              })
+            })
+
           })
           .catch((error) => {
             console.error("Error inserting coin:", error);
           });
+
       })
       .catch((error) => {
         console.error("Error loading Playroom:", error);
@@ -586,37 +599,6 @@ mergeInto(LibraryManager.library, {
     } else {
       console.error(
         'The player state object does not have a "setState" method.'
-      );
-      return null;
-    }
-  },
-
-  //Player Quit:
-
-  OnQuitInternal: function (playerId, callback) {
-    const players = window._multiplayer.getPlayers();
-
-    // Check if players is an object
-    if (typeof players !== "object" || players === null) {
-      console.error('The "players" variable is not an object:', players);
-      return null;
-    }
-
-    const playerState = players[UTF8ToString(playerId)];
-
-    if (!playerState) {
-      console.error("Player with ID", UTF8ToString(playerId), "not found.");
-      return null;
-    }
-
-    // Assuming that the player state object has a "setState" method
-    if (typeof playerState.onQuit === "function") {
-      playerState.onQuit(() => {
-        dynCall("v", callback, []);
-      });
-    } else {
-      console.error(
-        'The player state object does not have a "onQuitState" method.'
       );
       return null;
     }
