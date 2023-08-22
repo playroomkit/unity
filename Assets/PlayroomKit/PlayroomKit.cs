@@ -54,7 +54,7 @@ namespace Playroom
                 InsertCoinCallback = callback;
                 string optionsJson = null;
                 if (options != null) optionsJson = SerializeInitOptions(options);
-                InsertCoinInternal(InvokeInsertCoin, optionsJson, _OnQuitInternalHandler);
+                InsertCoinInternal(InvokeInsertCoin, optionsJson, __OnQuitInternalHandler);
             }
             else
             {
@@ -631,14 +631,14 @@ namespace Playroom
         }
 
         [MonoPInvokeCallback(typeof(Action))]
-        private static extern void _OnQuitInternalHandler(string playerId) {
+        private static extern void __OnQuitInternalHandler(string playerId) {
             if (Players.TryGetValue(playerId, out Player player))
             {
                 player.OnQuitWrapperCallback();
             }
             else
             {
-                Debug.LogError("[_OnQuitInternalHandler] Couldn't find player with id " + playerId)
+                Debug.LogError("[__OnQuitInternalHandler] Couldn't find player with id " + playerId)
             }
         }
 
