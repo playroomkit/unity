@@ -2,9 +2,9 @@ mergeInto(LibraryManager.library, {
   /**
    * @description Inserts a coin into the game by loading the required scripts and initializing the Playroom.
    * @param {function} callback - A callback function to execute after the Playroom is loaded.
-   * @param {function} onQuitInternalCallbackFunctionPtr - (internal) This C# callback function calls an OnQuit wrapper on C# side, with the player's ID.
+   * @param {function} onQuitInternalCallback - (internal) This C# callback function calls an OnQuit wrapper on C# side, with the player's ID.
    */
-  InsertCoinInternal: function (callback, optionsJson, onQuitInternalCallbackFunctionPtr) {
+  InsertCoinInternal: function (callback, optionsJson, onQuitInternalCallback) {
     function embedScript(src) {
       return new Promise((resolve, reject) => {
         var script = document.createElement("script");
@@ -43,7 +43,7 @@ mergeInto(LibraryManager.library, {
               var buffer = _malloc(bufferSize);
               stringToUTF8(id, buffer, bufferSize);
               player.onQuit(() => {
-                dynCall("vi", onQuitInternalCallbackFunctionPtr, [buffer]);
+                dynCall("vi", onQuitInternalCallback, [buffer]);
               })
             })
 
