@@ -37,7 +37,7 @@ namespace Playroom
         private static Action InsertCoinCallback = null;
 
         [DllImport("__Internal")]
-        private static extern void InsertCoinInternal(Action callback, string options);
+        private static extern void InsertCoinInternal(Action callback, string options, Action onQuitInternalCallback);
 
         [MonoPInvokeCallback(typeof(Action))]
         private static void InvokeInsertCoin()
@@ -54,12 +54,11 @@ namespace Playroom
                 InsertCoinCallback = callback;
                 string optionsJson = null;
                 if (options != null) optionsJson = SerializeInitOptions(options);
-                InsertCoinInternal(InvokeInsertCoin, optionsJson);
+                InsertCoinInternal(InvokeInsertCoin, optionsJson, _OnQuitInternalHandler);
             }
             else
             {
                 isPlayRoomInitialized = true;
-
 
                 Debug.Log("Coin Inserted");
 
@@ -631,6 +630,18 @@ namespace Playroom
             }
         }
 
+        [DllImport("__Internal")]
+        private static extern void _OnQuitInternalHandler(string playerId) {
+            // find the player, call its WrapperCallback
+            if (Players.TryGetValue(playerId, out Player player))
+            {
+                player.OnQuitWrapperCallback();
+            }
+            else
+            {
+                Debug.LogError("[OnQuitInternalCallback] Couldn't find player with id " + playerId)
+            }
+        }
 
         // Player class
         public class Player
@@ -674,7 +685,7 @@ namespace Playroom
                 if (IsRunningInBrowser())
                 {
                     OnQuitCallbacks.Add(OnQuitDefaultCallback);
-                    OnQuitInternal(this.id, OnQuitWrapperCallback);
+                    // OnQuitInternal(this.id, OnQuitWrapperCallback);
                 }
                 else
                 {
@@ -685,10 +696,9 @@ namespace Playroom
                 }
             }
 
-            [DllImport("__Internal")]
-            private static extern void OnQuitInternal(string id, Action callback);
-
-            private static List<Action> OnQuitCallbacks = new();
+            // Can't be init'd here.
+            // remove static here
+            private List<Action> OnQuitCallbacks = new();
 
 
             private void OnQuitDefaultCallback()
@@ -701,7 +711,8 @@ namespace Playroom
             }
 
             [MonoPInvokeCallback(typeof(Action))]
-            private static void OnQuitWrapperCallback()
+            // remove static here
+            public void OnQuitWrapperCallback()
             {
                 if (OnQuitCallbacks != null)
                     foreach (var callback in OnQuitCallbacks)
