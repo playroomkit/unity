@@ -632,7 +632,6 @@ namespace Playroom
 
         [MonoPInvokeCallback(typeof(Action))]
         private static extern void _OnQuitInternalHandler(string playerId) {
-            // find the player, call its WrapperCallback
             if (Players.TryGetValue(playerId, out Player player))
             {
                 player.OnQuitWrapperCallback();
