@@ -37,7 +37,7 @@ namespace Playroom
         private static Action InsertCoinCallback = null;
 
         [DllImport("__Internal")]
-        private static extern void InsertCoinInternal(Action callback, string options, Action onQuitInternalCallback);
+        private static extern void InsertCoinInternal(Action callback, string options, Action<string> onQuitInternalCallback);
 
         [MonoPInvokeCallback(typeof(Action))]
         private static void InvokeInsertCoin()
@@ -630,15 +630,16 @@ namespace Playroom
             }
         }
 
-        [MonoPInvokeCallback(typeof(Action))]
-        private static extern void __OnQuitInternalHandler(string playerId) {
+        [MonoPInvokeCallback(typeof(Action<string>))]
+        private static void __OnQuitInternalHandler(string playerId) {
             if (Players.TryGetValue(playerId, out Player player))
             {
+               
                 player.OnQuitWrapperCallback();
             }
             else
             {
-                Debug.LogError("[__OnQuitInternalHandler] Couldn't find player with id " + playerId)
+                Debug.LogError("[__OnQuitInternalHandler] Couldn't find player with id " + playerId);
             }
         }
 
@@ -700,6 +701,7 @@ namespace Playroom
             {
                 if (!isPlayRoomInitialized)
                 {
+                    Debug.LogError("Playroom not initialized yet! Please call InsertCoin.");
                 }
 
                 Players.Remove(id);
