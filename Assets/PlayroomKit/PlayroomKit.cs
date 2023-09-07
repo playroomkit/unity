@@ -78,33 +78,46 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern void OnPlayerJoinInternal(Action<string> callback);
 
-        private static Action<Player> onPlayerJoinCallback = null;
+        // private static Action<Player> onPlayerJoinCallback = null;
+        private static List<Action<Player>> OnJoinCallbacks = new();
 
         [MonoPInvokeCallback(typeof(Action<string>))]
         private static void OnPlayerJoinWrapperCallback(string id)
         {
             var player = GetPlayer(id);
-            onPlayerJoinCallback?.Invoke(player);
+            foreach (var callback in OnJoinCallbacks)
+            {
+                callback?.Invoke(player);
+            }
+            // onPlayerJoinCallback?.Invoke(player);
         }
 
         public static void OnPlayerJoin(Action<Player> playerCallback)
         {
-            if (IsRunningInBrowser())
+            if (!isPlayRoomInitialized)
             {
-                onPlayerJoinCallback = playerCallback;
-                OnPlayerJoinInternal(OnPlayerJoinWrapperCallback);
+                Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
             }
             else
             {
-                if (!isPlayRoomInitialized)
+                if (IsRunningInBrowser())
                 {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                    // onPlayerJoinCallback = playerCallback;
+                    OnJoinCallbacks.Add(playerCallback);
+                    OnPlayerJoinInternal(OnPlayerJoinWrapperCallback);
                 }
                 else
                 {
-                    Debug.Log("On Player Join");
-                    var testPlayer = GetPlayer(PlayerId);
-                    playerCallback?.Invoke(testPlayer);
+                    if (!isPlayRoomInitialized)
+                    {
+                        Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                    }
+                    else
+                    {
+                        Debug.Log("On Player Join");
+                        var testPlayer = GetPlayer(PlayerId);
+                        playerCallback?.Invoke(testPlayer);
+                    }
                 }
             }
         }
