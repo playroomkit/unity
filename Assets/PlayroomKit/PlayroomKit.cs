@@ -634,7 +634,6 @@ namespace Playroom
         private static void __OnQuitInternalHandler(string playerId) {
             if (Players.TryGetValue(playerId, out Player player))
             {
-               
                 player.OnQuitWrapperCallback();
             }
             else

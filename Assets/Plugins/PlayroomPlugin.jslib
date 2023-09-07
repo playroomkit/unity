@@ -18,7 +18,7 @@ mergeInto(LibraryManager.library, {
 
     Promise.all([
       embedScript("https://unpkg.com/react@18.2.0/umd/react.development.js"),
-      embedScript("https://unpkg.com/react-dom/umd/react-dom.development.js"),
+      embedScript("https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"),
       embedScript("https://unpkg.com/playroomkit/multiplayer.umd.js"),
     ])
       .then(() => {
