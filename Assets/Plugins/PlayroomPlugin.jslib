@@ -4,7 +4,7 @@ mergeInto(LibraryManager.library, {
    * @param {function} callback - A callback function to execute after the Playroom is loaded.
    * @param {function} onQuitInternalCallback - (internal) This C# callback function calls an OnQuit wrapper on C# side, with the player's ID.
    */
-  InsertCoinInternal: function (callback, optionsJson, onQuitInternalCallback) {
+  InsertCoinInternal: function (callback, optionsJson, onJoinCallback  ,onQuitInternalCallback) {
     function embedScript(src) {
       return new Promise((resolve, reject) => {
         var script = document.createElement("script");
@@ -42,6 +42,8 @@ mergeInto(LibraryManager.library, {
               var bufferSize = lengthBytesUTF8(id) + 1;
               var buffer = _malloc(bufferSize);
               stringToUTF8(id, buffer, bufferSize);
+              dynCall("vi", onJoinCallback, [buffer]);
+
               player.onQuit(() => {
                 dynCall("vi", onQuitInternalCallback, [buffer]);
               })

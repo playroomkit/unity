@@ -37,7 +37,7 @@ namespace Playroom
         private static Action InsertCoinCallback = null;
 
         [DllImport("__Internal")]
-        private static extern void InsertCoinInternal(Action callback, string options, Action<string> onQuitInternalCallback);
+        private static extern void InsertCoinInternal(Action callback, string options, Action<string> onJoinCallBack ,Action<string> onQuitInternalCallback);
 
         [MonoPInvokeCallback(typeof(Action))]
         private static void InvokeInsertCoin()
@@ -54,7 +54,7 @@ namespace Playroom
                 InsertCoinCallback = callback;
                 string optionsJson = null;
                 if (options != null) optionsJson = SerializeInitOptions(options);
-                InsertCoinInternal(InvokeInsertCoin, optionsJson, __OnQuitInternalHandler);
+                InsertCoinInternal(InvokeInsertCoin, optionsJson, __OnPlayerJoinCallbackHandler, __OnQuitInternalHandler);
             }
             else
             {
@@ -75,13 +75,20 @@ namespace Playroom
             return JsonUtility.ToJson(options);
         }
 
-        [DllImport("__Internal")]
-        private static extern void OnPlayerJoinInternal(Action<string> callback);
+        // [DllImport("__Internal")]
+        // private static extern void OnPlayerJoinInternal(Action<string> callback);
 
         // private static Action<Player> onPlayerJoinCallback = null;
         private static List<Action<Player>> OnJoinCallbacks = new();
 
+
         [MonoPInvokeCallback(typeof(Action<string>))]
+        private static void __OnPlayerJoinCallbackHandler(string id)
+        {
+            OnPlayerJoinWrapperCallback(id);
+        }
+
+       
         private static void OnPlayerJoinWrapperCallback(string id)
         {
             var player = GetPlayer(id);
@@ -104,7 +111,7 @@ namespace Playroom
                 {
                     // onPlayerJoinCallback = playerCallback;
                     OnJoinCallbacks.Add(playerCallback);
-                    OnPlayerJoinInternal(OnPlayerJoinWrapperCallback);
+                    // OnPlayerJoinInternal(OnPlayerJoinWrapperCallback);
                 }
                 else
                 {
