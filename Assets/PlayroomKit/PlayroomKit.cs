@@ -37,7 +37,7 @@ namespace Playroom
         private static Action InsertCoinCallback = null;
 
         [DllImport("__Internal")]
-        private static extern void InsertCoinInternal(Action callback, string options, Action<string> onJoinCallBack ,Action<string> onQuitInternalCallback);
+        private static extern void InsertCoinInternal(Action callback, string options, Action<string> onPlayerJoinInternalCallback, Action<string> onQuitInternalCallback);
 
         [MonoPInvokeCallback(typeof(Action))]
         private static void InvokeInsertCoin()
@@ -79,7 +79,7 @@ namespace Playroom
         // private static extern void OnPlayerJoinInternal(Action<string> callback);
 
         // private static Action<Player> onPlayerJoinCallback = null;
-        private static List<Action<Player>> OnJoinCallbacks = new();
+        private static List<Action<Player>> OnPlayerJoinCallbacks = new();
 
 
         [MonoPInvokeCallback(typeof(Action<string>))]
@@ -92,14 +92,14 @@ namespace Playroom
         private static void OnPlayerJoinWrapperCallback(string id)
         {
             var player = GetPlayer(id);
-            foreach (var callback in OnJoinCallbacks)
+            foreach (var callback in OnPlayerJoinCallbacks)
             {
                 callback?.Invoke(player);
             }
             // onPlayerJoinCallback?.Invoke(player);
         }
 
-        public static void OnPlayerJoin(Action<Player> playerCallback)
+        public static void OnPlayerJoin(Action<Player> onPlayerJoinCallback)
         {
             if (!isPlayRoomInitialized)
             {
@@ -110,7 +110,7 @@ namespace Playroom
                 if (IsRunningInBrowser())
                 {
                     // onPlayerJoinCallback = playerCallback;
-                    OnJoinCallbacks.Add(playerCallback);
+                    OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
                     // OnPlayerJoinInternal(OnPlayerJoinWrapperCallback);
                 }
                 else
@@ -123,7 +123,7 @@ namespace Playroom
                     {
                         Debug.Log("On Player Join");
                         var testPlayer = GetPlayer(PlayerId);
-                        playerCallback?.Invoke(testPlayer);
+                        onPlayerJoinCallback?.Invoke(testPlayer);
                     }
                 }
             }

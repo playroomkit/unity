@@ -591,7 +591,7 @@ mergeInto(LibraryManager.library, {
     }
 
     // Assuming that the player state object has a "setState" method
-    if (typeof playerState.setState === "function") {
+    if (typeof playerState.getState === "function") {
       var obj = playerState.getState(UTF8ToString(key));
       var jsonString = JSON.stringify(obj);
       var bufferSize = lengthBytesUTF8(jsonString) + 1;
@@ -605,4 +605,6 @@ mergeInto(LibraryManager.library, {
       return null;
     }
   },
+
+
 });
