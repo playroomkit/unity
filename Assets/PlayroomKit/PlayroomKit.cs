@@ -36,7 +36,7 @@ namespace Playroom
 
         private static Action InsertCoinCallback = null;
 
-        [DllImport("__Internal")]
+        [DllImport("__Internal")]   
         private static extern void InsertCoinInternal(Action callback, string options, Action<string> onPlayerJoinInternalCallback, Action<string> onQuitInternalCallback);
 
         [MonoPInvokeCallback(typeof(Action))]
@@ -661,7 +661,34 @@ namespace Playroom
                 Debug.LogError("[__OnQuitInternalHandler] Couldn't find player with id " + playerId);
             }
         }
+        
+        
+        // Joystick
+        [DllImport("__Internal")]
+        private static extern void CreateJoystickInternal();
 
+        public static void CreateJoyStick()
+        {
+            CreateJoystickInternal();
+        }
+
+        [DllImport("__Internal")]
+        private static extern string DpadJoystickInternal();
+
+        public static Dpad DpadJoystick()
+        {
+            var jsonString = DpadJoystickInternal();
+            Dpad myDpad = JsonUtility.FromJson<Dpad>(jsonString);
+            return myDpad;
+        }
+        
+        [System.Serializable]
+        public class Dpad
+        {
+            public string x;
+            public string y;
+        }
+        
         // Player class
         public class Player
         {
@@ -1182,4 +1209,6 @@ namespace Playroom
             }
         }
     }
+
+   
 }

@@ -17,6 +17,7 @@
         [SerializeField] private int score = 0;
         [SerializeField] private static bool playerJoined;
 
+       
 
         private void Awake()
         {
@@ -35,10 +36,31 @@
                 var myPlayer = PlayroomKit.MyPlayer();
                 var index = players.IndexOf(myPlayer);
                 
+
+                var myDpad = PlayroomKit.DpadJoystick();
+                
+
+                if (myDpad.y == "up")
+                {
+                    playerGameObjects[index].GetComponent<PlayerController>().Jump();
+                }
+                if (myDpad.x == "left")
+                {
+                    playerGameObjects[index].GetComponent<PlayerController>().dirX = -1;
+                }
+                else if (myDpad.x == "right")
+                {
+                    playerGameObjects[index].GetComponent<PlayerController>().dirX = 1;
+                }
+                else
+                {
+                    playerGameObjects[index].GetComponent<PlayerController>().dirX = 0;
+                }
                 playerGameObjects[index].GetComponent<PlayerController>().Move();
-                playerGameObjects[index].GetComponent<PlayerController>().Jump();
-
-
+                               
+                
+                
+                
                 players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
                 players[index].SetState("posY", playerGameObjects[index].GetComponent<Transform>().position.y);
                 
@@ -76,7 +98,10 @@
         {
             GameObject playerObj = (GameObject)Instantiate(Resources.Load("Player"),
                 new Vector3(Random.Range(-4, 4), Random.Range(1, 5), 0), Quaternion.identity);
+
             
+            // creates joystick
+            PlayroomKit.CreateJoyStick();
             
             playerObj.GetComponent<SpriteRenderer>().color = player.GetProfile().color;
             Debug.Log(player.GetProfile().name + " Joined the game!" + "id: " +  player.id);

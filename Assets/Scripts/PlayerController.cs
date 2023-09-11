@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Rigidbody2D rb2D;
     [SerializeField] private bool isJumping;
 
+    public float dirX;
 
     // Update is called once per frame
     void Update()
@@ -19,13 +20,13 @@ public class PlayerController : MonoBehaviour
 
     public void Move()
     {
-        var dirX = Input.GetAxisRaw("Horizontal");
+        // dirX = Input.GetAxisRaw("Horizontal");
         transform.Translate(new Vector3(dirX,0,0) * (moveSpeed * Time.deltaTime));
     }
     
     public void Jump()
     {
-        if (Input.GetButton("Jump") && isJumping)
+        if (/*Input.GetButton("Jump") && */ isJumping)
         {
             rb2D.AddForce(transform.up * jumpAmount,ForceMode2D.Impulse);
             isJumping = false;
