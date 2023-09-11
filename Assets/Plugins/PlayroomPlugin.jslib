@@ -614,7 +614,7 @@ mergeInto(LibraryManager.library, {
   CreateJoystickInternal: function (JoystickOptions) {
 
     const options = JoystickOptions ? JSON.parse(UTF8ToString(JoystickOptions)) : {};
-    console.log(options);
+
 
     this.leftStick = new Playroom.Joystick(Playroom.myPlayer(), {
       type: options.type,
