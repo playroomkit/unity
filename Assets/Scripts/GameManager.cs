@@ -16,7 +16,7 @@
 
         [SerializeField] private int score = 0;
         [SerializeField] private static bool playerJoined;
-
+        
        
 
         private void Awake()
@@ -28,7 +28,12 @@
             });
         }
 
-     
+        private void Start()
+        {
+           
+        }
+
+
         private void Update()
         {
             if(playerJoined)
@@ -101,7 +106,7 @@
 
             
             // creates joystick
-            PlayroomKit.CreateJoyStick();
+            PlayroomKit.CreateJoyStick(new PlayroomKit.JoystickOptions(){type = "dpad"});
             
             playerObj.GetComponent<SpriteRenderer>().color = player.GetProfile().color;
             Debug.Log(player.GetProfile().name + " Joined the game!" + "id: " +  player.id);

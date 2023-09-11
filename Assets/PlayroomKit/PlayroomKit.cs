@@ -665,11 +665,12 @@ namespace Playroom
         
         // Joystick
         [DllImport("__Internal")]
-        private static extern void CreateJoystickInternal();
+        private static extern void CreateJoystickInternal(string joyStickOptionsJson);
 
-        public static void CreateJoyStick()
+        public static void CreateJoyStick(JoystickOptions options)
         {
-            CreateJoystickInternal();
+            var jsonStr = JsonUtility.ToJson(options);
+            CreateJoystickInternal(jsonStr);
         }
 
         [DllImport("__Internal")]
@@ -681,7 +682,21 @@ namespace Playroom
             Dpad myDpad = JsonUtility.FromJson<Dpad>(jsonString);
             return myDpad;
         }
+
+
         
+        [System.Serializable]
+        public class JoystickOptions
+        {
+            public string type = "angular"; // default = angular, can be dpad
+            //TODO: classes for ButtonOptions, ZoneOptions
+            // public ButtonOptions[] buttons;
+            // public ZoneOptions zones = null;
+
+        }
+        
+       
+
         [System.Serializable]
         public class Dpad
         {
