@@ -4,7 +4,12 @@ mergeInto(LibraryManager.library, {
    * @param {function} callback - A callback function to execute after the Playroom is loaded.
    * @param {function} onQuitInternalCallback - (internal) This C# callback function calls an OnQuit wrapper on C# side, with the player's ID.
    */
-  InsertCoinInternal: function (callback, optionsJson, onQuitInternalCallback) {
+  InsertCoinInternal: function (
+    callback,
+    optionsJson,
+    onJoinCallback,
+    onQuitInternalCallback
+  ) {
     function embedScript(src) {
       return new Promise((resolve, reject) => {
         var script = document.createElement("script");
@@ -18,7 +23,9 @@ mergeInto(LibraryManager.library, {
 
     Promise.all([
       embedScript("https://unpkg.com/react@18.2.0/umd/react.development.js"),
-      embedScript("https://unpkg.com/react-dom/umd/react-dom.development.js"),
+      embedScript(
+        "https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"
+      ),
       embedScript("https://unpkg.com/playroomkit/multiplayer.umd.js"),
     ])
       .then(() => {
@@ -36,22 +43,22 @@ mergeInto(LibraryManager.library, {
         Playroom.insertCoin(options)
           .then(() => {
             dynCall("v", callback, []);
-        
+
             Playroom.onPlayerJoin((player) => {
               var id = player.id;
               var bufferSize = lengthBytesUTF8(id) + 1;
               var buffer = _malloc(bufferSize);
               stringToUTF8(id, buffer, bufferSize);
+              dynCall("vi", onJoinCallback, [buffer]);
+
               player.onQuit(() => {
                 dynCall("vi", onQuitInternalCallback, [buffer]);
-              })
-            })
-
+              });
+            });
           })
           .catch((error) => {
             console.error("Error inserting coin:", error);
           });
-
       })
       .catch((error) => {
         console.error("Error loading Playroom:", error);
@@ -589,7 +596,7 @@ mergeInto(LibraryManager.library, {
     }
 
     // Assuming that the player state object has a "setState" method
-    if (typeof playerState.setState === "function") {
+    if (typeof playerState.getState === "function") {
       var obj = playerState.getState(UTF8ToString(key));
       var jsonString = JSON.stringify(obj);
       var bufferSize = lengthBytesUTF8(jsonString) + 1;
@@ -602,5 +609,27 @@ mergeInto(LibraryManager.library, {
       );
       return null;
     }
+  },
+
+  CreateJoystickInternal: function (JoystickOptions) {
+
+    const options = JoystickOptions ? JSON.parse(UTF8ToString(JoystickOptions)) : {};
+
+
+    this.leftStick = new Playroom.Joystick(Playroom.myPlayer(), {
+      type: options.type,   
+      buttons: options.buttons,
+      zones: options.zones,
+    });
+  },
+
+  DpadJoystickInternal: function () {
+    const dpad = this.leftStick.dpad();
+
+    var jsonString = JSON.stringify(dpad);
+    var bufferSize = lengthBytesUTF8(jsonString) + 1;
+    var buffer = _malloc(bufferSize);
+    stringToUTF8(jsonString, buffer, bufferSize);
+    return buffer;
   },
 });

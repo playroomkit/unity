@@ -36,8 +36,8 @@ namespace Playroom
 
         private static Action InsertCoinCallback = null;
 
-        [DllImport("__Internal")]
-        private static extern void InsertCoinInternal(Action callback, string options, Action<string> onQuitInternalCallback);
+        [DllImport("__Internal")]   
+        private static extern void InsertCoinInternal(Action callback, string options, Action<string> onPlayerJoinInternalCallback, Action<string> onQuitInternalCallback);
 
         [MonoPInvokeCallback(typeof(Action))]
         private static void InvokeInsertCoin()
@@ -54,7 +54,7 @@ namespace Playroom
                 InsertCoinCallback = callback;
                 string optionsJson = null;
                 if (options != null) optionsJson = SerializeInitOptions(options);
-                InsertCoinInternal(InvokeInsertCoin, optionsJson, __OnQuitInternalHandler);
+                InsertCoinInternal(InvokeInsertCoin, optionsJson, __OnPlayerJoinCallbackHandler, __OnQuitInternalHandler);
             }
             else
             {
@@ -75,36 +75,56 @@ namespace Playroom
             return JsonUtility.ToJson(options);
         }
 
-        [DllImport("__Internal")]
-        private static extern void OnPlayerJoinInternal(Action<string> callback);
+        // [DllImport("__Internal")]
+        // private static extern void OnPlayerJoinInternal(Action<string> callback);
 
-        private static Action<Player> onPlayerJoinCallback = null;
+        // private static Action<Player> onPlayerJoinCallback = null;
+        private static List<Action<Player>> OnPlayerJoinCallbacks = new();
+
 
         [MonoPInvokeCallback(typeof(Action<string>))]
+        private static void __OnPlayerJoinCallbackHandler(string id)
+        {
+            OnPlayerJoinWrapperCallback(id);
+        }
+
+       
         private static void OnPlayerJoinWrapperCallback(string id)
         {
             var player = GetPlayer(id);
-            onPlayerJoinCallback?.Invoke(player);
+            foreach (var callback in OnPlayerJoinCallbacks)
+            {
+                callback?.Invoke(player);
+            }
+            // onPlayerJoinCallback?.Invoke(player);
         }
 
-        public static void OnPlayerJoin(Action<Player> playerCallback)
+        public static void OnPlayerJoin(Action<Player> onPlayerJoinCallback)
         {
-            if (IsRunningInBrowser())
+            if (!isPlayRoomInitialized)
             {
-                onPlayerJoinCallback = playerCallback;
-                OnPlayerJoinInternal(OnPlayerJoinWrapperCallback);
+                Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
             }
             else
             {
-                if (!isPlayRoomInitialized)
+                if (IsRunningInBrowser())
                 {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                    // onPlayerJoinCallback = playerCallback;
+                    OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
+                    // OnPlayerJoinInternal(OnPlayerJoinWrapperCallback);
                 }
                 else
                 {
-                    Debug.Log("On Player Join");
-                    var testPlayer = GetPlayer(PlayerId);
-                    playerCallback?.Invoke(testPlayer);
+                    if (!isPlayRoomInitialized)
+                    {
+                        Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                    }
+                    else
+                    {
+                        Debug.Log("On Player Join");
+                        var testPlayer = GetPlayer(PlayerId);
+                        onPlayerJoinCallback?.Invoke(testPlayer);
+                    }
                 }
             }
         }
@@ -634,7 +654,6 @@ namespace Playroom
         private static void __OnQuitInternalHandler(string playerId) {
             if (Players.TryGetValue(playerId, out Player player))
             {
-               
                 player.OnQuitWrapperCallback();
             }
             else
@@ -642,7 +661,102 @@ namespace Playroom
                 Debug.LogError("[__OnQuitInternalHandler] Couldn't find player with id " + playerId);
             }
         }
+        
+        
+        // Joystick
+        [DllImport("__Internal")]
+        private static extern void CreateJoystickInternal(string joyStickOptionsJson);
 
+        public static void CreateJoyStick(JoystickOptions options)
+        {
+            var jsonStr = ConvertJoystickOptionsToJson(options);
+            CreateJoystickInternal(jsonStr);
+        }
+
+        [DllImport("__Internal")]
+        private static extern string DpadJoystickInternal();
+
+        public static Dpad DpadJoystick()
+        {
+            var jsonString = DpadJoystickInternal();
+            Dpad myDpad = JsonUtility.FromJson<Dpad>(jsonString);
+            return myDpad;
+        }
+
+        private static string ConvertJoystickOptionsToJson(JoystickOptions options)
+        {
+            JSONNode joystickOptionsJson = new JSONObject();
+            joystickOptionsJson["type"] = options.type;
+
+            // Serialize the buttons array
+            JSONArray buttonsArray = new JSONArray();
+            foreach (ButtonOptions button in options.buttons)
+            {
+                JSONObject buttonJson = new JSONObject();
+                buttonJson["id"] = button.id;
+                buttonJson["label"] = button.label;
+                buttonJson["icon"] = button.icon;
+                buttonsArray.Add(buttonJson);
+            }
+            joystickOptionsJson["buttons"] = buttonsArray;
+
+            // Serialize the zones property (assuming it's not null)
+            if (options.zones != null)
+            {
+                JSONObject zonesJson = new JSONObject();
+                zonesJson["up"] = ConvertButtonOptionsToJson(options.zones.up);
+                zonesJson["down"] = ConvertButtonOptionsToJson(options.zones.down);
+                zonesJson["left"] = ConvertButtonOptionsToJson(options.zones.left);
+                zonesJson["right"] = ConvertButtonOptionsToJson(options.zones.right);
+                joystickOptionsJson["zones"] = zonesJson;
+            }
+
+            return joystickOptionsJson.ToString();
+        }
+
+        // Function to convert ButtonOptions to JSON
+        private static JSONNode ConvertButtonOptionsToJson(ButtonOptions button)
+        {
+            JSONObject buttonJson = new JSONObject();
+            buttonJson["id"] = button.id;
+            buttonJson["label"] = button.label;
+            buttonJson["icon"] = button.icon;
+            return buttonJson;
+        }
+        
+       
+        public class JoystickOptions
+        {
+            public string type = "angular"; // default = angular, can be dpad
+            //TODO: classes for ButtonOptions, ZoneOptions
+            public ButtonOptions[] buttons;
+            public ZoneOptions zones = null;
+        }
+
+        [System.Serializable]
+        public class ButtonOptions
+        {
+            public string id = null;
+            public string label = "";
+            public string icon = null;
+        } 
+        
+        public class ZoneOptions
+        {
+            public ButtonOptions up = null;
+            public ButtonOptions down = null;
+            public ButtonOptions left = null;
+            public ButtonOptions right = null;
+        } 
+       
+
+        [System.Serializable]
+        public class Dpad
+        {
+            public string x;
+            public string y;
+        }
+        
         // Player class
         public class Player
         {
@@ -1163,4 +1277,6 @@ namespace Playroom
             }
         }
     }
+
+   
 }
