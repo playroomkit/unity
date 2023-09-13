@@ -106,7 +106,21 @@
 
             
             // creates joystick
-            PlayroomKit.CreateJoyStick(new PlayroomKit.JoystickOptions(){type = "dpad"});
+            PlayroomKit.CreateJoyStick(new PlayroomKit.JoystickOptions()
+            {
+                type = "dpad",
+                buttons = new []{new PlayroomKit.ButtonOptions()
+                {
+                    id = "jump",
+                    label = "jump"
+                }},
+                zones = new PlayroomKit.ZoneOptions() {right = new PlayroomKit.ButtonOptions()
+                {
+                    id = "right",
+                    label = "right"
+                }}
+
+            });
             
             playerObj.GetComponent<SpriteRenderer>().color = player.GetProfile().color;
             Debug.Log(player.GetProfile().name + " Joined the game!" + "id: " +  player.id);

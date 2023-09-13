@@ -669,7 +669,7 @@ namespace Playroom
 
         public static void CreateJoyStick(JoystickOptions options)
         {
-            var jsonStr = JsonUtility.ToJson(options);
+            var jsonStr = ConvertJoystickOptionsToJson(options);
             CreateJoystickInternal(jsonStr);
         }
 
@@ -683,18 +683,71 @@ namespace Playroom
             return myDpad;
         }
 
+        private static string ConvertJoystickOptionsToJson(JoystickOptions options)
+        {
+            JSONNode joystickOptionsJson = new JSONObject();
+            joystickOptionsJson["type"] = options.type;
 
+            // Serialize the buttons array
+            JSONArray buttonsArray = new JSONArray();
+            foreach (ButtonOptions button in options.buttons)
+            {
+                JSONObject buttonJson = new JSONObject();
+                buttonJson["id"] = button.id;
+                buttonJson["label"] = button.label;
+                buttonJson["icon"] = button.icon;
+                buttonsArray.Add(buttonJson);
+            }
+            joystickOptionsJson["buttons"] = buttonsArray;
+
+            // Serialize the zones property (assuming it's not null)
+            if (options.zones != null)
+            {
+                JSONObject zonesJson = new JSONObject();
+                zonesJson["up"] = ConvertButtonOptionsToJson(options.zones.up);
+                zonesJson["down"] = ConvertButtonOptionsToJson(options.zones.down);
+                zonesJson["left"] = ConvertButtonOptionsToJson(options.zones.left);
+                zonesJson["right"] = ConvertButtonOptionsToJson(options.zones.right);
+                joystickOptionsJson["zones"] = zonesJson;
+            }
+
+            return joystickOptionsJson.ToString();
+        }
+
+        // Function to convert ButtonOptions to JSON
+        private static JSONNode ConvertButtonOptionsToJson(ButtonOptions button)
+        {
+            JSONObject buttonJson = new JSONObject();
+            buttonJson["id"] = button.id;
+            buttonJson["label"] = button.label;
+            buttonJson["icon"] = button.icon;
+            return buttonJson;
+        }
         
-        [System.Serializable]
+       
         public class JoystickOptions
         {
             public string type = "angular"; // default = angular, can be dpad
             //TODO: classes for ButtonOptions, ZoneOptions
-            // public ButtonOptions[] buttons;
-            // public ZoneOptions zones = null;
-
+            public ButtonOptions[] buttons;
+            public ZoneOptions zones = null;
         }
+
+        [System.Serializable]
+        public class ButtonOptions
+        {
+            public string id = null;
+            public string label = "";
+            public string icon = null;
+        } 
         
+        public class ZoneOptions
+        {
+            public ButtonOptions up = null;
+            public ButtonOptions down = null;
+            public ButtonOptions left = null;
+            public ButtonOptions right = null;
+        } 
        
 
         [System.Serializable]
