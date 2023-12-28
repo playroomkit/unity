@@ -419,7 +419,7 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern string GetStateStringInternal(string key);
 
-        private static string GetStateString(string key)
+        public static string GetStateString(string key)
         {
             if (IsRunningInBrowser())
             {
