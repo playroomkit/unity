@@ -5,8 +5,6 @@ using AOT;
 using System;
 using SimpleJSON;
 
-
-
 namespace Playroom
 {
     public class PlayroomKit
@@ -32,6 +30,18 @@ namespace Playroom
             public bool streamMode = false;
             public bool allowGamepads = false;
             public string baseUrl = "";
+
+// avatars, roomCode, skipLobby, reconnectGracePeriod, maxPlayersPerRoom
+
+            public string[] avatars;
+
+            public string roomCode = "";
+
+            public bool skipLobby = false;
+
+            public int reconnectGracePeriod = 0;
+            public int maxPlayersPerRoom;
+
         }
 
         private static Action InsertCoinCallback = null;
@@ -235,6 +245,8 @@ namespace Playroom
             return MyPlayer();
         }
 
+        [DllImport("__Internal")]
+        public static extern string GetRoomCode();
 
         [DllImport("__Internal")]
         private static extern void SetStateString(string key, string value, bool reliable = false);

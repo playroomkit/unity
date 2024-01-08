@@ -617,7 +617,7 @@ mergeInto(LibraryManager.library, {
 
 
     this.leftStick = new Playroom.Joystick(Playroom.myPlayer(), {
-      type: options.type,   
+      type: options.type,
       buttons: options.buttons,
       zones: options.zones,
     });
@@ -632,4 +632,12 @@ mergeInto(LibraryManager.library, {
     stringToUTF8(jsonString, buffer, bufferSize);
     return buffer;
   },
+
+  GetRoomCode: function () {
+    var roomCode = Playroom.getRoomCode();
+    var bufferSize = lengthBytesUTF8(roomCode) + 1;
+    var buffer = _malloc(bufferSize);
+    stringToUTF8(roomCode, buffer, bufferSize);
+    return buffer;
+  }
 });

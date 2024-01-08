@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
 
     public void Move()
     {
-        // dirX = Input.GetAxisRaw("Horizontal");
+        dirX = Input.GetAxisRaw("Horizontal");
         transform.Translate(new Vector3(dirX,0,0) * (moveSpeed * Time.deltaTime));
     }
     
