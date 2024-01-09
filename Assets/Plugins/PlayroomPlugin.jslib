@@ -1,14 +1,15 @@
 mergeInto(LibraryManager.library, {
   /**
    * @description Inserts a coin into the game by loading the required scripts and initializing the Playroom.
-   * @param {function} callback - A callback function to execute after the Playroom is loaded.
+   * @param {function} onLaunchCallBack - A callback function to execute after the Playroom is loaded.
    * @param {function} onQuitInternalCallback - (internal) This C# callback function calls an OnQuit wrapper on C# side, with the player's ID.
    */
   InsertCoinInternal: function (
-    callback,
+    onLaunchCallBack,
     optionsJson,
     onJoinCallback,
-    onQuitInternalCallback
+    onQuitInternalCallback,
+    // onLaunchCallback
   ) {
     function embedScript(src) {
       return new Promise((resolve, reject) => {
@@ -20,6 +21,9 @@ mergeInto(LibraryManager.library, {
         document.head.appendChild(script);
       });
     }
+
+    var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
+    // console.log(options)
 
     Promise.all([
       embedScript("https://unpkg.com/react@18.2.0/umd/react.development.js"),
@@ -36,13 +40,9 @@ mergeInto(LibraryManager.library, {
           return;
         }
 
-        console.info("Playroom has loaded.");
-
-        var options = optionsJson ? JSON.parse(optionsJson) : {};
-
         Playroom.insertCoin(options)
           .then(() => {
-            dynCall("v", callback, []);
+            dynCall("v", onLaunchCallBack, []);
 
             Playroom.onPlayerJoin((player) => {
               var id = player.id;
@@ -64,6 +64,8 @@ mergeInto(LibraryManager.library, {
         console.error("Error loading Playroom:", error);
       });
   },
+
+
 
   /**
    * @description Checks whether the player is the host of the game.
@@ -639,5 +641,22 @@ mergeInto(LibraryManager.library, {
     var buffer = _malloc(bufferSize);
     stringToUTF8(roomCode, buffer, bufferSize);
     return buffer;
-  }
+  },
+
+  OnDisconnect: function (callback) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    Playroom.onDisconnect((e) => {
+      console.log(`Disconnected!`, e.code, e.reason);
+      dynCall("v", callback, [])
+    });
+    
+  },
+
+
 });

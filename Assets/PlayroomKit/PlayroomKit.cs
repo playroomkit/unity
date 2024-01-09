@@ -9,10 +9,9 @@ namespace Playroom
 {
     public class PlayroomKit
     {
-        
         private static bool isPlayRoomInitialized;
-        
-        
+
+
         /// <summary>
         /// Required Mock Mode:
         /// </summary>
@@ -30,23 +29,16 @@ namespace Playroom
             public bool streamMode = false;
             public bool allowGamepads = false;
             public string baseUrl = "";
-
-// avatars, roomCode, skipLobby, reconnectGracePeriod, maxPlayersPerRoom
-
-            public string[] avatars;
-
+            public string[] avatars = null;
             public string roomCode = "";
-
             public bool skipLobby = false;
-
             public int reconnectGracePeriod = 0;
-            public int maxPlayersPerRoom;
-
+            public int? maxPlayersPerRoom;
         }
 
         private static Action InsertCoinCallback = null;
 
-        [DllImport("__Internal")]   
+        [DllImport("__Internal")]
         private static extern void InsertCoinInternal(Action callback, string options, Action<string> onPlayerJoinInternalCallback, Action<string> onQuitInternalCallback);
 
         [MonoPInvokeCallback(typeof(Action))]
@@ -63,7 +55,8 @@ namespace Playroom
                 isPlayRoomInitialized = true;
                 InsertCoinCallback = callback;
                 string optionsJson = null;
-                if (options != null) optionsJson = SerializeInitOptions(options);
+                if (options != null) { optionsJson = SerializeInitOptions(options); }
+                Debug.Log("C# " + optionsJson);
                 InsertCoinInternal(InvokeInsertCoin, optionsJson, __OnPlayerJoinCallbackHandler, __OnQuitInternalHandler);
             }
             else
@@ -72,7 +65,11 @@ namespace Playroom
 
                 Debug.Log("Coin Inserted");
 
-                if (options != null && options.streamMode) mockIsStreamMode = options.streamMode;
+                // if (options != null && options.streamMode) mockIsStreamMode = options.streamMode;
+                string optionsJson = null;
+                if (options != null) optionsJson = SerializeInitOptions(options);
+
+                // Debug.Log(optionsJson);
 
                 callback?.Invoke();
             }
@@ -82,7 +79,33 @@ namespace Playroom
         {
             if (options == null) return null;
 
-            return JsonUtility.ToJson(options);
+            JSONNode node = JSON.Parse("{}");
+
+            node["streamMode"] = options.streamMode;
+            node["allowGamepads"] = options.allowGamepads;
+            node["baseUrl"] = options.baseUrl;
+
+            if (options.avatars != null)
+            {
+                JSONArray avatarsArray = new JSONArray();
+                foreach (string avatar in options.avatars)
+                {
+                    avatarsArray.Add(avatar);
+                }
+                node["avatars"] = avatarsArray;
+            }
+
+            node["roomCode"] = options.roomCode;
+            node["skipLobby"] = options.skipLobby;
+            node["reconnectGracePeriod"] = options.reconnectGracePeriod;
+
+            // Check if maxPlayersPerRoom is provided, otherwise omit the property
+            if (options.maxPlayersPerRoom.HasValue)
+            {
+                node["maxPlayersPerRoom"] = options.maxPlayersPerRoom.Value;
+            }
+
+            return node.ToString();
         }
 
         // [DllImport("__Internal")]
@@ -98,7 +121,7 @@ namespace Playroom
             OnPlayerJoinWrapperCallback(id);
         }
 
-       
+
         private static void OnPlayerJoinWrapperCallback(string id)
         {
             var player = GetPlayer(id);
@@ -247,6 +270,13 @@ namespace Playroom
 
         [DllImport("__Internal")]
         public static extern string GetRoomCode();
+
+        [MonoPInvokeCallback(typeof(Action))]
+        public static void OnDisconnect(Action callback)
+        {
+            callback.Invoke();
+        }
+
 
         [DllImport("__Internal")]
         private static extern void SetStateString(string key, string value, bool reliable = false);
@@ -663,7 +693,8 @@ namespace Playroom
         }
 
         [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void __OnQuitInternalHandler(string playerId) {
+        private static void __OnQuitInternalHandler(string playerId)
+        {
             if (Players.TryGetValue(playerId, out Player player))
             {
                 player.OnQuitWrapperCallback();
@@ -673,8 +704,8 @@ namespace Playroom
                 Debug.LogError("[__OnQuitInternalHandler] Couldn't find player with id " + playerId);
             }
         }
-        
-        
+
+
         // Joystick
         [DllImport("__Internal")]
         private static extern void CreateJoystickInternal(string joyStickOptionsJson);
@@ -735,8 +766,8 @@ namespace Playroom
             buttonJson["icon"] = button.icon;
             return buttonJson;
         }
-        
-       
+
+
         public class JoystickOptions
         {
             public string type = "angular"; // default = angular, can be dpad
@@ -751,16 +782,16 @@ namespace Playroom
             public string id = null;
             public string label = "";
             public string icon = null;
-        } 
-        
+        }
+
         public class ZoneOptions
         {
             public ButtonOptions up = null;
             public ButtonOptions down = null;
             public ButtonOptions left = null;
             public ButtonOptions right = null;
-        } 
-       
+        }
+
 
         [System.Serializable]
         public class Dpad
@@ -768,11 +799,11 @@ namespace Playroom
             public string x;
             public string y;
         }
-        
+
         // Player class
         public class Player
         {
-            
+
 
             [Serializable]
             public class Profile
@@ -783,7 +814,7 @@ namespace Playroom
                 public JsonColor jsonColor;
                 public string name;
                 public string photo;
-                
+
                 [Serializable]
                 public class JsonColor
                 {
@@ -793,9 +824,9 @@ namespace Playroom
                     public string hexString;
                     public int hex;
                 }
-                
-              
-                
+
+
+
             }
 
 
@@ -823,7 +854,7 @@ namespace Playroom
 
             private List<Action<string>> OnQuitCallbacks = new();
 
-            
+
             private void OnQuitDefaultCallback()
             {
                 if (!isPlayRoomInitialized)
@@ -1212,7 +1243,7 @@ namespace Playroom
 
                 return profileData;
             }
-            
+
             public Profile GetProfile()
             {
                 if (IsRunningInBrowser())
@@ -1244,7 +1275,7 @@ namespace Playroom
                             name = "CoolPlayTest",
                             jsonColor = mockJsonColor,
                             photo = "testPhoto"
-                            
+
                         };
                         return testProfile;
                     }
@@ -1290,5 +1321,5 @@ namespace Playroom
         }
     }
 
-   
+
 }
