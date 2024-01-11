@@ -655,8 +655,53 @@ mergeInto(LibraryManager.library, {
       console.log(`Disconnected!`, e.code, e.reason);
       dynCall("v", callback, [])
     });
-    
+
   },
 
+  WaitForStateInternal: function (stateKey, onStateSetCallback) {
+    if (!window.Playroom) {
+      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      reject("Playroom library not loaded");
+      return;
+    }
+
+    stateKey = UTF8ToString(stateKey)
+
+    Playroom.waitForState(stateKey).then(() => {
+      dynCall("v", onStateSetCallback, [])
+    }).catch((error) => {
+      console.error("Error Waiting for state:", error);
+    });
+  },
+
+  WaitForPlayerStateInternal: function (playerId, stateKey, onStateSetCallback) {
+    if (!window.Playroom) {
+      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      reject("Playroom library not loaded");
+      return;
+    }
+
+    const players = window._multiplayer.getPlayers();
+
+    if (typeof players !== "object" || players === null) {
+      console.error('The "players" variable is not an object:', players);
+      return null;
+    }
+    const playerState = players[UTF8ToString(playerId)];
+
+    if (!playerState) {
+      console.error("Player with ID", UTF8ToString(playerId), "not found.");
+      return null;
+    }
+
+
+    stateKey = UTF8ToString(stateKey)
+    Playroom.waitForPlayerState(playerState, stateKey).then(() => {
+      dynCall("v", onStateSetCallback, [])
+    }).catch((error) => {
+      console.error("Error waiting for state:", error);
+    });
+
+  },
 
 });

@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using AOT;
 using System;
 using SimpleJSON;
+using System.Xml.Xsl;
 
 namespace Playroom
 {
@@ -590,6 +591,26 @@ namespace Playroom
             }
         }
 
+        [DllImport("__Internal")]
+        private static extern void WaitForStateInternal(string stateKey, Action onStateSetCallback = null);
+
+
+        private static Action OnStateChangeCallBack = null;
+
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void InvokeCallback()
+        {
+            OnStateChangeCallBack?.Invoke();
+        }
+
+        public static void WaitForState(string stateKey, Action onStateSetCallback = null)
+        {
+            if (IsRunningInBrowser())
+            {
+                OnStateChangeCallBack = onStateSetCallback;
+                WaitForStateInternal(stateKey, InvokeCallback);
+            }
+        }
 
         [DllImport("__Internal")]
         private static extern string GetStateDictionaryInternal(string key);
@@ -803,7 +824,6 @@ namespace Playroom
         // Player class
         public class Player
         {
-
 
             [Serializable]
             public class Profile
@@ -1203,6 +1223,13 @@ namespace Playroom
                 return ParseJsonToDictionary<float>(jsonString);
             }
 
+            public void WaitForState(string StateKey, Action onStateSetCallback = null)
+            {
+                if (IsRunningInBrowser())
+                {
+                    WaitForPlayerStateInternal(id, StateKey, onStateSetCallback);
+                }
+            }
 
             [DllImport("__Internal")]
             private static extern void SetPlayerStateByPlayerId(string playerID, string key, int value,
@@ -1281,6 +1308,11 @@ namespace Playroom
                     }
                 }
             }
+
+
+
+            [DllImport("__Internal")]
+            private static extern void WaitForPlayerStateInternal(string playerID, string stateKey, Action onStateSetCallback = null);
 
 
             [DllImport("__Internal")]
