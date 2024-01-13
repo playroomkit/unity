@@ -1,14 +1,15 @@
 mergeInto(LibraryManager.library, {
   /**
    * @description Inserts a coin into the game by loading the required scripts and initializing the Playroom.
-   * @param {function} callback - A callback function to execute after the Playroom is loaded.
+   * @param {function} onLaunchCallBack - A callback function to execute after the Playroom is loaded.
    * @param {function} onQuitInternalCallback - (internal) This C# callback function calls an OnQuit wrapper on C# side, with the player's ID.
    */
   InsertCoinInternal: function (
-    callback,
+    onLaunchCallBack,
     optionsJson,
     onJoinCallback,
-    onQuitInternalCallback
+    onQuitInternalCallback,
+    // onLaunchCallback
   ) {
     function embedScript(src) {
       return new Promise((resolve, reject) => {
@@ -20,6 +21,9 @@ mergeInto(LibraryManager.library, {
         document.head.appendChild(script);
       });
     }
+
+    var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
+    // console.log(options)
 
     Promise.all([
       embedScript("https://unpkg.com/react@18.2.0/umd/react.development.js"),
@@ -36,13 +40,9 @@ mergeInto(LibraryManager.library, {
           return;
         }
 
-        console.info("Playroom has loaded.");
-
-        var options = optionsJson ? JSON.parse(optionsJson) : {};
-
         Playroom.insertCoin(options)
           .then(() => {
-            dynCall("v", callback, []);
+            dynCall("v", onLaunchCallBack, []);
 
             Playroom.onPlayerJoin((player) => {
               var id = player.id;
@@ -64,6 +64,8 @@ mergeInto(LibraryManager.library, {
         console.error("Error loading Playroom:", error);
       });
   },
+
+
 
   /**
    * @description Checks whether the player is the host of the game.
@@ -617,7 +619,7 @@ mergeInto(LibraryManager.library, {
 
 
     this.leftStick = new Playroom.Joystick(Playroom.myPlayer(), {
-      type: options.type,   
+      type: options.type,
       buttons: options.buttons,
       zones: options.zones,
     });
@@ -632,4 +634,110 @@ mergeInto(LibraryManager.library, {
     stringToUTF8(jsonString, buffer, bufferSize);
     return buffer;
   },
+
+  GetRoomCode: function () {
+    var roomCode = Playroom.getRoomCode();
+    var bufferSize = lengthBytesUTF8(roomCode) + 1;
+    var buffer = _malloc(bufferSize);
+    stringToUTF8(roomCode, buffer, bufferSize);
+    return buffer;
+  },
+
+  OnDisconnect: function (callback) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    Playroom.onDisconnect((e) => {
+      console.log(`Disconnected!`, e.code, e.reason);
+      dynCall("v", callback, [])
+    });
+
+  },
+
+  WaitForStateInternal: function (stateKey, onStateSetCallback) {
+    if (!window.Playroom) {
+      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      reject("Playroom library not loaded");
+      return;
+    }
+
+    stateKey = UTF8ToString(stateKey)
+
+    Playroom.waitForState(stateKey).then(() => {
+      dynCall("v", onStateSetCallback, [])
+    }).catch((error) => {
+      console.error("Error Waiting for state:", error);
+    });
+  },
+
+  WaitForPlayerStateInternal: function (playerId, stateKey, onStateSetCallback) {
+    if (!window.Playroom) {
+      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      reject("Playroom library not loaded");
+      return;
+    }
+
+    const players = window._multiplayer.getPlayers();
+
+    if (typeof players !== "object" || players === null) {
+      console.error('The "players" variable is not an object:', players);
+      return null;
+    }
+    const playerState = players[UTF8ToString(playerId)];
+
+    if (!playerState) {
+      console.error("Player with ID", UTF8ToString(playerId), "not found.");
+      return null;
+    }
+
+
+    stateKey = UTF8ToString(stateKey)
+    Playroom.waitForPlayerState(playerState, stateKey).then(() => {
+      dynCall("v", onStateSetCallback, [])
+    }).catch((error) => {
+      console.error("Error waiting for state:", error);
+    });
+
+  },
+
+  KickInternal: function (playerID, onKickCallBack) {
+
+    if (!window.Playroom) {
+      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      reject("Playroom library not loaded");
+      return;
+    }
+
+    const players = window._multiplayer.getPlayers();
+    console.log(players)
+
+    if (typeof players !== "object" || players === null) {
+      console.error('The "players" variable is not an object:', players);
+      return null;
+    }
+    const playerState = players[UTF8ToString(playerID)];
+    console.log(playerState)
+
+    if (!playerState) {
+      console.error("Player with ID", UTF8ToString(playerID), "not found.");
+      return null;
+    }
+
+    const p = playerState.kick()
+    console.log(p)
+
+    playerState.kick().then(() => {
+      dynCall('v', onKickCallBack, [])
+    }).catch((error) => {
+      console.error("Error kicking player:", error);
+    });
+
+  }
+
+
+
 });
