@@ -612,6 +612,8 @@ namespace Playroom
             }
         }
 
+
+
         [DllImport("__Internal")]
         private static extern string GetStateDictionaryInternal(string key);
 
@@ -1231,6 +1233,15 @@ namespace Playroom
                 }
             }
 
+            public void Kick(Action OnKickCallBack = null)
+            {
+                if (IsRunningInBrowser())
+                {
+                    OnKickCallBack = onKickCallBack;
+                    KickInternal(id, InvokeKickCallBack);
+                }
+            }
+
             [DllImport("__Internal")]
             private static extern void SetPlayerStateByPlayerId(string playerID, string key, int value,
                 bool reliable = false);
@@ -1310,6 +1321,16 @@ namespace Playroom
             }
 
 
+            private static Action onKickCallBack = null;
+
+            [MonoPInvokeCallback(typeof(Action))]
+            private static void InvokeKickCallBack()
+            {
+                onKickCallBack?.Invoke();
+            }
+
+            [DllImport("__Internal")]
+            private static extern void KickInternal(string playerID, Action onKickCallBack = null);
 
             [DllImport("__Internal")]
             private static extern void WaitForPlayerStateInternal(string playerID, string stateKey, Action onStateSetCallback = null);

@@ -704,4 +704,40 @@ mergeInto(LibraryManager.library, {
 
   },
 
+  KickInternal: function (playerID, onKickCallBack) {
+
+    if (!window.Playroom) {
+      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      reject("Playroom library not loaded");
+      return;
+    }
+
+    const players = window._multiplayer.getPlayers();
+    console.log(players)
+
+    if (typeof players !== "object" || players === null) {
+      console.error('The "players" variable is not an object:', players);
+      return null;
+    }
+    const playerState = players[UTF8ToString(playerID)];
+    console.log(playerState)
+
+    if (!playerState) {
+      console.error("Player with ID", UTF8ToString(playerID), "not found.");
+      return null;
+    }
+
+    const p = playerState.kick()
+    console.log(p)
+
+    playerState.kick().then(() => {
+      dynCall('v', onKickCallBack, [])
+    }).catch((error) => {
+      console.error("Error kicking player:", error);
+    });
+
+  }
+
+
+
 });
