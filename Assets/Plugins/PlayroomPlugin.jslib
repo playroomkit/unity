@@ -12,6 +12,7 @@ mergeInto(LibraryManager.library, {
     // onLaunchCallback
   ) {
     function embedScript(src) {
+      script.crossOrigin = 'anonymous';
       return new Promise((resolve, reject) => {
         var script = document.createElement("script");
         script.src = src;

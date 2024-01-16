@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AOT;
 using Playroom;
 using UnityEngine;
@@ -16,21 +17,28 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int score = 0;
     [SerializeField] private static bool playerJoined;
 
-
     private void Awake()
     {
+#if !UNITY_EDITOR && UNITY_WEBGL
+        WebGLInput.captureAllKeyboardInput = false;
+
         PlayroomKit.InsertCoin(() =>
         {
             PlayroomKit.OnPlayerJoin(AddPlayer);
-            PlayroomKit.SetState("score", score);
+            //PlayroomKit.SetState("score", score);
+            //PlayroomKit.SetState("Started", true);
+            WebGLInput.captureAllKeyboardInput = true;
         });
+#else
+#endif
     }
 
-    private void Start()
+
+    [MonoPInvokeCallback(typeof(Action))]
+    static void WaitForSate()
     {
-
+        Debug.Log("Waiting for state callback");
     }
-
 
     private void Update()
     {
@@ -39,39 +47,17 @@ public class GameManager : MonoBehaviour
             var myPlayer = PlayroomKit.MyPlayer();
             var index = players.IndexOf(myPlayer);
 
+            //Debug.Log("Started" + PlayroomKit.GetState<bool>("Started"));
 
-            /*var myDpad = PlayroomKit.DpadJoystick();
-
-
-            if (myDpad.y == "up")
-            {
-                playerGameObjects[index].GetComponent<PlayerController>().Jump();
-            }
-            if (myDpad.x == "left")
-            {
-                playerGameObjects[index].GetComponent<PlayerController>().dirX = -1;
-            }
-            else if (myDpad.x == "right")
-            {
-                playerGameObjects[index].GetComponent<PlayerController>().dirX = 1;
-            }
-            else
-            {
-                playerGameObjects[index].GetComponent<PlayerController>().dirX = 0;
-            }*/
             playerGameObjects[index].GetComponent<PlayerController>().Move();
-
-            if (Input.GetKeyDown(KeyCode.L))
-            {
-                var code = PlayroomKit.GetRoomCode();
-                Debug.Log("Room Code" + code);
-            }
 
 
             players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
             players[index].SetState("posY", playerGameObjects[index].GetComponent<Transform>().position.y);
 
         }
+
+
 
         for (var i = 0; i < players.Count; i++)
         {
@@ -91,7 +77,7 @@ public class GameManager : MonoBehaviour
                 if (playerGameObjects[i].GetComponent<Transform>().position.x >= 0f)
                 {
                     score += 10;
-                    PlayroomKit.SetState("score", score);
+                    //PlayroomKit.SetState("score", score);
                 }
             }
             else
@@ -102,33 +88,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
     public static void AddPlayer(PlayroomKit.Player player)
     {
         GameObject playerObj = (GameObject)Instantiate(Resources.Load("Player"),
             new Vector3(Random.Range(-4, 4), Random.Range(1, 5), 0), Quaternion.identity);
 
-
-        // creates joystick
-        /*PlayroomKit.CreateJoyStick(new PlayroomKit.JoystickOptions()
-        {
-            type = "dpad",
-            buttons = new []{new PlayroomKit.ButtonOptions()
-            {
-                id = "jump",
-                label = "jump"
-            }},
-            zones = new PlayroomKit.ZoneOptions() {right = new PlayroomKit.ButtonOptions()
-            {
-                id = "right",
-                label = "right"
-            }}
-
-        });
-        */
-
         playerObj.GetComponent<SpriteRenderer>().color = player.GetProfile().color;
         Debug.Log(player.GetProfile().name + " Joined the game!" + "id: " + player.id);
 
+    
         PlayerDict.Add(player.id, playerObj);
         players.Add(player);
         playerGameObjects.Add(playerObj);

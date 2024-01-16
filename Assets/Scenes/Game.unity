@@ -141,7 +141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &77751265
 RectTransform:
   m_ObjectHideFlags: 0
@@ -207,9 +207,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 330732771}
-        m_TargetAssemblyTypeName: TestManager, Assembly-CSharp
-        m_MethodName: SetStateTest
+      - m_Target: {fileID: 330732769}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: Kick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -454,7 +454,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: SetState
+  m_Text: Kick
 --- !u!222 &360417501
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -615,7 +615,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1036353973
 MonoBehaviour:
   m_ObjectHideFlags: 0
