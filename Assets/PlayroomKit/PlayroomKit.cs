@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using AOT;
 using System;
@@ -335,7 +336,7 @@ namespace Playroom
         {
             if (IsRunningInBrowser())
             {
-                var floatAsString = value.ToString();
+                var floatAsString = value.ToString(CultureInfo.InvariantCulture);
                 SetStateFloatInternal(key, floatAsString, reliable);
             }
             else
@@ -928,7 +929,7 @@ namespace Playroom
             {
                 if (IsRunningInBrowser())
                 {
-                    SetPlayerStateFloatByPlayerId(id, key, value.ToString(), reliable);
+                    SetPlayerStateFloatByPlayerId(id, key, value.ToString(CultureInfo.InvariantCulture), reliable);
                 }
                 else
                 {
