@@ -612,6 +612,24 @@ namespace Playroom
             }
         }
 
+        [DllImport("__Internal")]
+        private static extern void WaitForPlayerStateInternal(string playerID, string StateKey, Action onStateSetCallback);
+
+        Action Callback = null;
+        public void WaitForPlayerState(string playerID, string StateKey, Action onStateSetCallback = null)
+        {
+            if (IsRunningInBrowser())
+            {
+                Callback = onStateSetCallback;
+                WaitForPlayerStateInternal(playerID, StateKey, OnStateSetCallback);
+            }
+        }
+
+        [MonoPInvokeCallback(typeof(Action))]
+        void OnStateSetCallback()
+        {  
+            Callback?.Invoke();
+        }
 
 
         [DllImport("__Internal")]
@@ -794,7 +812,7 @@ namespace Playroom
         public class JoystickOptions
         {
             public string type = "angular"; // default = angular, can be dpad
-            //TODO: classes for ButtonOptions, ZoneOptions
+
             public ButtonOptions[] buttons;
             public ZoneOptions zones = null;
         }
