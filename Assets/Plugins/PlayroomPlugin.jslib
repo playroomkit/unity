@@ -9,7 +9,6 @@ mergeInto(LibraryManager.library, {
     optionsJson,
     onJoinCallback,
     onQuitInternalCallback,
-    // onLaunchCallback
   ) {
     function embedScript(src) {
       return new Promise((resolve, reject) => {
@@ -736,8 +735,34 @@ mergeInto(LibraryManager.library, {
       console.error("Error kicking player:", error);
     });
 
-  }
+  },
 
+  ResetStates: function (keysToExclude, onStatesReset) {
+    if (!window.Playroom) {
+      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      reject("Playroom library not loaded");
+      return;
+    }
 
+    Playroom.resetStates(keysToExclude).then(() => {
+      dynCall('v', onStatesReset, [])
+    }).catch((error) => {
+      console.error("Error reseting states:", error);
+    });
+  },
+
+  ResetPlayersStates: function (keysToExclude, onPlayersStatesReset) {
+    if (!window.Playroom) {
+      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      reject("Playroom library not loaded");
+      return;
+    }
+
+    Playroom.resetPlayersStates(keysToExclude).then(() => {
+      dynCall('v', onPlayersStatesReset, [])
+    }).catch((error) => {
+      console.error("Error reseting players states:", error);
+    });
+  },
 
 });

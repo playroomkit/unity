@@ -627,7 +627,7 @@ namespace Playroom
 
         [MonoPInvokeCallback(typeof(Action))]
         void OnStateSetCallback()
-        {  
+        {
             Callback?.Invoke();
         }
 
@@ -700,6 +700,12 @@ namespace Playroom
 
             return dictionary;
         }
+
+        [DllImport("__Internal")]
+        public static extern void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null);
+
+        [DllImport("__Internal")]
+        public static extern void ResetPlayersStates(string[] keysToExclude, Action OnPlayersStatesReset = null);
 
 
         // it checks if the game is running in the browser or in the editor
