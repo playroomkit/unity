@@ -35,6 +35,9 @@ namespace Playroom
             public bool skipLobby = false;
             public int reconnectGracePeriod = 0;
             public int? maxPlayersPerRoom;
+
+            public Dictionary<string, object> defaultStates = null;
+
         }
 
         private static Action InsertCoinCallback = null;
@@ -57,7 +60,6 @@ namespace Playroom
                 InsertCoinCallback = callback;
                 string optionsJson = null;
                 if (options != null) { optionsJson = SerializeInitOptions(options); }
-                Debug.Log("C# " + optionsJson);
                 InsertCoinInternal(InvokeInsertCoin, optionsJson, __OnPlayerJoinCallbackHandler, __OnQuitInternalHandler);
             }
             else
@@ -70,7 +72,7 @@ namespace Playroom
                 string optionsJson = null;
                 if (options != null) optionsJson = SerializeInitOptions(options);
 
-                // Debug.Log(optionsJson);
+                Debug.Log(optionsJson);
 
                 callback?.Invoke();
             }
@@ -100,13 +102,48 @@ namespace Playroom
             node["skipLobby"] = options.skipLobby;
             node["reconnectGracePeriod"] = options.reconnectGracePeriod;
 
-            // Check if maxPlayersPerRoom is provided, otherwise omit the property
             if (options.maxPlayersPerRoom.HasValue)
             {
                 node["maxPlayersPerRoom"] = options.maxPlayersPerRoom.Value;
             }
 
+            if (options.defaultStates != null)
+            {
+                JSONObject defaultStatesObject = new JSONObject();
+                foreach (var kvp in options.defaultStates)
+                {
+                    defaultStatesObject[kvp.Key] = ConvertValueToJSON(kvp.Value);
+                }
+                node["defaultStates"] = defaultStatesObject;
+            }
+
+
             return node.ToString();
+        }
+
+        private static JSONNode ConvertValueToJSON(object value)
+        {
+            if (value is string stringValue)
+            {
+                return stringValue;
+            }
+            else if (value is int intValue)
+            {
+                return intValue;
+            }
+            else if (value is float floatValue)
+            {
+                return floatValue;
+            }
+            else if (value is bool boolValue)
+            {
+                return boolValue;
+            }
+            else
+            {
+                // Handle other types if needed
+                return JSON.Parse("{}");
+            }
         }
 
         // [DllImport("__Internal")]
@@ -702,7 +739,27 @@ namespace Playroom
         }
 
         [DllImport("__Internal")]
-        public static extern void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null);
+        private static extern void ResetStatesInternal(string keysToExclude = null, Action OnStatesReset = null);
+
+        private static Action onstatesReset;
+
+        public static void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null)
+        {
+            if (IsRunningInBrowser())
+            {
+                onstatesReset = OnStatesReset;
+                string keysJson = keysToExclude != null ? JSONArray.Create(keysToExclude).ToString() : null;
+
+                ResetStatesInternal(keysJson, InvokeResetCallBack);
+            }
+        }
+
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void InvokeResetCallBack()
+        {
+            onstatesReset?.Invoke();
+        }
+
 
         [DllImport("__Internal")]
         public static extern void ResetPlayersStates(string[] keysToExclude, Action OnPlayersStatesReset = null);

@@ -737,19 +737,26 @@ mergeInto(LibraryManager.library, {
 
   },
 
-  ResetStates: function (keysToExclude, onStatesReset) {
+  ResetStatesInternal: function (keysToExclude, onStatesReset) {
     if (!window.Playroom) {
       console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
-      reject("Playroom library not loaded");
       return;
     }
 
-    Playroom.resetStates(keysToExclude).then(() => {
-      dynCall('v', onStatesReset, [])
-    }).catch((error) => {
-      console.error("Error reseting states:", error);
-    });
+    keysToExclude = Array.isArray(keysToExclude) ? keysToExclude : [];
+    console.log(keysToExclude);
+    
+    Playroom.resetStates(keysToExclude)
+      .then(() => {
+        dynCall('v', onStatesReset, []);
+      })
+      .catch((error) => {
+        console.error("Error resetting states:", error);
+        throw error;
+      });
   },
+
+
 
   ResetPlayersStates: function (keysToExclude, onPlayersStatesReset) {
     if (!window.Playroom) {
