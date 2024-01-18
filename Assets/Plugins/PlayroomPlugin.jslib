@@ -9,6 +9,7 @@ mergeInto(LibraryManager.library, {
     optionsJson,
     onJoinCallback,
     onQuitInternalCallback,
+    onDisconnectCallback
   ) {
     function embedScript(src) {
       return new Promise((resolve, reject) => {
@@ -54,6 +55,11 @@ mergeInto(LibraryManager.library, {
                 dynCall("vi", onQuitInternalCallback, [buffer]);
               });
             });
+
+            Playroom.onDisconnect(() => {
+              dynCall("v", onDisconnectCallback, []);
+            });
+
           })
           .catch((error) => {
             console.error("Error inserting coin:", error);
@@ -642,7 +648,7 @@ mergeInto(LibraryManager.library, {
     return buffer;
   },
 
-  OnDisconnect: function (callback) {
+  OnDisconnectInternal: function (callback) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
@@ -652,6 +658,7 @@ mergeInto(LibraryManager.library, {
 
     Playroom.onDisconnect((e) => {
       console.log(`Disconnected!`, e.code, e.reason);
+      console.log(typeof e)
       dynCall("v", callback, [])
     });
 

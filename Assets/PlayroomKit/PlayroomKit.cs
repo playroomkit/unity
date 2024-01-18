@@ -42,9 +42,10 @@ namespace Playroom
         }
 
         private static Action InsertCoinCallback = null;
+        private static Action OnDisconnectCallback = null;
 
         [DllImport("__Internal")]
-        private static extern void InsertCoinInternal(Action callback, string options, Action<string> onPlayerJoinInternalCallback, Action<string> onQuitInternalCallback);
+        private static extern void InsertCoinInternal(Action callback, string options, Action<string> onPlayerJoinInternalCallback, Action<string> onQuitInternalCallback, Action onDisconnectCallback);
 
         [MonoPInvokeCallback(typeof(Action))]
         private static void InvokeInsertCoin()
@@ -53,15 +54,16 @@ namespace Playroom
         }
 
         // optional InitOptions
-        public static void InsertCoin(Action callback, InitOptions options = null)
+        public static void InsertCoin(Action onLaunchCallBack, InitOptions options = null, Action onDisconnectCallback = null)
         {
             if (IsRunningInBrowser())
             {
                 isPlayRoomInitialized = true;
-                InsertCoinCallback = callback;
+                InsertCoinCallback = onLaunchCallBack;
+                OnDisconnectCallback = onDisconnectCallback;
                 string optionsJson = null;
                 if (options != null) { optionsJson = SerializeInitOptions(options); }
-                InsertCoinInternal(InvokeInsertCoin, optionsJson, __OnPlayerJoinCallbackHandler, __OnQuitInternalHandler);
+                InsertCoinInternal(InvokeInsertCoin, optionsJson, __OnPlayerJoinCallbackHandler, __OnQuitInternalHandler, onDisconnectCallbackHandler);
             }
             else
             {
@@ -75,7 +77,7 @@ namespace Playroom
 
                 Debug.Log(optionsJson);
 
-                callback?.Invoke();
+                onLaunchCallBack?.Invoke();
             }
         }
 
@@ -168,6 +170,12 @@ namespace Playroom
         private static void __OnPlayerJoinCallbackHandler(string id)
         {
             OnPlayerJoinWrapperCallback(id);
+        }
+
+        [MonoPInvokeCallback(typeof(Action<string>))]
+        private static void onDisconnectCallbackHandler()
+        {
+            OnDisconnectCallback?.Invoke();
         }
 
 
@@ -320,10 +328,15 @@ namespace Playroom
         [DllImport("__Internal")]
         public static extern string GetRoomCode();
 
-        [MonoPInvokeCallback(typeof(Action))]
+
+        [DllImport("__Internal")]
+        private static extern void OnDisconnectInternal(Action callback);
+
+
         public static void OnDisconnect(Action callback)
         {
-            callback.Invoke();
+            OnDisconnectCallback = callback;
+            OnDisconnectInternal(onDisconnectCallbackHandler);
         }
 
 
