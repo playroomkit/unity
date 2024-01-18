@@ -37,6 +37,7 @@ namespace Playroom
             public int? maxPlayersPerRoom;
 
             public Dictionary<string, object> defaultStates = null;
+            public Dictionary<string, object> defaultPlayerState = null;
 
         }
 
@@ -115,6 +116,16 @@ namespace Playroom
                     defaultStatesObject[kvp.Key] = ConvertValueToJSON(kvp.Value);
                 }
                 node["defaultStates"] = defaultStatesObject;
+            }
+
+            if (options.defaultPlayerState != null)
+            {
+                JSONObject defaultPlayerStatesObject = new JSONObject();
+                foreach (var kvp in options.defaultPlayerState)
+                {
+                    defaultPlayerStatesObject[kvp.Key] = ConvertValueToJSON(kvp.Value);
+                }
+                node["defaultPlayerStates"] = defaultPlayerStatesObject;
             }
 
 
@@ -742,6 +753,7 @@ namespace Playroom
         private static extern void ResetStatesInternal(string keysToExclude = null, Action OnStatesReset = null);
 
         private static Action onstatesReset;
+        private static Action onplayersStatesReset;
 
         public static void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null)
         {
@@ -759,9 +771,25 @@ namespace Playroom
             onstatesReset?.Invoke();
         }
 
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void InvokePlayersResetCallBack()
+        {
+            onplayersStatesReset?.Invoke();
+        }
+
 
         [DllImport("__Internal")]
-        public static extern void ResetPlayersStates(string[] keysToExclude, Action OnPlayersStatesReset = null);
+        private static extern void ResetPlayersStatesInternal(string keysToExclude, Action OnPlayersStatesReset = null);
+
+        public static void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
+        {
+            if (IsRunningInBrowser())
+            {
+                onstatesReset = OnStatesReset;
+                string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
+                ResetPlayersStatesInternal(keysJson, InvokePlayersResetCallBack);
+            }
+        }
 
         private static JSONArray CreateJsonArray(string[] array)
         {
