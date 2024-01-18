@@ -748,8 +748,7 @@ namespace Playroom
             if (IsRunningInBrowser())
             {
                 onstatesReset = OnStatesReset;
-                string keysJson = keysToExclude != null ? JSONArray.Create(keysToExclude).ToString() : null;
-
+                string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
                 ResetStatesInternal(keysJson, InvokeResetCallBack);
             }
         }
@@ -764,6 +763,17 @@ namespace Playroom
         [DllImport("__Internal")]
         public static extern void ResetPlayersStates(string[] keysToExclude, Action OnPlayersStatesReset = null);
 
+        private static JSONArray CreateJsonArray(string[] array)
+        {
+            JSONArray jsonArray = new JSONArray();
+
+            foreach (string item in array)
+            {
+                jsonArray.Add(item);
+            }
+
+            return jsonArray;
+        }
 
         // it checks if the game is running in the browser or in the editor
         public static bool IsRunningInBrowser()

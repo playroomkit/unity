@@ -743,10 +743,10 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    keysToExclude = Array.isArray(keysToExclude) ? keysToExclude : [];
-    console.log(keysToExclude);
-    
-    Playroom.resetStates(keysToExclude)
+    var keys = keysToExclude ? JSON.parse(UTF8ToString(keysToExclude)) : [];
+    console.log(keys);
+
+    Playroom.resetStates(keys)
       .then(() => {
         dynCall('v', onStatesReset, []);
       })
