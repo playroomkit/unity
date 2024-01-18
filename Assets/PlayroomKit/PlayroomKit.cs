@@ -37,7 +37,7 @@ namespace Playroom
             public int? maxPlayersPerRoom;
 
             public Dictionary<string, object> defaultStates = null;
-            public Dictionary<string, object> defaultPlayerState = null;
+            public Dictionary<string, object> defaultPlayerStates = null;
 
         }
 
@@ -118,10 +118,10 @@ namespace Playroom
                 node["defaultStates"] = defaultStatesObject;
             }
 
-            if (options.defaultPlayerState != null)
+            if (options.defaultPlayerStates != null)
             {
                 JSONObject defaultPlayerStatesObject = new JSONObject();
-                foreach (var kvp in options.defaultPlayerState)
+                foreach (var kvp in options.defaultPlayerStates)
                 {
                     defaultPlayerStatesObject[kvp.Key] = ConvertValueToJSON(kvp.Value);
                 }
