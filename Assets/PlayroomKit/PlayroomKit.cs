@@ -71,12 +71,8 @@ namespace Playroom
 
                 Debug.Log("Coin Inserted");
 
-                // if (options != null && options.streamMode) mockIsStreamMode = options.streamMode;
                 string optionsJson = null;
                 if (options != null) optionsJson = SerializeInitOptions(options);
-
-                Debug.Log(optionsJson);
-
                 onLaunchCallBack?.Invoke();
             }
         }
