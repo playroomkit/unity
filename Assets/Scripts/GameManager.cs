@@ -14,19 +14,19 @@ public class GameManager : MonoBehaviour
     private static Dictionary<string, GameObject> PlayerDict = new();
     Dictionary<string, float> moveData = new();
 
-    [SerializeField] private int score = 0;
+    [SerializeField] private int score;
     [SerializeField] private Text scoreText;
 
     [SerializeField] private static bool playerJoined;
 
-    string[] keysToIgnore;
+
 
     private void Awake()
     {
 
-        keysToIgnore = new string[] { "started" };
 
-#if   UNITY_WEBGL && !UNITY_EDITOR
+
+#if UNITY_WEBGL && !UNITY_EDITOR
         WebGLInput.captureAllKeyboardInput = false;
 
         PlayroomKit.InsertCoin(() =>
@@ -38,7 +38,6 @@ public class GameManager : MonoBehaviour
         {
             defaultPlayerStates = new() {
                 {"score", -500},
-                {"posX", -5},
             }
         });
 
@@ -53,7 +52,6 @@ public class GameManager : MonoBehaviour
         {
             defaultStates = new() {
                 {"score", -500},
-                {"posX", -5},
             }
         });
 
@@ -72,10 +70,10 @@ public class GameManager : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.L) && PlayroomKit.IsHost())
             {
-                PlayroomKit.ResetStates(keysToIgnore, () =>
+                PlayroomKit.ResetStates(null, () =>
                 {
-                    score = PlayroomKit.GetState<int>("score");
-                    scoreText.text = "Score: " + score.ToString();
+                    var defscore = PlayroomKit.GetState<int>("score");
+                    scoreText.text = "Score: " + defscore.ToString();
                 });
             }
 
