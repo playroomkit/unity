@@ -9,7 +9,7 @@ mergeInto(LibraryManager.library, {
     optionsJson,
     onJoinCallback,
     onQuitInternalCallback,
-    // onLaunchCallback
+    onDisconnectCallback
   ) {
     function embedScript(src) {
       script.crossOrigin = 'anonymous';
@@ -55,6 +55,11 @@ mergeInto(LibraryManager.library, {
                 dynCall("vi", onQuitInternalCallback, [buffer]);
               });
             });
+
+            Playroom.onDisconnect(() => {
+              dynCall("v", onDisconnectCallback, []);
+            });
+
           })
           .catch((error) => {
             console.error("Error inserting coin:", error);
@@ -643,7 +648,7 @@ mergeInto(LibraryManager.library, {
     return buffer;
   },
 
-  OnDisconnect: function (callback) {
+  OnDisconnectInternal: function (callback) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
@@ -713,24 +718,64 @@ mergeInto(LibraryManager.library, {
     }
 
     const players = window._multiplayer.getPlayers();
+    
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
       return null;
     }
     const playerState = players[UTF8ToString(playerID)];
+    
 
     if (!playerState) {
       console.error("Player with ID", UTF8ToString(playerID), "not found.");
       return null;
     }
+
+    const p = playerState.kick()
+    console.log(p)
+
     playerState.kick().then(() => {
       dynCall('v', onKickCallBack, [])
     }).catch((error) => {
       console.error("Error kicking player:", error);
     });
 
-  }
+  },
+
+  ResetStatesInternal: function (keysToExclude, onStatesReset) {
+    if (!window.Playroom) {
+      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      return;
+    }
+
+    var keys = keysToExclude ? JSON.parse(UTF8ToString(keysToExclude)) : [];
+    Playroom.resetStates(keys)
+      .then(() => {
+        dynCall('v', onStatesReset, []);
+      })
+      .catch((error) => {
+        console.error("Error resetting states:", error);
+        throw error;
+      });
+  },
+
+  ResetPlayersStatesInternal: function (keysToExclude, onStatesReset) {
+    if (!window.Playroom) {
+      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      return;
+    }
+
+    var keys = keysToExclude ? JSON.parse(UTF8ToString(keysToExclude)) : [];
+    Playroom.resetPlayersStates(keys)
+      .then(() => {
+        dynCall('v', onStatesReset, []);
+      })
+      .catch((error) => {
+        console.error("Error resetting players states:", error);
+        throw error;
+      });
+  },
 
 
 

@@ -36,12 +36,17 @@ namespace Playroom
             public bool skipLobby = false;
             public int reconnectGracePeriod = 0;
             public int? maxPlayersPerRoom;
+
+            public Dictionary<string, object> defaultStates = null;
+            public Dictionary<string, object> defaultPlayerStates = null;
+
         }
 
         private static Action InsertCoinCallback = null;
+        private static Action OnDisconnectCallback = null;
 
         [DllImport("__Internal")]
-        private static extern void InsertCoinInternal(Action callback, string options, Action<string> onPlayerJoinInternalCallback, Action<string> onQuitInternalCallback);
+        private static extern void InsertCoinInternal(Action callback, string options, Action<string> onPlayerJoinInternalCallback, Action<string> onQuitInternalCallback, Action onDisconnectCallback);
 
         [MonoPInvokeCallback(typeof(Action))]
         private static void InvokeInsertCoin()
@@ -50,15 +55,16 @@ namespace Playroom
         }
 
         // optional InitOptions
-        public static void InsertCoin(Action callback, InitOptions options = null)
+        public static void InsertCoin(Action onLaunchCallBack, InitOptions options = null, Action onDisconnectCallback = null)
         {
             if (IsRunningInBrowser())
             {
                 isPlayRoomInitialized = true;
-                InsertCoinCallback = callback;
+                InsertCoinCallback = onLaunchCallBack;
+                OnDisconnectCallback = onDisconnectCallback;
                 string optionsJson = null;
                 if (options != null) { optionsJson = SerializeInitOptions(options); }
-                InsertCoinInternal(InvokeInsertCoin, optionsJson, __OnPlayerJoinCallbackHandler, __OnQuitInternalHandler);
+                InsertCoinInternal(InvokeInsertCoin, optionsJson, __OnPlayerJoinCallbackHandler, __OnQuitInternalHandler, onDisconnectCallbackHandler);
             }
             else
             {
@@ -66,13 +72,9 @@ namespace Playroom
 
                 Debug.Log("Coin Inserted");
 
-                // if (options != null && options.streamMode) mockIsStreamMode = options.streamMode;
                 string optionsJson = null;
                 if (options != null) optionsJson = SerializeInitOptions(options);
-
-                // Debug.Log(optionsJson);
-
-                callback?.Invoke();
+                onLaunchCallBack?.Invoke();
             }
         }
 
@@ -100,13 +102,58 @@ namespace Playroom
             node["skipLobby"] = options.skipLobby;
             node["reconnectGracePeriod"] = options.reconnectGracePeriod;
 
-            // Check if maxPlayersPerRoom is provided, otherwise omit the property
             if (options.maxPlayersPerRoom.HasValue)
             {
                 node["maxPlayersPerRoom"] = options.maxPlayersPerRoom.Value;
             }
 
+            if (options.defaultStates != null)
+            {
+                JSONObject defaultStatesObject = new JSONObject();
+                foreach (var kvp in options.defaultStates)
+                {
+                    defaultStatesObject[kvp.Key] = ConvertValueToJSON(kvp.Value);
+                }
+                node["defaultStates"] = defaultStatesObject;
+            }
+
+            if (options.defaultPlayerStates != null)
+            {
+                JSONObject defaultPlayerStatesObject = new JSONObject();
+                foreach (var kvp in options.defaultPlayerStates)
+                {
+                    defaultPlayerStatesObject[kvp.Key] = ConvertValueToJSON(kvp.Value);
+                }
+                node["defaultPlayerStates"] = defaultPlayerStatesObject;
+            }
+
+
             return node.ToString();
+        }
+
+        private static JSONNode ConvertValueToJSON(object value)
+        {
+            if (value is string stringValue)
+            {
+                return stringValue;
+            }
+            else if (value is int intValue)
+            {
+                return intValue;
+            }
+            else if (value is float floatValue)
+            {
+                return floatValue;
+            }
+            else if (value is bool boolValue)
+            {
+                return boolValue;
+            }
+            else
+            {
+                // Handle other types if needed
+                return JSON.Parse("{}");
+            }
         }
 
         // [DllImport("__Internal")]
@@ -120,6 +167,12 @@ namespace Playroom
         private static void __OnPlayerJoinCallbackHandler(string id)
         {
             OnPlayerJoinWrapperCallback(id);
+        }
+
+        [MonoPInvokeCallback(typeof(Action<string>))]
+        private static void onDisconnectCallbackHandler()
+        {
+            OnDisconnectCallback?.Invoke();
         }
 
 
@@ -272,10 +325,15 @@ namespace Playroom
         [DllImport("__Internal")]
         public static extern string GetRoomCode();
 
-        [MonoPInvokeCallback(typeof(Action))]
+
+        [DllImport("__Internal")]
+        private static extern void OnDisconnectInternal(Action callback);
+
+
         public static void OnDisconnect(Action callback)
         {
-            callback.Invoke();
+            OnDisconnectCallback = callback;
+            OnDisconnectInternal(onDisconnectCallbackHandler);
         }
 
 
@@ -612,6 +670,24 @@ namespace Playroom
             }
         }
 
+        [DllImport("__Internal")]
+        private static extern void WaitForPlayerStateInternal(string playerID, string StateKey, Action onStateSetCallback);
+
+        Action Callback = null;
+        public void WaitForPlayerState(string playerID, string StateKey, Action onStateSetCallback = null)
+        {
+            if (IsRunningInBrowser())
+            {
+                Callback = onStateSetCallback;
+                WaitForPlayerStateInternal(playerID, StateKey, OnStateSetCallback);
+            }
+        }
+
+        [MonoPInvokeCallback(typeof(Action))]
+        void OnStateSetCallback()
+        {
+            Callback?.Invoke();
+        }
 
 
         [DllImport("__Internal")]
@@ -683,6 +759,59 @@ namespace Playroom
             return dictionary;
         }
 
+        [DllImport("__Internal")]
+        private static extern void ResetStatesInternal(string keysToExclude = null, Action OnStatesReset = null);
+
+        private static Action onstatesReset;
+        private static Action onplayersStatesReset;
+
+        public static void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null)
+        {
+            if (IsRunningInBrowser())
+            {
+                onstatesReset = OnStatesReset;
+                string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
+                ResetStatesInternal(keysJson, InvokeResetCallBack);
+            }
+        }
+
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void InvokeResetCallBack()
+        {
+            onstatesReset?.Invoke();
+        }
+
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void InvokePlayersResetCallBack()
+        {
+            onplayersStatesReset?.Invoke();
+        }
+
+
+        [DllImport("__Internal")]
+        private static extern void ResetPlayersStatesInternal(string keysToExclude, Action OnPlayersStatesReset = null);
+
+        public static void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
+        {
+            if (IsRunningInBrowser())
+            {
+                onstatesReset = OnStatesReset;
+                string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
+                ResetPlayersStatesInternal(keysJson, InvokePlayersResetCallBack);
+            }
+        }
+
+        private static JSONArray CreateJsonArray(string[] array)
+        {
+            JSONArray jsonArray = new JSONArray();
+
+            foreach (string item in array)
+            {
+                jsonArray.Add(item);
+            }
+
+            return jsonArray;
+        }
 
         // it checks if the game is running in the browser or in the editor
         public static bool IsRunningInBrowser()
@@ -794,7 +923,7 @@ namespace Playroom
         public class JoystickOptions
         {
             public string type = "angular"; // default = angular, can be dpad
-            //TODO: classes for ButtonOptions, ZoneOptions
+
             public ButtonOptions[] buttons;
             public ZoneOptions zones = null;
         }
