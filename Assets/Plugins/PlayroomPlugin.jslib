@@ -12,6 +12,7 @@ mergeInto(LibraryManager.library, {
     // onLaunchCallback
   ) {
     function embedScript(src) {
+      script.crossOrigin = 'anonymous';
       return new Promise((resolve, reject) => {
         var script = document.createElement("script");
         script.src = src;
@@ -23,7 +24,6 @@ mergeInto(LibraryManager.library, {
     }
 
     var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
-    // console.log(options)
 
     Promise.all([
       embedScript("https://unpkg.com/react@18.2.0/umd/react.development.js"),
@@ -713,23 +713,17 @@ mergeInto(LibraryManager.library, {
     }
 
     const players = window._multiplayer.getPlayers();
-    console.log(players)
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
       return null;
     }
     const playerState = players[UTF8ToString(playerID)];
-    console.log(playerState)
 
     if (!playerState) {
       console.error("Player with ID", UTF8ToString(playerID), "not found.");
       return null;
     }
-
-    const p = playerState.kick()
-    console.log(p)
-
     playerState.kick().then(() => {
       dynCall('v', onKickCallBack, [])
     }).catch((error) => {

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using AOT;
 using System;
@@ -57,7 +58,6 @@ namespace Playroom
                 InsertCoinCallback = callback;
                 string optionsJson = null;
                 if (options != null) { optionsJson = SerializeInitOptions(options); }
-                Debug.Log("C# " + optionsJson);
                 InsertCoinInternal(InvokeInsertCoin, optionsJson, __OnPlayerJoinCallbackHandler, __OnQuitInternalHandler);
             }
             else
@@ -336,7 +336,7 @@ namespace Playroom
         {
             if (IsRunningInBrowser())
             {
-                var floatAsString = value.ToString();
+                var floatAsString = value.ToString(CultureInfo.InvariantCulture);
                 SetStateFloatInternal(key, floatAsString, reliable);
             }
             else
@@ -929,7 +929,7 @@ namespace Playroom
             {
                 if (IsRunningInBrowser())
                 {
-                    SetPlayerStateFloatByPlayerId(id, key, value.ToString(), reliable);
+                    SetPlayerStateFloatByPlayerId(id, key, value.ToString(CultureInfo.InvariantCulture), reliable);
                 }
                 else
                 {
