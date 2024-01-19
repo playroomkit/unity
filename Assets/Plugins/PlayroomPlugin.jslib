@@ -725,15 +725,11 @@ mergeInto(LibraryManager.library, {
       return null;
     }
     const playerState = players[UTF8ToString(playerID)];
-    
 
     if (!playerState) {
       console.error("Player with ID", UTF8ToString(playerID), "not found.");
       return null;
     }
-
-    const p = playerState.kick()
-    console.log(p)
 
     playerState.kick().then(() => {
       dynCall('v', onKickCallBack, [])
