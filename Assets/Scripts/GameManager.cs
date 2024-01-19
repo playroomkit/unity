@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using AOT;
 using Playroom;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
@@ -15,30 +15,51 @@ public class GameManager : MonoBehaviour
     Dictionary<string, float> moveData = new();
 
     [SerializeField] private int score = 0;
+    [SerializeField] private Text scoreText;
+
     [SerializeField] private static bool playerJoined;
+
+    string[] keysToIgnore;
 
     private void Awake()
     {
-#if !UNITY_EDITOR && UNITY_WEBGL
+
+        keysToIgnore = new string[] { "started" };
+
+#if   UNITY_WEBGL && !UNITY_EDITOR
         WebGLInput.captureAllKeyboardInput = false;
 
         PlayroomKit.InsertCoin(() =>
         {
             PlayroomKit.OnPlayerJoin(AddPlayer);
-            //PlayroomKit.SetState("score", score);
-            //PlayroomKit.SetState("Started", true);
+            PlayroomKit.SetState("score", score);
             WebGLInput.captureAllKeyboardInput = true;
+        }, new PlayroomKit.InitOptions()
+        {
+            defaultPlayerStates = new() {
+                {"score", -500},
+                {"posX", -5},
+            }
         });
-#else
+
+#elif UNITY_EDITOR
+
+        PlayroomKit.InsertCoin(() =>
+        {
+            PlayroomKit.OnPlayerJoin(AddPlayer);
+            PlayroomKit.SetState("score", score);
+
+        }, new PlayroomKit.InitOptions()
+        {
+            defaultStates = new() {
+                {"score", -500},
+                {"posX", -5},
+            }
+        });
+
 #endif
     }
 
-
-    [MonoPInvokeCallback(typeof(Action))]
-    static void WaitForSate()
-    {
-        Debug.Log("Waiting for state callback");
-    }
 
     private void Update()
     {
@@ -47,17 +68,21 @@ public class GameManager : MonoBehaviour
             var myPlayer = PlayroomKit.MyPlayer();
             var index = players.IndexOf(myPlayer);
 
-            //Debug.Log("Started" + PlayroomKit.GetState<bool>("Started"));
-
             playerGameObjects[index].GetComponent<PlayerController>().Move();
 
+            if (Input.GetKeyDown(KeyCode.L) && PlayroomKit.IsHost())
+            {
+                PlayroomKit.ResetStates(keysToIgnore, () =>
+                {
+                    score = PlayroomKit.GetState<int>("score");
+                    scoreText.text = "Score: " + score.ToString();
+                });
+            }
 
             players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
             players[index].SetState("posY", playerGameObjects[index].GetComponent<Transform>().position.y);
 
         }
-
-
 
         for (var i = 0; i < players.Count; i++)
         {
@@ -77,17 +102,18 @@ public class GameManager : MonoBehaviour
                 if (playerGameObjects[i].GetComponent<Transform>().position.x >= 0f)
                 {
                     score += 10;
-                    //PlayroomKit.SetState("score", score);
+                    scoreText.text = "Score: " + score.ToString();
+                    PlayroomKit.SetState("score", score);
                 }
             }
             else
             {
                 Debug.Log(PlayroomKit.GetState<int>("score"));
+                scoreText.text = "Score: " + score.ToString();
             }
-
         }
-    }
 
+    }
 
     public static void AddPlayer(PlayroomKit.Player player)
     {
@@ -97,7 +123,6 @@ public class GameManager : MonoBehaviour
         playerObj.GetComponent<SpriteRenderer>().color = player.GetProfile().color;
         Debug.Log(player.GetProfile().name + " Joined the game!" + "id: " + player.id);
 
-    
         PlayerDict.Add(player.id, playerObj);
         players.Add(player);
         playerGameObjects.Add(playerObj);
