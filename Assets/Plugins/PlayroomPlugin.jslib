@@ -56,10 +56,6 @@ mergeInto(LibraryManager.library, {
               });
             });
 
-            Playroom.onDisconnect(() => {
-              dynCall("v", onDisconnectCallback, []);
-            });
-
           })
           .catch((error) => {
             console.error("Error inserting coin:", error);
@@ -718,7 +714,7 @@ mergeInto(LibraryManager.library, {
     }
 
     const players = window._multiplayer.getPlayers();
-    
+
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
