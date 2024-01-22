@@ -5,8 +5,8 @@ mergeInto(LibraryManager.library, {
    * @param {function} onQuitInternalCallback - (internal) This C# callback function calls an OnQuit wrapper on C# side, with the player's ID.
    */
   InsertCoinInternal: function (
-    onLaunchCallBack,
     optionsJson,
+    onLaunchCallBack,
     onJoinCallback,
     onQuitInternalCallback,
     onDisconnectCallback
@@ -22,6 +22,16 @@ mergeInto(LibraryManager.library, {
         document.head.appendChild(script);
       });
     }
+
+    function OnLaunchCallBack() {
+      dynCall("v", onLaunchCallBack, []);
+    }
+
+    function OnDisconnectCallback() {
+      dynCall("v", onDisconnectCallback, []);
+    }
+
+
 
     var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
 
@@ -40,9 +50,9 @@ mergeInto(LibraryManager.library, {
           return;
         }
 
-        Playroom.insertCoin(options)
+        Playroom.insertCoin(options, OnLaunchCallBack, OnDisconnectCallback)
           .then(() => {
-            dynCall("v", onLaunchCallBack, []);
+           
 
             Playroom.onPlayerJoin((player) => {
               var id = player.id;
@@ -54,10 +64,6 @@ mergeInto(LibraryManager.library, {
               player.onQuit(() => {
                 dynCall("vi", onQuitInternalCallback, [buffer]);
               });
-            });
-
-            Playroom.onDisconnect(() => {
-              dynCall("v", onDisconnectCallback, []);
             });
 
           })
@@ -718,7 +724,7 @@ mergeInto(LibraryManager.library, {
     }
 
     const players = window._multiplayer.getPlayers();
-    
+
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
