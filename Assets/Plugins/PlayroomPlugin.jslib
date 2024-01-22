@@ -5,8 +5,8 @@ mergeInto(LibraryManager.library, {
    * @param {function} onQuitInternalCallback - (internal) This C# callback function calls an OnQuit wrapper on C# side, with the player's ID.
    */
   InsertCoinInternal: function (
-    onLaunchCallBack,
     optionsJson,
+    onLaunchCallBack,
     onJoinCallback,
     onQuitInternalCallback,
     onDisconnectCallback
