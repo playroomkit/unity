@@ -23,6 +23,16 @@ mergeInto(LibraryManager.library, {
       });
     }
 
+    function OnLaunchCallBack() {
+      dynCall("v", onLaunchCallBack, []);
+    }
+
+    function OnDisconnectCallback() {
+      dynCall("v", onDisconnectCallback, []);
+    }
+
+
+
     var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
 
     Promise.all([
@@ -40,9 +50,9 @@ mergeInto(LibraryManager.library, {
           return;
         }
 
-        Playroom.insertCoin(options)
+        Playroom.insertCoin(options, OnLaunchCallBack, OnDisconnectCallback)
           .then(() => {
-            dynCall("v", onLaunchCallBack, []);
+           
 
             Playroom.onPlayerJoin((player) => {
               var id = player.id;
