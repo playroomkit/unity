@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 using AOT;
 using System;
 using SimpleJSON;
-using System.Xml.Xsl;
 
 namespace Playroom
 {
@@ -64,7 +63,7 @@ namespace Playroom
                 OnDisconnectCallback = onDisconnectCallback;
                 string optionsJson = null;
                 if (options != null) { optionsJson = SerializeInitOptions(options); }
-                InsertCoinInternal(optionsJson ,InvokeInsertCoin,__OnPlayerJoinCallbackHandler, __OnQuitInternalHandler, onDisconnectCallbackHandler);
+                InsertCoinInternal(optionsJson, InvokeInsertCoin, __OnPlayerJoinCallbackHandler, __OnQuitInternalHandler, onDisconnectCallbackHandler);
             }
             else
             {
@@ -1114,6 +1113,26 @@ namespace Playroom
                 }
             }
 
+            public void SetState(string key, object value, bool reliable = false)
+            {
+                if (IsRunningInBrowser())
+                {
+                    SetStateString(key, JsonUtility.ToJson(value), reliable);
+                }
+                else
+                {
+                    if (!isPlayRoomInitialized)
+                    {
+                        Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                    }
+                    else
+                    {
+                        Debug.Log($"State Set! Key: {key}, Value: {value}");
+                        MockSetState(key, value);
+                    }
+                }
+            }
+
             public T GetState<T>(string key)
             {
                 if (IsRunningInBrowser())
@@ -1136,8 +1155,7 @@ namespace Playroom
                     }
                     else
                     {
-                        Debug.LogError($"GetState<{typeof(T)}> is not supported.");
-                        return default;
+                        return JsonUtility.FromJson<T>(GetStateString(key));
                     }
                 }
                 else
