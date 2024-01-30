@@ -435,6 +435,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ad216459c914fb58bc572c96d587702, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 2934851299200569815, guid: c14e0b3aef64ed84ebfdf32c2def9cac, type: 3}
   score: 0
   scoreText: {fileID: 197975553}
 --- !u!4 &330732770

@@ -25,37 +25,32 @@ public class GameManager : MonoBehaviour
     {
 
 
+        // PlayroomKit.OnPlayerJoin(AddPlayer);
+        #if UNITY_WEBGL && !UNITY_EDITOR
+                WebGLInput.captureAllKeyboardInput = false;
 
-#if UNITY_WEBGL && !UNITY_EDITOR
-        WebGLInput.captureAllKeyboardInput = false;
+                PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
+                {
+                    defaultPlayerStates = new() {
+                        {"score", -500},
+                    }
+                }, () =>
+                {
+                    PlayroomKit.OnPlayerJoin(AddPlayer);
+                    PlayroomKit.SetState("score", score);
+                    WebGLInput.captureAllKeyboardInput = true;
+                });
 
-        PlayroomKit.InsertCoin(() =>
-        {
-            PlayroomKit.OnPlayerJoin(AddPlayer);
-            PlayroomKit.SetState("score", score);
-            WebGLInput.captureAllKeyboardInput = true;
-        }, new PlayroomKit.InitOptions()
-        {
-            defaultPlayerStates = new() {
-                {"score", -500},
-            }
-        });
+        #elif UNITY_EDITOR
 
-#elif UNITY_EDITOR
+                PlayroomKit.InsertCoin(null, () =>
+                {
+                    PlayroomKit.OnPlayerJoin(AddPlayer);
+                    PlayroomKit.SetState("score", score);
 
-        PlayroomKit.InsertCoin(() =>
-        {
-            PlayroomKit.OnPlayerJoin(AddPlayer);
-            PlayroomKit.SetState("score", score);
+                });
 
-        }, new PlayroomKit.InitOptions()
-        {
-            defaultStates = new() {
-                {"score", -500},
-            }
-        });
-
-#endif
+        #endif
     }
 
 
