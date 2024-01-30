@@ -52,6 +52,10 @@ namespace Playroom
         private static void InvokeInsertCoin()
         {
             InsertCoinCallback?.Invoke();
+#if UNITY_WEBGL && !UNITY_EDITOR
+            WebGLInput.captureAllKeyboardInput = true;
+#endif
+
         }
 
         // optional InitOptions
@@ -63,7 +67,20 @@ namespace Playroom
                 InsertCoinCallback = onLaunchCallBack;
                 OnDisconnectCallback = onDisconnectCallback;
                 string optionsJson = null;
-                if (options != null) { optionsJson = SerializeInitOptions(options); }
+                if (options != null)
+                {
+                    optionsJson = SerializeInitOptions(options);
+                }
+
+                if (options.skipLobby == false)
+                {
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+                        WebGLInput.captureAllKeyboardInput = false;
+#endif
+                }
+
+
                 InsertCoinInternal(optionsJson, InvokeInsertCoin, __OnQuitInternalHandler, onDisconnectCallbackHandler);
             }
             else
