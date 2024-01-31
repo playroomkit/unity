@@ -7,7 +7,6 @@ mergeInto(LibraryManager.library, {
   InsertCoinInternal: function (
     optionsJson,
     onLaunchCallBack,
-    // onJoinCallback,
     onQuitInternalCallback,
     onDisconnectCallback
   ) {
@@ -59,7 +58,6 @@ mergeInto(LibraryManager.library, {
               var bufferSize = lengthBytesUTF8(id) + 1;
               var buffer = _malloc(bufferSize);
               stringToUTF8(id, buffer, bufferSize);
-              // dynCall("vi", onJoinCallback, [buffer]);
 
               player.onQuit(() => {
                 dynCall("vi", onQuitInternalCallback, [buffer]);
