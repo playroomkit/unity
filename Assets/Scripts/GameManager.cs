@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using AOT;
 using Playroom;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -20,42 +21,23 @@ public class GameManager : MonoBehaviour
     [SerializeField] private static bool playerJoined;
 
 
-
     private void Awake()
     {
 
+        PlayroomKit.OnPlayerJoin(AddPlayer);
 
+        // PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
+        // {
+        //     defaultPlayerStates = new() {
+        //                 {"score", -500},
+        //             }
+        // }, () =>
+        // {
+        //     PlayroomKit.OnPlayerJoin(AddPlayer);
+        //     PlayroomKit.SetState("score", score);
 
-#if UNITY_WEBGL && !UNITY_EDITOR
-        WebGLInput.captureAllKeyboardInput = false;
+        // });
 
-        PlayroomKit.InsertCoin(() =>
-        {
-            PlayroomKit.OnPlayerJoin(AddPlayer);
-            PlayroomKit.SetState("score", score);
-            WebGLInput.captureAllKeyboardInput = true;
-        }, new PlayroomKit.InitOptions()
-        {
-            defaultPlayerStates = new() {
-                {"score", -500},
-            }
-        });
-
-#elif UNITY_EDITOR
-
-        PlayroomKit.InsertCoin(() =>
-        {
-            PlayroomKit.OnPlayerJoin(AddPlayer);
-            PlayroomKit.SetState("score", score);
-
-        }, new PlayroomKit.InitOptions()
-        {
-            defaultStates = new() {
-                {"score", -500},
-            }
-        });
-
-#endif
     }
 
 
