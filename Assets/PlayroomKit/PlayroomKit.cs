@@ -45,12 +45,16 @@ namespace Playroom
         private static Action OnDisconnectCallback = null;
 
         [DllImport("__Internal")]
-        private static extern void InsertCoinInternal(string options, Action onLaunchCallback, Action<string> onPlayerJoinInternalCallback, Action<string> onQuitInternalCallback, Action onDisconnectCallback);
+        private static extern void InsertCoinInternal(string options, Action onLaunchCallback, Action<string> onQuitInternalCallback, Action onDisconnectCallback);
 
         [MonoPInvokeCallback(typeof(Action))]
         private static void InvokeInsertCoin()
         {
             InsertCoinCallback?.Invoke();
+#if UNITY_WEBGL && !UNITY_EDITOR
+            WebGLInput.captureAllKeyboardInput = true;
+#endif
+
         }
 
         // optional InitOptions
@@ -62,8 +66,24 @@ namespace Playroom
                 InsertCoinCallback = onLaunchCallBack;
                 OnDisconnectCallback = onDisconnectCallback;
                 string optionsJson = null;
-                if (options != null) { optionsJson = SerializeInitOptions(options); }
-                InsertCoinInternal(optionsJson, InvokeInsertCoin, __OnPlayerJoinCallbackHandler, __OnQuitInternalHandler, onDisconnectCallbackHandler);
+
+                if (options != null)
+                {
+                    optionsJson = SerializeInitOptions(options);
+                }
+
+                if (options.skipLobby == false)
+                {
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+                        WebGLInput.captureAllKeyboardInput = false;
+#endif
+                }
+
+
+                InsertCoinInternal(optionsJson, InvokeInsertCoin, __OnQuitInternalHandler, onDisconnectCallbackHandler);
+
+              
             }
             else
             {
@@ -155,8 +175,8 @@ namespace Playroom
             }
         }
 
-        // [DllImport("__Internal")]
-        // private static extern void OnPlayerJoinInternal(Action<string> callback);
+        [DllImport("__Internal")]
+        private static extern void OnPlayerJoinInternal(Action<string> callback);
 
         // private static Action<Player> onPlayerJoinCallback = null;
         private static List<Action<Player>> OnPlayerJoinCallbacks = new();
@@ -185,6 +205,9 @@ namespace Playroom
             // onPlayerJoinCallback?.Invoke(player);
         }
 
+
+
+
         public static void OnPlayerJoin(Action<Player> onPlayerJoinCallback)
         {
             if (!isPlayRoomInitialized)
@@ -197,7 +220,7 @@ namespace Playroom
                 {
                     // onPlayerJoinCallback = playerCallback;
                     OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
-                    // OnPlayerJoinInternal(OnPlayerJoinWrapperCallback);
+                    OnPlayerJoinInternal(__OnPlayerJoinCallbackHandler);
                 }
                 else
                 {
