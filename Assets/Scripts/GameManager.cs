@@ -23,22 +23,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-
-        // PlayroomKit.OnPlayerJoin(AddPlayer);
-
-        PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
-        {
-            defaultPlayerStates = new() {
-                        {"score", -500},
-                    }
-        }, () =>
-        {
-            PlayroomKit.OnPlayerJoin(AddPlayer);
-            PlayroomKit.OnPlayerJoin(AddPlayer);
-            PlayroomKit.SetState("score", score);
-
-        });
-
+        PlayroomKit.OnPlayerJoin(AddPlayer);
     }
 
 
