@@ -24,19 +24,20 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
 
-        PlayroomKit.OnPlayerJoin(AddPlayer);
+        // PlayroomKit.OnPlayerJoin(AddPlayer);
 
-        // PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
-        // {
-        //     defaultPlayerStates = new() {
-        //                 {"score", -500},
-        //             }
-        // }, () =>
-        // {
-        //     PlayroomKit.OnPlayerJoin(AddPlayer);
-        //     PlayroomKit.SetState("score", score);
+        PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
+        {
+            defaultPlayerStates = new() {
+                        {"score", -500},
+                    }
+        }, () =>
+        {
+            PlayroomKit.OnPlayerJoin(AddPlayer);
+            PlayroomKit.OnPlayerJoin(AddPlayer);
+            PlayroomKit.SetState("score", score);
 
-        // });
+        });
 
     }
 
@@ -97,20 +98,27 @@ public class GameManager : MonoBehaviour
 
     public static void AddPlayer(PlayroomKit.Player player)
     {
-        GameObject playerObj = (GameObject)Instantiate(Resources.Load("Player"),
-            new Vector3(Random.Range(-4, 4), Random.Range(1, 5), 0), Quaternion.identity);
 
-        playerObj.GetComponent<SpriteRenderer>().color = player.GetProfile().color;
-        Debug.Log(player.GetProfile().name + " Joined the game!" + "id: " + player.id);
+        if (!playerJoined)
+        {
+            GameObject playerObj = (GameObject)Instantiate(Resources.Load("Player"),
+                new Vector3(Random.Range(-4, 4), Random.Range(1, 5), 0), Quaternion.identity);
 
-        PlayerDict.Add(player.id, playerObj);
-        players.Add(player);
-        playerGameObjects.Add(playerObj);
+            playerObj.GetComponent<SpriteRenderer>().color = player.GetProfile().color;
+            Debug.Log(player.GetProfile().name + " Joined the game!" + "id: " + player.id);
 
-        playerJoined = true;
 
-        player.OnQuit(RemovePlayer);
+            PlayerDict.TryAdd(player.id, playerObj);
+
+            players.Add(player);
+            playerGameObjects.Add(playerObj);
+
+            playerJoined = true;
+            player.OnQuit(RemovePlayer);
+        }
     }
+
+
 
     [MonoPInvokeCallback(typeof(Action<string>))]
     private static void RemovePlayer(string playerID)

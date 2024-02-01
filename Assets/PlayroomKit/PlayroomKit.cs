@@ -18,10 +18,9 @@ namespace Playroom
         /// </summary>
         private const string PlayerId = "mockPlayer";
         private static bool mockIsStreamMode;
-        public static Dictionary<string, object> MockDictionary = new();
+        private static Dictionary<string, object> MockDictionary = new();
 
-
-        public static Dictionary<string, Player> Players = new();
+        public static readonly Dictionary<string, Player> Players = new();
 
 
         [Serializable]
