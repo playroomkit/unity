@@ -793,7 +793,7 @@ mergeInto(LibraryManager.library, {
 
 
 
-  RPCregister: function (name) {
+  RpcRegister: function (name) {
     if (!window.Playroom) {
       console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
       return;
@@ -812,7 +812,7 @@ mergeInto(LibraryManager.library, {
     Playroom.RPC.register(UTF8ToString(name), registerCallback);
   },
 
-  RPCcallInternal: function (name, data, mode, callbackOnResponse) {
+  RpcCallInternal: function (name, data, mode, callbackOnResponse) {
     if (!window.Playroom) {
       console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
     }
@@ -822,13 +822,6 @@ mergeInto(LibraryManager.library, {
       console.log("Response received: ", responseData);
       dynCall('v', callbackOnResponse, []);
     }
-
-    // Just to check the sequence in enum:
-    console.log("mode ALL    : " + Playroom.RPC.Mode.ALL);
-    console.log("mode OTHERS : " + Playroom.RPC.Mode.OTHERS);
-    console.log("mode HOST   : " + Playroom.RPC.Mode.HOST);
-    // mode from unity:
-    console.log("Mode from unity: " + mode);
 
     Playroom.RPC.call(UTF8ToString(name), UTF8ToString(data), mode, onResponseCallback);
   },

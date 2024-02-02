@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.H))
             {
-                PlayroomKit.RPCcall("playTurn", "Temp Data", () =>
+                PlayroomKit.RpcCall("playTurn", "rock", () =>
                 {
                     Debug.Log("On Response Callback called");
                 });
@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.K))
             {
-                PlayroomKit.RPCregister("playTurn");
+                PlayroomKit.RpcRegister("playTurn");
             }
 
             players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);

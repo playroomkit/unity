@@ -980,23 +980,23 @@ namespace Playroom
         }
 
         [DllImport("__Internal")]
-        public extern static void RPCregister(string name);
+        public extern static void RpcRegister(string name);
 
         [DllImport("__Internal")]
-        private extern static void RPCcallInternal(string name, string data, RPCModes mode, Action callbackOnResponse);
+        private extern static void RpcCallInternal(string name, string data, RPCModes mode, Action callbackOnResponse);
 
         private static Action CallbackOnResponse = null;
 
-        public static void RPCcall(string name, string data, RPCModes mode, Action callbackOnResponse)
+        public static void RpcCall(string name, string data, RPCModes mode, Action callbackOnResponse)
         {
             CallbackOnResponse = callbackOnResponse;
             RPCcallInternal(name, data, mode, InvokeOnResponseCallback);
         }
 
         // Default Mode
-        public static void RPCcall(string name, string data, Action callbackOnResponse)
+        public static void RpcCall(string name, string data, Action callbackOnResponse)
         {
-            RPCcall(name, data, RPCModes.ALL, callbackOnResponse);
+            RpcCall(name, data, RPCModes.ALL, callbackOnResponse);
         }
 
         [MonoPInvokeCallback(typeof(Action))]
