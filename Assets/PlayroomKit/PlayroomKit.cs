@@ -990,7 +990,7 @@ namespace Playroom
         public static void RpcCall(string name, string data, RPCModes mode, Action callbackOnResponse)
         {
             CallbackOnResponse = callbackOnResponse;
-            RPCcallInternal(name, data, mode, InvokeOnResponseCallback);
+            RpcCallInternal(name, data, mode, InvokeOnResponseCallback);
         }
 
         // Default Mode
