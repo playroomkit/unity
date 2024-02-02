@@ -282,24 +282,28 @@ mergeInto(LibraryManager.library, {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
       );
-      return "";
     }
 
-    var returnStr = Playroom.getState(UTF8ToString(key));
+    try {
+      var returnStr = Playroom.getState(UTF8ToString(key));
 
-    if (returnStr == null) {
-      return "";
+      if (returnStr == null) {
+        return "";
+      }
+
+      if (typeof returnStr !== 'string') {
+        return "";
+      }
+
+      var bufferSize = lengthBytesUTF8(returnStr) + 1;
+      var buffer = _malloc(bufferSize);
+      stringToUTF8(returnStr, buffer, bufferSize);
+      return buffer;
+    } catch (error) {
+      console.error("JavaScript Library: An error occurred in GetStateStringInternal: \n\n", error);
     }
-
-    if (typeof returnStr !== 'string') {
-      return "";
-    }
-
-    var bufferSize = lengthBytesUTF8(returnStr) + 1;
-    var buffer = _malloc(bufferSize);
-    stringToUTF8(returnStr, buffer, bufferSize);
-    return buffer;
   },
+
 
 
   /**
