@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using AOT;
 using Playroom;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+using Debug = UnityEngine.Debug;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -24,19 +26,18 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
 
-        PlayroomKit.OnPlayerJoin(AddPlayer);
+        // PlayroomKit.OnPlayerJoin(AddPlayer);
 
-        // PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
-        // {
-        //     defaultPlayerStates = new() {
-        //                 {"score", -500},
-        //             }
-        // }, () =>
-        // {
-        //     PlayroomKit.OnPlayerJoin(AddPlayer);
-        //     PlayroomKit.SetState("score", score);
-
-        // });
+        PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
+        {
+            defaultPlayerStates = new() {
+                        {"score", -500},
+                    }
+        }, () =>
+        {
+            PlayroomKit.OnPlayerJoin(AddPlayer);
+            PlayroomKit.SetState("score", score);
+        });
 
     }
 
@@ -50,13 +51,28 @@ public class GameManager : MonoBehaviour
 
             playerGameObjects[index].GetComponent<PlayerController>().Move();
 
-            if (Input.GetKeyDown(KeyCode.L) && PlayroomKit.IsHost())
+            if (Input.GetKeyDown(KeyCode.R) && PlayroomKit.IsHost())
             {
                 PlayroomKit.ResetStates(null, () =>
                 {
                     var defscore = PlayroomKit.GetState<int>("score");
                     scoreText.text = "Score: " + defscore.ToString();
                 });
+
+            }
+
+
+            if (Input.GetKeyDown(KeyCode.H))
+            {
+                PlayroomKit.RPCcall("playTurn", "Temp Data", () =>
+                {
+                    Debug.Log("On Response Callback called");
+                });
+            }
+
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                PlayroomKit.RPCregister("playTurn");
             }
 
             players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
@@ -88,8 +104,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                Debug.Log(PlayroomKit.GetState<int>("score"));
-                scoreText.text = "Score: " + score.ToString();
+                scoreText.text = "Score: " + PlayroomKit.GetState<int>("score").ToString();
             }
         }
 

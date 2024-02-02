@@ -970,6 +970,41 @@ namespace Playroom
             public string y;
         }
 
+
+        // RPC:
+        public enum RPCModes
+        {
+            ALL,
+            OTHERS,
+            HOST
+        }
+
+        [DllImport("__Internal")]
+        public extern static void RPCregister(string name);
+
+        [DllImport("__Internal")]
+        private extern static void RPCcallInternal(string name, string data, RPCModes mode, Action callbackOnResponse);
+
+        private static Action CallbackOnResponse = null;
+
+        public static void RPCcall(string name, string data, RPCModes mode, Action callbackOnResponse)
+        {
+            CallbackOnResponse = callbackOnResponse;
+            RPCcallInternal(name, data, mode, InvokeOnResponseCallback);
+        }
+
+        // Default Mode
+        public static void RPCcall(string name, string data, Action callbackOnResponse)
+        {
+            RPCcall(name, data, RPCModes.ALL, callbackOnResponse);
+        }
+
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void InvokeOnResponseCallback()
+        {
+            CallbackOnResponse?.Invoke();
+        }
+
         // Player class
         public class Player
         {
