@@ -79,7 +79,6 @@ namespace Playroom
 #endif
                 }
 
-
                 InsertCoinInternal(optionsJson, InvokeInsertCoin, __OnQuitInternalHandler, onDisconnectCallbackHandler);
             }
             else
