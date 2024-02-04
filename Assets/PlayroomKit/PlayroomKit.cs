@@ -18,6 +18,12 @@ namespace Playroom
         /// </summary>
         private const string PlayerId = "mockPlayer";
         private static bool mockIsStreamMode;
+
+        /* 
+        This is private, instead of public, to prevent tampering in Mock Mode.
+        Reason: In Mock Mode, only a single player can be tested. 
+        Ref: https://docs.joinplayroom.com/usage/unity#mock-mode
+        */
         private static Dictionary<string, object> MockDictionary = new();
 
         public static readonly Dictionary<string, Player> Players = new();
