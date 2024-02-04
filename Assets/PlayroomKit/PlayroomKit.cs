@@ -985,11 +985,20 @@ namespace Playroom
         [DllImport("__Internal")]
         private extern static void RpcCallInternal(string name, string data, RPCModes mode, Action callbackOnResponse);
 
-        private static Action CallbackOnResponse = null;
+        private static Dictionary<string, Action> OnResponseCallbacks = new Dictionary<string, Action>();
+        private static List<string> RpcEventNames = new List<string>();
 
         public static void RpcCall(string name, string data, RPCModes mode, Action callbackOnResponse)
         {
-            CallbackOnResponse = callbackOnResponse;
+            if (OnResponseCallbacks.ContainsKey(name))
+            {
+                OnResponseCallbacks[name] = callbackOnResponse;
+            }
+            else
+            {
+                OnResponseCallbacks.Add(name, callbackOnResponse);
+                RpcEventNames.Add(name);
+            }
             RpcCallInternal(name, data, mode, InvokeOnResponseCallback);
         }
 
@@ -1002,8 +1011,16 @@ namespace Playroom
         [MonoPInvokeCallback(typeof(Action))]
         private static void InvokeOnResponseCallback()
         {
-            CallbackOnResponse?.Invoke();
+            foreach (var name in RpcEventNames)
+            {
+                if (OnResponseCallbacks.TryGetValue(name, out Action callback))
+                {
+                    callback?.Invoke();
+                }
+            }
+            RpcEventNames.Clear();
         }
+
 
         // Player class
         public class Player

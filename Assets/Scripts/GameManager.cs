@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
 
         PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
         {
+            maxPlayersPerRoom = 2,
             defaultPlayerStates = new() {
                         {"score", -500},
                     }
@@ -61,18 +62,24 @@ public class GameManager : MonoBehaviour
 
             }
 
-
-            if (Input.GetKeyDown(KeyCode.H))
-            {
-                PlayroomKit.RpcCall("playTurn", "rock", () =>
-                {
-                    Debug.Log("On Response Callback called");
-                });
-            }
-
             if (Input.GetKeyDown(KeyCode.K))
             {
                 PlayroomKit.RpcRegister("playTurn");
+                // PlayroomKit.RpcRegister("playTurn2");
+                PlayroomKit.RpcRegister("playTurn3");
+            }
+
+
+            if (Input.GetKeyDown(KeyCode.H))
+            {
+                PlayroomKit.RpcCall("playTurn", "rock", PlayTurn);
+                PlayroomKit.RpcCall("playTurn3", "paper", PlayTurn3);
+                PlayroomKit.RpcCall("playTurn", "scissors", PlayTurn2);
+            }
+
+            if (Input.GetKeyDown(KeyCode.M))
+            {
+                PlayroomKit.RpcCall("playTurn", "scissors", PlayTurn2);
             }
 
             players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
@@ -108,6 +115,21 @@ public class GameManager : MonoBehaviour
             }
         }
 
+    }
+
+    void PlayTurn()
+    {
+        Debug.Log("playTurn: 1");
+    }
+
+    void PlayTurn2()
+    {
+        Debug.Log("playTurn: 2");
+    }
+
+    void PlayTurn3()
+    {
+        Debug.Log("playTurn3: 3");
     }
 
     public static void AddPlayer(PlayroomKit.Player player)

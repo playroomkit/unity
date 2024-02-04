@@ -32,7 +32,9 @@ mergeInto(LibraryManager.library, {
 
 
 
+
     var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
+
 
     Promise.all([
       embedScript("https://unpkg.com/react@18.2.0/umd/react.development.js"),
