@@ -1044,35 +1044,38 @@ namespace Playroom
 
         private static string ConvertToJson(object data)
         {
-            if (data == null) return null;
-
-            // Check for simple data types
-            if (data is string stringValue)
+            if (data == null)
             {
-                return stringValue;
+                return null;
             }
-            else if (data is int intValue)
+            else if (data.GetType().IsPrimitive || data is string)
             {
-                return intValue.ToString();
+                return data.ToString();
             }
-            else if (data is float floatValue)
+            if (data is Vector2 vector2)
             {
-                return floatValue.ToString();
+                return JsonUtility.ToJson(vector2);
             }
-            else if (data is bool boolValue)
+            else if (data is Vector3 vector3)
             {
-                return boolValue.ToString();
+                return JsonUtility.ToJson(vector3);
+            }
+            else if (data is Vector4 vector4)
+            {
+                return JsonUtility.ToJson(vector4);
+            }
+            else if (data is Quaternion quaternion)
+            {
+                return JsonUtility.ToJson(quaternion);
             }
             else
             {
-                // If it's not a simple data type, handle it separately
                 return ConvertComplexToJson(data);
             }
         }
 
         private static string ConvertComplexToJson(object data)
         {
-            // Add logic to handle complex data types
             if (data is IDictionary dictionary)
             {
                 JSONObject dictNode = new JSONObject();
@@ -1082,14 +1085,21 @@ namespace Playroom
                 }
                 return dictNode.ToString();
             }
+            else if (data is IEnumerable enumerable)
+            {
+                JSONArray arrayNode = new JSONArray();
+                foreach (object element in enumerable)
+                {
+                    arrayNode.Add(ConvertToJson(element));
+                }
+                return arrayNode.ToString();
+            }
             else
             {
-                // Handle other complex data types if needed
                 Debug.Log($"{data} is '{data.GetType()}' which is currently not supported by RPC!");
                 return JSON.Parse("{}").ToString();
             }
         }
-
 
 
         // Player class
