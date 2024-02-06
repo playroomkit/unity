@@ -822,12 +822,12 @@ mergeInto(LibraryManager.library, {
       var data;
       if (dataJson) {
         try {
-          console.log("JS json: " + UTF8ToString(dataJson))
+
           data = JSON.parse(UTF8ToString(dataJson));
         } catch (parseError) {
           console.warn("Failed to parse dataJson as JSON. Treating it as a regular string.");
           data = UTF8ToString(dataJson);
-          console.log("string  " + data)
+
         }
       } else {
         data = {};

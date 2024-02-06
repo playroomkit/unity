@@ -1006,7 +1006,7 @@ namespace Playroom
                     RpcEventNames.Add(name);
                 }
             }
-            Debug.Log("C#: \n" + jsonData);
+
             RpcCallInternal(name, jsonData, mode, InvokeOnResponseCallback);
         }
 
