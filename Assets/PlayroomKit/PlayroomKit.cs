@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using AOT;
 using System;
 using SimpleJSON;
+using System.Collections;
 
 namespace Playroom
 {
@@ -985,25 +986,32 @@ namespace Playroom
         [DllImport("__Internal")]
         private extern static void RpcCallInternal(string name, string data, RPCModes mode, Action callbackOnResponse);
 
-        private static Dictionary<string, Action> OnResponseCallbacks = new Dictionary<string, Action>();
+        private static Dictionary<string, List<Action>> OnResponseCallbacks = new Dictionary<string, List<Action>>();
         private static List<string> RpcEventNames = new List<string>();
 
-        public static void RpcCall(string name, string data, RPCModes mode, Action callbackOnResponse)
+        public static void RpcCall(string name, object data, RPCModes mode, Action callbackOnResponse)
         {
+
+            string jsonData = ConvertToJson(data);
+
             if (OnResponseCallbacks.ContainsKey(name))
             {
-                OnResponseCallbacks[name] = callbackOnResponse;
+                OnResponseCallbacks[name].Add(callbackOnResponse);
             }
             else
             {
-                OnResponseCallbacks.Add(name, callbackOnResponse);
-                RpcEventNames.Add(name);
+                OnResponseCallbacks.Add(name, new List<Action> { callbackOnResponse });
+                if (!RpcEventNames.Contains(name))
+                {
+                    RpcEventNames.Add(name);
+                }
             }
-            RpcCallInternal(name, data, mode, InvokeOnResponseCallback);
+            Debug.Log("C#: \n" + jsonData);
+            RpcCallInternal(name, jsonData, mode, InvokeOnResponseCallback);
         }
 
         // Default Mode
-        public static void RpcCall(string name, string data, Action callbackOnResponse)
+        public static void RpcCall(string name, object data, Action callbackOnResponse)
         {
             RpcCall(name, data, RPCModes.ALL, callbackOnResponse);
         }
@@ -1013,13 +1021,75 @@ namespace Playroom
         {
             foreach (var name in RpcEventNames)
             {
-                if (OnResponseCallbacks.TryGetValue(name, out Action callback))
+                try
                 {
-                    callback?.Invoke();
+                    if (OnResponseCallbacks.TryGetValue(name, out List<Action> callbacks))
+                    {
+                        foreach (var callback in callbacks)
+                        {
+                            callback?.Invoke();
+                        }
+
+                        RpcEventNames.Remove(name);
+                        OnResponseCallbacks.Remove(name);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"C#: Error in Invoking callback for RPC event name: '{name}': {ex.Message}");
                 }
             }
-            RpcEventNames.Clear();
         }
+
+
+        private static string ConvertToJson(object data)
+        {
+            if (data == null) return null;
+
+            // Check for simple data types
+            if (data is string stringValue)
+            {
+                return stringValue;
+            }
+            else if (data is int intValue)
+            {
+                return intValue.ToString();
+            }
+            else if (data is float floatValue)
+            {
+                return floatValue.ToString();
+            }
+            else if (data is bool boolValue)
+            {
+                return boolValue.ToString();
+            }
+            else
+            {
+                // If it's not a simple data type, handle it separately
+                return ConvertComplexToJson(data);
+            }
+        }
+
+        private static string ConvertComplexToJson(object data)
+        {
+            // Add logic to handle complex data types
+            if (data is IDictionary dictionary)
+            {
+                JSONObject dictNode = new JSONObject();
+                foreach (DictionaryEntry entry in dictionary)
+                {
+                    dictNode[entry.Key.ToString()] = ConvertToJson(entry.Value);
+                }
+                return dictNode.ToString();
+            }
+            else
+            {
+                // Handle other complex data types if needed
+                Debug.Log($"{data} is '{data.GetType()}' which is currently not supported by RPC!");
+                return JSON.Parse("{}").ToString();
+            }
+        }
+
 
 
         // Player class

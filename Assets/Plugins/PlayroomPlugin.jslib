@@ -802,11 +802,9 @@ mergeInto(LibraryManager.library, {
     }
 
     function registerCallback(data, sender) {
-
       //TODO: callback from unity here?  
-
       console.log(`${sender.id} played their turn!`);
-      console.log(data);
+      console.log(`recieving: ${data}`);
       return 'okay!';
     }
 
@@ -814,19 +812,38 @@ mergeInto(LibraryManager.library, {
     Playroom.RPC.register(UTF8ToString(name), registerCallback);
   },
 
-  RpcCallInternal: function (name, data, mode, callbackOnResponse) {
+  RpcCallInternal: function (name, dataJson, mode, callbackOnResponse) {
     if (!window.Playroom) {
       console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      return;
     }
 
-    // Example callback function
-    function onResponseCallback(responseData) {
-      console.log("Response received: ", responseData);
-      dynCall('v', callbackOnResponse, []);
-    }
+    try {
+      var data;
+      if (dataJson) {
+        try {
+          console.log("JS json: " + UTF8ToString(dataJson))
+          data = JSON.parse(UTF8ToString(dataJson));
+        } catch (parseError) {
+          console.warn("Failed to parse dataJson as JSON. Treating it as a regular string.");
+          data = UTF8ToString(dataJson);
+          console.log("string  " + data)
+        }
+      } else {
+        data = {};
+      }
 
-    Playroom.RPC.call(UTF8ToString(name), UTF8ToString(data), mode, onResponseCallback);
+      function onResponseCallback(responseData) {
+        console.log("Response received: ", responseData);
+        dynCall('v', callbackOnResponse, []);
+      }
+
+      Playroom.RPC.call(UTF8ToString(name), data, mode, onResponseCallback);
+    } catch (error) {
+      console.error("Error in RpcCallInternal:", error);
+    }
   },
+
 
 
 
