@@ -795,17 +795,20 @@ mergeInto(LibraryManager.library, {
 
 
 
-  RpcRegister: function (name) {
+  RpcRegisterInternal: function (name, callback, onResponseReturn) {
     if (!window.Playroom) {
       console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
       return;
     }
 
+    onResponseReturn = UTF8ToString(onResponseReturn)
+
     function registerCallback(data, sender) {
-      //TODO: callback from unity here?  
-      console.log(`${sender.id} played their turn!`);
-      console.log(`recieving: ${data}`);
-      return 'okay!';
+      var dataJson = JSON.stringify(data);
+      var senderJson = JSON.stringify(sender);
+      dynCall('vii', callback, [allocateUTF8(dataJson), allocateUTF8(senderJson)]);
+
+      return onResponseReturn;
     }
 
     // Register the callback for the RPC

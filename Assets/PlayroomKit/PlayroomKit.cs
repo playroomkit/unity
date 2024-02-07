@@ -980,8 +980,22 @@ namespace Playroom
             HOST
         }
 
+        private static Action<string, string> RpcRegisterCallback = null;
+
         [DllImport("__Internal")]
-        public extern static void RpcRegister(string name);
+        private extern static void RpcRegisterInternal(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null);
+
+        public static void RpcRegister(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null)
+        {
+            RpcRegisterCallback = rpcRegisterCallback;
+            RpcRegisterInternal(name, InvokeRpcRegisterCallBack, onResponseReturn);
+        }
+
+        [MonoPInvokeCallback(typeof(Action<string, string>))]
+        private static void InvokeRpcRegisterCallBack(string dataJson, string senderJson)
+        {
+            RpcRegisterCallback?.Invoke(dataJson, senderJson);
+        }
 
         [DllImport("__Internal")]
         private extern static void RpcCallInternal(string name, string data, RPCModes mode, Action callbackOnResponse);
