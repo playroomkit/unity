@@ -994,6 +994,22 @@ namespace Playroom
         [MonoPInvokeCallback(typeof(Action<string, string>))]
         private static void InvokeRpcRegisterCallBack(string dataJson, string senderJson)
         {
+            try
+            {
+                if (!Players.ContainsKey(senderJson))
+                {
+                    var player = new Player(senderJson);
+                    Players.Add(senderJson, player);
+                }
+                else
+                {
+                    Debug.LogWarning($"Players dictionary already has a player with ID: {senderJson}!");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex.Message);
+            }
             RpcRegisterCallback?.Invoke(dataJson, senderJson);
         }
 

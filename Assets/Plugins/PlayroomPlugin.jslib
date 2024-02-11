@@ -41,6 +41,7 @@ mergeInto(LibraryManager.library, {
       embedScript(
         "https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"
       ),
+      // not the latest version:
       embedScript("https://unpkg.com/playroomkit/multiplayer.umd.js"),
     ])
       .then(() => {
@@ -805,8 +806,15 @@ mergeInto(LibraryManager.library, {
 
     function registerCallback(data, sender) {
       var dataJson = JSON.stringify(data);
-      var senderJson = JSON.stringify(sender);
-      dynCall('vii', callback, [allocateUTF8(dataJson), allocateUTF8(senderJson)]);
+      
+
+      var id = sender.id;
+      var bufferSize = lengthBytesUTF8(id) + 1;
+      var buffer = _malloc(bufferSize);
+      stringToUTF8(id, buffer, bufferSize);
+
+
+      dynCall('vii', callback, [allocateUTF8(dataJson), buffer]);
 
       return onResponseReturn;
     }
