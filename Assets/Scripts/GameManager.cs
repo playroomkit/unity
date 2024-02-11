@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private static bool playerJoined;
 
+    Dictionary<string, float> states;
+
 
     private void Awake()
     {
@@ -33,12 +35,19 @@ public class GameManager : MonoBehaviour
             maxPlayersPerRoom = 2,
             defaultPlayerStates = new() {
                         {"score", -500},
-                    }
+                    },
+            // skipLobby = true,
         }, () =>
         {
             PlayroomKit.OnPlayerJoin(AddPlayer);
             PlayroomKit.SetState("score", score);
+
         });
+
+        states = new() {
+                        {"health", 86.4f},
+                        {"speed", 10.34f},
+                    };
 
     }
 
@@ -64,22 +73,22 @@ public class GameManager : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.K))
             {
-                PlayroomKit.RpcRegister("playTurn");
+                PlayroomKit.RpcRegister("playTurn", playTurnRegisterCallback, "PlayTurn Response");
                 // PlayroomKit.RpcRegister("playTurn2");
-                PlayroomKit.RpcRegister("playTurn3");
+                PlayroomKit.RpcRegister("playTurn3", playTurnRegisterCallback);
             }
 
 
             if (Input.GetKeyDown(KeyCode.H))
             {
                 PlayroomKit.RpcCall("playTurn", "rock", PlayTurn);
-                PlayroomKit.RpcCall("playTurn3", "paper", PlayTurn3);
-                PlayroomKit.RpcCall("playTurn", "scissors", PlayTurn2);
+                PlayroomKit.RpcCall("playTurn3", 69, PlayTurn3);
+                PlayroomKit.RpcCall("playTurn", states, PlayTurn2);
             }
 
             if (Input.GetKeyDown(KeyCode.M))
             {
-                PlayroomKit.RpcCall("playTurn", "scissors", PlayTurn2);
+                PlayroomKit.RpcCall("playTurn", playerGameObjects[index].transform.position, PlayTurn2);
             }
 
             players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
@@ -117,19 +126,26 @@ public class GameManager : MonoBehaviour
 
     }
 
+    void playTurnRegisterCallback(string data, string sender)
+    {
+        Debug.Log("sender: " + sender);
+        var player = PlayroomKit.GetPlayer(sender);
+        Debug.Log("Name of sender: " + player.GetProfile().name);
+    }
+
     void PlayTurn()
     {
-        Debug.Log("playTurn: 1");
+        Debug.Log("playTurn called");
     }
 
     void PlayTurn2()
     {
-        Debug.Log("playTurn: 2");
+        Debug.Log("playTurn2 called");
     }
 
     void PlayTurn3()
     {
-        Debug.Log("playTurn3: 3");
+        Debug.Log("playTurn3 called");
     }
 
     public static void AddPlayer(PlayroomKit.Player player)
