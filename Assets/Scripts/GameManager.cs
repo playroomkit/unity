@@ -18,12 +18,12 @@ public class GameManager : MonoBehaviour
     Dictionary<string, float> moveData = new();
 
     [SerializeField] private int score;
-    [SerializeField] private Text scoreText;
+    [SerializeField] private Text scoreText1;
+    [SerializeField] private Text scoreText2;
 
     [SerializeField] private static bool playerJoined;
 
-    Dictionary<string, float> states;
-
+    bool isMoving;
 
     private void Awake()
     {
@@ -36,19 +36,43 @@ public class GameManager : MonoBehaviour
             defaultPlayerStates = new() {
                         {"score", -500},
                     },
-            // skipLobby = true,
+
         }, () =>
         {
             PlayroomKit.OnPlayerJoin(AddPlayer);
-            PlayroomKit.SetState("score", score);
-
         });
 
-        states = new() {
-                        {"health", 86.4f},
-                        {"speed", 10.34f},
-                    };
+    }
 
+    void Start()
+    {
+        PlayroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
+    }
+
+    void HandleScoreUpdate(string data, string caller)
+    {
+        var player = PlayroomKit.GetPlayer(caller);
+        Debug.Log($"Caller: {caller}, Player Name: {player?.GetProfile().name}, Data: {data}");
+
+        // Find the player's GameObject in the dictionary
+        if (PlayerDict.TryGetValue(caller, out GameObject playerObj))
+        {
+            // Get the PlayerController component
+            var playerController = playerObj.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                // Update the score text
+                playerController.scoreText.text = $"Score: {data}";
+            }
+            else
+            {
+                Debug.LogError($"PlayerController not found on GameObject for caller: {caller}");
+            }
+        }
+        else
+        {
+            Debug.LogError($"No GameObject found for caller: {caller}");
+        }
     }
 
 
@@ -60,40 +84,40 @@ public class GameManager : MonoBehaviour
             var index = players.IndexOf(myPlayer);
 
             playerGameObjects[index].GetComponent<PlayerController>().Move();
+            players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
+            players[index].SetState("posY", playerGameObjects[index].GetComponent<Transform>().position.y);
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Vector3 playerPosition = playerGameObjects[index].transform.position;
+                playerGameObjects[index].GetComponent<PlayerController>().ShootBullet(playerPosition, 50f);
+
+                score += 50;
+
+                // if (PlayerDict.TryGetValue(myPlayer.id, out GameObject playerObj))
+                // {
+                //     var playerController = playerObj.GetComponent<PlayerController>();
+                //     if (playerController != null)
+                //     {
+                //         playerController.scoreText.text = $"Score: {score}";
+                //     }
+                // }
+
+                PlayroomKit.RpcCall("ShootBullet", score, () =>
+                {
+                    Debug.Log("shooting bullet!");
+                });
+            }
 
             if (Input.GetKeyDown(KeyCode.R) && PlayroomKit.IsHost())
             {
                 PlayroomKit.ResetStates(null, () =>
                 {
                     var defscore = PlayroomKit.GetState<int>("score");
-                    scoreText.text = "Score: " + defscore.ToString();
+                    // scoreText.text = "Score: " + defscore.ToString();
                 });
 
             }
-
-            if (Input.GetKeyDown(KeyCode.K))
-            {
-                PlayroomKit.RpcRegister("playTurn", playTurnRegisterCallback, "PlayTurn Response");
-                // PlayroomKit.RpcRegister("playTurn2");
-                PlayroomKit.RpcRegister("playTurn3", playTurnRegisterCallback);
-            }
-
-
-            if (Input.GetKeyDown(KeyCode.H))
-            {
-                PlayroomKit.RpcCall("playTurn", "rock", PlayTurn);
-                PlayroomKit.RpcCall("playTurn3", 69, PlayTurn3);
-                PlayroomKit.RpcCall("playTurn", states, PlayTurn2);
-            }
-
-            if (Input.GetKeyDown(KeyCode.M))
-            {
-                PlayroomKit.RpcCall("playTurn", playerGameObjects[index].transform.position, PlayTurn2);
-            }
-
-            players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
-            players[index].SetState("posY", playerGameObjects[index].GetComponent<Transform>().position.y);
-
         }
 
         for (var i = 0; i < players.Count; i++)
@@ -109,46 +133,32 @@ public class GameManager : MonoBehaviour
                     playerGameObjects[i].GetComponent<Transform>().position = newPos;
             }
 
-            if (PlayroomKit.IsHost())
-            {
-                if (playerGameObjects[i].GetComponent<Transform>().position.x >= 0f)
-                {
-                    score += 10;
-                    scoreText.text = "Score: " + score.ToString();
-                    PlayroomKit.SetState("score", score);
-                }
-            }
-            else
-            {
-                scoreText.text = "Score: " + PlayroomKit.GetState<int>("score").ToString();
-            }
+            // if (PlayroomKit.IsHost())
+            // {
+            //     if (playerGameObjects[i].GetComponent<Transform>().position.x >= 0f)
+            //     {
+            //         score += 10;
+            //         scoreText.text = "Score: " + score.ToString();
+            //         PlayroomKit.SetState("score", score);
+            //     }
+            // }
+            // else
+            // {
+            //     scoreText.text = "Score: " + PlayroomKit.GetState<int>("score").ToString();
+            // }
         }
 
     }
 
-    void playTurnRegisterCallback(string data, string sender)
+    void rpcRegisterCallback(string data, string sender)
     {
         Debug.Log("sender: " + sender);
         var player = PlayroomKit.GetPlayer(sender);
         Debug.Log("Name of sender: " + player.GetProfile().name);
     }
 
-    void PlayTurn()
-    {
-        Debug.Log("playTurn called");
-    }
 
-    void PlayTurn2()
-    {
-        Debug.Log("playTurn2 called");
-    }
-
-    void PlayTurn3()
-    {
-        Debug.Log("playTurn3 called");
-    }
-
-    public static void AddPlayer(PlayroomKit.Player player)
+    public void AddPlayer(PlayroomKit.Player player)
     {
         GameObject playerObj = (GameObject)Instantiate(Resources.Load("Player"),
             new Vector3(Random.Range(-4, 4), Random.Range(1, 5), 0), Quaternion.identity);
@@ -159,6 +169,10 @@ public class GameManager : MonoBehaviour
         PlayerDict.Add(player.id, playerObj);
         players.Add(player);
         playerGameObjects.Add(playerObj);
+
+        Text scoreText = (players.Count == 1) ? scoreText1 : scoreText2;
+        playerObj.GetComponent<PlayerController>().scoreText = scoreText;
+
 
         playerJoined = true;
 
