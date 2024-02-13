@@ -27,7 +27,6 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-
         // PlayroomKit.OnPlayerJoin(AddPlayer);
 
         PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
@@ -73,6 +72,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError($"No GameObject found for caller: {caller}");
         }
+
     }
 
 
@@ -178,6 +178,8 @@ public class GameManager : MonoBehaviour
 
         player.OnQuit(RemovePlayer);
     }
+
+
 
     [MonoPInvokeCallback(typeof(Action<string>))]
     private static void RemovePlayer(string playerID)
