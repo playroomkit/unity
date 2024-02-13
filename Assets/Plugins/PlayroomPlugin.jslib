@@ -41,7 +41,6 @@ mergeInto(LibraryManager.library, {
       embedScript(
         "https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"
       ),
-      // not the latest version:
       embedScript("https://unpkg.com/playroomkit/multiplayer.umd.js"),
     ])
       .then(() => {
@@ -153,7 +152,6 @@ mergeInto(LibraryManager.library, {
     }
 
     Playroom.onPlayerJoin((player) => {
-      // Call the C# callback function with the player.id as a string parameter
       var id = player.id;
       var bufferSize = lengthBytesUTF8(id) + 1;
       var buffer = _malloc(bufferSize);
@@ -390,7 +388,6 @@ mergeInto(LibraryManager.library, {
       return null;
     }
 
-    // Assuming that the player state object has a "setState" method
     if (typeof playerState.setState === "function") {
       playerState.setState(UTF8ToString(key), value, reliable);
     } else {
@@ -417,7 +414,6 @@ mergeInto(LibraryManager.library, {
       return null;
     }
 
-    // Assuming that the player state object has a "setState" method
     if (typeof playerState.setState === "function") {
       playerState.setState(
         UTF8ToString(key),
@@ -474,8 +470,6 @@ mergeInto(LibraryManager.library, {
     const players = window._multiplayer.getPlayers();
 
     reliable = !!reliable;
-
-    // Check if players is an object
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
       return null;
@@ -610,7 +604,7 @@ mergeInto(LibraryManager.library, {
   GetPlayerStateDictionary: function (playerId, key) {
     const players = window._multiplayer.getPlayers();
 
-    // Check if players is an object
+
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
       return null;
@@ -623,7 +617,7 @@ mergeInto(LibraryManager.library, {
       return null;
     }
 
-    // Assuming that the player state object has a "setState" method
+
     if (typeof playerState.getState === "function") {
       var obj = playerState.getState(UTF8ToString(key));
       var jsonString = JSON.stringify(obj);
@@ -806,7 +800,7 @@ mergeInto(LibraryManager.library, {
 
     function registerCallback(data, sender) {
       var dataJson = JSON.stringify(data);
-      
+
 
       var id = sender.id;
       var bufferSize = lengthBytesUTF8(id) + 1;
@@ -819,7 +813,6 @@ mergeInto(LibraryManager.library, {
       return onResponseReturn;
     }
 
-    // Register the callback for the RPC
     Playroom.RPC.register(UTF8ToString(name), registerCallback);
   },
 
