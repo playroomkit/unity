@@ -32,7 +32,9 @@ mergeInto(LibraryManager.library, {
 
 
 
+
     var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
+
 
     Promise.all([
       embedScript("https://unpkg.com/react@18.2.0/umd/react.development.js"),
@@ -150,7 +152,6 @@ mergeInto(LibraryManager.library, {
     }
 
     Playroom.onPlayerJoin((player) => {
-      // Call the C# callback function with the player.id as a string parameter
       var id = player.id;
       var bufferSize = lengthBytesUTF8(id) + 1;
       var buffer = _malloc(bufferSize);
@@ -387,7 +388,6 @@ mergeInto(LibraryManager.library, {
       return null;
     }
 
-    // Assuming that the player state object has a "setState" method
     if (typeof playerState.setState === "function") {
       playerState.setState(UTF8ToString(key), value, reliable);
     } else {
@@ -414,7 +414,6 @@ mergeInto(LibraryManager.library, {
       return null;
     }
 
-    // Assuming that the player state object has a "setState" method
     if (typeof playerState.setState === "function") {
       playerState.setState(
         UTF8ToString(key),
@@ -471,8 +470,6 @@ mergeInto(LibraryManager.library, {
     const players = window._multiplayer.getPlayers();
 
     reliable = !!reliable;
-
-    // Check if players is an object
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
       return null;
@@ -607,7 +604,7 @@ mergeInto(LibraryManager.library, {
   GetPlayerStateDictionary: function (playerId, key) {
     const players = window._multiplayer.getPlayers();
 
-    // Check if players is an object
+
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
       return null;
@@ -620,7 +617,7 @@ mergeInto(LibraryManager.library, {
       return null;
     }
 
-    // Assuming that the player state object has a "setState" method
+
     if (typeof playerState.getState === "function") {
       var obj = playerState.getState(UTF8ToString(key));
       var jsonString = JSON.stringify(obj);
@@ -790,6 +787,68 @@ mergeInto(LibraryManager.library, {
         throw error;
       });
   },
+
+
+
+  RpcRegisterInternal: function (name, callback, onResponseReturn) {
+    if (!window.Playroom) {
+      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      return;
+    }
+
+    onResponseReturn = UTF8ToString(onResponseReturn)
+
+    function registerCallback(data, sender) {
+      var dataJson = JSON.stringify(data);
+
+
+      var id = sender.id;
+      var bufferSize = lengthBytesUTF8(id) + 1;
+      var buffer = _malloc(bufferSize);
+      stringToUTF8(id, buffer, bufferSize);
+
+
+      dynCall('vii', callback, [allocateUTF8(dataJson), buffer]);
+
+      return onResponseReturn;
+    }
+
+    Playroom.RPC.register(UTF8ToString(name), registerCallback);
+  },
+
+  RpcCallInternal: function (name, dataJson, mode, callbackOnResponse) {
+    if (!window.Playroom) {
+      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      return;
+    }
+
+    try {
+      var data;
+      if (dataJson) {
+        try {
+
+          data = JSON.parse(UTF8ToString(dataJson));
+        } catch (parseError) {
+          console.warn("Failed to parse dataJson as JSON. Treating it as a regular string.");
+          data = UTF8ToString(dataJson);
+
+        }
+      } else {
+        data = {};
+      }
+
+      function onResponseCallback(responseData) {
+        console.log("Response received: ", responseData);
+        dynCall('v', callbackOnResponse, []);
+      }
+
+      Playroom.RPC.call(UTF8ToString(name), data, mode, onResponseCallback);
+    } catch (error) {
+      console.error("Error in RpcCallInternal:", error);
+    }
+  },
+
+
 
 
 

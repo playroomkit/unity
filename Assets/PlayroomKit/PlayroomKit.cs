@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using AOT;
 using System;
 using SimpleJSON;
+using System.Collections;
 
 namespace Playroom
 {
@@ -974,6 +975,167 @@ namespace Playroom
             public string x;
             public string y;
         }
+
+
+        // RPC:
+        public enum RPCModes
+        {
+            ALL,
+            OTHERS,
+            HOST
+        }
+
+        private static Action<string, string> RpcRegisterCallback = null;
+
+        [DllImport("__Internal")]
+        private extern static void RpcRegisterInternal(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null);
+
+        public static void RpcRegister(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null)
+        {
+            RpcRegisterCallback = rpcRegisterCallback;
+            RpcRegisterInternal(name, InvokeRpcRegisterCallBack, onResponseReturn);
+        }
+
+        [MonoPInvokeCallback(typeof(Action<string, string>))]
+        private static void InvokeRpcRegisterCallBack(string dataJson, string senderJson)
+        {
+            try
+            {
+                if (!Players.ContainsKey(senderJson))
+                {
+                    var player = new Player(senderJson);
+                    Players.Add(senderJson, player);
+                }
+                else
+                {
+                    Debug.LogWarning($"Players dictionary already has a player with ID: {senderJson}!");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex.Message);
+            }
+            RpcRegisterCallback?.Invoke(dataJson, senderJson);
+        }
+
+        [DllImport("__Internal")]
+        private extern static void RpcCallInternal(string name, string data, RPCModes mode, Action callbackOnResponse);
+
+        private static Dictionary<string, List<Action>> OnResponseCallbacks = new Dictionary<string, List<Action>>();
+        private static List<string> RpcEventNames = new List<string>();
+
+        public static void RpcCall(string name, object data, RPCModes mode, Action callbackOnResponse)
+        {
+
+            string jsonData = ConvertToJson(data);
+
+            if (OnResponseCallbacks.ContainsKey(name))
+            {
+                OnResponseCallbacks[name].Add(callbackOnResponse);
+            }
+            else
+            {
+                OnResponseCallbacks.Add(name, new List<Action> { callbackOnResponse });
+                if (!RpcEventNames.Contains(name))
+                {
+                    RpcEventNames.Add(name);
+                }
+            }
+
+            RpcCallInternal(name, jsonData, mode, InvokeOnResponseCallback);
+        }
+
+        // Default Mode
+        public static void RpcCall(string name, object data, Action callbackOnResponse)
+        {
+            RpcCall(name, data, RPCModes.ALL, callbackOnResponse);
+        }
+
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void InvokeOnResponseCallback()
+        {
+            foreach (var name in RpcEventNames)
+            {
+                try
+                {
+                    if (OnResponseCallbacks.TryGetValue(name, out List<Action> callbacks))
+                    {
+                        foreach (var callback in callbacks)
+                        {
+                            callback?.Invoke();
+                        }
+
+                        RpcEventNames.Remove(name);
+                        OnResponseCallbacks.Remove(name);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"C#: Error in Invoking callback for RPC event name: '{name}': {ex.Message}");
+                }
+            }
+        }
+
+
+        private static string ConvertToJson(object data)
+        {
+            if (data == null)
+            {
+                return null;
+            }
+            else if (data.GetType().IsPrimitive || data is string)
+            {
+                return data.ToString();
+            }
+            if (data is Vector2 vector2)
+            {
+                return JsonUtility.ToJson(vector2);
+            }
+            else if (data is Vector3 vector3)
+            {
+                return JsonUtility.ToJson(vector3);
+            }
+            else if (data is Vector4 vector4)
+            {
+                return JsonUtility.ToJson(vector4);
+            }
+            else if (data is Quaternion quaternion)
+            {
+                return JsonUtility.ToJson(quaternion);
+            }
+            else
+            {
+                return ConvertComplexToJson(data);
+            }
+        }
+
+        private static string ConvertComplexToJson(object data)
+        {
+            if (data is IDictionary dictionary)
+            {
+                JSONObject dictNode = new JSONObject();
+                foreach (DictionaryEntry entry in dictionary)
+                {
+                    dictNode[entry.Key.ToString()] = ConvertToJson(entry.Value);
+                }
+                return dictNode.ToString();
+            }
+            else if (data is IEnumerable enumerable)
+            {
+                JSONArray arrayNode = new JSONArray();
+                foreach (object element in enumerable)
+                {
+                    arrayNode.Add(ConvertToJson(element));
+                }
+                return arrayNode.ToString();
+            }
+            else
+            {
+                Debug.Log($"{data} is '{data.GetType()}' which is currently not supported by RPC!");
+                return JSON.Parse("{}").ToString();
+            }
+        }
+
 
         // Player class
         public class Player
