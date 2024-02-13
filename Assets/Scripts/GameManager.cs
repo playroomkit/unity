@@ -53,14 +53,14 @@ public class GameManager : MonoBehaviour
         var player = PlayroomKit.GetPlayer(caller);
         Debug.Log($"Caller: {caller}, Player Name: {player?.GetProfile().name}, Data: {data}");
 
-        // Find the player's GameObject in the dictionary
+
         if (PlayerDict.TryGetValue(caller, out GameObject playerObj))
         {
-            // Get the PlayerController component
+
             var playerController = playerObj.GetComponent<PlayerController>();
             if (playerController != null)
             {
-                // Update the score text
+
                 playerController.scoreText.text = $"Score: {data}";
             }
             else
@@ -94,15 +94,6 @@ public class GameManager : MonoBehaviour
 
                 score += 50;
 
-                // if (PlayerDict.TryGetValue(myPlayer.id, out GameObject playerObj))
-                // {
-                //     var playerController = playerObj.GetComponent<PlayerController>();
-                //     if (playerController != null)
-                //     {
-                //         playerController.scoreText.text = $"Score: {score}";
-                //     }
-                // }
-
                 PlayroomKit.RpcCall("ShootBullet", score, () =>
                 {
                     Debug.Log("shooting bullet!");
@@ -133,19 +124,7 @@ public class GameManager : MonoBehaviour
                     playerGameObjects[i].GetComponent<Transform>().position = newPos;
             }
 
-            // if (PlayroomKit.IsHost())
-            // {
-            //     if (playerGameObjects[i].GetComponent<Transform>().position.x >= 0f)
-            //     {
-            //         score += 10;
-            //         scoreText.text = "Score: " + score.ToString();
-            //         PlayroomKit.SetState("score", score);
-            //     }
-            // }
-            // else
-            // {
-            //     scoreText.text = "Score: " + PlayroomKit.GetState<int>("score").ToString();
-            // }
+
         }
 
     }
