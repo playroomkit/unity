@@ -978,7 +978,7 @@ namespace Playroom
 
 
         // RPC:
-        public enum RPCModes
+        public enum RpcMode
         {
             ALL,
             OTHERS,
@@ -1019,12 +1019,12 @@ namespace Playroom
         }
 
         [DllImport("__Internal")]
-        private extern static void RpcCallInternal(string name, string data, RPCModes mode, Action callbackOnResponse);
+        private extern static void RpcCallInternal(string name, string data, RpcMode mode, Action callbackOnResponse);
 
         private static Dictionary<string, List<Action>> OnResponseCallbacks = new Dictionary<string, List<Action>>();
         private static List<string> RpcEventNames = new List<string>();
 
-        public static void RpcCall(string name, object data, RPCModes mode, Action callbackOnResponse)
+        public static void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse)
         {
 
             string jsonData = ConvertToJson(data);
@@ -1048,7 +1048,7 @@ namespace Playroom
         // Default Mode
         public static void RpcCall(string name, object data, Action callbackOnResponse)
         {
-            RpcCall(name, data, RPCModes.ALL, callbackOnResponse);
+            RpcCall(name, data, RpcMode.ALL, callbackOnResponse);
         }
 
         [MonoPInvokeCallback(typeof(Action))]
