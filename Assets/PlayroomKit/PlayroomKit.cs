@@ -45,6 +45,13 @@ namespace Playroom
             public Dictionary<string, object> defaultStates = null;
             public Dictionary<string, object> defaultPlayerStates = null;
 
+            public bool matchmaking = false;
+
+        }
+
+        public class MatchMakingOptions
+        {
+            public int waitBeforeCreatingNewRoom = 5000;
         }
 
         private static Action InsertCoinCallback = null;
@@ -122,6 +129,8 @@ namespace Playroom
             node["roomCode"] = options.roomCode;
             node["skipLobby"] = options.skipLobby;
             node["reconnectGracePeriod"] = options.reconnectGracePeriod;
+
+            node["matchmaking"] = options.matchmaking;
 
             if (options.maxPlayersPerRoom.HasValue)
             {
@@ -1136,6 +1145,8 @@ namespace Playroom
             }
         }
 
+        [DllImport("__Internal")]
+        public static extern void StartMatchMaking();
 
         // Player class
         public class Player
