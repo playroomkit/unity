@@ -856,7 +856,7 @@ mergeInto(LibraryManager.library, {
     }
 
     Playroom.startMatchmaking().then(() => {
-      console.log(`Player have joined a public room`);
+      console.log(`Player has joined a public room`);
     }).catch(error => {
       console.error(
         `JS: Error starting match making ${error}`)
