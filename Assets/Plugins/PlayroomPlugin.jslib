@@ -849,7 +849,7 @@ mergeInto(LibraryManager.library, {
   },
 
 
-  StartMatchMaking: function () {
+  StartMatchmaking: function () {
     if (!window.Playroom) {
       console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
       return;

@@ -1146,7 +1146,7 @@ namespace Playroom
         }
 
         [DllImport("__Internal")]
-        public static extern void StartMatchMaking();
+        public static extern void StartMatchmaking();
 
         // Player class
         public class Player
