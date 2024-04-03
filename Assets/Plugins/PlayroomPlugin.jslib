@@ -11,9 +11,9 @@ mergeInto(LibraryManager.library, {
     onDisconnectCallback
   ) {
     function embedScript(src) {
-      script.crossOrigin = 'anonymous';
       return new Promise((resolve, reject) => {
         var script = document.createElement("script");
+        script.crossOrigin = 'anonymous';
         script.src = src;
         script.async = false;
         script.onload = resolve;

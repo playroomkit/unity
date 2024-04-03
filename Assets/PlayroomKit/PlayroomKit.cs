@@ -41,6 +41,8 @@ namespace Playroom
             public bool skipLobby = false;
             public int reconnectGracePeriod = 0;
             public int? maxPlayersPerRoom;
+            public string? gameId;
+            public bool discord = false;
 
             public Dictionary<string, object> defaultStates = null;
             public Dictionary<string, object> defaultPlayerStates = null;
@@ -136,6 +138,13 @@ namespace Playroom
             {
                 node["maxPlayersPerRoom"] = options.maxPlayersPerRoom.Value;
             }
+
+            if (options.gameId != null)
+            {
+                node["gameId"] = options.gameId;
+            }
+
+            node["discord"] = options.discord;
 
             if (options.defaultStates != null)
             {
