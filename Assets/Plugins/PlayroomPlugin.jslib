@@ -64,18 +64,14 @@ mergeInto(LibraryManager.library, {
 
           })
           .catch((error) => {
-            // console.error("Error loading Playroom:", error);
-
             var bufferSize = lengthBytesUTF8(error) + 1;
             var buffer = _malloc(bufferSize);
             stringToUTF8(error, buffer, bufferSize);
-
+    
             dynCall("vi", onError, [buffer]);
           });
       })
       .catch((error) => {
-        // console.error("Error loading Playroom:", error);
-
         var bufferSize = lengthBytesUTF8(error) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(error, buffer, bufferSize);

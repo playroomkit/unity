@@ -81,7 +81,8 @@ namespace Playroom
         private static void InvokeOnErrorInsertCoin(string error)
         {
             onError?.Invoke(error);
-            Debug.LogError(error);
+            if (error != "")
+                throw new Exception(error);
         }
 
         private static Action<string> onError;

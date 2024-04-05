@@ -33,7 +33,6 @@ public class GameManager : MonoBehaviour
         {
             maxPlayersPerRoom = 2,
             matchmaking = true,
-            // gameId = "123",
             discord = true,
             defaultPlayerStates = new() {
                         {"score", -500},
