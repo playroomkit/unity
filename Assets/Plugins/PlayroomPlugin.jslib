@@ -8,7 +8,8 @@ mergeInto(LibraryManager.library, {
     optionsJson,
     onLaunchCallBack,
     onQuitInternalCallback,
-    onDisconnectCallback
+    onDisconnectCallback,
+    onError
   ) {
     function embedScript(src) {
       return new Promise((resolve, reject) => {
@@ -30,11 +31,7 @@ mergeInto(LibraryManager.library, {
       dynCall("v", onDisconnectCallback, []);
     }
 
-
-
-
     var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
-
 
     Promise.all([
       embedScript("https://unpkg.com/react@18.2.0/umd/react.development.js"),
@@ -54,7 +51,6 @@ mergeInto(LibraryManager.library, {
         Playroom.insertCoin(options, OnLaunchCallBack, OnDisconnectCallback)
           .then(() => {
 
-
             Playroom.onPlayerJoin((player) => {
               var id = player.id;
               var bufferSize = lengthBytesUTF8(id) + 1;
@@ -68,11 +64,23 @@ mergeInto(LibraryManager.library, {
 
           })
           .catch((error) => {
-            console.error("Error inserting coin:", error);
+            // console.error("Error loading Playroom:", error);
+
+            var bufferSize = lengthBytesUTF8(error) + 1;
+            var buffer = _malloc(bufferSize);
+            stringToUTF8(error, buffer, bufferSize);
+
+            dynCall("vi", onError, [buffer]);
           });
       })
       .catch((error) => {
-        console.error("Error loading Playroom:", error);
+        // console.error("Error loading Playroom:", error);
+
+        var bufferSize = lengthBytesUTF8(error) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(error, buffer, bufferSize);
+
+        dynCall("vi", onError, [buffer]);
       });
   },
 

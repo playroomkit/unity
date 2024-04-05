@@ -28,11 +28,13 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         // PlayroomKit.OnPlayerJoin(AddPlayer);
-
+        
         PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
         {
             maxPlayersPerRoom = 2,
             matchmaking = true,
+            // gameId = "123",
+            discord = true,
             defaultPlayerStates = new() {
                         {"score", -500},
                     },
