@@ -77,17 +77,15 @@ namespace Playroom
 
         }
 
-
-
-
-        private static Action<string> onError;
-        public static string error;
         [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void InvokeOnErrorInsertCoin(string errror)
+        private static void InvokeOnErrorInsertCoin(string error)
         {
-            onError?.Invoke(errror);
+            onError?.Invoke(error);
             Debug.LogError(error);
         }
+
+        private static Action<string> onError;
+
         public static void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null, Action onDisconnectCallback = null)
         {
             if (IsRunningInBrowser())
