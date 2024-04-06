@@ -91,15 +91,20 @@ public class GameManager : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                myPlayer.Kick(() =>
+                {
+                    Destroy(playerGameObjects[index]);
+                });
+
                 Vector3 playerPosition = playerGameObjects[index].transform.position;
                 playerGameObjects[index].GetComponent<PlayerController>().ShootBullet(playerPosition, 50f);
 
                 score += 50;
 
-                PlayroomKit.RpcCall("ShootBullet", score, () =>
-                {
-                    Debug.Log("shooting bullet!");
-                });
+                // PlayroomKit.RpcCall("ShootBullet", score, () =>
+                // {
+                //     Debug.Log("shooting bullet!");
+                // });
             }
 
             if (Input.GetKeyDown(KeyCode.R) && PlayroomKit.IsHost())

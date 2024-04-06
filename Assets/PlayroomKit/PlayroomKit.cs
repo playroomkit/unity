@@ -30,6 +30,7 @@ namespace Playroom
         public static readonly Dictionary<string, Player> Players = new();
 
 
+
         [Serializable]
         public class InitOptions
         {
@@ -252,7 +253,9 @@ namespace Playroom
                     {
                         Debug.Log("On Player Join");
                         var testPlayer = GetPlayer(PlayerId);
-                        onPlayerJoinCallback?.Invoke(testPlayer);
+                        OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
+                        // onPlayerJoinCallback?.Invoke(testPlayer);
+                        __OnPlayerJoinCallbackHandler(PlayerId);
                     }
                 }
             }
@@ -1602,7 +1605,9 @@ namespace Playroom
                     }
                     else
                     {
-                        //  TODO: remove player from dictionary and destroy its game object
+                        var player = GetPlayer(PlayerId);
+                        Players.Remove(player.id);
+                        InvokeKickCallBack();
                     }
                 }
             }
