@@ -1593,6 +1593,18 @@ namespace Playroom
                     OnKickCallBack = onKickCallBack;
                     KickInternal(id, InvokeKickCallBack);
                 }
+                else
+                {
+                    if (!isPlayRoomInitialized)
+                    {
+                        Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                        return;
+                    }
+                    else
+                    {
+                        //  TODO: remove player from dictionary and destroy its game object
+                    }
+                }
             }
 
             [DllImport("__Internal")]
