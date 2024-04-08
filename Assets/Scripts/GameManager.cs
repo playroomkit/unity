@@ -85,10 +85,14 @@ public class GameManager : MonoBehaviour
             var myPlayer = PlayroomKit.MyPlayer();
             var index = players.IndexOf(myPlayer);
 
-            playerGameObjects[index].GetComponent<PlayerController>().Move();
-            players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
-            players[index].SetState("posY", playerGameObjects[index].GetComponent<Transform>().position.y);
+            Debug.Log(index);
 
+            if (index != -1)
+            {
+                playerGameObjects[index].GetComponent<PlayerController>().Move();
+                players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
+                players[index].SetState("posY", playerGameObjects[index].GetComponent<Transform>().position.y);
+            }
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 myPlayer.Kick(() =>
