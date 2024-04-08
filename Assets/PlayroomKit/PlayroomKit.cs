@@ -254,7 +254,6 @@ namespace Playroom
                         Debug.Log("On Player Join");
                         var testPlayer = GetPlayer(PlayerId);
                         OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
-                        // onPlayerJoinCallback?.Invoke(testPlayer);
                         __OnPlayerJoinCallbackHandler(PlayerId);
                     }
                 }
@@ -1607,7 +1606,7 @@ namespace Playroom
                     {
                         var player = GetPlayer(PlayerId);
                         Players.Remove(player.id);
-                        InvokeKickCallBack();
+                        onKickCallBack?.Invoke();
                     }
                 }
             }
