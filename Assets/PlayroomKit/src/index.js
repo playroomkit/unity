@@ -19,7 +19,7 @@ mergeInto(LibraryManager.library, {
       dynCall("v", onDisconnectCallback, []);
     }
 
-      var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
+    var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
 
     if (!window.Playroom) {
       console.error(
@@ -114,6 +114,8 @@ mergeInto(LibraryManager.library, {
    * @description Registers a callback to be executed when a new player joins the game.
    * @param {function} functionPtr - A C# callback function that receives the player's ID as a string parameter.
    */
+
+
   OnPlayerJoinInternal: function (functionPtr) {
     if (!window.Playroom) {
       console.error(
@@ -122,13 +124,21 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    Playroom.onPlayerJoin((player) => {
+    this.unsubcribeCallback = Playroom.onPlayerJoin((player) => {
       var id = player.id;
       var bufferSize = lengthBytesUTF8(id) + 1;
       var buffer = _malloc(bufferSize);
       stringToUTF8(id, buffer, bufferSize);
       dynCall("vi", functionPtr, [buffer]);
     });
+  },
+
+  UnregisterOnPlayerJoinInternal: function () {
+    if (this.unsubcribeCallback) {
+      this.unsubcribeCallback();
+    } else {
+      console.error("No player join event handler to unregister.");
+    }
   },
 
   /* ----- MULTIPLAYER GETTERS AND SETTERS  ↓ ----- */

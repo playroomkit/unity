@@ -198,6 +198,9 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern void OnPlayerJoinInternal(Action<string> callback);
 
+        [DllImport("__Internal")]
+        private static extern void UnregisterOnPlayerJoinInternal();
+
         // private static Action<Player> onPlayerJoinCallback = null;
         private static List<Action<Player>> OnPlayerJoinCallbacks = new();
 
@@ -224,9 +227,6 @@ namespace Playroom
             }
             // onPlayerJoinCallback?.Invoke(player);
         }
-
-
-
 
         public static void OnPlayerJoin(Action<Player> onPlayerJoinCallback)
         {
@@ -257,6 +257,12 @@ namespace Playroom
                 }
             }
         }
+
+        public static void UnregisterOnPlayerJoin()
+        {
+            UnregisterOnPlayerJoin();
+        }
+
 
         public static Dictionary<string, Player> GetPlayers()
         {
