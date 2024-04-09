@@ -260,7 +260,7 @@ namespace Playroom
 
         public static void UnregisterOnPlayerJoin()
         {
-            UnregisterOnPlayerJoin();
+            UnregisterOnPlayerJoinInternal();
         }
 
 
@@ -892,6 +892,9 @@ namespace Playroom
             }
         }
 
+        [DllImport("__Internal")]
+        private static extern void UnregisterOnQuit();
+
         [MonoPInvokeCallback(typeof(Action<string>))]
         private static void __OnQuitInternalHandler(string playerId)
         {
@@ -1207,7 +1210,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isPlayRoomInitialized)
+                    if (!isPlayRoomInitialized)///
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     else
                         Debug.Log("Mock Player Created");
@@ -1242,7 +1245,6 @@ namespace Playroom
                 else
                     OnQuitCallbacks.Add(callback);
             }
-
 
             public void SetState(string key, int value, bool reliable = false)
             {
