@@ -893,7 +893,12 @@ namespace Playroom
         }
 
         [DllImport("__Internal")]
-        private static extern void UnregisterOnQuit();
+        private static extern void UnregisterOnQuitInternal();
+
+        public static void UnregisterOnQuit()
+        {
+            UnregisterOnQuitInternal();
+        }
 
         [MonoPInvokeCallback(typeof(Action<string>))]
         private static void __OnQuitInternalHandler(string playerId)

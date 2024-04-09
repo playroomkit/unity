@@ -36,7 +36,7 @@ mergeInto(LibraryManager.library, {
           var buffer = _malloc(bufferSize);
           stringToUTF8(id, buffer, bufferSize);
 
-          player.onQuit(() => {
+          this.unsubscribeOnQuit = player.onQuit(() => {
             dynCall("vi", onQuitInternalCallback, [buffer]);
           });
         });
@@ -124,7 +124,7 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    this.unsubcribeCallback = Playroom.onPlayerJoin((player) => {
+    this.unsubcribePlayerJoin = Playroom.onPlayerJoin((player) => {
       var id = player.id;
       var bufferSize = lengthBytesUTF8(id) + 1;
       var buffer = _malloc(bufferSize);
@@ -134,10 +134,32 @@ mergeInto(LibraryManager.library, {
   },
 
   UnregisterOnPlayerJoinInternal: function () {
-    if (this.unsubcribeCallback) {
-      this.unsubcribeCallback();
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+
+    if (this.unsubcribePlayerJoin) {
+      this.unsubcribePlayerJoin();
     } else {
       console.error("No player join event handler to unregister.");
+    }
+  },
+
+  UnregisterOnQuitInternal: function () {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+    if (this.unsubscribeOnQuit) {
+      this.unsubscribeOnQuit();
+    } else {
+      console.error("No On Quit event handler to unregister.");
     }
   },
 
