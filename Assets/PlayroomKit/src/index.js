@@ -133,7 +133,7 @@ mergeInto(LibraryManager.library, {
     });
   },
 
-  UnregisterOnPlayerJoinInternal: function () {
+  UnsubscribeOnPlayerJoinInternal: function () {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
@@ -149,7 +149,7 @@ mergeInto(LibraryManager.library, {
     }
   },
 
-  UnregisterOnQuitInternal: function () {
+  UnsubscribeOnQuitInternal: function () {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."

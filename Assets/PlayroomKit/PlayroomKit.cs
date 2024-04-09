@@ -199,7 +199,7 @@ namespace Playroom
         private static extern void OnPlayerJoinInternal(Action<string> callback);
 
         [DllImport("__Internal")]
-        private static extern void UnregisterOnPlayerJoinInternal();
+        private static extern void UnsubscribeOnPlayerJoinInternal();
 
         // private static Action<Player> onPlayerJoinCallback = null;
         private static List<Action<Player>> OnPlayerJoinCallbacks = new();
@@ -258,9 +258,9 @@ namespace Playroom
             }
         }
 
-        public static void UnregisterOnPlayerJoin()
+        public static void UnsubscribeOnPlayerJoin()
         {
-            UnregisterOnPlayerJoinInternal();
+            UnsubscribeOnPlayerJoinInternal();
         }
 
 
@@ -893,11 +893,11 @@ namespace Playroom
         }
 
         [DllImport("__Internal")]
-        private static extern void UnregisterOnQuitInternal();
+        private static extern void UnsubscribeOnQuitInternal();
 
-        public static void UnregisterOnQuit()
+        public static void UnsubscribeOnQuit()
         {
-            UnregisterOnQuitInternal();
+            UnsubscribeOnQuitInternal();
         }
 
         [MonoPInvokeCallback(typeof(Action<string>))]

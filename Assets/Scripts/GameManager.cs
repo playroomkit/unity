@@ -156,17 +156,19 @@ public class GameManager : MonoBehaviour
 
 
         playerJoined = true;
-
         player.OnQuit(RemovePlayer);
+
     }
 
 
-
+    // This should be in prk
     [MonoPInvokeCallback(typeof(Action<string>))]
     private static void RemovePlayer(string playerID)
     {
         if (PlayerDict.TryGetValue(playerID, out GameObject player))
         {
+            PlayerDict.Remove(playerID);
+            playerGameObjects.Remove(player);
             Destroy(player);
         }
         else
