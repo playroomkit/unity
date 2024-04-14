@@ -30,6 +30,7 @@ namespace Playroom
         public static readonly Dictionary<string, Player> Players = new();
 
 
+
         [Serializable]
         public class InitOptions
         {
@@ -252,7 +253,8 @@ namespace Playroom
                     {
                         Debug.Log("On Player Join");
                         var testPlayer = GetPlayer(PlayerId);
-                        onPlayerJoinCallback?.Invoke(testPlayer);
+                        OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
+                        __OnPlayerJoinCallbackHandler(PlayerId);
                     }
                 }
             }
@@ -1592,6 +1594,20 @@ namespace Playroom
                 {
                     OnKickCallBack = onKickCallBack;
                     KickInternal(id, InvokeKickCallBack);
+                }
+                else
+                {
+                    if (!isPlayRoomInitialized)
+                    {
+                        Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                        return;
+                    }
+                    else
+                    {
+                        var player = GetPlayer(PlayerId);
+                        Players.Remove(player.id);
+                        onKickCallBack?.Invoke();
+                    }
                 }
             }
 
