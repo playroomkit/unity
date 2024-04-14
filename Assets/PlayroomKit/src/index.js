@@ -44,9 +44,6 @@ mergeInto(LibraryManager.library, {
 
       })
       .catch((error) => {
-
-        console.error(error)
-
         var jsonString = JSON.stringify(error);
         var bufferSize = lengthBytesUTF8(jsonString) + 1;
         var buffer = _malloc(bufferSize);

@@ -84,7 +84,6 @@ namespace Playroom
             var errorString = JsonUtility.FromJson<string>(error);
             if (error != "")
             {
-                Debug.Log(errorString);
                 throw new Exception(errorString);
             }
         }
