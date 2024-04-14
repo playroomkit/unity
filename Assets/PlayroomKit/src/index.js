@@ -11,17 +11,6 @@ mergeInto(LibraryManager.library, {
     onDisconnectCallback,
     onError
   ) {
-    function embedScript(src) {
-      return new Promise((resolve, reject) => {
-        var script = document.createElement("script");
-        script.crossOrigin = 'anonymous';
-        script.src = src;
-        script.async = false;
-        script.onload = resolve;
-        script.onerror = reject;
-        document.head.appendChild(script);
-      });
-    }
 
     function OnLaunchCallBack() {
       dynCall("v", onLaunchCallBack, []);
@@ -31,52 +20,31 @@ mergeInto(LibraryManager.library, {
       dynCall("v", onDisconnectCallback, []);
     }
 
-    var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
+      var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
 
-    Promise.all([
-      embedScript("https://unpkg.com/react@18.2.0/umd/react.development.js"),
-      embedScript(
-        "https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"
-      ),
-      embedScript("https://unpkg.com/playroomkit/multiplayer.umd.js"),
-    ])
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    Playroom.insertCoin(options, OnLaunchCallBack, OnDisconnectCallback)
       .then(() => {
-        if (!window.Playroom) {
-          console.error(
-            "Playroom library is not loaded. Please make sure to call InsertCoin first."
-          );
-          return;
-        }
+        Playroom.onPlayerJoin((player) => {
+          var id = player.id;
+          var bufferSize = lengthBytesUTF8(id) + 1;
+          var buffer = _malloc(bufferSize);
+          stringToUTF8(id, buffer, bufferSize);
 
-        Playroom.insertCoin(options, OnLaunchCallBack, OnDisconnectCallback)
-          .then(() => {
-
-            Playroom.onPlayerJoin((player) => {
-              var id = player.id;
-              var bufferSize = lengthBytesUTF8(id) + 1;
-              var buffer = _malloc(bufferSize);
-              stringToUTF8(id, buffer, bufferSize);
-
-              player.onQuit(() => {
-                dynCall("vi", onQuitInternalCallback, [buffer]);
-              });
-            });
-
-          })
-          .catch((error) => {
-            var bufferSize = lengthBytesUTF8(error) + 1;
-            var buffer = _malloc(bufferSize);
-            stringToUTF8(error, buffer, bufferSize);
-    
-            dynCall("vi", onError, [buffer]);
+          player.onQuit(() => {
+            dynCall("vi", onQuitInternalCallback, [buffer]);
           });
+        });
+
       })
       .catch((error) => {
-        var bufferSize = lengthBytesUTF8(error) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(error, buffer, bufferSize);
-
-        dynCall("vi", onError, [buffer]);
+        console.error("Error inserting coin:", error);
       });
   },
 
@@ -812,7 +780,7 @@ mergeInto(LibraryManager.library, {
       stringToUTF8(id, buffer, bufferSize);
 
 
-      dynCall('vii', callback, [allocateUTF8(dataJson), buffer]);
+      dynCall('vii', callback, [stringToNewUTF8(dataJson), buffer]);
 
       return onResponseReturn;
     }

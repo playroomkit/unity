@@ -16,7 +16,6 @@ jobs:
         echo "Assets/PlayroomKit.meta" > metaList
         echo "Assets/Plugins.meta" >> metaList
         find Assets/PlayroomKit/ -name \*.meta >> metaList
-        find Assets/Plugins/ -name \*.meta >> metaList
         echo metaList
 
     - run: mkdir output

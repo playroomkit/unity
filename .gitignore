@@ -77,3 +77,5 @@ crashlytics-build.properties
 node_modules
 metaList
 package-lock.json
+package-lock.json.meta
+Assets/Plugins
