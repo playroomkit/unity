@@ -779,7 +779,7 @@ mergeInto(LibraryManager.library, {
       stringToUTF8(id, buffer, bufferSize);
 
 
-      dynCall('vii', callback, [allocateUTF8(dataJson), buffer]);
+      dynCall('vii', callback, [stringToNewUTF8(dataJson), buffer]);
 
       return onResponseReturn;
     }
