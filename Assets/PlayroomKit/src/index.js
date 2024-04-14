@@ -44,7 +44,14 @@ mergeInto(LibraryManager.library, {
 
       })
       .catch((error) => {
-        console.error("Error inserting coin:", error);
+
+        console.error(error)
+
+        var jsonString = JSON.stringify(error);
+        var bufferSize = lengthBytesUTF8(jsonString) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(jsonString, buffer, bufferSize);
+        dynCall("vi", onError, [buffer]);
       });
   },
 
