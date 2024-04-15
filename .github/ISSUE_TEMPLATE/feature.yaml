@@ -1,0 +1,16 @@
+name: Suggest an improvement!
+description: Do you want to see something better in the Unity SDK?
+title: "[Feature-Request]: "
+labels: ["enhancement", "triage"]
+assignees:
+  - asadm
+body:
+  - type: textarea
+    id: enhancement-description
+    attributes:
+      label: What do you want to see?
+      description: Also tell us, what alternatives have you tried?
+      placeholder: Tell us what you want!
+      value: "Better developer experience!"
+    validations:
+      required: true
