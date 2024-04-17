@@ -1074,6 +1074,8 @@ namespace Playroom
         [MonoPInvokeCallback(typeof(Action))]
         private static void InvokeOnResponseCallback()
         {
+            var namesToRemove = new List<string>();
+
             foreach (var name in RpcEventNames)
             {
                 try
@@ -1085,14 +1087,20 @@ namespace Playroom
                             callback?.Invoke();
                         }
 
-                        RpcEventNames.Remove(name);
-                        OnResponseCallbacks.Remove(name);
+                        namesToRemove.Add(name);
                     }
                 }
                 catch (Exception ex)
                 {
                     Debug.LogError($"C#: Error in Invoking callback for RPC event name: '{name}': {ex.Message}");
                 }
+            }
+
+            // Remove the names after the loop
+            foreach (var name in namesToRemove)
+            {
+                RpcEventNames.Remove(name);
+                OnResponseCallbacks.Remove(name);
             }
         }
 

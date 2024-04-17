@@ -23,12 +23,12 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private static bool playerJoined;
 
+    [SerializeField] private Text scoreText;
+
     bool isMoving;
 
     private void Awake()
     {
-        // PlayroomKit.OnPlayerJoin(AddPlayer);
-
         PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
         {
             maxPlayersPerRoom = 2,
@@ -85,30 +85,23 @@ public class GameManager : MonoBehaviour
             var myPlayer = PlayroomKit.MyPlayer();
             var index = players.IndexOf(myPlayer);
 
-            Debug.Log(index);
+            playerGameObjects[index].GetComponent<PlayerController>().Move();
+            players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
+            players[index].SetState("posY", playerGameObjects[index].GetComponent<Transform>().position.y);
 
-            if (index != -1)
-            {
-                playerGameObjects[index].GetComponent<PlayerController>().Move();
-                players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
-                players[index].SetState("posY", playerGameObjects[index].GetComponent<Transform>().position.y);
-            }
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                myPlayer.Kick(() =>
-                {
-                    Destroy(playerGameObjects[index]);
-                });
 
                 Vector3 playerPosition = playerGameObjects[index].transform.position;
                 playerGameObjects[index].GetComponent<PlayerController>().ShootBullet(playerPosition, 50f);
 
                 score += 50;
 
-                // PlayroomKit.RpcCall("ShootBullet", score, () =>
-                // {
-                //     Debug.Log("shooting bullet!");
-                // });
+                PlayroomKit.RpcCall("ShootBullet", score, () =>
+                {
+                    Debug.Log("shooting bullet!");
+                });
             }
 
             if (Input.GetKeyDown(KeyCode.R) && PlayroomKit.IsHost())
@@ -116,7 +109,7 @@ public class GameManager : MonoBehaviour
                 PlayroomKit.ResetStates(null, () =>
                 {
                     var defscore = PlayroomKit.GetState<int>("score");
-                    // scoreText.text = "Score: " + defscore.ToString();
+                    scoreText.text = "Score: " + defscore.ToString();
                 });
 
             }
@@ -140,14 +133,6 @@ public class GameManager : MonoBehaviour
 
     }
 
-    void rpcRegisterCallback(string data, string sender)
-    {
-        Debug.Log("sender: " + sender);
-        var player = PlayroomKit.GetPlayer(sender);
-        Debug.Log("Name of sender: " + player.GetProfile().name);
-    }
-
-
     public void AddPlayer(PlayroomKit.Player player)
     {
         GameObject playerObj = (GameObject)Instantiate(Resources.Load("Player"),
@@ -160,7 +145,7 @@ public class GameManager : MonoBehaviour
         players.Add(player);
         playerGameObjects.Add(playerObj);
 
-        Text scoreText = (players.Count == 1) ? scoreText1 : scoreText2;
+        scoreText = (players.Count == 1) ? scoreText1 : scoreText2;
         playerObj.GetComponent<PlayerController>().scoreText = scoreText;
 
 
@@ -168,8 +153,6 @@ public class GameManager : MonoBehaviour
 
         player.OnQuit(RemovePlayer);
     }
-
-
 
     [MonoPInvokeCallback(typeof(Action<string>))]
     private static void RemovePlayer(string playerID)
