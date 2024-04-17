@@ -20,7 +20,7 @@ mergeInto(LibraryManager.library, {
       dynCall("v", onDisconnectCallback, []);
     }
 
-      var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
+    var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
 
     if (!window.Playroom) {
       console.error(

@@ -81,7 +81,6 @@ namespace Playroom
         private static void InvokeOnErrorInsertCoin(string error)
         {
             onError?.Invoke(error);
-            // var errorString = JsonUtility.FromJson<string>(error);
             Debug.LogException(new Exception(error));
         }
 
