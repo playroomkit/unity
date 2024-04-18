@@ -6,6 +6,7 @@ using AOT;
 using System;
 using SimpleJSON;
 using System.Collections;
+using System.Runtime.CompilerServices;
 
 namespace Playroom
 {
@@ -196,10 +197,10 @@ namespace Playroom
         }
 
         [DllImport("__Internal")]
-        private static extern void OnPlayerJoinInternal(Action<string> callback);
+        private static extern string OnPlayerJoinInternal(Action<string> callback);
 
         [DllImport("__Internal")]
-        private static extern void UnsubscribeOnPlayerJoinInternal();
+        private static extern void UnsubscribeOnPlayerJoinInternal(string id);
 
         // private static Action<Player> onPlayerJoinCallback = null;
         private static List<Action<Player>> OnPlayerJoinCallbacks = new();
@@ -228,19 +229,26 @@ namespace Playroom
             // onPlayerJoinCallback?.Invoke(player);
         }
 
-        public static void OnPlayerJoin(Action<Player> onPlayerJoinCallback)
+        public static Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
         {
             if (!isPlayRoomInitialized)
             {
                 Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
+                return null;
             }
             else
             {
                 if (IsRunningInBrowser())
                 {
-                    // onPlayerJoinCallback = playerCallback;
                     OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
-                    OnPlayerJoinInternal(__OnPlayerJoinCallbackHandler);
+                    var CallbackID = OnPlayerJoinInternal(__OnPlayerJoinCallbackHandler);
+
+                    void Unsubscribe()
+                    {
+                        UnsubscribeOnPlayerJoin(CallbackID);
+                    }
+
+                    return Unsubscribe;
                 }
                 else
                 {
@@ -254,13 +262,14 @@ namespace Playroom
                         var testPlayer = GetPlayer(PlayerId);
                         onPlayerJoinCallback?.Invoke(testPlayer);
                     }
+                    return null;
                 }
             }
         }
 
-        public static void UnsubscribeOnPlayerJoin()
+        public static void UnsubscribeOnPlayerJoin(string CallbackID)
         {
-            UnsubscribeOnPlayerJoinInternal();
+            UnsubscribeOnPlayerJoinInternal(CallbackID);
         }
 
 

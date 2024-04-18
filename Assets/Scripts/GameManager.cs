@@ -23,26 +23,24 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private static bool playerJoined;
 
-    bool isMoving;
+    bool gameStarted;
+    private Action UnsubscribePrintPlayerNames;
+    private Action UnsubscribeAddPlayer;
 
     private void Awake()
     {
-        // PlayroomKit.OnPlayerJoin(AddPlayer);
-
         PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
         {
             maxPlayersPerRoom = 2,
-            matchmaking = true,
             defaultPlayerStates = new() {
-                        {"score", -500},
+                        {"score", 0},
                     },
 
         }, () =>
         {
-            PlayroomKit.OnPlayerJoin(AddPlayer);
+            UnsubscribePrintPlayerNames = PlayroomKit.OnPlayerJoin(PrintPlayerName);
+            UnsubscribeAddPlayer = PlayroomKit.OnPlayerJoin(AddPlayer);
         });
-
-
     }
 
     void Start()
@@ -82,6 +80,9 @@ public class GameManager : MonoBehaviour
     {
         if (playerJoined)
         {
+            if (gameStarted)
+                UnsubscribePrintPlayerNames();
+
             var myPlayer = PlayroomKit.MyPlayer();
             var index = players.IndexOf(myPlayer);
 
@@ -138,14 +139,14 @@ public class GameManager : MonoBehaviour
         Debug.Log("Name of sender: " + player.GetProfile().name);
     }
 
-
     public void AddPlayer(PlayroomKit.Player player)
     {
+        Debug.Log("AddPlayer Invoked!");
+
         GameObject playerObj = (GameObject)Instantiate(Resources.Load("Player"),
             new Vector3(Random.Range(-4, 4), Random.Range(1, 5), 0), Quaternion.identity);
 
         playerObj.GetComponent<SpriteRenderer>().color = player.GetProfile().color;
-        Debug.Log(player.GetProfile().name + " Joined the game!" + "id: " + player.id);
 
         PlayerDict.Add(player.id, playerObj);
         players.Add(player);
@@ -154,10 +155,20 @@ public class GameManager : MonoBehaviour
         Text scoreText = (players.Count == 1) ? scoreText1 : scoreText2;
         playerObj.GetComponent<PlayerController>().scoreText = scoreText;
 
-
         playerJoined = true;
         player.OnQuit(RemovePlayer);
+    }
 
+    public void PrintPlayerName(PlayroomKit.Player player)
+    {
+        Debug.Log("Print Player Names Invoked!!");
+        Debug.Log(player.GetProfile().name + " Joined the game!" + "id: " + player.id);
+        UnsubscribePrintPlayerNames();
+    }
+
+    public void SomeThingElseInvoked(PlayroomKit.Player player)
+    {
+        Debug.Log("SomeThingElseInvoked Invoked!!!");
     }
 
 

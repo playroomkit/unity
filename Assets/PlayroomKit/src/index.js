@@ -19,6 +19,7 @@ mergeInto(LibraryManager.library, {
       dynCall("v", onDisconnectCallback, []);
     }
 
+    this.onPlayerJoinCallBacks = {};
     var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
 
     if (!window.Playroom) {
@@ -124,28 +125,34 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    this.unsubcribePlayerJoin = Playroom.onPlayerJoin((player) => {
+    var callbackID = Date.now().toString();
+    var unsubcribePlayerJoin = Playroom.onPlayerJoin((player) => {
       var id = player.id;
       var bufferSize = lengthBytesUTF8(id) + 1;
       var buffer = _malloc(bufferSize);
       stringToUTF8(id, buffer, bufferSize);
+
       dynCall("vi", functionPtr, [buffer]);
     });
+
+    this.onPlayerJoinCallBacks[callbackID] = unsubcribePlayerJoin;
+    var callbackIDbufferSize = lengthBytesUTF8(callbackID) + 1;
+    var callbackIDUTF8 = _malloc(callbackIDbufferSize);
+    stringToUTF8(callbackID, callbackIDUTF8, callbackIDbufferSize);
+    return callbackIDUTF8;
+
   },
 
-  UnsubscribeOnPlayerJoinInternal: function () {
-    if (!window.Playroom) {
-      console.error(
-        "Playroom library is not loaded. Please make sure to call InsertCoin first."
-      );
-      return;
-    }
+  UnsubscribeOnPlayerJoinInternal: function (id) {
+    functionId = UTF8ToString(id);
+    var unsubscribeFunction = this.onPlayerJoinCallBacks[functionId];
+    if (unsubscribeFunction) {
+      unsubscribeFunction();
+      console.log("Unsubscribing from ID: " + functionId)
 
-
-    if (this.unsubcribePlayerJoin) {
-      this.unsubcribePlayerJoin();
+      delete this.onPlayerJoinCallBacks[functionId]; 
     } else {
-      console.error("No player join event handler to unregister.");
+      console.error("No player join event handler with ID " + functionId + " to unregister.");
     }
   },
 
