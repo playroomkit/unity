@@ -1096,7 +1096,6 @@ namespace Playroom
                 }
             }
 
-            // Remove the names after the loop
             foreach (var name in namesToRemove)
             {
                 RpcEventNames.Remove(name);
