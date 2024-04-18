@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+
         PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
         {
             maxPlayersPerRoom = 2,

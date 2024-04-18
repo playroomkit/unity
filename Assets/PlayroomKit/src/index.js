@@ -8,7 +8,8 @@ mergeInto(LibraryManager.library, {
     optionsJson,
     onLaunchCallBack,
     onQuitInternalCallback,
-    onDisconnectCallback
+    onDisconnectCallback,
+    onError
   ) {
 
     function OnLaunchCallBack() {
@@ -19,7 +20,7 @@ mergeInto(LibraryManager.library, {
       dynCall("v", onDisconnectCallback, []);
     }
 
-      var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
+    var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
 
     if (!window.Playroom) {
       console.error(
@@ -43,7 +44,11 @@ mergeInto(LibraryManager.library, {
 
       })
       .catch((error) => {
-        console.error("Error inserting coin:", error);
+        var jsonString = JSON.stringify(error);
+        var bufferSize = lengthBytesUTF8(jsonString) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(jsonString, buffer, bufferSize);
+        dynCall("vi", onError, [buffer]);
       });
   },
 

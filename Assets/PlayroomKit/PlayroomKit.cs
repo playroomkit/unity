@@ -61,7 +61,12 @@ namespace Playroom
         private static Action OnDisconnectCallback = null;
 
         [DllImport("__Internal")]
-        private static extern void InsertCoinInternal(string options, Action onLaunchCallback, Action<string> onQuitInternalCallback, Action onDisconnectCallback);
+        private static extern void InsertCoinInternal(
+            string options,
+            Action onLaunchCallback,
+            Action<string> onQuitInternalCallback,
+            Action onDisconnectCallback,
+            Action<string> onError);
 
         [MonoPInvokeCallback(typeof(Action))]
         private static void InvokeInsertCoin()
@@ -73,7 +78,15 @@ namespace Playroom
 
         }
 
-        // optional InitOptions
+        [MonoPInvokeCallback(typeof(Action<string>))]
+        private static void InvokeOnErrorInsertCoin(string error)
+        {
+            onError?.Invoke(error);
+            Debug.LogException(new Exception(error));
+        }
+
+        private static Action<string> onError;
+
         public static void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null, Action onDisconnectCallback = null)
         {
             if (IsRunningInBrowser())
@@ -95,7 +108,7 @@ namespace Playroom
 #endif
                 }
 
-                InsertCoinInternal(optionsJson, InvokeInsertCoin, __OnQuitInternalHandler, onDisconnectCallbackHandler);
+                InsertCoinInternal(optionsJson, InvokeInsertCoin, __OnQuitInternalHandler, onDisconnectCallbackHandler, InvokeOnErrorInsertCoin);
             }
             else
             {
