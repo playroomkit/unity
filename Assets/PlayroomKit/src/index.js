@@ -127,7 +127,7 @@ mergeInto(LibraryManager.library, {
 
     var callbackID = Date.now().toString();
     try {
-      this.unsubcribePlayerJoin = Playroom.onPlayerJoin((player) => {
+      var unsubcribePlayerJoin = Playroom.onPlayerJoin((player) => {
         var id = player.id;
         var bufferSize = lengthBytesUTF8(id) + 1;
         var buffer = _malloc(bufferSize);
@@ -140,7 +140,7 @@ mergeInto(LibraryManager.library, {
     }
 
 
-    this.onPlayerJoinCallBacks[callbackID] = this.unsubcribePlayerJoin;
+    this.onPlayerJoinCallBacks[callbackID] = unsubcribePlayerJoin;
     var callbackIDbufferSize = lengthBytesUTF8(callbackID) + 1;
     var callbackIDUTF8 = _malloc(callbackIDbufferSize);
     stringToUTF8(callbackID, callbackIDUTF8, callbackIDbufferSize);
@@ -153,9 +153,7 @@ mergeInto(LibraryManager.library, {
     var unsubscribeFunction = this.onPlayerJoinCallBacks[functionId];
     if (unsubscribeFunction) {
       unsubscribeFunction();
-      console.log("Unsubscribing from ID: " + functionId)
-
-      // delete this.onPlayerJoinCallBacks[functionId];
+      delete this.onPlayerJoinCallBacks[functionId];
     } else {
       console.error("No player join event handler with ID " + functionId + " to unregister.");
     }

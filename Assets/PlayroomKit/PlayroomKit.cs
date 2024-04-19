@@ -226,7 +226,6 @@ namespace Playroom
             {
                 callback?.Invoke(player);
             }
-            // onPlayerJoinCallback?.Invoke(player);
         }
 
         public static Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
