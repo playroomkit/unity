@@ -14,3 +14,9 @@ body:
       value: "Better developer experience!"
     validations:
       required: true
+  - type: input
+    id: chat-url
+    attributes:
+      label: Link to original discussion
+      description: Relevant chat URL, such as a Discord message link, Slack message link, GitHub Issue, etc.
+      placeholder: https://discord.com/channels/997752993598419044/link-to-chat
