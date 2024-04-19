@@ -6,7 +6,7 @@ using AOT;
 using System;
 using SimpleJSON;
 using System.Collections;
-using System.Runtime.CompilerServices;
+
 
 namespace Playroom
 {
@@ -240,11 +240,15 @@ namespace Playroom
             {
                 if (IsRunningInBrowser())
                 {
-                    OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
+                    if (!OnPlayerJoinCallbacks.Contains(onPlayerJoinCallback))
+                    {
+                        OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
+                    }
                     var CallbackID = OnPlayerJoinInternal(__OnPlayerJoinCallbackHandler);
 
                     void Unsubscribe()
                     {
+                        OnPlayerJoinCallbacks.Remove(onPlayerJoinCallback);
                         UnsubscribeOnPlayerJoin(CallbackID);
                     }
 

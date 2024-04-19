@@ -126,16 +126,21 @@ mergeInto(LibraryManager.library, {
     }
 
     var callbackID = Date.now().toString();
-    var unsubcribePlayerJoin = Playroom.onPlayerJoin((player) => {
-      var id = player.id;
-      var bufferSize = lengthBytesUTF8(id) + 1;
-      var buffer = _malloc(bufferSize);
-      stringToUTF8(id, buffer, bufferSize);
+    try {
+      this.unsubcribePlayerJoin = Playroom.onPlayerJoin((player) => {
+        var id = player.id;
+        var bufferSize = lengthBytesUTF8(id) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(id, buffer, bufferSize);
 
-      dynCall("vi", functionPtr, [buffer]);
-    });
+        dynCall("vi", functionPtr, [buffer]);
+      });
+    } catch (error) {
+      console.log(error);
+    }
 
-    this.onPlayerJoinCallBacks[callbackID] = unsubcribePlayerJoin;
+
+    this.onPlayerJoinCallBacks[callbackID] = this.unsubcribePlayerJoin;
     var callbackIDbufferSize = lengthBytesUTF8(callbackID) + 1;
     var callbackIDUTF8 = _malloc(callbackIDbufferSize);
     stringToUTF8(callbackID, callbackIDUTF8, callbackIDbufferSize);
@@ -150,7 +155,7 @@ mergeInto(LibraryManager.library, {
       unsubscribeFunction();
       console.log("Unsubscribing from ID: " + functionId)
 
-      delete this.onPlayerJoinCallBacks[functionId]; 
+      // delete this.onPlayerJoinCallBacks[functionId];
     } else {
       console.error("No player join event handler with ID " + functionId + " to unregister.");
     }
