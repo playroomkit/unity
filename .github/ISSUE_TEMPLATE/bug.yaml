@@ -1,6 +1,5 @@
 name: Bug Report
 description: File a bug report.
-title: "[Bug]: "
 labels: ["bug", "triage"]
 assignees:
   - SaadBazaz
@@ -42,7 +41,4 @@ body:
     id: logs
     attributes:
       label: Relevant log output
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
-      render: shell
-    validations:
-      required: true
+      description: Please copy and paste any relevant log output. You can also add screenshots of your browser console, network requests, etcetera.
