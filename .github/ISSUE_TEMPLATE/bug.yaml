@@ -22,7 +22,7 @@ body:
     id: version
     attributes:
       label: Version
-      description: What version of our software are you running?
+      description: What version of the SDK are you running? (PlayroomKit for Unity SDK)
       placeholder: x.x.x
     validations:
       required: true
@@ -32,6 +32,12 @@ body:
       label: What is your environment?
       description: Describe your project's environment. This will help us reproduce the issue.
       placeholder: Unity version, Browser, Operating System, etc
+  - type: input
+    id: chat-url
+    attributes:
+      label: Link to original discussion
+      description: Relevant chat URL, such as a Discord message link, Slack message link, GitHub Issue, etc.
+      placeholder: https://discord.com/channels/997752993598419044/link-to-chat
   - type: textarea
     id: logs
     attributes:
