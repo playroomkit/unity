@@ -41,8 +41,6 @@ public class GameManager : MonoBehaviour
         {
             PlayroomKit.OnPlayerJoin(AddPlayer);
         });
-
-
     }
 
     void Start()
@@ -133,13 +131,15 @@ public class GameManager : MonoBehaviour
 
     }
 
+
     public void AddPlayer(PlayroomKit.Player player)
     {
+        Debug.Log("AddPlayer Invoked!");
+
         GameObject playerObj = (GameObject)Instantiate(Resources.Load("Player"),
             new Vector3(Random.Range(-4, 4), Random.Range(1, 5), 0), Quaternion.identity);
 
         playerObj.GetComponent<SpriteRenderer>().color = player.GetProfile().color;
-        Debug.Log(player.GetProfile().name + " Joined the game!" + "id: " + player.id);
 
         PlayerDict.Add(player.id, playerObj);
         players.Add(player);
@@ -148,10 +148,14 @@ public class GameManager : MonoBehaviour
         scoreText = (players.Count == 1) ? scoreText1 : scoreText2;
         playerObj.GetComponent<PlayerController>().scoreText = scoreText;
 
-
         playerJoined = true;
-
         player.OnQuit(RemovePlayer);
+       
+    }
+
+    public void SomeThingElseInvoked(PlayroomKit.Player player)
+    {
+        Debug.Log("SomeThingElseInvoked Invoked!!!");
     }
 
     [MonoPInvokeCallback(typeof(Action<string>))]
@@ -159,6 +163,8 @@ public class GameManager : MonoBehaviour
     {
         if (PlayerDict.TryGetValue(playerID, out GameObject player))
         {
+            PlayerDict.Remove(playerID);
+            playerGameObjects.Remove(player);
             Destroy(player);
         }
         else

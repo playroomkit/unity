@@ -7,6 +7,7 @@ using System;
 using SimpleJSON;
 using System.Collections;
 
+
 namespace Playroom
 {
     public class PlayroomKit
@@ -210,7 +211,10 @@ namespace Playroom
         }
 
         [DllImport("__Internal")]
-        private static extern void OnPlayerJoinInternal(Action<string> callback);
+        private static extern string OnPlayerJoinInternal(Action<string> callback);
+
+        [DllImport("__Internal")]
+        private static extern void UnsubscribeOnPlayerJoinInternal(string id);
 
         // private static Action<Player> onPlayerJoinCallback = null;
         private static List<Action<Player>> OnPlayerJoinCallbacks = new();
@@ -236,25 +240,32 @@ namespace Playroom
             {
                 callback?.Invoke(player);
             }
-            // onPlayerJoinCallback?.Invoke(player);
         }
 
-
-
-
-        public static void OnPlayerJoin(Action<Player> onPlayerJoinCallback)
+        public static Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
         {
             if (!isPlayRoomInitialized)
             {
                 Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
+                return null;
             }
             else
             {
                 if (IsRunningInBrowser())
                 {
-                    // onPlayerJoinCallback = playerCallback;
-                    OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
-                    OnPlayerJoinInternal(__OnPlayerJoinCallbackHandler);
+                    if (!OnPlayerJoinCallbacks.Contains(onPlayerJoinCallback))
+                    {
+                        OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
+                    }
+                    var CallbackID = OnPlayerJoinInternal(__OnPlayerJoinCallbackHandler);
+
+                    void Unsubscribe()
+                    {
+                        OnPlayerJoinCallbacks.Remove(onPlayerJoinCallback);
+                        UnsubscribeOnPlayerJoin(CallbackID);
+                    }
+
+                    return Unsubscribe;
                 }
                 else
                 {
@@ -269,9 +280,16 @@ namespace Playroom
                         OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
                         __OnPlayerJoinCallbackHandler(PlayerId);
                     }
+                    return null;
                 }
             }
         }
+
+        public static void UnsubscribeOnPlayerJoin(string CallbackID)
+        {
+            UnsubscribeOnPlayerJoinInternal(CallbackID);
+        }
+
 
         public static Dictionary<string, Player> GetPlayers()
         {
@@ -901,6 +919,14 @@ namespace Playroom
             }
         }
 
+        [DllImport("__Internal")]
+        private static extern void UnsubscribeOnQuitInternal();
+
+        public static void UnsubscribeOnQuit()
+        {
+            UnsubscribeOnQuitInternal();
+        }
+
         [MonoPInvokeCallback(typeof(Action<string>))]
         private static void __OnQuitInternalHandler(string playerId)
         {
@@ -1223,7 +1249,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isPlayRoomInitialized)
+                    if (!isPlayRoomInitialized)///
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     else
                         Debug.Log("Mock Player Created");
@@ -1251,14 +1277,25 @@ namespace Playroom
                         callback?.Invoke(id);
             }
 
-            public void OnQuit(Action<string> callback)
+            public Action OnQuit(Action<string> callback)
             {
                 if (!isPlayRoomInitialized)
+                {
                     Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
+                    return null;
+                }
                 else
+                {
                     OnQuitCallbacks.Add(callback);
-            }
 
+                    void Unsubscribe()
+                    {
+                        OnQuitCallbacks.Remove(callback);
+                    }
+
+                    return Unsubscribe;
+                }
+            }
 
             public void SetState(string key, int value, bool reliable = false)
             {
