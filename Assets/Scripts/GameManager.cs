@@ -47,6 +47,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         PlayroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
+        PlayroomKit.RpcRegister("Hello", Hello, "You said Hello!");
     }
 
     void HandleScoreUpdate(string data, string caller)
@@ -151,6 +152,11 @@ public class GameManager : MonoBehaviour
         playerJoined = true;
 
         player.OnQuit(RemovePlayer);
+    }
+
+    void Hello(string data, string caller)
+    {
+        Debug.Log($"Hello! said by {caller}");
     }
 
     [MonoPInvokeCallback(typeof(Action<string>))]
