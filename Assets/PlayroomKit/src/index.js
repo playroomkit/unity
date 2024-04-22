@@ -37,7 +37,7 @@ mergeInto(LibraryManager.library, {
           var buffer = _malloc(bufferSize);
           stringToUTF8(id, buffer, bufferSize);
 
-          this.unsubscribeOnQuit = player.onQuit(() => {
+          player.onQuit(() => {
             dynCall("vi", onQuitInternalCallback, [buffer]);
           });
         });

@@ -156,7 +156,8 @@ public class GameManager : MonoBehaviour
         playerObj.GetComponent<PlayerController>().scoreText = scoreText;
 
         playerJoined = true;
-        player.OnQuit(RemovePlayer);
+        var Unsubscribe = player.OnQuit(RemovePlayer);
+        Unsubscribe();
     }
 
     public void PrintPlayerName(PlayroomKit.Player player)

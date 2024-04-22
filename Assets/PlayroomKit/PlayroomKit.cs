@@ -1255,12 +1255,24 @@ namespace Playroom
                         callback?.Invoke(id);
             }
 
-            public void OnQuit(Action<string> callback)
+            public Action OnQuit(Action<string> callback)
             {
                 if (!isPlayRoomInitialized)
+                {
                     Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
+                    return null;
+                }
                 else
+                {
                     OnQuitCallbacks.Add(callback);
+
+                    void Unsubscribe()
+                    {
+                        OnQuitCallbacks.Remove(callback);
+                    }
+
+                    return Unsubscribe;
+                }
             }
 
             public void SetState(string key, int value, bool reliable = false)
