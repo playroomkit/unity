@@ -1005,22 +1005,14 @@ namespace Playroom
             HOST
         }
 
-        private static Dictionary<string, Action<string, string>> RpcRegisterCallbacks = new Dictionary<string, Action<string, string>>();
+        private static Action<string, string> RpcRegisterCallback = null;
 
         [DllImport("__Internal")]
         private extern static void RpcRegisterInternal(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null);
 
         public static void RpcRegister(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null)
         {
-            if (!RpcRegisterCallbacks.ContainsKey(name))
-            {
-                RpcRegisterCallbacks.Add(name, rpcRegisterCallback);
-            }
-            else
-            {
-                Debug.LogWarning($"Callback for RPC '{name}' already registered.");
-            }
-
+            RpcRegisterCallback = rpcRegisterCallback;
             RpcRegisterInternal(name, InvokeRpcRegisterCallBack, onResponseReturn);
         }
 
@@ -1043,11 +1035,8 @@ namespace Playroom
             {
                 Debug.LogError(ex.Message);
             }
-
-            // TODO: Invoke the callback if name exists and is called?
-
+            RpcRegisterCallback?.Invoke(dataJson, senderJson);
         }
-
 
         [DllImport("__Internal")]
         private extern static void RpcCallInternal(string name, string data, RpcMode mode, Action callbackOnResponse);
