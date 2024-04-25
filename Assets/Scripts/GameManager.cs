@@ -47,6 +47,12 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         PlayroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
+        PlayroomKit.RpcRegister("Hello", Hello, "You said Hello!");
+    }
+
+    void Hello(string data, string caller)
+    {
+        Debug.Log($"Hello! said by {caller}");
     }
 
     void HandleScoreUpdate(string data, string caller)
