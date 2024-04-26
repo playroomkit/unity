@@ -1044,14 +1044,17 @@ namespace Playroom
             HOST
         }
 
-        private static Action<string, string> RpcRegisterCallback = null;
+        private static List<Action<string, string>> rpcRegisterCallbacks = new();
+        private static List<string> rpcRegisteredEvents = new();
+        private static List<string> rpcCalledEvents = new();
 
         [DllImport("__Internal")]
         private extern static void RpcRegisterInternal(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null);
 
         public static void RpcRegister(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null)
         {
-            RpcRegisterCallback = rpcRegisterCallback;
+            rpcRegisterCallbacks.Add(rpcRegisterCallback);
+            rpcRegisteredEvents.Add(name);
             RpcRegisterInternal(name, InvokeRpcRegisterCallBack, onResponseReturn);
         }
 
@@ -1074,14 +1077,21 @@ namespace Playroom
             {
                 Debug.LogError(ex.Message);
             }
-            RpcRegisterCallback?.Invoke(dataJson, senderJson);
+
+            for (int i = 0; i < Math.Min(rpcRegisteredEvents.Count, rpcCalledEvents.Count); i++)
+            {
+                if (rpcRegisteredEvents[i] == rpcCalledEvents[i])
+                {
+                    rpcRegisterCallbacks[i].Invoke(dataJson, senderJson);
+                }
+            }
+
         }
 
         [DllImport("__Internal")]
         private extern static void RpcCallInternal(string name, string data, RpcMode mode, Action callbackOnResponse);
 
         private static Dictionary<string, List<Action>> OnResponseCallbacks = new Dictionary<string, List<Action>>();
-        private static List<string> RpcEventNames = new List<string>();
 
         public static void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse)
         {
@@ -1095,9 +1105,9 @@ namespace Playroom
             else
             {
                 OnResponseCallbacks.Add(name, new List<Action> { callbackOnResponse });
-                if (!RpcEventNames.Contains(name))
+                if (!rpcCalledEvents.Contains(name))
                 {
-                    RpcEventNames.Add(name);
+                    rpcCalledEvents.Add(name);
                 }
             }
 
@@ -1115,7 +1125,7 @@ namespace Playroom
         {
             var namesToRemove = new List<string>();
 
-            foreach (var name in RpcEventNames)
+            foreach (var name in rpcCalledEvents)
             {
                 try
                 {
@@ -1137,7 +1147,7 @@ namespace Playroom
 
             foreach (var name in namesToRemove)
             {
-                RpcEventNames.Remove(name);
+                rpcCalledEvents.Remove(name);
                 OnResponseCallbacks.Remove(name);
             }
         }
