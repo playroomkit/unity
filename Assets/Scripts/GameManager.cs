@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 using Debug = UnityEngine.Debug;
+using System.Collections;
 
 
 public class GameManager : MonoBehaviour
@@ -29,10 +30,10 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-
         PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
         {
             maxPlayersPerRoom = 2,
+
             defaultPlayerStates = new() {
                         {"score", 0},
                     },
@@ -43,15 +44,11 @@ public class GameManager : MonoBehaviour
         });
     }
 
+
+
     void Start()
     {
         PlayroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
-        PlayroomKit.RpcRegister("Hello", Hello, "You said Hello!");
-    }
-
-    void Hello(string data, string caller)
-    {
-        Debug.Log($"Hello! said by {caller}");
     }
 
     void HandleScoreUpdate(string data, string caller)
@@ -81,7 +78,6 @@ public class GameManager : MonoBehaviour
 
     }
 
-
     private void Update()
     {
         if (playerJoined)
@@ -90,18 +86,16 @@ public class GameManager : MonoBehaviour
             var index = players.IndexOf(myPlayer);
 
             playerGameObjects[index].GetComponent<PlayerController>().Move();
-            players[index].SetState("posX", playerGameObjects[index].GetComponent<Transform>().position.x);
-            players[index].SetState("posY", playerGameObjects[index].GetComponent<Transform>().position.y);
 
+            players[index].SetState("pos", playerGameObjects[index].GetComponent<Transform>().position);
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
-
                 Vector3 playerPosition = playerGameObjects[index].transform.position;
-                playerGameObjects[index].GetComponent<PlayerController>().ShootBullet(playerPosition, 50f);
-
+                playerGameObjects[index].GetComponent<PlayerController>().ShootBullet(
+                    playerPosition,
+                    50f);
                 score += 50;
-
                 PlayroomKit.RpcCall("ShootBullet", score, () =>
                 {
                     Debug.Log("shooting bullet!");
@@ -117,22 +111,20 @@ public class GameManager : MonoBehaviour
                 });
 
             }
-        }
 
-        for (var i = 0; i < players.Count; i++)
-        {
 
-            if (players[i] != null)
+            for (var i = 0; i < players.Count; i++)
             {
-                var posX = players[i].GetState<float>("posX");
-                var posY = players[i].GetState<float>("posY");
-                Vector3 newPos = new Vector3(posX, posY, 0);
 
-                if (playerGameObjects != null)
-                    playerGameObjects[i].GetComponent<Transform>().position = newPos;
+                if (players[i] != null)
+                {
+                    var pos = players[i].GetState<Vector3>("pos");
+                    if (playerGameObjects[i] != null)
+                        playerGameObjects[i].GetComponent<Transform>().position = pos;
+                }
+
+
             }
-
-
         }
 
     }
@@ -156,7 +148,7 @@ public class GameManager : MonoBehaviour
 
         playerJoined = true;
         player.OnQuit(RemovePlayer);
-       
+
     }
 
     public void SomeThingElseInvoked(PlayroomKit.Player player)
