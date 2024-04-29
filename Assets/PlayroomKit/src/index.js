@@ -600,11 +600,20 @@ mergeInto(LibraryManager.library, {
     }
 
     if (typeof playerState.getState === "function") {
-      var stateVal = playerState.getState(UTF8ToString(key));
-      var bufferSize = lengthBytesUTF8(stateVal) + 1;
-      var buffer = _malloc(bufferSize);
-      stringToUTF8(stateVal, buffer, bufferSize);
-      return buffer;
+      try {
+        var stateVal = playerState.getState(UTF8ToString(key));
+
+        if (stateVal === undefined) {
+          return null;
+        }
+
+        var bufferSize = lengthBytesUTF8(stateVal) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(stateVal, buffer, bufferSize);
+        return buffer;
+      } catch (error) {
+        console.log("There was an error: " + error);
+      }
     } else {
       console.error(
         'The player state object does not have a "getState" method.'

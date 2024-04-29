@@ -1392,7 +1392,8 @@ namespace Playroom
             {
                 if (IsRunningInBrowser())
                 {
-                    SetStateString(key, JsonUtility.ToJson(value), reliable);
+                    string jsonString = JsonUtility.ToJson(value);
+                    SetPlayerStateStringById(id, key, jsonString, reliable);
                 }
                 else
                 {
@@ -1412,26 +1413,15 @@ namespace Playroom
             {
                 if (IsRunningInBrowser())
                 {
-                    if (typeof(T) == typeof(int))
-                    {
-                        return (T)(object)GetPlayerStateIntById(id, key);
-                    }
-                    else if (typeof(T) == typeof(float))
-                    {
-                        return (T)(object)GetPlayerStateFloatById(id, key);
-                    }
-                    else if (typeof(T) == typeof(bool))
-                    {
-                        return (T)(object)GetStateBool(key);
-                    }
-                    else if (typeof(T) == typeof(string))
-                    {
-                        return (T)(object)GetPlayerStateStringById(id, key);
-                    }
-                    else
-                    {
-                        return JsonUtility.FromJson<T>(GetStateString(key));
-                    }
+                    Type type = typeof(T);
+                    if (type == typeof(int)) return (T)(object)GetPlayerStateIntById(id, key);
+                    else if (type == typeof(float)) return (T)(object)GetPlayerStateFloatById(id, key);
+                    else if (type == typeof(bool)) return (T)(object)GetPlayerStateBoolById(id, key);
+                    else if (type == typeof(string)) return (T)(object)GetPlayerStateStringById(id, key);
+                    else if (type == typeof(Vector3)) return (T)(object)JsonUtility.FromJson<Vector3>(GetPlayerStateStringById(id, key));
+                    else if (type == typeof(Vector2)) return (T)(object)JsonUtility.FromJson<Vector2>(GetPlayerStateStringById(id, key));
+                    else if (type == typeof(Quaternion)) return (T)(object)JsonUtility.FromJson<Quaternion>(GetPlayerStateStringById(id, key));
+                    else throw new NotSupportedException($"Type {typeof(T)} is not supported by GetState");
                 }
                 else
                 {
@@ -1446,6 +1436,7 @@ namespace Playroom
                     }
                 }
             }
+
 
             public Dictionary<string, T> GetStateDict<T>(string key)
             {
@@ -1771,6 +1762,29 @@ namespace Playroom
             [DllImport("__Internal")]
             private static extern void WaitForPlayerStateInternal(string playerID, string stateKey, Action onStateSetCallback = null);
 
+
+            public static bool GetPlayerStateBoolById(string id, string key)
+            {
+                if (IsRunningInBrowser())
+                {
+                    var stateValue = GetPlayerStateIntById(id, key);
+                    return stateValue == 1 ? true :
+                        stateValue == 0 ? false :
+                        throw new InvalidOperationException($"GetStateBool: {key} is not a bool");
+                }
+                else
+                {
+                    if (!isPlayRoomInitialized)
+                    {
+                        Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                        return false;
+                    }
+                    else
+                    {
+                        return MockGetState<bool>(key);
+                    }
+                }
+            }
 
             [DllImport("__Internal")]
             private static extern int GetPlayerStateIntById(string playerID, string key);
