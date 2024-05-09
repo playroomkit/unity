@@ -111,7 +111,6 @@ public class GameManager : MonoBehaviour
             players[index].SetState("pos", playerGameObjects[index].GetComponent<Transform>().position);
 
             ShootBullet(index);
-            // SayHello();
 
             if (Input.GetKeyDown(KeyCode.R) && PlayroomKit.IsHost())
             {

@@ -1087,17 +1087,6 @@ namespace Playroom
                 rpcCalledEvents.Add(name);
             }
 
-            Debug.Log("rpcRegisteredEvents");
-            for (int i = 0; i < rpcRegisteredEvents.Count; i++)
-            {
-                Debug.Log(rpcRegisteredEvents[i]);
-            }
-
-            Debug.Log("rpcCalledEvents");
-            for (int i = 0; i < rpcCalledEvents.Count; i++)
-            {
-                Debug.Log(rpcCalledEvents[i]);
-            }
 
             for (int i = 0; i < Math.Min(rpcRegisteredEvents.Count, rpcCalledEvents.Count); i++)
             {
