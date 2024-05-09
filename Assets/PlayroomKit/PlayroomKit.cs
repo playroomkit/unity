@@ -1079,6 +1079,7 @@ namespace Playroom
             }
 
 
+            // Getting the name of called Rpc event
             string name = GetState<string>("rpcCalledEventName");
 
             if (!rpcCalledEvents.Contains(name))
@@ -1104,7 +1105,7 @@ namespace Playroom
 
         public static void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse)
         {
-
+            // setting to sync the event name with other players
             SetState("rpcCalledEventName", name, reliable: true);
 
 
@@ -1137,8 +1138,6 @@ namespace Playroom
         {
             var namesToRemove = new List<string>();
 
-            var n = GetState<string>("rpcCalledEventName");
-    
             foreach (var name in rpcCalledEvents)
             {
                 try
