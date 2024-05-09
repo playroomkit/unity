@@ -12,23 +12,31 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
+
+    [Header("Player holders")]
     private static readonly List<PlayroomKit.Player> players = new();
     private static readonly List<GameObject> playerGameObjects = new();
 
     private static Dictionary<string, GameObject> PlayerDict = new();
-    Dictionary<string, float> moveData = new();
 
+
+    [Header("Score and Score UI")]
     [SerializeField] private int score;
-    [SerializeField] private Text scoreText1;
-    [SerializeField] private Text scoreText2;
+    [SerializeField] private Text scoreTextPlayer1;
+    [SerializeField] private Text scoreTextPlayer2;
 
-    [SerializeField] private static bool playerJoined;
+    private Text selectedScoreText;
 
-    [SerializeField] private Text scoreText;
+    private static bool playerJoined;
 
-    bool isMoving;
 
-    private void Awake()
+    void Awake()
+    {
+        // StartCoroutine(StartMatchmakingCoroutine());
+        Initialize();
+    }
+
+    private void Initialize()
     {
         PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
         {
@@ -44,11 +52,24 @@ public class GameManager : MonoBehaviour
         });
     }
 
+    private IEnumerator StartMatchmakingCoroutine()
+    {
+        Initialize();
 
+        yield return new WaitUntil(() => PlayroomKit.GetPlayers().Count > 0);
+
+        PlayroomKit.StartMatchmaking();
+    }
 
     void Start()
     {
         PlayroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
+        PlayroomKit.RpcRegister("Hello", Hello);
+    }
+
+    private void Hello(string arg1, string arg2)
+    {
+        print("helo");
     }
 
     void HandleScoreUpdate(string data, string caller)
@@ -89,25 +110,15 @@ public class GameManager : MonoBehaviour
 
             players[index].SetState("pos", playerGameObjects[index].GetComponent<Transform>().position);
 
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Vector3 playerPosition = playerGameObjects[index].transform.position;
-                playerGameObjects[index].GetComponent<PlayerController>().ShootBullet(
-                    playerPosition,
-                    50f);
-                score += 50;
-                PlayroomKit.RpcCall("ShootBullet", score, () =>
-                {
-                    Debug.Log("shooting bullet!");
-                });
-            }
+            ShootBullet(index);
+            // SayHello();
 
             if (Input.GetKeyDown(KeyCode.R) && PlayroomKit.IsHost())
             {
                 PlayroomKit.ResetStates(null, () =>
                 {
                     var defscore = PlayroomKit.GetState<int>("score");
-                    scoreText.text = "Score: " + defscore.ToString();
+                    selectedScoreText.text = "Score: " + defscore.ToString();
                 });
 
             }
@@ -129,11 +140,34 @@ public class GameManager : MonoBehaviour
 
     }
 
+    private void ShootBullet(int pleyerIndex)
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Vector3 playerPosition = playerGameObjects[pleyerIndex].transform.position;
+            playerGameObjects[pleyerIndex].GetComponent<PlayerController>().ShootBullet(
+                playerPosition,
+                50f);
+            score += 50;
+            PlayroomKit.RpcCall("ShootBullet", score, () =>
+            {
+                Debug.Log("Shooting bullet");
+            });
+        }
+    }
+
+    private void SayHello()
+    {
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            PlayroomKit.RpcCall("Hello", -1, () => {
+                Debug.Log("saying helo");
+            });
+        }
+    }
 
     public void AddPlayer(PlayroomKit.Player player)
     {
-        Debug.Log("AddPlayer Invoked!");
-
         GameObject playerObj = (GameObject)Instantiate(Resources.Load("Player"),
             new Vector3(Random.Range(-4, 4), Random.Range(1, 5), 0), Quaternion.identity);
 
@@ -143,17 +177,11 @@ public class GameManager : MonoBehaviour
         players.Add(player);
         playerGameObjects.Add(playerObj);
 
-        scoreText = (players.Count == 1) ? scoreText1 : scoreText2;
-        playerObj.GetComponent<PlayerController>().scoreText = scoreText;
+        selectedScoreText = (players.Count == 1) ? scoreTextPlayer1 : scoreTextPlayer2;
+        playerObj.GetComponent<PlayerController>().scoreText = selectedScoreText;
 
         playerJoined = true;
         player.OnQuit(RemovePlayer);
-
-    }
-
-    public void SomeThingElseInvoked(PlayroomKit.Player player)
-    {
-        Debug.Log("SomeThingElseInvoked Invoked!!!");
     }
 
     [MonoPInvokeCallback(typeof(Action<string>))]
@@ -167,7 +195,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("player not in dict");
+            Debug.LogWarning("Player is not in dictionary");
         }
 
     }
