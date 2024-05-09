@@ -1080,7 +1080,6 @@ namespace Playroom
 
 
             string name = GetState<string>("rpcCalledEventName");
-            Debug.LogWarning("eventName: " + name);
 
             if (!rpcCalledEvents.Contains(name))
             {
