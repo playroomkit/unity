@@ -28,7 +28,7 @@ namespace Playroom
         */
         private static Dictionary<string, object> MockDictionary = new();
 
-        public static readonly Dictionary<string, Player> Players = new();
+        private static readonly Dictionary<string, Player> Players = new();
 
 
 
@@ -1137,6 +1137,8 @@ namespace Playroom
         {
             var namesToRemove = new List<string>();
 
+            var n = GetState<string>("rpcCalledEventName");
+    
             foreach (var name in rpcCalledEvents)
             {
                 try
