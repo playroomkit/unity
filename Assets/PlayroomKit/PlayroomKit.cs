@@ -1078,7 +1078,7 @@ namespace Playroom
 
 
             List<string> updatedRpcCalledEvents = new();
-            // This state is required to update the called rpc events list 
+            // This state is required to update the called rpc events list, (Temp fix see RpcCall for more) 
             string nameJson = GetState<string>("rpcCalledEventName");
 
             JSONArray jsonArray = JSON.Parse(nameJson).AsArray;
@@ -1086,12 +1086,6 @@ namespace Playroom
             {
                 string item = node.Value;
                 updatedRpcCalledEvents.Add(item);
-            }
-
-            Debug.Log("\n\nupdatedRpcCalledEvents: ");
-            for (int i = 0; i < updatedRpcCalledEvents.Count; i++)
-            {
-                Debug.Log(updatedRpcCalledEvents[i]);
             }
 
             foreach (string name in updatedRpcCalledEvents)
@@ -1136,7 +1130,8 @@ namespace Playroom
             string jsonString = jsonArray.ToString();
             /* 
             This is requrired to sync the rpc events between all players, without this players won't know which event has been called.
-            this is a temporary fix, RPC's need to be handled within JS for better control.*/
+            this is a temporary fix, RPC's need to be handled within JS for better control.
+            */
             SetState("rpcCalledEventName", jsonString, reliable: true);
 
             RpcCallInternal(name, jsonData, mode, InvokeOnResponseCallback);
