@@ -67,9 +67,10 @@ public class GameManager : MonoBehaviour
         PlayroomKit.RpcRegister("Hello", Hello);
     }
 
-    private void Hello(string arg1, string arg2)
+    private void Hello(string data, string caller)
     {
-        print("helo");
+        var player = PlayroomKit.GetPlayer(caller);
+        Debug.Log($"Caller: {caller}, Player Name: {player?.GetProfile().name}, Data: {data}");
     }
 
     void HandleScoreUpdate(string data, string caller)
@@ -111,6 +112,7 @@ public class GameManager : MonoBehaviour
             players[index].SetState("pos", playerGameObjects[index].GetComponent<Transform>().position);
 
             ShootBullet(index);
+            SayHello();
 
             if (Input.GetKeyDown(KeyCode.R) && PlayroomKit.IsHost())
             {
@@ -159,7 +161,8 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.H))
         {
-            PlayroomKit.RpcCall("Hello", -1, () => {
+            PlayroomKit.RpcCall("Hello", -1, () =>
+            {
                 Debug.Log("saying helo");
             });
         }
