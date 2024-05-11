@@ -28,7 +28,7 @@ namespace Playroom
         */
         private static Dictionary<string, object> MockDictionary = new();
 
-        public static readonly Dictionary<string, Player> Players = new();
+        private static readonly Dictionary<string, Player> Players = new();
 
 
 
@@ -1044,8 +1044,7 @@ namespace Playroom
             HOST
         }
 
-        private static List<Action<string, string>> rpcRegisterCallbacks = new();
-        private static List<string> rpcRegisteredEvents = new();
+        private static Dictionary<string, Action<string, string>> rpcRegisterCallbacks = new();
         private static List<string> rpcCalledEvents = new();
 
         [DllImport("__Internal")]
@@ -1053,8 +1052,7 @@ namespace Playroom
 
         public static void RpcRegister(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null)
         {
-            rpcRegisterCallbacks.Add(rpcRegisterCallback);
-            rpcRegisteredEvents.Add(name);
+            rpcRegisterCallbacks.Add(name, rpcRegisterCallback);
             RpcRegisterInternal(name, InvokeRpcRegisterCallBack, onResponseReturn);
         }
 
@@ -1078,11 +1076,23 @@ namespace Playroom
                 Debug.LogError(ex.Message);
             }
 
-            for (int i = 0; i < Math.Min(rpcRegisteredEvents.Count, rpcCalledEvents.Count); i++)
+
+            List<string> updatedRpcCalledEvents = new();
+            // This state is required to update the called rpc events list, (Temp fix see RpcCall for more) 
+            string nameJson = GetState<string>("rpcCalledEventName");
+
+            JSONArray jsonArray = JSON.Parse(nameJson).AsArray;
+            foreach (JSONNode node in jsonArray)
             {
-                if (rpcRegisteredEvents[i] == rpcCalledEvents[i])
+                string item = node.Value;
+                updatedRpcCalledEvents.Add(item);
+            }
+
+            foreach (string name in updatedRpcCalledEvents)
+            {
+                if (rpcRegisterCallbacks.TryGetValue(name, out Action<string, string> callback))
                 {
-                    rpcRegisterCallbacks[i].Invoke(dataJson, senderJson);
+                    callback?.Invoke(dataJson, senderJson);
                 }
             }
 
@@ -1111,6 +1121,19 @@ namespace Playroom
                 }
             }
 
+
+            JSONArray jsonArray = new JSONArray();
+            foreach (string item in rpcCalledEvents)
+            {
+                jsonArray.Add(item);
+            }
+            string jsonString = jsonArray.ToString();
+            /* 
+            This is requrired to sync the rpc events between all players, without this players won't know which event has been called.
+            this is a temporary fix, RPC's need to be handled within JS for better control.
+            */
+            SetState("rpcCalledEventName", jsonString, reliable: true);
+
             RpcCallInternal(name, jsonData, mode, InvokeOnResponseCallback);
         }
 
@@ -1125,7 +1148,7 @@ namespace Playroom
         {
             var namesToRemove = new List<string>();
 
-            foreach (var name in rpcCalledEvents)
+            foreach (string name in rpcCalledEvents)
             {
                 try
                 {
