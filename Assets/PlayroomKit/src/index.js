@@ -11,7 +11,6 @@ mergeInto(LibraryManager.library, {
     onDisconnectCallback,
     onError
   ) {
-
     function OnLaunchCallBack() {
       dynCall("v", onLaunchCallBack, []);
     }
@@ -42,7 +41,6 @@ mergeInto(LibraryManager.library, {
             dynCall("vi", onQuitInternalCallback, [buffer]);
           });
         });
-
       })
       .catch((error) => {
         var jsonString = JSON.stringify(error);
@@ -52,7 +50,6 @@ mergeInto(LibraryManager.library, {
         dynCall("vi", onError, [buffer]);
       });
   },
-
 
   /**
    * @description Checks whether the player is the host of the game.
@@ -121,7 +118,6 @@ mergeInto(LibraryManager.library, {
    * @param {function} functionPtr - A C# callback function that receives the player's ID as a string parameter.
    */
 
-
   OnPlayerJoinInternal: function (functionPtr) {
     if (!window.Playroom) {
       console.error(
@@ -144,13 +140,11 @@ mergeInto(LibraryManager.library, {
       console.log(error);
     }
 
-
     this.onPlayerJoinCallBacks[callbackID] = unsubcribePlayerJoin;
     var callbackIDbufferSize = lengthBytesUTF8(callbackID) + 1;
     var callbackIDUTF8 = _malloc(callbackIDbufferSize);
     stringToUTF8(callbackID, callbackIDUTF8, callbackIDbufferSize);
     return callbackIDUTF8;
-
   },
 
   UnsubscribeOnPlayerJoinInternal: function (id) {
@@ -160,7 +154,9 @@ mergeInto(LibraryManager.library, {
       unsubscribeFunction();
       delete this.onPlayerJoinCallBacks[functionId];
     } else {
-      console.error("No player join event handler with ID " + functionId + " to unregister.");
+      console.error(
+        "No player join event handler with ID " + functionId + " to unregister."
+      );
     }
   },
 
@@ -310,7 +306,7 @@ mergeInto(LibraryManager.library, {
         return "";
       }
 
-      if (typeof returnStr !== 'string') {
+      if (typeof returnStr !== "string") {
         return "";
       }
 
@@ -319,11 +315,12 @@ mergeInto(LibraryManager.library, {
       stringToUTF8(returnStr, buffer, bufferSize);
       return buffer;
     } catch (error) {
-      console.error("JavaScript Library: An error occurred in GetStateStringInternal: \n\n", error);
+      console.error(
+        "JavaScript Library: An error occurred in GetStateStringInternal: \n\n",
+        error
+      );
     }
   },
-
-
 
   /**
    * @description Retrieves a dictionary (JSON) value from the game state using the provided key.
@@ -631,7 +628,6 @@ mergeInto(LibraryManager.library, {
   GetPlayerStateDictionary: function (playerId, key) {
     const players = window._multiplayer.getPlayers();
 
-
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
       return null;
@@ -643,7 +639,6 @@ mergeInto(LibraryManager.library, {
       console.error("Player with ID", UTF8ToString(playerId), "not found.");
       return null;
     }
-
 
     if (typeof playerState.getState === "function") {
       var obj = playerState.getState(UTF8ToString(key));
@@ -661,9 +656,9 @@ mergeInto(LibraryManager.library, {
   },
 
   CreateJoystickInternal: function (JoystickOptions) {
-
-    const options = JoystickOptions ? JSON.parse(UTF8ToString(JoystickOptions)) : {};
-
+    const options = JoystickOptions
+      ? JSON.parse(UTF8ToString(JoystickOptions))
+      : {};
 
     this.leftStick = new Playroom.Joystick(Playroom.myPlayer(), {
       type: options.type,
@@ -700,30 +695,39 @@ mergeInto(LibraryManager.library, {
 
     Playroom.onDisconnect((e) => {
       console.log(`Disconnected!`, e.code, e.reason);
-      dynCall("v", callback, [])
+      dynCall("v", callback, []);
     });
-
   },
 
   WaitForStateInternal: function (stateKey, onStateSetCallback) {
     if (!window.Playroom) {
-      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
       reject("Playroom library not loaded");
       return;
     }
 
-    stateKey = UTF8ToString(stateKey)
+    stateKey = UTF8ToString(stateKey);
 
-    Playroom.waitForState(stateKey).then(() => {
-      dynCall("v", onStateSetCallback, [])
-    }).catch((error) => {
-      console.error("Error Waiting for state:", error);
-    });
+    Playroom.waitForState(stateKey)
+      .then(() => {
+        dynCall("v", onStateSetCallback, []);
+      })
+      .catch((error) => {
+        console.error("Error Waiting for state:", error);
+      });
   },
 
-  WaitForPlayerStateInternal: function (playerId, stateKey, onStateSetCallback) {
+  WaitForPlayerStateInternal: function (
+    playerId,
+    stateKey,
+    onStateSetCallback
+  ) {
     if (!window.Playroom) {
-      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
       reject("Playroom library not loaded");
       return;
     }
@@ -741,26 +745,26 @@ mergeInto(LibraryManager.library, {
       return null;
     }
 
-
-    stateKey = UTF8ToString(stateKey)
-    Playroom.waitForPlayerState(playerState, stateKey).then(() => {
-      dynCall("v", onStateSetCallback, [])
-    }).catch((error) => {
-      console.error("Error waiting for state:", error);
-    });
-
+    stateKey = UTF8ToString(stateKey);
+    Playroom.waitForPlayerState(playerState, stateKey)
+      .then(() => {
+        dynCall("v", onStateSetCallback, []);
+      })
+      .catch((error) => {
+        console.error("Error waiting for state:", error);
+      });
   },
 
   KickInternal: function (playerID, onKickCallBack) {
-
     if (!window.Playroom) {
-      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
       reject("Playroom library not loaded");
       return;
     }
 
     const players = window._multiplayer.getPlayers();
-
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
@@ -773,24 +777,28 @@ mergeInto(LibraryManager.library, {
       return null;
     }
 
-    playerState.kick().then(() => {
-      dynCall('v', onKickCallBack, [])
-    }).catch((error) => {
-      console.error("Error kicking player:", error);
-    });
-
+    playerState
+      .kick()
+      .then(() => {
+        dynCall("v", onKickCallBack, []);
+      })
+      .catch((error) => {
+        console.error("Error kicking player:", error);
+      });
   },
 
   ResetStatesInternal: function (keysToExclude, onStatesReset) {
     if (!window.Playroom) {
-      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
       return;
     }
 
     var keys = keysToExclude ? JSON.parse(UTF8ToString(keysToExclude)) : [];
     Playroom.resetStates(keys)
       .then(() => {
-        dynCall('v', onStatesReset, []);
+        dynCall("v", onStatesReset, []);
       })
       .catch((error) => {
         console.error("Error resetting states:", error);
@@ -800,14 +808,16 @@ mergeInto(LibraryManager.library, {
 
   ResetPlayersStatesInternal: function (keysToExclude, onStatesReset) {
     if (!window.Playroom) {
-      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
       return;
     }
 
     var keys = keysToExclude ? JSON.parse(UTF8ToString(keysToExclude)) : [];
     Playroom.resetPlayersStates(keys)
       .then(() => {
-        dynCall('v', onStatesReset, []);
+        dynCall("v", onStatesReset, []);
       })
       .catch((error) => {
         console.error("Error resetting players states:", error);
@@ -815,27 +825,25 @@ mergeInto(LibraryManager.library, {
       });
   },
 
-
-
   RpcRegisterInternal: function (name, callback, onResponseReturn) {
     if (!window.Playroom) {
-      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
       return;
     }
 
-    onResponseReturn = UTF8ToString(onResponseReturn)
+    onResponseReturn = UTF8ToString(onResponseReturn);
 
     function registerCallback(data, sender) {
       var dataJson = JSON.stringify(data);
-
 
       var id = sender.id;
       var bufferSize = lengthBytesUTF8(id) + 1;
       var buffer = _malloc(bufferSize);
       stringToUTF8(id, buffer, bufferSize);
 
-
-      dynCall('vii', callback, [stringToNewUTF8(dataJson), buffer]);
+      dynCall("vii", callback, [stringToNewUTF8(dataJson), buffer]);
 
       return onResponseReturn;
     }
@@ -845,7 +853,9 @@ mergeInto(LibraryManager.library, {
 
   RpcCallInternal: function (name, dataJson, mode, callbackOnResponse) {
     if (!window.Playroom) {
-      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
       return;
     }
 
@@ -853,12 +863,12 @@ mergeInto(LibraryManager.library, {
       var data;
       if (dataJson) {
         try {
-
           data = JSON.parse(UTF8ToString(dataJson));
         } catch (parseError) {
-          console.warn("Failed to parse dataJson as JSON. Treating it as a regular string.");
+          console.warn(
+            "Failed to parse dataJson as JSON. Treating it as a regular string."
+          );
           data = UTF8ToString(dataJson);
-
         }
       } else {
         data = {};
@@ -866,7 +876,7 @@ mergeInto(LibraryManager.library, {
 
       function onResponseCallback(responseData) {
         console.log("Response received: ", responseData);
-        dynCall('v', callbackOnResponse, []);
+        dynCall("v", callbackOnResponse, []);
       }
 
       Playroom.RPC.call(UTF8ToString(name), data, mode, onResponseCallback);
@@ -875,19 +885,21 @@ mergeInto(LibraryManager.library, {
     }
   },
 
-
-  StartMatchmaking: function () {
+  StartMatchmakingInternal: function (callback) {
     if (!window.Playroom) {
-      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
       return;
     }
 
-    Playroom.startMatchmaking().then(() => {
-      console.log(`Player has joined a public room`);
-    }).catch(error => {
-      console.error(
-        `JS: Error starting match making ${error}`)
-    });
+    Playroom.startMatchmaking()
+      .then(() => {
+        console.log(`Player has joined a public room`);
+        dynCall("v", callback, []);
+      })
+      .catch((error) => {
+        console.error(`JS: Error starting match making ${error}`);
+      });
   },
-
 });

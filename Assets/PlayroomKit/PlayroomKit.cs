@@ -291,7 +291,7 @@ namespace Playroom
         }
 
 
-        public static Dictionary<string, Player> GetPlayers()
+        private static Dictionary<string, Player> GetPlayers()
         {
             if (!isPlayRoomInitialized)
                 Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
@@ -1236,7 +1236,20 @@ namespace Playroom
         }
 
         [DllImport("__Internal")]
-        public static extern void StartMatchmaking();
+        public static extern void StartMatchmakingInternal(Action callback);
+
+        static Action startMatchmakingCallback = null;
+        public static void StartMatchmaking(Action callback = null)
+        {
+            startMatchmakingCallback = callback;
+            StartMatchmakingInternal(InvokeStartMatchmakingCallback);
+        }
+
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void InvokeStartMatchmakingCallback()
+        {
+            startMatchmakingCallback?.Invoke();
+        }
 
         // Player class
         public class Player
