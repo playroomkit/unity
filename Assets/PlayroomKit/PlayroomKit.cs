@@ -914,7 +914,7 @@ namespace Playroom
             }
             else
             {
-                Debug.LogError($"No {key} in States or value is not of type {typeof(T)}");
+                Debug.LogWarning($"No {key} in States or value is not of type {typeof(T)}");
                 return default;
             }
         }
@@ -1052,8 +1052,15 @@ namespace Playroom
 
         public static void RpcRegister(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null)
         {
-            rpcRegisterCallbacks.Add(name, rpcRegisterCallback);
-            RpcRegisterInternal(name, InvokeRpcRegisterCallBack, onResponseReturn);
+            if (IsRunningInBrowser())
+            {
+                rpcRegisterCallbacks.Add(name, rpcRegisterCallback);
+                RpcRegisterInternal(name, InvokeRpcRegisterCallBack, onResponseReturn);
+            }
+            else
+            {
+                Debug.LogError("[Mock Mode] RPC is currently not supported in Mock Mode!\n Please build the project to test RPC.");
+            }
         }
 
         [MonoPInvokeCallback(typeof(Action<string, string>))]
@@ -1106,35 +1113,40 @@ namespace Playroom
         public static void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse)
         {
 
-            string jsonData = ConvertToJson(data);
-
-            if (OnResponseCallbacks.ContainsKey(name))
+            if (IsRunningInBrowser())
             {
-                OnResponseCallbacks[name].Add(callbackOnResponse);
+                string jsonData = ConvertToJson(data);
+                if (OnResponseCallbacks.ContainsKey(name))
+                {
+                    OnResponseCallbacks[name].Add(callbackOnResponse);
+                }
+                else
+                {
+                    OnResponseCallbacks.Add(name, new List<Action> { callbackOnResponse });
+                    if (!rpcCalledEvents.Contains(name))
+                    {
+                        rpcCalledEvents.Add(name);
+                    }
+                }
+                JSONArray jsonArray = new JSONArray();
+                foreach (string item in rpcCalledEvents)
+                {
+                    jsonArray.Add(item);
+                }
+                string jsonString = jsonArray.ToString();
+                /* 
+                This is requrired to sync the rpc events between all players, without this players won't know which event has been called.
+                this is a temporary fix, RPC's need to be handled within JS for better control.
+                */
+                SetState("rpcCalledEventName", jsonString, reliable: true);
+
+                RpcCallInternal(name, jsonData, mode, InvokeOnResponseCallback);
             }
             else
             {
-                OnResponseCallbacks.Add(name, new List<Action> { callbackOnResponse });
-                if (!rpcCalledEvents.Contains(name))
-                {
-                    rpcCalledEvents.Add(name);
-                }
+                Debug.LogError("[Mock Mode] RPC Calls are not supported in Mock Mode! yet.\nPlease make a build to test RPC.");
             }
 
-
-            JSONArray jsonArray = new JSONArray();
-            foreach (string item in rpcCalledEvents)
-            {
-                jsonArray.Add(item);
-            }
-            string jsonString = jsonArray.ToString();
-            /* 
-            This is requrired to sync the rpc events between all players, without this players won't know which event has been called.
-            this is a temporary fix, RPC's need to be handled within JS for better control.
-            */
-            SetState("rpcCalledEventName", jsonString, reliable: true);
-
-            RpcCallInternal(name, jsonData, mode, InvokeOnResponseCallback);
         }
 
         // Default Mode
@@ -1241,8 +1253,15 @@ namespace Playroom
         static Action startMatchmakingCallback = null;
         public static void StartMatchmaking(Action callback = null)
         {
-            startMatchmakingCallback = callback;
-            StartMatchmakingInternal(InvokeStartMatchmakingCallback);
+            if (IsRunningInBrowser())
+            {
+                startMatchmakingCallback = callback;
+                StartMatchmakingInternal(InvokeStartMatchmakingCallback);
+            }
+            else
+            {
+                Debug.LogError("[Mock Mode] Matchmaking is not supported in Mock Mode! yet.\nPlease build the project to test Matchmaking.");
+            }
         }
 
         [MonoPInvokeCallback(typeof(Action))]
