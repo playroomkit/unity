@@ -291,7 +291,7 @@ namespace Playroom
         }
 
 
-        private static Dictionary<string, Player> GetPlayers()
+        public static Dictionary<string, Player> GetPlayers()
         {
             if (!isPlayRoomInitialized)
                 Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
