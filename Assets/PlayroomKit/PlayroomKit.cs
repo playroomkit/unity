@@ -595,7 +595,7 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern string GetStateStringInternal(string key);
 
-        public static string GetStateString(string key)
+        private static string GetStateString(string key)
         {
             if (IsRunningInBrowser())
             {
@@ -618,7 +618,7 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern int GetStateIntInternal(string key);
 
-        public static int GetStateInt(string key)
+        private static int GetStateInt(string key)
         {
             if (IsRunningInBrowser())
             {
@@ -641,7 +641,7 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern float GetStateFloatInternal(string key);
 
-        public static float GetStateFloat(string key)
+        private static float GetStateFloat(string key)
         {
             if (IsRunningInBrowser())
             {
@@ -661,7 +661,7 @@ namespace Playroom
             }
         }
 
-        public static bool GetStateBool(string key)
+        private static bool GetStateBool(string key)
         {
             if (IsRunningInBrowser())
             {
@@ -1073,10 +1073,7 @@ namespace Playroom
                     var player = new Player(senderJson);
                     Players.Add(senderJson, player);
                 }
-                else
-                {
-                    Debug.LogWarning($"Players dictionary already has a player with ID: {senderJson}!");
-                }
+                
             }
             catch (Exception ex)
             {
@@ -1514,7 +1511,7 @@ namespace Playroom
                 }
             }
 
-            public int GetPlayerStateInt(string key)
+            private int GetPlayerStateInt(string key)
             {
                 if (IsRunningInBrowser())
                 {
@@ -1534,7 +1531,7 @@ namespace Playroom
                 }
             }
 
-            public float GetPlayerStateFloat(string key)
+            private float GetPlayerStateFloat(string key)
             {
                 if (IsRunningInBrowser())
                 {
@@ -1554,7 +1551,7 @@ namespace Playroom
                 }
             }
 
-            public string GetPlayerStateString(string key)
+            private string GetPlayerStateString(string key)
             {
                 if (IsRunningInBrowser())
                 {
@@ -1574,7 +1571,7 @@ namespace Playroom
                 }
             }
 
-            public bool GetPlayerStateBool(string key)
+            private bool GetPlayerStateBool(string key)
             {
                 if (IsRunningInBrowser())
                 {
@@ -1685,12 +1682,6 @@ namespace Playroom
                         MockSetState(key, values);
                     }
                 }
-            }
-
-            public Dictionary<string, float> GetStateFloat(string id, string key)
-            {
-                var jsonString = GetPlayerStateDictionary(id, key);
-                return ParseJsonToDictionary<float>(jsonString);
             }
 
             public void WaitForState(string StateKey, Action onStateSetCallback = null)
@@ -1818,7 +1809,7 @@ namespace Playroom
             private static extern void WaitForPlayerStateInternal(string playerID, string stateKey, Action onStateSetCallback = null);
 
 
-            public static bool GetPlayerStateBoolById(string id, string key)
+            private static bool GetPlayerStateBoolById(string id, string key)
             {
                 if (IsRunningInBrowser())
                 {
