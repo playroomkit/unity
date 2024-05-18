@@ -285,7 +285,7 @@ namespace Playroom
             }
         }
 
-        public static void UnsubscribeOnPlayerJoin(string CallbackID)
+        private static void UnsubscribeOnPlayerJoin(string CallbackID)
         {
             UnsubscribeOnPlayerJoinInternal(CallbackID);
         }
@@ -595,7 +595,7 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern string GetStateStringInternal(string key);
 
-        public static string GetStateString(string key)
+        private static string GetStateString(string key)
         {
             if (IsRunningInBrowser())
             {
@@ -618,7 +618,7 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern int GetStateIntInternal(string key);
 
-        public static int GetStateInt(string key)
+        private static int GetStateInt(string key)
         {
             if (IsRunningInBrowser())
             {
@@ -641,7 +641,7 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern float GetStateFloatInternal(string key);
 
-        public static float GetStateFloat(string key)
+        private static float GetStateFloat(string key)
         {
             if (IsRunningInBrowser())
             {
@@ -661,7 +661,7 @@ namespace Playroom
             }
         }
 
-        public static bool GetStateBool(string key)
+        private static bool GetStateBool(string key)
         {
             if (IsRunningInBrowser())
             {
@@ -688,40 +688,63 @@ namespace Playroom
         {
             if (IsRunningInBrowser())
             {
-                if (typeof(T) == typeof(int))
-                {
-                    return (T)(object)GetStateInt(key);
-                }
-                else if (typeof(T) == typeof(float))
-                {
-                    return (T)(object)GetStateFloat(key);
-                }
-                else if (typeof(T) == typeof(bool))
-                {
-                    return (T)(object)GetStateBool(key);
-                }
-                else if (typeof(T) == typeof(string))
-                {
-                    return (T)(object)GetStateString(key);
-                }
+                Type type = typeof(T);
+                if (type == typeof(int)) return (T)(object)GetStateInt(key);
+                else if (type == typeof(float)) return (T)(object)GetStateFloat(key);
+                else if (type == typeof(bool)) return (T)(object)GetStateBool(key);
+                else if (type == typeof(string)) return (T)(object)GetStateString(key);
+                else if (type == typeof(Vector2)) return JsonUtility.FromJson<T>(GetStateString(key));
+                else if (type == typeof(Vector3)) return JsonUtility.FromJson<T>(GetStateString(key));
+                else if (type == typeof(Vector4)) return JsonUtility.FromJson<T>(GetStateString(key));
+                else if (type == typeof(Quaternion)) return JsonUtility.FromJson<T>(GetStateString(key));
                 else
                 {
-                    Debug.LogError($"GetState<{typeof(T)}> is not supported.");
+                    Debug.LogError($"GetState<{type}> is not supported.");
                     return default;
                 }
             }
             else
             {
-                if (!isPlayRoomInitialized)
+                if (isPlayRoomInitialized)
+                {
+                    return MockGetState<T>(key);
+                }
+                else
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return default;
                 }
+            }
+        }
+
+
+        public static Dictionary<string, T> GetState<T>(string key, bool isReturnDictionary = false)
+        {
+            if (IsRunningInBrowser() && isReturnDictionary)
+            {
+                var jsonString = GetStateDictionaryInternal(key);
+                return ParseJsonToDictionary<T>(jsonString);
+            }
+            else
+            {
+                if (isPlayRoomInitialized)
+                {
+                    if (isReturnDictionary)
+                    {
+                        return MockGetState<Dictionary<string, T>>(key);
+                    }
+                    else
+                    {
+                        return default;
+                    }
+                }
                 else
                 {
-                    return MockGetState<T>(key);
+                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                    return default;
                 }
             }
+
         }
 
         [DllImport("__Internal")]
@@ -768,26 +791,7 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern string GetStateDictionaryInternal(string key);
 
-        public static Dictionary<string, T> GetStateDict<T>(string key)
-        {
-            if (IsRunningInBrowser())
-            {
-                var jsonString = GetStateDictionaryInternal(key);
-                return ParseJsonToDictionary<T>(jsonString);
-            }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return default;
-                }
-                else
-                {
-                    return MockGetState<Dictionary<string, T>>(key);
-                }
-            }
-        }
+
 
         // Utils:
         private static void SetStateHelper<T>(string key, Dictionary<string, T> values, bool reliable = false)
@@ -922,7 +926,7 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern void UnsubscribeOnQuitInternal();
 
-        public static void UnsubscribeOnQuit()
+        private static void UnsubscribeOnQuit()
         {
             UnsubscribeOnQuitInternal();
         }
@@ -932,7 +936,7 @@ namespace Playroom
         {
             if (Players.TryGetValue(playerId, out Player player))
             {
-                player.OnQuitWrapperCallback();
+                ((IPlayerInteraction)player).InvokeOnQuitWrapperCallback();
             }
             else
             {
@@ -1073,10 +1077,7 @@ namespace Playroom
                     var player = new Player(senderJson);
                     Players.Add(senderJson, player);
                 }
-                else
-                {
-                    Debug.LogWarning($"Players dictionary already has a player with ID: {senderJson}!");
-                }
+
             }
             catch (Exception ex)
             {
@@ -1248,7 +1249,7 @@ namespace Playroom
         }
 
         [DllImport("__Internal")]
-        public static extern void StartMatchmakingInternal(Action callback);
+        private static extern void StartMatchmakingInternal(Action callback);
 
         static Action startMatchmakingCallback = null;
         public static void StartMatchmaking(Action callback = null)
@@ -1271,7 +1272,13 @@ namespace Playroom
         }
 
         // Player class
-        public class Player
+
+        public interface IPlayerInteraction
+        {
+            void InvokeOnQuitWrapperCallback();
+        }
+
+        public class Player : IPlayerInteraction
         {
 
             [Serializable]
@@ -1300,7 +1307,7 @@ namespace Playroom
 
 
             public string id;
-            public static int totalObjects = 0;
+            private static int totalObjects = 0;
 
 
             public Player(string id)
@@ -1335,11 +1342,16 @@ namespace Playroom
             }
 
             [MonoPInvokeCallback(typeof(Action))]
-            public void OnQuitWrapperCallback()
+            private void OnQuitWrapperCallback()
             {
                 if (OnQuitCallbacks != null)
                     foreach (var callback in OnQuitCallbacks)
                         callback?.Invoke(id);
+            }
+
+            void IPlayerInteraction.InvokeOnQuitWrapperCallback()
+            {
+                OnQuitWrapperCallback();
             }
 
             public Action OnQuit(Action<string> callback)
@@ -1493,28 +1505,36 @@ namespace Playroom
             }
 
 
-            public Dictionary<string, T> GetStateDict<T>(string key)
+            public Dictionary<string, T> GetState<T>(string key, bool isReturnDictionary = false)
             {
-                if (IsRunningInBrowser())
+
+                if (IsRunningInBrowser() && isReturnDictionary)
                 {
                     var jsonString = GetPlayerStateDictionary(id, key);
                     return ParseJsonToDictionary<T>(jsonString);
                 }
                 else
                 {
-                    if (!isPlayRoomInitialized)
+                    if (isPlayRoomInitialized)
+                    {
+                        if (isReturnDictionary)
+                        {
+                            return MockGetState<Dictionary<string, T>>(key);
+                        }
+                        else
+                        {
+                            return default;
+                        }
+                    }
+                    else
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                         return default;
                     }
-                    else
-                    {
-                        return MockGetState<Dictionary<string, T>>(key);
-                    }
                 }
             }
 
-            public int GetPlayerStateInt(string key)
+            private int GetPlayerStateInt(string key)
             {
                 if (IsRunningInBrowser())
                 {
@@ -1534,7 +1554,7 @@ namespace Playroom
                 }
             }
 
-            public float GetPlayerStateFloat(string key)
+            private float GetPlayerStateFloat(string key)
             {
                 if (IsRunningInBrowser())
                 {
@@ -1554,7 +1574,7 @@ namespace Playroom
                 }
             }
 
-            public string GetPlayerStateString(string key)
+            private string GetPlayerStateString(string key)
             {
                 if (IsRunningInBrowser())
                 {
@@ -1574,7 +1594,7 @@ namespace Playroom
                 }
             }
 
-            public bool GetPlayerStateBool(string key)
+            private bool GetPlayerStateBool(string key)
             {
                 if (IsRunningInBrowser())
                 {
@@ -1685,12 +1705,6 @@ namespace Playroom
                         MockSetState(key, values);
                     }
                 }
-            }
-
-            public Dictionary<string, float> GetStateFloat(string id, string key)
-            {
-                var jsonString = GetPlayerStateDictionary(id, key);
-                return ParseJsonToDictionary<float>(jsonString);
             }
 
             public void WaitForState(string StateKey, Action onStateSetCallback = null)
@@ -1818,7 +1832,7 @@ namespace Playroom
             private static extern void WaitForPlayerStateInternal(string playerID, string stateKey, Action onStateSetCallback = null);
 
 
-            public static bool GetPlayerStateBoolById(string id, string key)
+            private static bool GetPlayerStateBoolById(string id, string key)
             {
                 if (IsRunningInBrowser())
                 {
@@ -1876,6 +1890,8 @@ namespace Playroom
                 // Output the JSON string
                 SetPlayerStateDictionary(id, key, jsonString, reliable);
             }
+
+
         }
     }
 
