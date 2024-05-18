@@ -688,44 +688,63 @@ namespace Playroom
         {
             if (IsRunningInBrowser())
             {
-                if (typeof(T) == typeof(int))
-                {
-                    return (T)(object)GetStateInt(key);
-                }
-                else if (typeof(T) == typeof(float))
-                {
-                    return (T)(object)GetStateFloat(key);
-                }
-                else if (typeof(T) == typeof(bool))
-                {
-                    return (T)(object)GetStateBool(key);
-                }
-                else if (typeof(T) == typeof(string))
-                {
-                    return (T)(object)GetStateString(key);
-                }
-                else if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Dictionary<string, T>))
-                {
-                    return (T)(object)GetStateDict<object>(key);
-                }
+                Type type = typeof(T);
+                if (type == typeof(int)) return (T)(object)GetStateInt(key);
+                else if (type == typeof(float)) return (T)(object)GetStateFloat(key);
+                else if (type == typeof(bool)) return (T)(object)GetStateBool(key);
+                else if (type == typeof(string)) return (T)(object)GetStateString(key);
+                else if (type == typeof(Vector2)) return JsonUtility.FromJson<T>(GetStateString(key));
+                else if (type == typeof(Vector3)) return JsonUtility.FromJson<T>(GetStateString(key));
+                else if (type == typeof(Vector4)) return JsonUtility.FromJson<T>(GetStateString(key));
+                else if (type == typeof(Quaternion)) return JsonUtility.FromJson<T>(GetStateString(key));
                 else
                 {
-                    Debug.LogError($"GetState<{typeof(T)}> is not supported.");
+                    Debug.LogError($"GetState<{type}> is not supported.");
                     return default;
                 }
             }
             else
             {
-                if (!isPlayRoomInitialized)
+                if (isPlayRoomInitialized)
+                {
+                    return MockGetState<T>(key);
+                }
+                else
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return default;
                 }
+            }
+        }
+
+
+        public static Dictionary<string, T> GetState<T>(string key, bool isReturnDictionary = false)
+        {
+            if (IsRunningInBrowser() && isReturnDictionary)
+            {
+                var jsonString = GetStateDictionaryInternal(key);
+                return ParseJsonToDictionary<T>(jsonString);
+            }
+            else
+            {
+                if (isPlayRoomInitialized)
+                {
+                    if (isReturnDictionary)
+                    {
+                        return MockGetState<Dictionary<string, T>>(key);
+                    }
+                    else
+                    {
+                        return default;
+                    }
+                }
                 else
                 {
-                    return MockGetState<T>(key);
+                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                    return default;
                 }
             }
+
         }
 
         [DllImport("__Internal")]
@@ -772,26 +791,7 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern string GetStateDictionaryInternal(string key);
 
-        private static Dictionary<string, T> GetStateDict<T>(string key)
-        {
-            if (IsRunningInBrowser())
-            {
-                var jsonString = GetStateDictionaryInternal(key);
-                return ParseJsonToDictionary<T>(jsonString);
-            }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return default;
-                }
-                else
-                {
-                    return MockGetState<Dictionary<string, T>>(key);
-                }
-            }
-        }
+
 
         // Utils:
         private static void SetStateHelper<T>(string key, Dictionary<string, T> values, bool reliable = false)
@@ -1488,10 +1488,6 @@ namespace Playroom
                     else if (type == typeof(Vector3)) return (T)(object)JsonUtility.FromJson<Vector3>(GetPlayerStateStringById(id, key));
                     else if (type == typeof(Vector2)) return (T)(object)JsonUtility.FromJson<Vector2>(GetPlayerStateStringById(id, key));
                     else if (type == typeof(Quaternion)) return (T)(object)JsonUtility.FromJson<Quaternion>(GetPlayerStateStringById(id, key));
-                    else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<string, T>))
-                    {
-                        return (T)(object)GetStateDict<T>(key);
-                    }
                     else throw new NotSupportedException($"Type {typeof(T)} is not supported by GetState");
                 }
                 else
@@ -1509,23 +1505,31 @@ namespace Playroom
             }
 
 
-            private Dictionary<string, T> GetStateDict<T>(string key)
+            public Dictionary<string, T> GetState<T>(string key, bool isReturnDictionary = false)
             {
-                if (IsRunningInBrowser())
+
+                if (IsRunningInBrowser() && isReturnDictionary)
                 {
                     var jsonString = GetPlayerStateDictionary(id, key);
                     return ParseJsonToDictionary<T>(jsonString);
                 }
                 else
                 {
-                    if (!isPlayRoomInitialized)
+                    if (isPlayRoomInitialized)
                     {
-                        Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                        return default;
+                        if (isReturnDictionary)
+                        {
+                            return MockGetState<Dictionary<string, T>>(key);
+                        }
+                        else
+                        {
+                            return default;
+                        }
                     }
                     else
                     {
-                        return MockGetState<Dictionary<string, T>>(key);
+                        Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                        return default;
                     }
                 }
             }
