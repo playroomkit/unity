@@ -936,7 +936,7 @@ namespace Playroom
         {
             if (Players.TryGetValue(playerId, out Player player))
             {
-                player.OnQuitWrapperCallback();
+                ((IPlayerInteraction)player).InvokeOnQuitWrapperCallback();
             }
             else
             {
@@ -1272,7 +1272,13 @@ namespace Playroom
         }
 
         // Player class
-        public class Player
+
+        public interface IPlayerInteraction
+        {
+            void InvokeOnQuitWrapperCallback();
+        }
+
+        public class Player : IPlayerInteraction
         {
 
             [Serializable]
@@ -1336,11 +1342,16 @@ namespace Playroom
             }
 
             [MonoPInvokeCallback(typeof(Action))]
-            public void OnQuitWrapperCallback()
+            private void OnQuitWrapperCallback()
             {
                 if (OnQuitCallbacks != null)
                     foreach (var callback in OnQuitCallbacks)
                         callback?.Invoke(id);
+            }
+
+            void IPlayerInteraction.InvokeOnQuitWrapperCallback()
+            {
+                OnQuitWrapperCallback();
             }
 
             public Action OnQuit(Action<string> callback)
@@ -1875,6 +1886,8 @@ namespace Playroom
                 // Output the JSON string
                 SetPlayerStateDictionary(id, key, jsonString, reliable);
             }
+
+
         }
     }
 
