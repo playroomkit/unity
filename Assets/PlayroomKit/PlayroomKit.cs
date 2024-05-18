@@ -285,7 +285,7 @@ namespace Playroom
             }
         }
 
-        public static void UnsubscribeOnPlayerJoin(string CallbackID)
+        private static void UnsubscribeOnPlayerJoin(string CallbackID)
         {
             UnsubscribeOnPlayerJoinInternal(CallbackID);
         }
@@ -922,7 +922,7 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern void UnsubscribeOnQuitInternal();
 
-        public static void UnsubscribeOnQuit()
+        private static void UnsubscribeOnQuit()
         {
             UnsubscribeOnQuitInternal();
         }
@@ -1245,7 +1245,7 @@ namespace Playroom
         }
 
         [DllImport("__Internal")]
-        public static extern void StartMatchmakingInternal(Action callback);
+        private static extern void StartMatchmakingInternal(Action callback);
 
         static Action startMatchmakingCallback = null;
         public static void StartMatchmaking(Action callback = null)
@@ -1297,7 +1297,7 @@ namespace Playroom
 
 
             public string id;
-            public static int totalObjects = 0;
+            private static int totalObjects = 0;
 
 
             public Player(string id)
