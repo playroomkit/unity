@@ -704,6 +704,10 @@ namespace Playroom
                 {
                     return (T)(object)GetStateString(key);
                 }
+                else if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Dictionary<string, T>))
+                {
+                    return (T)(object)GetStateDict<object>(key);
+                }
                 else
                 {
                     Debug.LogError($"GetState<{typeof(T)}> is not supported.");
@@ -768,7 +772,7 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern string GetStateDictionaryInternal(string key);
 
-        public static Dictionary<string, T> GetStateDict<T>(string key)
+        private static Dictionary<string, T> GetStateDict<T>(string key)
         {
             if (IsRunningInBrowser())
             {
@@ -1073,7 +1077,7 @@ namespace Playroom
                     var player = new Player(senderJson);
                     Players.Add(senderJson, player);
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -1473,6 +1477,10 @@ namespace Playroom
                     else if (type == typeof(Vector3)) return (T)(object)JsonUtility.FromJson<Vector3>(GetPlayerStateStringById(id, key));
                     else if (type == typeof(Vector2)) return (T)(object)JsonUtility.FromJson<Vector2>(GetPlayerStateStringById(id, key));
                     else if (type == typeof(Quaternion)) return (T)(object)JsonUtility.FromJson<Quaternion>(GetPlayerStateStringById(id, key));
+                    else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<string, T>))
+                    {
+                        return (T)(object)GetStateDict<T>(key);
+                    }
                     else throw new NotSupportedException($"Type {typeof(T)} is not supported by GetState");
                 }
                 else
@@ -1490,7 +1498,7 @@ namespace Playroom
             }
 
 
-            public Dictionary<string, T> GetStateDict<T>(string key)
+            private Dictionary<string, T> GetStateDict<T>(string key)
             {
                 if (IsRunningInBrowser())
                 {
