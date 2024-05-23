@@ -25,10 +25,7 @@ public class Lobby : MonoBehaviour
     public void LeaveRoom()
     {
         PlayroomKit.Player player = PlayroomKit.MyPlayer();
-
-        player.OnQuitWrapperCallback();
         currentRoomCode.text = "Room Code: " + PlayroomKit.GetRoomCode();
-
         unsubOnQuit();
     }
 

@@ -18,7 +18,6 @@ mergeInto(LibraryManager.library, {
     function OnDisconnectCallback() {
       dynCall("v", onDisconnectCallback, []);
     }
-
     this.onPlayerJoinCallBacks = {};
     var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
 
@@ -901,5 +900,38 @@ mergeInto(LibraryManager.library, {
       .catch((error) => {
         console.error(`JS: Error starting match making ${error}`);
       });
+  },
+
+  // Utils for callback manager:
+  SendKey: function (key) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+    console.log(UTF8ToString(key));
+    if (!this.callbackIds) {
+      this.callbackIds = [];
+    } 
+    this.callbackIds.push(UTF8ToString(key));
+  },
+
+  GetKey: function (key) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    var foundKey = this.callbackIds.find(function (item) {
+      return item === UTF8ToString(key);
+    });
+
+    var bufferSize = lengthBytesUTF8(foundKey) + 1;
+    var buffer = _malloc(bufferSize);
+    stringToUTF8(foundKey, buffer, bufferSize);
+    return buffer;
   },
 });
