@@ -716,8 +716,10 @@ mergeInto(LibraryManager.library, {
         var buffer = _malloc(bufferSize);
         stringToUTF8(stateKey, buffer, bufferSize);
 
+        stateVal = JSON.stringify(stateVal);
 
-        dynCall("vi", onStateSetCallback, [buffer]);
+
+        dynCall("vii", onStateSetCallback, [stringToNewUTF8(stateVal), buffer]);
       })
       .catch((error) => {
         console.error("Error Waiting for state:", error);

@@ -747,25 +747,17 @@ namespace Playroom
 
         }
 
-
         [DllImport("__Internal")]
-        private static extern void SendKey(string key);
+        private static extern void WaitForStateInternal(string stateKey, Action<string, string> onStateSetCallback);
 
-        [DllImport("__Internal")]
-        private static extern string GetKey();
+        private static Dictionary<string, Action<string>> OnStateChangeCallBacks = new();
 
-        [DllImport("__Internal")]
-        private static extern void WaitForStateInternal(string stateKey, Action<string> onStateSetCallback);
-
-
-        private static Dictionary<string, Action> OnStateChangeCallBacks = new();
-
-        [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void InvokeCallback(string stateKey)
+        [MonoPInvokeCallback(typeof(Action<string, string>))]
+        private static void InvokeCallback(string stateVal, string stateKey)
         {
-            if (OnStateChangeCallBacks.TryGetValue(stateKey, out Action callback))
+            if (OnStateChangeCallBacks.TryGetValue(stateKey, out Action<string> callback))
             {
-                callback?.Invoke();
+                callback?.Invoke(stateVal);
             }
             else
             {
@@ -773,7 +765,7 @@ namespace Playroom
             }
         }
 
-        public static void WaitForState(string stateKey, Action onStateSetCallback = null)
+        public static void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
         {
             if (IsRunningInBrowser())
             {

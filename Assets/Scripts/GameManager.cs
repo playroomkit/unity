@@ -55,12 +55,12 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         PlayroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
-        PlayroomKit.WaitForState("pos", NewMethod);
+        PlayroomKit.WaitForState("pos", WhatPos);
     }
 
-    private static void NewMethod()
+    private static void WhatPos(string pos)
     {
-        Debug.Log("pos state is ready!");
+        Debug.Log($"pos state is ready! {pos}");
     }
 
     void HandleScoreUpdate(string data, string caller)
