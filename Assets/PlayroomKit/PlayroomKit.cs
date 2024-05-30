@@ -747,26 +747,50 @@ namespace Playroom
 
         }
 
+
         [DllImport("__Internal")]
-        private static extern void WaitForStateInternal(string stateKey, Action onStateSetCallback = null);
+        private static extern void SendKey(string key);
+
+        [DllImport("__Internal")]
+        private static extern string GetKey();
+
+        [DllImport("__Internal")]
+        private static extern void WaitForStateInternal(string stateKey, Action<string> onStateSetCallback);
 
 
-        private static Action OnStateChangeCallBack = null;
+        private static Dictionary<string, Action> OnStateChangeCallBacks = new();
 
-        [MonoPInvokeCallback(typeof(Action))]
-        private static void InvokeCallback()
+        [MonoPInvokeCallback(typeof(Action<string>))]
+        private static void InvokeCallback(string stateKey)
         {
-            OnStateChangeCallBack?.Invoke();
+            if (OnStateChangeCallBacks.TryGetValue(stateKey, out Action callback))
+            {
+                callback?.Invoke();
+            }
+            else
+            {
+                Debug.LogWarning($"[WaitForState]: No callback found for state key: {stateKey}");
+            }
         }
 
         public static void WaitForState(string stateKey, Action onStateSetCallback = null)
         {
             if (IsRunningInBrowser())
             {
-                OnStateChangeCallBack = onStateSetCallback;
+                if (!OnStateChangeCallBacks.ContainsKey(stateKey))
+                {
+                    OnStateChangeCallBacks.Add(stateKey, onStateSetCallback);
+                }
+                else
+                {
+                    OnStateChangeCallBacks[stateKey] = onStateSetCallback;
+                }
+
                 WaitForStateInternal(stateKey, InvokeCallback);
             }
         }
+
+
 
         [DllImport("__Internal")]
         private static extern void WaitForPlayerStateInternal(string playerID, string StateKey, Action onStateSetCallback);
