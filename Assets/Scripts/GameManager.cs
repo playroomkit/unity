@@ -55,12 +55,18 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         PlayroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
-        PlayroomKit.WaitForState("pos", WhatPos);
+        PlayroomKit.WaitForState("posX", PosX);
+        PlayroomKit.WaitForState("posY", PosY);
     }
 
-    private static void WhatPos(string pos)
+    private static void PosX(string pos)
     {
-        Debug.Log($"pos state is ready! {pos}");
+        Debug.Log($"pos X state is ready! {pos}");
+    }
+
+    private static void PosY(string pos)
+    {
+        Debug.Log($"pos Y state2 is ready! {pos}");
     }
 
     void HandleScoreUpdate(string data, string caller)
@@ -145,7 +151,8 @@ public class GameManager : MonoBehaviour
             });
 
 
-            PlayroomKit.SetState("pos", playerGameObjects[pleyerIndex].transform.position.x);
+            PlayroomKit.SetState("posX", playerGameObjects[pleyerIndex].transform.position.x);
+            PlayroomKit.SetState("posY", playerGameObjects[pleyerIndex].transform.position.y);
         }
     }
 
