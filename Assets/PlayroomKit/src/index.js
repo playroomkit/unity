@@ -708,10 +708,17 @@ mergeInto(LibraryManager.library, {
     }
 
     stateKey = UTF8ToString(stateKey);
-
     Playroom.waitForState(stateKey)
-      .then(() => {
-        dynCall("v", onStateSetCallback, []);
+      .then((stateVal) => {
+        
+        var bufferSize = lengthBytesUTF8(stateKey) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(stateKey, buffer, bufferSize);
+
+        stateVal = JSON.stringify(stateVal);
+
+
+        dynCall("vii", onStateSetCallback, [stringToNewUTF8(stateVal), buffer]);
       })
       .catch((error) => {
         console.error("Error Waiting for state:", error);

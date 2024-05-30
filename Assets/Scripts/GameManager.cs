@@ -32,7 +32,6 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        // StartCoroutine(StartMatchmakingCoroutine());
         Initialize();
     }
 
@@ -49,28 +48,25 @@ public class GameManager : MonoBehaviour
         }, () =>
         {
             PlayroomKit.OnPlayerJoin(AddPlayer);
+
         });
-    }
-
-    private IEnumerator StartMatchmakingCoroutine()
-    {
-        Initialize();
-
-        yield return new WaitUntil(() => PlayroomKit.GetPlayers().Count > 0);
-
-        PlayroomKit.StartMatchmaking();
     }
 
     void Start()
     {
         PlayroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
-        PlayroomKit.RpcRegister("Hello", Hello);
+        PlayroomKit.WaitForState("posX", PosX);
+        PlayroomKit.WaitForState("posY", PosY);
     }
 
-    private void Hello(string data, string caller)
+    private static void PosX(string pos)
     {
-        var player = PlayroomKit.GetPlayer(caller);
-        Debug.Log($"Caller: {caller}, Player Name: {player?.GetProfile().name}, Data: {data}");
+        Debug.Log($"pos X state is ready! {pos}");
+    }
+
+    private static void PosY(string pos)
+    {
+        Debug.Log($"pos Y state2 is ready! {pos}");
     }
 
     void HandleScoreUpdate(string data, string caller)
@@ -112,7 +108,6 @@ public class GameManager : MonoBehaviour
             players[index].SetState("pos", playerGameObjects[index].GetComponent<Transform>().position);
 
             ShootBullet(index);
-            SayHello();
 
             if (Input.GetKeyDown(KeyCode.R) && PlayroomKit.IsHost())
             {
@@ -154,17 +149,10 @@ public class GameManager : MonoBehaviour
             {
                 Debug.Log("Shooting bullet");
             });
-        }
-    }
 
-    private void SayHello()
-    {
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            PlayroomKit.RpcCall("Hello", -1, () =>
-            {
-                Debug.Log("saying helo");
-            });
+
+            PlayroomKit.SetState("posX", playerGameObjects[pleyerIndex].transform.position.x);
+            PlayroomKit.SetState("posY", playerGameObjects[pleyerIndex].transform.position.y);
         }
     }
 
