@@ -12,7 +12,7 @@ namespace Playroom
 {
     public partial class PlayroomKit
     {
-        public static bool isPlayRoomInitialized;
+        private static bool isPlayRoomInitialized;
 
         /// <summary>
         /// Required Mock Mode:
@@ -826,7 +826,7 @@ namespace Playroom
             SetStateDictionary(key, jsonString, reliable);
         }
 
-        protected static Dictionary<string, T> ParseJsonToDictionary<T>(string jsonString)
+        private static Dictionary<string, T> ParseJsonToDictionary<T>(string jsonString)
         {
             var dictionary = new Dictionary<string, T>();
             var jsonNode = JSON.Parse(jsonString);
@@ -915,7 +915,7 @@ namespace Playroom
 #endif
         }
 
-        protected static void MockSetState(string key, object value)
+        private static void MockSetState(string key, object value)
         {
             if (MockDictionary.ContainsKey(key))
                 MockDictionary[key] = value;
@@ -923,7 +923,7 @@ namespace Playroom
                 MockDictionary.Add(key, value);
         }
 
-        protected static T MockGetState<T>(string key)
+        private static T MockGetState<T>(string key)
         {
             if (MockDictionary.TryGetValue(key, out var value) && value is T typedValue)
             {
