@@ -758,33 +758,18 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern void WaitForStateInternal(string stateKey, Action<string, string> onStateSetCallback);
 
-        private static Dictionary<string, Action<string>> OnStateChangeCallBacks = new();
 
         [MonoPInvokeCallback(typeof(Action<string, string>))]
-        private static void InvokeCallback(string stateVal, string stateKey)
+        private static void InvokeCallback(string stateKey, string stateVal)
         {
-            if (OnStateChangeCallBacks.TryGetValue(stateKey, out Action<string> callback))
-            {
-                callback?.Invoke(stateVal);
-            }
-            else
-            {
-                Debug.LogWarning($"[WaitForState]: No callback found for state key: {stateKey}");
-            }
+            CallbackManager.InvokeCallback(stateKey, stateVal);
         }
 
         public static void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
         {
             if (IsRunningInBrowser())
             {
-                if (!OnStateChangeCallBacks.ContainsKey(stateKey))
-                {
-                    OnStateChangeCallBacks.Add(stateKey, onStateSetCallback);
-                }
-                else
-                {
-                    OnStateChangeCallBacks[stateKey] = onStateSetCallback;
-                }
+                CallbackManager.RegisterCallback(onStateSetCallback, stateKey);
 
                 WaitForStateInternal(stateKey, InvokeCallback);
             }

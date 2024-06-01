@@ -9,7 +9,7 @@ namespace Playroom
     {
         private static Dictionary<string, Delegate> callbacks = new();
 
-        public static string RegisterCallback(Action callback, string key = null)
+        public static string RegisterCallback(Delegate callback, string key = null)
         {
             if (string.IsNullOrEmpty(key))
                 key = GenerateKey();
@@ -28,11 +28,13 @@ namespace Playroom
         }
 
 
-        public static void InvokeCallback(string key)
+        public static void InvokeCallback(string key, string arg1 = null)
         {
             if (callbacks.TryGetValue(key, out Delegate callback))
             {
-                (callback as Action)?.Invoke();
+                if (callback is Action action) action?.Invoke();
+                else if (callback is Action<string> stringAction) stringAction?.Invoke(arg1);
+                else Debug.LogError($"Callback with key {key} is of unsupported type!");
             }
             else
             {

@@ -13,10 +13,9 @@ mergeInto(LibraryManager.library, {
     onLaunchCallBackKey,
     onQuitInternalCallbackKey
   ) {
-
     onLaunchCallBackKey = UTF8ToString(onLaunchCallBackKey);
     onQuitInternalCallbackKey = UTF8ToString(onQuitInternalCallbackKey);
-    
+
     function OnLaunchCallBack() {
       var key = _ConvertString(onLaunchCallBackKey);
       dynCall("vi", onLaunchCallBack, [key]);
@@ -706,7 +705,7 @@ mergeInto(LibraryManager.library, {
     });
   },
 
-  WaitForStateInternal: function (state, onStateSetCallback) {
+  WaitForStateInternal: function (stateKey, onStateSetCallback) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
@@ -715,14 +714,14 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    state = UTF8ToString(state);
-    Playroom.waitForState(state)
+    stateKey = UTF8ToString(stateKey);
+    Playroom.waitForState(stateKey)
       .then((stateVal) => {
         stateVal = JSON.stringify(stateVal);
 
-        var buffer = _ConvertString(state);
+        var key = _ConvertString(stateKey);
 
-        dynCall("vii", onStateSetCallback, [stringToNewUTF8(stateVal), buffer]);
+        dynCall("vii", onStateSetCallback, [key, stringToNewUTF8(stateVal)]);
       })
       .catch((error) => {
         console.error("Error Waiting for state:", error);
