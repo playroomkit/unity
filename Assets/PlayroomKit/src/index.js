@@ -9,14 +9,22 @@ mergeInto(LibraryManager.library, {
     onLaunchCallBack,
     onQuitInternalCallback,
     onDisconnectCallback,
-    onError
+    onError,
+    onLaunchCallBackKey,
+    onQuitInternalCallbackKey
   ) {
+
+    onLaunchCallBackKey = UTF8ToString(onLaunchCallBackKey);
+    onQuitInternalCallbackKey = UTF8ToString(onQuitInternalCallbackKey);
+    
     function OnLaunchCallBack() {
-      dynCall("v", onLaunchCallBack, []);
+      var key = _ConvertString(onLaunchCallBackKey);
+      dynCall("vi", onLaunchCallBack, [key]);
     }
 
     function OnDisconnectCallback() {
-      dynCall("v", onDisconnectCallback, []);
+      var key = _ConvertString(onQuitInternalCallbackKey);
+      dynCall("vi", onDisconnectCallback, [key]);
     }
     this.onPlayerJoinCallBacks = {};
     var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
@@ -698,7 +706,7 @@ mergeInto(LibraryManager.library, {
     });
   },
 
-  WaitForStateInternal: function (stateKey, onStateSetCallback) {
+  WaitForStateInternal: function (state, onStateSetCallback) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
@@ -707,16 +715,12 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    stateKey = UTF8ToString(stateKey);
-    Playroom.waitForState(stateKey)
+    state = UTF8ToString(state);
+    Playroom.waitForState(state)
       .then((stateVal) => {
-        
-        var bufferSize = lengthBytesUTF8(stateKey) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(stateKey, buffer, bufferSize);
-
         stateVal = JSON.stringify(stateVal);
 
+        var buffer = _ConvertString(state);
 
         dynCall("vii", onStateSetCallback, [stringToNewUTF8(stateVal), buffer]);
       })
@@ -909,36 +913,17 @@ mergeInto(LibraryManager.library, {
       });
   },
 
-  // Utils for callback manager:
-  SendKey: function (key) {
-    if (!window.Playroom) {
-      console.error(
-        "Playroom library is not loaded. Please make sure to call InsertCoin first."
-      );
-      return;
-    }
-    console.log(UTF8ToString(key));
-    if (!this.callbackIds) {
-      this.callbackIds = [];
-    } 
-    this.callbackIds.push(UTF8ToString(key));
-  },
-
-  GetKey: function (key) {
-    if (!window.Playroom) {
-      console.error(
-        "Playroom library is not loaded. Please make sure to call InsertCoin first."
-      );
-      return;
-    }
-
-    var foundKey = this.callbackIds.find(function (item) {
-      return item === UTF8ToString(key);
-    });
-
-    var bufferSize = lengthBytesUTF8(foundKey) + 1;
+  // UTILS
+  /**
+   * Converts a given string into a UTF-8 encoded string and stores it in memory.
+   *
+   * @param {string} str - The string to be converted.
+   * @returns {number} The memory address of the buffer where the converted string is stored.
+   */
+  ConvertString: function (str) {
+    var bufferSize = lengthBytesUTF8(str) + 1;
     var buffer = _malloc(bufferSize);
-    stringToUTF8(foundKey, buffer, bufferSize);
+    stringToUTF8(str, buffer, bufferSize);
     return buffer;
   },
 });
