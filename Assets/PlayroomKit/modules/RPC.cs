@@ -18,7 +18,7 @@ namespace Playroom
             HOST
         }
 
-        private static Dictionary<string, Action<string, string>> rpcRegisterCallbacks = new();
+        // private static Dictionary<string, Action<string, string>> rpcRegisterCallbacks = new();
         private static List<string> rpcCalledEvents = new();
 
         [DllImport("__Internal")]
@@ -28,7 +28,8 @@ namespace Playroom
         {
             if (IsRunningInBrowser())
             {
-                rpcRegisterCallbacks.Add(name, rpcRegisterCallback);
+                // rpcRegisterCallbacks.Add(name, rpcRegisterCallback);
+                CallbackManager.RegisterCallback(rpcRegisterCallback, name);
                 RpcRegisterInternal(name, InvokeRpcRegisterCallBack, onResponseReturn);
             }
             else
@@ -68,10 +69,11 @@ namespace Playroom
 
             foreach (string name in updatedRpcCalledEvents)
             {
-                if (rpcRegisterCallbacks.TryGetValue(name, out Action<string, string> callback))
-                {
-                    callback?.Invoke(dataJson, senderJson);
-                }
+                // if (rpcRegisterCallbacks.TryGetValue(name, out Action<string, string> callback))
+                // {
+                //     callback?.Invoke(dataJson, senderJson);
+                // }
+                CallbackManager.InvokeCallback(name, dataJson, senderJson);
             }
 
         }
@@ -79,7 +81,7 @@ namespace Playroom
         [DllImport("__Internal")]
         private extern static void RpcCallInternal(string name, string data, RpcMode mode, Action callbackOnResponse);
 
-        private static Dictionary<string, List<Action>> OnResponseCallbacks = new Dictionary<string, List<Action>>();
+        // private static Dictionary<string, List<Action>> OnResponseCallbacks = new Dictionary<string, List<Action>>();
 
         public static void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse)
         {
@@ -87,18 +89,25 @@ namespace Playroom
             if (IsRunningInBrowser())
             {
                 string jsonData = ConvertToJson(data);
-                if (OnResponseCallbacks.ContainsKey(name))
+
+                // if (OnResponseCallbacks.ContainsKey(name))
+                // {
+                //     OnResponseCallbacks[name].Add(callbackOnResponse);
+                // }
+                // else
+                // {
+                //     OnResponseCallbacks.Add(name, new List<Action> { callbackOnResponse });
+
+                // }
+
+                CallbackManager.RegisterCallback(callbackOnResponse, name);
+
+                if (!rpcCalledEvents.Contains(name))
                 {
-                    OnResponseCallbacks[name].Add(callbackOnResponse);
+                    rpcCalledEvents.Add(name);
                 }
-                else
-                {
-                    OnResponseCallbacks.Add(name, new List<Action> { callbackOnResponse });
-                    if (!rpcCalledEvents.Contains(name))
-                    {
-                        rpcCalledEvents.Add(name);
-                    }
-                }
+
+
                 JSONArray jsonArray = new JSONArray();
                 foreach (string item in rpcCalledEvents)
                 {
@@ -135,15 +144,9 @@ namespace Playroom
             {
                 try
                 {
-                    if (OnResponseCallbacks.TryGetValue(name, out List<Action> callbacks))
-                    {
-                        foreach (var callback in callbacks)
-                        {
-                            callback?.Invoke();
-                        }
+                    CallbackManager.InvokeCallback(name);
+                    namesToRemove.Add(name);
 
-                        namesToRemove.Add(name);
-                    }
                 }
                 catch (Exception ex)
                 {
@@ -154,7 +157,8 @@ namespace Playroom
             foreach (var name in namesToRemove)
             {
                 rpcCalledEvents.Remove(name);
-                OnResponseCallbacks.Remove(name);
+                // OnResponseCallbacks.Remove(name);
+                CallbackManager.UnregisterCallback(name);
             }
         }
 
