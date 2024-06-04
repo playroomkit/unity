@@ -9,16 +9,22 @@ mergeInto(LibraryManager.library, {
     onLaunchCallBack,
     onQuitInternalCallback,
     onDisconnectCallback,
-    onError
+    onError,
+    onLaunchCallBackKey,
+    onQuitInternalCallbackKey
   ) {
+    onLaunchCallBackKey = UTF8ToString(onLaunchCallBackKey);
+    onQuitInternalCallbackKey = UTF8ToString(onQuitInternalCallbackKey);
+
     function OnLaunchCallBack() {
-      dynCall("v", onLaunchCallBack, []);
+      var key = _ConvertString(onLaunchCallBackKey);
+      dynCall("vi", onLaunchCallBack, [key]);
     }
 
     function OnDisconnectCallback() {
-      dynCall("v", onDisconnectCallback, []);
+      var key = _ConvertString(onQuitInternalCallbackKey);
+      dynCall("vi", onDisconnectCallback, [key]);
     }
-
     this.onPlayerJoinCallBacks = {};
     var options = optionsJson ? JSON.parse(UTF8ToString(optionsJson)) : {};
 
@@ -711,15 +717,11 @@ mergeInto(LibraryManager.library, {
     stateKey = UTF8ToString(stateKey);
     Playroom.waitForState(stateKey)
       .then((stateVal) => {
-        
-        var bufferSize = lengthBytesUTF8(stateKey) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(stateKey, buffer, bufferSize);
-
         stateVal = JSON.stringify(stateVal);
 
+        var key = _ConvertString(stateKey);
 
-        dynCall("vii", onStateSetCallback, [stringToNewUTF8(stateVal), buffer]);
+        dynCall("vii", onStateSetCallback, [key, stringToNewUTF8(stateVal)]);
       })
       .catch((error) => {
         console.error("Error Waiting for state:", error);
@@ -908,5 +910,19 @@ mergeInto(LibraryManager.library, {
       .catch((error) => {
         console.error(`JS: Error starting match making ${error}`);
       });
+  },
+
+  // UTILS
+  /**
+   * Converts a given string into a UTF-8 encoded string and stores it in memory.
+   *
+   * @param {string} str - The string to be converted.
+   * @returns {number} The memory address of the buffer where the converted string is stored.
+   */
+  ConvertString: function (str) {
+    var bufferSize = lengthBytesUTF8(str) + 1;
+    var buffer = _malloc(bufferSize);
+    stringToUTF8(str, buffer, bufferSize);
+    return buffer;
   },
 });

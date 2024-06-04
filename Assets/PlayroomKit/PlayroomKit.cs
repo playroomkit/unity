@@ -61,15 +61,20 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern void InsertCoinInternal(
             string options,
-            Action onLaunchCallback,
+            Action<string> onLaunchCallback,
             Action<string> onQuitInternalCallback,
-            Action onDisconnectCallback,
-            Action<string> onError);
+            Action<string> onDisconnectCallback,
+            Action<string> onError,
+            string onLaunchCallBackKey,
+            string onDisconnectCallBackKey
+            );
 
-        [MonoPInvokeCallback(typeof(Action))]
-        private static void InvokeInsertCoin()
+        [MonoPInvokeCallback(typeof(Action<string>))]
+        private static void InvokeInsertCoin(string key)
         {
-            InsertCoinCallback?.Invoke();
+            CallbackManager.InvokeCallback(key);
+
+
 #if UNITY_WEBGL && !UNITY_EDITOR
             WebGLInput.captureAllKeyboardInput = true;
 #endif
@@ -90,8 +95,13 @@ namespace Playroom
             if (IsRunningInBrowser())
             {
                 isPlayRoomInitialized = true;
-                InsertCoinCallback = onLaunchCallBack;
-                OnDisconnectCallback = onDisconnectCallback;
+
+
+                string onLaunchCallBackKey = CallbackManager.RegisterCallback(onLaunchCallBack, "onLaunchCallBack");
+                string onDisconnectCallBackKey = CallbackManager.RegisterCallback(onDisconnectCallback, "onDisconnectCallBack");
+
+                Debug.Log(onLaunchCallBackKey);
+
                 string optionsJson = null;
                 if (options != null)
                 {
@@ -106,7 +116,9 @@ namespace Playroom
 #endif
                 }
 
-                InsertCoinInternal(optionsJson, InvokeInsertCoin, __OnQuitInternalHandler, onDisconnectCallbackHandler, InvokeOnErrorInsertCoin);
+                InsertCoinInternal(
+                    optionsJson, InvokeInsertCoin, __OnQuitInternalHandler, onDisconnectCallbackHandler,
+                    InvokeOnErrorInsertCoin, onLaunchCallBackKey, onDisconnectCallBackKey);
             }
             else
             {
@@ -213,7 +225,6 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern void UnsubscribeOnPlayerJoinInternal(string id);
 
-        // private static Action<Player> onPlayerJoinCallback = null;
         private static List<Action<Player>> OnPlayerJoinCallbacks = new();
 
 
@@ -224,9 +235,9 @@ namespace Playroom
         }
 
         [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void onDisconnectCallbackHandler()
+        private static void onDisconnectCallbackHandler(string key)
         {
-            OnDisconnectCallback?.Invoke();
+            CallbackManager.InvokeCallback(key);
         }
 
 
@@ -399,12 +410,12 @@ namespace Playroom
 
 
         [DllImport("__Internal")]
-        private static extern void OnDisconnectInternal(Action callback);
+        private static extern void OnDisconnectInternal(Action<string> callback);
 
 
         public static void OnDisconnect(Action callback)
         {
-            OnDisconnectCallback = callback;
+            CallbackManager.RegisterCallback(callback);
             OnDisconnectInternal(onDisconnectCallbackHandler);
         }
 
@@ -747,33 +758,18 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern void WaitForStateInternal(string stateKey, Action<string, string> onStateSetCallback);
 
-        private static Dictionary<string, Action<string>> OnStateChangeCallBacks = new();
 
         [MonoPInvokeCallback(typeof(Action<string, string>))]
-        private static void InvokeCallback(string stateVal, string stateKey)
+        private static void InvokeCallback(string stateKey, string stateVal)
         {
-            if (OnStateChangeCallBacks.TryGetValue(stateKey, out Action<string> callback))
-            {
-                callback?.Invoke(stateVal);
-            }
-            else
-            {
-                Debug.LogWarning($"[WaitForState]: No callback found for state key: {stateKey}");
-            }
+            CallbackManager.InvokeCallback(stateKey, stateVal);
         }
 
         public static void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
         {
             if (IsRunningInBrowser())
             {
-                if (!OnStateChangeCallBacks.ContainsKey(stateKey))
-                {
-                    OnStateChangeCallBacks.Add(stateKey, onStateSetCallback);
-                }
-                else
-                {
-                    OnStateChangeCallBacks[stateKey] = onStateSetCallback;
-                }
+                CallbackManager.RegisterCallback(onStateSetCallback, stateKey);
 
                 WaitForStateInternal(stateKey, InvokeCallback);
             }
