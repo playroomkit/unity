@@ -55,9 +55,6 @@ namespace Playroom
             public int waitBeforeCreatingNewRoom = 5000;
         }
 
-        private static Action InsertCoinCallback = null;
-        private static Action OnDisconnectCallback = null;
-
         [DllImport("__Internal")]
         private static extern void InsertCoinInternal(
             string options,

@@ -27,27 +27,25 @@ namespace Playroom
             return key;
         }
 
-        public static void UnregisterCallback(string key)
-        {
-            if (callbacks.ContainsKey(key))
-            {
-                callbacks.Remove(key);
-            }
-            else
-            {
-                Debug.LogError($"Callback with key {key} not found!");
-            }
-        }
-
-
         public static void InvokeCallback(string key, string arg1 = null, string arg2 = null)
         {
             if (callbacks.TryGetValue(key, out Delegate callback))
             {
-                if (callback is Action action) action?.Invoke();
-                else if (callback is Action<string> stringAction) stringAction?.Invoke(arg1);
-                else if (callback is Action<string, string> doubleStringAction) doubleStringAction?.Invoke(arg1, arg2);
-                else Debug.LogError($"Callback with key {key} is of unsupported type!");
+                switch (callback)
+                {
+                    case Action action:
+                        action?.Invoke();
+                        break;
+                    case Action<string> stringAction:
+                        stringAction?.Invoke(arg1);
+                        break;
+                    case Action<string, string> doubleStringAction:
+                        doubleStringAction?.Invoke(arg1, arg2);
+                        break;
+                    default:
+                        Debug.LogError($"Callback with key {key} is of unsupported type!");
+                        break;
+                }
             }
             else
             {
