@@ -57,6 +57,9 @@ public class GameManager : MonoBehaviour
         PlayroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
         PlayroomKit.WaitForState("posX", PosX);
         PlayroomKit.WaitForState("posY", PosY);
+
+      
+
     }
 
     private static void PosX(string pos)

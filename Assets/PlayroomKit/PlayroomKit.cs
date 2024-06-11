@@ -14,19 +14,6 @@ namespace Playroom
     {
         private static bool isPlayRoomInitialized;
 
-        /// <summary>
-        /// Required Mock Mode:
-        /// </summary>
-        private const string PlayerId = "mockPlayer";
-        private static bool mockIsStreamMode;
-
-        /* 
-        This is private, instead of public, to prevent tampering in Mock Mode.
-        Reason: In Mock Mode, only a single player can be tested. 
-        Ref: https://docs.joinplayroom.com/usage/unity#mock-mode
-        */
-        private static Dictionary<string, object> MockDictionary = new();
-
         private static readonly Dictionary<string, Player> Players = new();
 
         [Serializable]
@@ -54,17 +41,6 @@ namespace Playroom
         {
             public int waitBeforeCreatingNewRoom = 5000;
         }
-
-        [DllImport("__Internal")]
-        private static extern void InsertCoinInternal(
-            string options,
-            Action<string> onLaunchCallback,
-            Action<string> onQuitInternalCallback,
-            Action<string> onDisconnectCallback,
-            Action<string> onError,
-            string onLaunchCallBackKey,
-            string onDisconnectCallBackKey
-            );
 
         [MonoPInvokeCallback(typeof(Action<string>))]
         private static void InvokeInsertCoin(string key)
@@ -216,11 +192,7 @@ namespace Playroom
             }
         }
 
-        [DllImport("__Internal")]
-        private static extern string OnPlayerJoinInternal(Action<string> callback);
 
-        [DllImport("__Internal")]
-        private static extern void UnsubscribeOnPlayerJoinInternal(string id);
 
         private static List<Action<Player>> OnPlayerJoinCallbacks = new();
 
@@ -327,8 +299,7 @@ namespace Playroom
         }
 
 
-        [DllImport("__Internal")]
-        private static extern bool IsHostInternal();
+
 
         public static bool IsHost()
         {
@@ -350,8 +321,7 @@ namespace Playroom
             }
         }
 
-        [DllImport("__Internal")]
-        private static extern bool IsStreamModeInternal();
+
 
         public static bool IsStreamMode()
         {
@@ -373,8 +343,7 @@ namespace Playroom
             }
         }
 
-        [DllImport("__Internal")]
-        private static extern string MyPlayerInternal();
+
 
         public static Player MyPlayer()
         {
@@ -402,12 +371,7 @@ namespace Playroom
             return MyPlayer();
         }
 
-        [DllImport("__Internal")]
-        public static extern string GetRoomCode();
 
-
-        [DllImport("__Internal")]
-        private static extern void OnDisconnectInternal(Action<string> callback);
 
 
         public static void OnDisconnect(Action callback)
@@ -416,19 +380,6 @@ namespace Playroom
             OnDisconnectInternal(onDisconnectCallbackHandler);
         }
 
-
-        [DllImport("__Internal")]
-        private static extern void SetStateString(string key, string value, bool reliable = false);
-
-        [DllImport("__Internal")]
-        private static extern void SetStateInternal(string key, int value, bool reliable = false);
-
-
-        [DllImport("__Internal")]
-        private static extern void SetStateInternal(string key, bool value, bool reliable = false);
-
-        [DllImport("__Internal")]
-        private static extern void SetStateFloatInternal(string key, string floatAsString, bool reliable = false);
 
         public static void SetState(string key, string value, bool reliable = false)
         {
@@ -511,8 +462,7 @@ namespace Playroom
             }
         }
 
-        [DllImport("__Internal")]
-        private static extern void SetStateDictionary(string key, string jsonValues, bool reliable = false);
+
 
 
         public static void SetState(string key, Dictionary<string, int> values, bool reliable = false)
@@ -597,8 +547,7 @@ namespace Playroom
 
 
         // GETTERS
-        [DllImport("__Internal")]
-        private static extern string GetStateStringInternal(string key);
+
 
         private static string GetStateString(string key)
         {
@@ -620,8 +569,7 @@ namespace Playroom
             }
         }
 
-        [DllImport("__Internal")]
-        private static extern int GetStateIntInternal(string key);
+
 
         private static int GetStateInt(string key)
         {
@@ -643,8 +591,7 @@ namespace Playroom
             }
         }
 
-        [DllImport("__Internal")]
-        private static extern float GetStateFloatInternal(string key);
+
 
         private static float GetStateFloat(string key)
         {
@@ -752,8 +699,7 @@ namespace Playroom
 
         }
 
-        [DllImport("__Internal")]
-        private static extern void WaitForStateInternal(string stateKey, Action<string, string> onStateSetCallback);
+
 
 
         [MonoPInvokeCallback(typeof(Action<string, string>))]
@@ -774,8 +720,7 @@ namespace Playroom
 
 
 
-        [DllImport("__Internal")]
-        private static extern void WaitForPlayerStateInternal(string playerID, string StateKey, Action onStateSetCallback);
+
 
         Action Callback = null;
         public void WaitForPlayerState(string playerID, string StateKey, Action onStateSetCallback = null)
@@ -792,11 +737,6 @@ namespace Playroom
         {
             Callback?.Invoke();
         }
-
-
-        [DllImport("__Internal")]
-        private static extern string GetStateDictionaryInternal(string key);
-
 
 
         // Utils:
@@ -844,8 +784,6 @@ namespace Playroom
             return dictionary;
         }
 
-        [DllImport("__Internal")]
-        private static extern void ResetStatesInternal(string keysToExclude = null, Action OnStatesReset = null);
 
         private static Action onstatesReset;
         private static Action onplayersStatesReset;
@@ -873,8 +811,7 @@ namespace Playroom
         }
 
 
-        [DllImport("__Internal")]
-        private static extern void ResetPlayersStatesInternal(string keysToExclude, Action OnPlayersStatesReset = null);
+
 
         public static void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
         {
@@ -908,29 +845,7 @@ namespace Playroom
 #endif
         }
 
-        private static void MockSetState(string key, object value)
-        {
-            if (MockDictionary.ContainsKey(key))
-                MockDictionary[key] = value;
-            else
-                MockDictionary.Add(key, value);
-        }
 
-        private static T MockGetState<T>(string key)
-        {
-            if (MockDictionary.TryGetValue(key, out var value) && value is T typedValue)
-            {
-                return typedValue;
-            }
-            else
-            {
-                Debug.LogWarning($"No {key} in States or value is not of type {typeof(T)}");
-                return default;
-            }
-        }
-
-        [DllImport("__Internal")]
-        private static extern void UnsubscribeOnQuitInternal();
 
         private static void UnsubscribeOnQuit()
         {
@@ -952,17 +867,11 @@ namespace Playroom
 
 
         // Joystick
-        [DllImport("__Internal")]
-        private static extern void CreateJoystickInternal(string joyStickOptionsJson);
-
         public static void CreateJoyStick(JoystickOptions options)
         {
             var jsonStr = ConvertJoystickOptionsToJson(options);
             CreateJoystickInternal(jsonStr);
         }
-
-        [DllImport("__Internal")]
-        private static extern string DpadJoystickInternal();
 
         public static Dpad DpadJoystick()
         {
@@ -1021,7 +930,7 @@ namespace Playroom
             public ZoneOptions zones = null;
         }
 
-        [System.Serializable]
+        [Serializable]
         public class ButtonOptions
         {
             public string id = null;
@@ -1038,17 +947,12 @@ namespace Playroom
         }
 
 
-        [System.Serializable]
+        [Serializable]
         public class Dpad
         {
             public string x;
             public string y;
         }
-
-
-
-        [DllImport("__Internal")]
-        private static extern void StartMatchmakingInternal(Action callback);
 
         static Action startMatchmakingCallback = null;
         public static void StartMatchmaking(Action callback = null)
