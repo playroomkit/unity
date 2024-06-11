@@ -17,7 +17,7 @@ namespace Playroom
         */
         private static Dictionary<string, object> MockDictionary = new();
 
-        public static void MockSetState(string key, object value)
+        private static void MockSetState(string key, object value)
         {
             if (MockDictionary.ContainsKey(key))
                 MockDictionary[key] = value;
@@ -25,7 +25,7 @@ namespace Playroom
                 MockDictionary.Add(key, value);
         }
 
-        public static T MockGetState<T>(string key)
+        private static T MockGetState<T>(string key)
         {
             if (MockDictionary.TryGetValue(key, out var value) && value is T typedValue)
             {
