@@ -14,7 +14,6 @@ namespace Playroom
             if (string.IsNullOrEmpty(key))
                 key = GenerateKey();
 
-
             if (!callbacks.ContainsKey(key))
             {
                 callbacks.Add(key, callback);

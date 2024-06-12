@@ -110,7 +110,7 @@ namespace Playroom
             }
             else
             {
-                MockRpcCall(name, data, RpcMode.ALL, callbackOnResponse);
+                MockRpcCall(name, data, mode, callbackOnResponse);
             }
 
         }

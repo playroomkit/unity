@@ -54,28 +54,37 @@ namespace Playroom
             }
         }
 
-        private static Dictionary<string, Action> mockCallbackOnResponse = new();
+        private static Dictionary<string, (Action<string, string> callback, string response)> mockRegisterCallbacks = new();
+        private static Dictionary<string, Action> mockResponseCallbacks = new();
 
         private static void MockRpcRegister(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null)
         {
-            CallbackManager.RegisterCallback(rpcRegisterCallback, name);
-            if (!string.IsNullOrEmpty(onResponseReturn)) Debug.Log(onResponseReturn);
+            mockRegisterCallbacks.TryAdd(name, (rpcRegisterCallback, onResponseReturn));
         }
 
         private static void MockRpcCall(string name, object data, RpcMode mode, Action callbackOnResponse)
         {
-            if (!mockCallbackOnResponse.ContainsKey(name))
-                mockCallbackOnResponse.Add(name, callbackOnResponse);
+            mockResponseCallbacks.TryAdd(name, callbackOnResponse);
 
             string stringData = Convert.ToString(data);
             var player = MyPlayer();
-            CallbackManager.InvokeCallback(name, stringData, player.id);
 
-            if (mockCallbackOnResponse.TryGetValue(name, out var callback))
+            if (mockRegisterCallbacks.TryGetValue(name, out var responseHandler))
+            {
+                responseHandler.callback?.Invoke(stringData, player.id);
+
+                if (!string.IsNullOrEmpty(responseHandler.response))
+                {
+                    Debug.Log($"Response received: {responseHandler.response}");
+                }
+            }
+
+            if (mockResponseCallbacks.TryGetValue(name, out var callback))
             {
                 callback?.Invoke();
             }
         }
+
     }
 
 }
