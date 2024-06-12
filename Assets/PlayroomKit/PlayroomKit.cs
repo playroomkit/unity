@@ -95,15 +95,11 @@ namespace Playroom
             }
             else
             {
-                isPlayRoomInitialized = true;
-
-                Debug.Log("Coin Inserted");
-
-                string optionsJson = null;
-                if (options != null) optionsJson = SerializeInitOptions(options);
-                onLaunchCallBack?.Invoke();
+                MockInsertCoin(options, onLaunchCallBack);
             }
         }
+
+      
 
         private static string SerializeInitOptions(InitOptions options)
         {
@@ -395,7 +391,6 @@ namespace Playroom
                 }
                 else
                 {
-                    Debug.Log($"State Set! Key: {key}, Value: {value}");
                     MockSetState(key, value);
                 }
             }
@@ -415,7 +410,6 @@ namespace Playroom
                 }
                 else
                 {
-                    Debug.Log($"State Set! Key: {key}, Value: {value}");
                     MockSetState(key, value);
                 }
             }
@@ -436,7 +430,6 @@ namespace Playroom
                 }
                 else
                 {
-                    Debug.Log($"State Set! Key: {key}, Value: {value}");
                     MockSetState(key, value);
                 }
             }
@@ -456,7 +449,6 @@ namespace Playroom
                 }
                 else
                 {
-                    Debug.Log($"State Set! Key: {key}, Value: {value}");
                     MockSetState(key, value);
                 }
             }
@@ -479,7 +471,6 @@ namespace Playroom
                 }
                 else
                 {
-                    Debug.Log($"State Set! Key: {key}, Value: {values}");
                     MockSetState(key, values);
                 }
             }
@@ -499,7 +490,6 @@ namespace Playroom
                 }
                 else
                 {
-                    Debug.Log($"State Set! Key: {key}, Value: {values}");
                     MockSetState(key, values);
                 }
             }
@@ -519,7 +509,6 @@ namespace Playroom
                 }
                 else
                 {
-                    Debug.Log($"State Set! Key: {key}, Value: {values}");
                     MockSetState(key, values);
                 }
             }
@@ -539,7 +528,6 @@ namespace Playroom
                 }
                 else
                 {
-                    Debug.Log($"State Set! Key: {key}, Value: {values}");
                     MockSetState(key, values);
                 }
             }

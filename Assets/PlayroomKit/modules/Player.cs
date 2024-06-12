@@ -212,7 +212,6 @@ namespace Playroom
                     }
                     else
                     {
-                        Debug.Log($"State Set! Key: {key}, Value: {value}");
                         MockSetState(key, value);
                     }
                 }
@@ -383,7 +382,6 @@ namespace Playroom
                     }
                     else
                     {
-                        Debug.Log($"PlayerState Set! Key: {key}, Value: {values}");
                         MockSetState(key, values);
                     }
                 }
@@ -403,7 +401,6 @@ namespace Playroom
                     }
                     else
                     {
-                        Debug.Log($"PlayerState Set! Key: {key}, Value: {values}");
                         MockSetState(key, values);
                     }
                 }
@@ -423,7 +420,6 @@ namespace Playroom
                     }
                     else
                     {
-                        Debug.Log($"PlayerState Set! Key: {key}, Value: {values}");
                         MockSetState(key, values);
                     }
                 }
@@ -443,7 +439,6 @@ namespace Playroom
                     }
                     else
                     {
-                        Debug.Log($"PlayerState Set! Key: {key}, Value: {values}");
                         MockSetState(key, values);
                     }
                 }
@@ -531,7 +526,7 @@ namespace Playroom
                         var testProfile = new Profile()
                         {
                             color = color1,
-                            name = "CoolPlayTest",
+                            name = "MockPlayer",
                             jsonColor = mockJsonColor,
                             photo = "testPhoto"
 

@@ -55,21 +55,13 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         PlayroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
-        PlayroomKit.WaitForState("posX", PosX);
-        PlayroomKit.WaitForState("posY", PosY);
-
-      
-
+        PlayroomKit.RpcRegister("Siu", Siu, "siuu");
     }
 
-    private static void PosX(string pos)
+    private void Siu(string arg1, string arg2)
     {
-        Debug.Log($"pos X state is ready! {pos}");
-    }
-
-    private static void PosY(string pos)
-    {
-        Debug.Log($"pos Y state2 is ready! {pos}");
+        var player = PlayroomKit.GetPlayer(arg2);
+        Debug.Log($"Caller: {arg2}, Player Name: {player?.GetProfile().name}, Data: {arg1}");
     }
 
     void HandleScoreUpdate(string data, string caller)
@@ -77,14 +69,11 @@ public class GameManager : MonoBehaviour
         var player = PlayroomKit.GetPlayer(caller);
         Debug.Log($"Caller: {caller}, Player Name: {player?.GetProfile().name}, Data: {data}");
 
-
         if (PlayerDict.TryGetValue(caller, out GameObject playerObj))
         {
-
             var playerController = playerObj.GetComponent<PlayerController>();
             if (playerController != null)
             {
-
                 playerController.scoreText.text = $"Score: {data}";
             }
             else
@@ -111,6 +100,15 @@ public class GameManager : MonoBehaviour
             players[index].SetState("pos", playerGameObjects[index].GetComponent<Transform>().position);
 
             ShootBullet(index);
+
+
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                PlayroomKit.RpcCall("Siu", 69, () =>
+                {
+                    Debug.LogWarning("hheeh");
+                });
+            }
 
             if (Input.GetKeyDown(KeyCode.R) && PlayroomKit.IsHost())
             {
