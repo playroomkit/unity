@@ -32,7 +32,7 @@ namespace Playroom
             }
             else
             {
-                Debug.LogError("[Mock Mode] RPC is currently not supported in Mock Mode!\n Please build the project to test RPC.");
+                MockRpcRegister(name, rpcRegisterCallback, onResponseReturn);
             }
         }
 
@@ -79,7 +79,6 @@ namespace Playroom
 
         public static void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse)
         {
-
             if (IsRunningInBrowser())
             {
                 string jsonData = ConvertToJson(data);
@@ -111,7 +110,7 @@ namespace Playroom
             }
             else
             {
-                Debug.LogError("[Mock Mode] RPC Calls are not supported in Mock Mode! yet.\nPlease make a build to test RPC.");
+                MockRpcCall(name, data, mode, callbackOnResponse);
             }
 
         }

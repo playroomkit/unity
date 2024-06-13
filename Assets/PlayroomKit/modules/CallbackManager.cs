@@ -14,7 +14,6 @@ namespace Playroom
             if (string.IsNullOrEmpty(key))
                 key = GenerateKey();
 
-
             if (!callbacks.ContainsKey(key))
             {
                 callbacks.Add(key, callback);
@@ -34,7 +33,7 @@ namespace Playroom
                 if (callback is Action action && args.Length == 0) action?.Invoke();
                 else if (callback is Action<string> stringAction && args.Length == 1) stringAction?.Invoke(args[0]);
                 else if (callback is Action<string, string> doubleStringAction && args.Length == 2) doubleStringAction?.Invoke(args[0], args[1]);
-                else Debug.LogError($"Callback with key {key} is of unsupported type or incorrect number of arguments!");
+                else Debug.LogError($"Callback with key {key} is of unsupported type or incorrect number of arguments: {args[0]}!");
             }
             else
             {
