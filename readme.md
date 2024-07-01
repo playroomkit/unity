@@ -48,3 +48,7 @@ Read more about the PlayroomKit Unity integration and the design behind it.
 
 - [Official announcement blog](https://docs.joinplayroom.com/blog/unityweb)
 - [Deep dive into PlayroomKit Unity](https://www.linkedin.com/pulse/building-unity-plugin-javascript-grayhatpk-gynfc/?trackingId=kbv0oZVNT6aLh2TjQ%2FhuVw%3D%3D)
+
+### Examples
+
+Example(s) of the SDK are in the [Examples](https://github.com/asadm/playroom-unity/tree/main/Assets/PlayroomKit/Examples) folder

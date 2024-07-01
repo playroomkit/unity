@@ -10,9 +10,6 @@ using UnityEngine;
 namespace Playroom
 {
     // Player class
-
-
-
     public partial class PlayroomKit
     {
 
@@ -202,6 +199,7 @@ namespace Playroom
                 if (IsRunningInBrowser())
                 {
                     string jsonString = JsonUtility.ToJson(value);
+                    // Debug.Log(jsonString);
                     SetPlayerStateStringById(id, key, jsonString, reliable);
                 }
                 else
@@ -226,23 +224,64 @@ namespace Playroom
                     else if (type == typeof(float)) return (T)(object)GetPlayerStateFloatById(id, key);
                     else if (type == typeof(bool)) return (T)(object)GetPlayerStateBoolById(id, key);
                     else if (type == typeof(string)) return (T)(object)GetPlayerStateStringById(id, key);
-                    else if (type == typeof(Vector3)) return (T)(object)JsonUtility.FromJson<Vector3>(GetPlayerStateStringById(id, key));
-                    else if (type == typeof(Vector2)) return (T)(object)JsonUtility.FromJson<Vector2>(GetPlayerStateStringById(id, key));
-                    else if (type == typeof(Quaternion)) return (T)(object)JsonUtility.FromJson<Quaternion>(GetPlayerStateStringById(id, key));
+                    else if (type == typeof(Vector3))
+                    {
+                        string json = GetPlayerStateStringById(id, key);
+                        if (json != null)
+                        {
+                            return (T)(object)JsonUtility.FromJson<Vector3>(json);
+                        }
+                        else
+                        {
+                            return default;
+                        }
+                    }
+                    else if (type == typeof(Color))
+                    {
+                        string json = GetPlayerStateStringById(id, key);
+                        if (json != null)
+                        {
+                            return (T)(object)JsonUtility.FromJson<Color>(json);
+                        }
+                        else
+                        {
+                            return default;
+                        }
+                    }
+                    else if (type == typeof(Vector2))
+                    {
+                        string json = GetPlayerStateStringById(id, key);
+                        if (json != null)
+                        {
+                            return (T)(object)JsonUtility.FromJson<Vector2>(json);
+                        }
+                        else
+                        {
+                            return default;
+                        }
+                    }
+                    else if (type == typeof(Quaternion))
+                    {
+                        string json = GetPlayerStateStringById(id, key);
+                        if (json != null)
+                        {
+                            return (T)(object)JsonUtility.FromJson<Quaternion>(json);
+                        }
+                        else
+                        {
+                            return default;
+                        }
+                    }
                     else throw new NotSupportedException($"Type {typeof(T)} is not supported by GetState");
                 }
-                else
+
+                if (!isPlayRoomInitialized)
                 {
-                    if (!isPlayRoomInitialized)
-                    {
-                        Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                        return default;
-                    }
-                    else
-                    {
-                        return MockGetState<T>(key);
-                    }
+                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                    return default;
                 }
+                return MockGetState<T>(key);
+
             }
 
 
