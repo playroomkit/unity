@@ -64,6 +64,7 @@ public class GameManager2d : MonoBehaviour
     void Start()
     {
         PlayroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
+
     }
 
     /// <summary>
@@ -115,8 +116,14 @@ public class GameManager2d : MonoBehaviour
                 if (players[i] != null)
                 {
                     var pos = players[i].GetState<Vector3>("pos");
+                    var color = players[i].GetState<Color>("color");
                     if (playerGameObjects != null)
+                    {
                         playerGameObjects[i].GetComponent<Transform>().position = pos;
+                        
+                        playerGameObjects[i].GetComponent<SpriteRenderer>().color = color;
+                    }
+
                 }
             }
         }
@@ -131,7 +138,7 @@ public class GameManager2d : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Vector3 playerPosition = playerGameObjects[playerIndex].transform.position;
-            
+
             score = playerGameObjects[playerIndex].GetComponent<PlayerController2d>().ShootBullet(playerPosition, 50f, score);
 
             PlayroomKit.RpcCall("ShootBullet", score, () =>
@@ -149,8 +156,7 @@ public class GameManager2d : MonoBehaviour
         var spawnPos = new Vector3(Random.Range(-4, 4), Random.Range(1, 5), 0);
         GameObject playerObj = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
 
-        Color color = player.GetProfile().color;
-        playerObj.GetComponent<SpriteRenderer>().color = color;
+        player.SetState("color", player.GetProfile().color);
 
         PlayerDict.Add(player.id, playerObj);
         players.Add(player);

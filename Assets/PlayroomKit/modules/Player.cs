@@ -10,9 +10,6 @@ using UnityEngine;
 namespace Playroom
 {
     // Player class
-
-
-
     public partial class PlayroomKit
     {
 
@@ -202,6 +199,7 @@ namespace Playroom
                 if (IsRunningInBrowser())
                 {
                     string jsonString = JsonUtility.ToJson(value);
+                    // Debug.Log(jsonString);
                     SetPlayerStateStringById(id, key, jsonString, reliable);
                 }
                 else
@@ -232,6 +230,18 @@ namespace Playroom
                         if (json != null)
                         {
                             return (T)(object)JsonUtility.FromJson<Vector3>(json);
+                        }
+                        else
+                        {
+                            return default;
+                        }
+                    }
+                    else if (type == typeof(Color))
+                    {
+                        string json = GetPlayerStateStringById(id, key);
+                        if (json != null)
+                        {
+                            return (T)(object)JsonUtility.FromJson<Color>(json);
                         }
                         else
                         {
