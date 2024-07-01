@@ -3,50 +3,50 @@ using Playroom;
 using AOT;
 using System;
 using TMPro;
+using System.Collections.Generic;
 
 
 public class Lobby : MonoBehaviour
 {
+    [SerializeField] private List<string> playerNames = new();
+    [SerializeField] private TextMeshProUGUI currentPlayerName;
 
-    [SerializeField] private TextMeshProUGUI currentRoomCode;
-    [SerializeField] private string roomID;
+    [SerializeField] private List<Texture2D> Avatars = new();
+    
 
-    private string gameURL;
-    private Action unsubOnQuit;
-
-    public void Initialize()
+    void Awake()
     {
-        PlayroomKit.InsertCoin(
-        new PlayroomKit.InitOptions() { roomCode = roomID },
-        () => { PlayroomKit.OnPlayerJoin(AddPlayer); }
-        );
+        Initialize();
     }
 
-    public void LeaveRoom()
+    void Start()
     {
-        PlayroomKit.Player player = PlayroomKit.MyPlayer();
-        currentRoomCode.text = "Room Code: " + PlayroomKit.GetRoomCode();
-        unsubOnQuit();
+        currentPlayerName.text = playerNames[0];
+    }
+
+
+    private void Initialize()
+    {
+        PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
+        {
+            maxPlayersPerRoom = 2,
+            defaultPlayerStates = new() {
+                        {"score", 0},
+                    },
+
+        }, () =>
+        {
+            PlayroomKit.OnPlayerJoin(AddPlayer);
+        });
     }
 
     private void AddPlayer(PlayroomKit.Player player)
     {
-        currentRoomCode.text = "Room Code: " + PlayroomKit.GetRoomCode();
-        Debug.Log($"{player.GetProfile().name} joining room no {PlayroomKit.GetRoomCode()}");
-        unsubOnQuit = player.OnQuit(RemovePlayer);
+        string playerName = player.GetProfile().name;
+
+
+        playerNames.Add(playerName);
     }
 
-    [MonoPInvokeCallback(typeof(Action<string>))]
-    private void RemovePlayer(string id)
-    {
-        var p = PlayroomKit.GetPlayer(id).GetProfile().name;
-        Debug.Log($"{p} leaving room no {PlayroomKit.GetRoomCode()}");
-    }
-
-    public void ReadString(string newRoomCode)
-    {
-        roomID = newRoomCode;
-        Debug.Log("room code set: " + roomID);
-    }
-
+    
 }

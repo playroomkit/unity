@@ -1,7 +1,5 @@
-using System;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
+using TMPro;
 
 public class PlayerController2d : MonoBehaviour
 {
@@ -14,7 +12,7 @@ public class PlayerController2d : MonoBehaviour
     [SerializeField] private bool isMoving;
 
     [SerializeField] private GameObject bulletPrefab;
-    public Text scoreText;
+    public TextMeshProUGUI scoreText;
 
 
     public float dirX;

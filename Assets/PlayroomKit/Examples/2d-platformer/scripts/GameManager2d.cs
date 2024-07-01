@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using AOT;
 using Playroom;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 using Debug = UnityEngine.Debug;
+using TMPro;
 
 
 public class GameManager2d : MonoBehaviour
@@ -19,10 +19,10 @@ public class GameManager2d : MonoBehaviour
     /// </summary>
     [Header("Score and UI")]
     [SerializeField] private int score = 0;
-    [SerializeField] private Text scoreTextPlayer1;
-    [SerializeField] private Text scoreTextPlayer2;
+    [SerializeField] private TextMeshProUGUI scoreTextPlayer1;
+    [SerializeField] private TextMeshProUGUI scoreTextPlayer2;
 
-    private Text selectedScoreText;
+    private TextMeshProUGUI selectedScoreText;
 
     private static bool playerJoined;
 
