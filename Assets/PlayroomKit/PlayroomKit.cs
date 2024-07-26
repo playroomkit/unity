@@ -99,7 +99,7 @@ namespace Playroom
             }
         }
 
-      
+
 
         private static string SerializeInitOptions(InitOptions options)
         {
@@ -421,6 +421,26 @@ namespace Playroom
             {
                 var floatAsString = value.ToString(CultureInfo.InvariantCulture);
                 SetStateFloatInternal(key, floatAsString, reliable);
+            }
+            else
+            {
+                if (!isPlayRoomInitialized)
+                {
+                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                }
+                else
+                {
+                    MockSetState(key, value);
+                }
+            }
+        }
+
+        public static void SetState(string key, object value, bool reliable = false)
+        {
+            if (IsRunningInBrowser())
+            {
+                string jsonString = JsonUtility.ToJson(value);
+                SetStateString(key, jsonString, reliable);
             }
             else
             {
