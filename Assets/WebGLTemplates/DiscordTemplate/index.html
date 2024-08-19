@@ -21,14 +21,6 @@
         </div>
       </div>
       <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-webgl-logo"></div>
-        <div id="unity-fullscreen-button"></div>
-#if SHOW_DIAGNOSTICS
-        <img id="diagnostics-icon" src="TemplateData/webmemd-icon.png">
-#endif
-        <div id="unity-build-title">{{{ PRODUCT_NAME }}}</div>
-      </div>
     </div>
     <script>
 
@@ -36,7 +28,6 @@
       var canvas = document.querySelector("#unity-canvas");
       var loadingBar = document.querySelector("#unity-loading-bar");
       var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
       var warningBanner = document.querySelector("#unity-warning");
 #if SHOW_DIAGNOSTICS
       var diagnostics_icon = document.getElementById("diagnostics-icon");
@@ -110,14 +101,6 @@
         // To lower canvas resolution on mobile devices to gain some
         // performance, uncomment the following line:
         // config.devicePixelRatio = 1;
-
-#if SHOW_DIAGNOSTICS
-        // position the diagnostics icon in the corner on the canvas
-        diagnostics_icon.style.position = "fixed";
-        diagnostics_icon.style.bottom = "10px";
-        diagnostics_icon.style.right = "0px";
-        canvas.after(diagnostics_icon);
-#endif
 
       } else {
         // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:

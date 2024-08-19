@@ -18,15 +18,18 @@ public class IsometricManager : MonoBehaviour
     [SerializeField] private GameObject playerPrefab;
 
 
-    private void Awake()
+    private void Start()
     {
         PlayroomKit.InsertCoin(new PlayroomKit.InitOptions
         {
             maxPlayersPerRoom = 3,
             matchmaking = false,
-            gameId = "iQwdxMdv3fCASVrghYgf",
+            gameId = "QlLX6m413MwtOjkdHKpi",
             discord = true
-        }, () => { PlayroomKit.OnPlayerJoin(AddPlayer); });
+        }, () => { PlayroomKit.OnPlayerJoin(AddPlayer); }, () =>  Debug.Log("OnDisconnect callback"));
+       
+           
+     
     }
 
     private void Update()
