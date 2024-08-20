@@ -12,9 +12,7 @@ public class IsometricManager : MonoBehaviour
 
     private static readonly Dictionary<string, GameObject> PlayerDict = new();
 
-
     [SerializeField] private static bool playerJoined;
-
     [SerializeField] private GameObject playerPrefab;
 
 
@@ -24,12 +22,9 @@ public class IsometricManager : MonoBehaviour
         {
             maxPlayersPerRoom = 3,
             matchmaking = false,
-            gameId = "QlLX6m413MwtOjkdHKpi",
+            gameId = "<Insert GameID (from dev.joinplayroom.com)>",
             discord = true
-        }, () => { PlayroomKit.OnPlayerJoin(AddPlayer); }, () =>  Debug.Log("OnDisconnect callback"));
-       
-           
-     
+        }, () => { PlayroomKit.OnPlayerJoin(AddPlayer); }, () => { Debug.Log("OnDisconnect callback"); });
     }
 
     private void Update()
@@ -37,24 +32,30 @@ public class IsometricManager : MonoBehaviour
         if (playerJoined)
         {
             var myPlayer = PlayroomKit.MyPlayer();
-            var i = players.IndexOf(myPlayer);
+            var index = players.IndexOf(myPlayer);
 
-            playerGameObjects[i].GetComponent<IsometricPlayerController>().LookAround();
-            players[i].SetState("angle", playerGameObjects[i].GetComponent<Transform>().rotation);
+            playerGameObjects[index].GetComponent<IsometricPlayerController>().LookAround();
+            players[index].SetState("angle", playerGameObjects[index].GetComponent<Transform>().rotation);
 
-            playerGameObjects[i].GetComponent<IsometricPlayerController>().Move();
-            players[i].SetState("move", playerGameObjects[i].GetComponent<Transform>().position);
+            playerGameObjects[index].GetComponent<IsometricPlayerController>().Move();
+            players[index].SetState("move", playerGameObjects[index].GetComponent<Transform>().position);
+
+
+            for (var i = 0; i < players.Count; i++)
+                if (players[i] != null)
+                {
+                    var pos = players[i].GetState<Vector3>("move");
+                    var rotate = players[i].GetState<Quaternion>("angle");
+                    var color = players[i].GetState<Color>("color");
+
+                    if (playerGameObjects[i] != null)
+                    {
+                        playerGameObjects[i].GetComponent<Transform>().SetPositionAndRotation(pos, rotate);
+
+                        playerGameObjects[i].GetComponent<Renderer>().material.color = color;
+                    }
+                }
         }
-
-        for (var i = 0; i < players.Count; i++)
-            if (players[i] != null)
-            {
-                var pos = players[i].GetState<Vector3>("move");
-                var rotate = players[i].GetState<Quaternion>("angle");
-
-                if (playerGameObjects[i] != null)
-                    playerGameObjects[i].GetComponent<Transform>().SetPositionAndRotation(pos, rotate);
-            }
     }
 
 
@@ -63,7 +64,7 @@ public class IsometricManager : MonoBehaviour
         var playerObj = Instantiate(playerPrefab,
             new Vector3(Random.Range(-5, 5), 2f, Random.Range(-5, 5)), Quaternion.identity);
 
-        playerObj.GetComponent<Renderer>().material.color = player.GetProfile().color;
+        player.SetState("color", player.GetProfile().color);
 
         PlayerDict.Add(player.id, playerObj);
         players.Add(player);
