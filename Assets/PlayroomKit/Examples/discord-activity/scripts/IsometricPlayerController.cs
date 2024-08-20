@@ -15,10 +15,6 @@ public class IsometricPlayerController : MonoBehaviour
         Look();
     }
 
-    // private void FixedUpdate() {
-    //     Move();
-    // }
-
     private void GatherInput()
     {
         _input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));

@@ -5,7 +5,7 @@ using Playroom;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class IsometricManager : MonoBehaviour
+public class GameManagerIsometric : MonoBehaviour
 {
     private static readonly List<PlayroomKit.Player> players = new();
     private static readonly List<GameObject> playerGameObjects = new();
