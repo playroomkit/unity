@@ -804,8 +804,8 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1943767788423411988, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
-      propertyPath: includeJavaScriptFiles.Array.data[0]
-      value: Playroomkit\modules\PlayroomMockBridge.js
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1943767788423411989, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -850,6 +850,14 @@ PrefabInstance:
     - target: {fileID: 1943767788423411991, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
       propertyPath: m_Name
       value: PlayroomMockModeHander
+      objectReference: {fileID: 0}
+    - target: {fileID: 1943767788423411991, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4137105055194106970, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
+      propertyPath: mockModeSelector
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -954,7 +962,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerID: {fileID: 710978326}
-  mockModeSelector: 1
 --- !u!4 &1661243509
 Transform:
   m_ObjectHideFlags: 0

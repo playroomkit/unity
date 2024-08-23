@@ -22,17 +22,13 @@ namespace Playroom
             switch (CurrentMockMode)
             {
                 case MockModeSelector.MockModeSimulated:
-                    Debug.Log("Normal");
+
                     MockInsertCoinSimulated(options, onLaunchCallBack);
                     break;
 
                 case MockModeSelector.BrowserBridgeMode:
-                    Debug.Log("BrowserMode");
-                    MockInsertCoinBrowser(options, onLaunchCallBack);
-                    break;
 
-                default:
-                    MockInsertCoinSimulated(options, onLaunchCallBack);
+                    MockInsertCoinBrowser(options, onLaunchCallBack);
                     break;
             }
         }
