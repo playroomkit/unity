@@ -1,0 +1,288 @@
+html,
+body {
+  font-family: "Open Sans", sans-serif;
+  font-size: 12pt;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: #777777;
+}
+
+#content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 600px;
+  height: 100%;
+  margin: auto;
+  box-sizing: border-box;
+}
+
+#header {
+  position: relative;
+  height: 80px;
+  flex: 0 0 auto;
+  padding: 0;
+  background-color: #172e45;
+  box-sizing: border-box;
+}
+
+#header_logo {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  top: 40px;
+  left: 15px;
+  transform: translateY(-50%);
+  background: url("ubb_logo.png") no-repeat center;
+  background-size: contain;
+}
+
+#header_text {
+  position: absolute;
+  top: 40px;
+  left: 70px;
+  transform: translateY(-50%);
+  font-size: 16pt;
+  color: #ffffff;
+}
+
+#main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  min-height: 400px;
+  box-sizing: border-box;
+  background-color: #eeeeee;
+}
+
+#footer {
+  position: relative;
+  height: 60px;
+  flex: 0 0 auto;
+  background-color: #dddddd;
+}
+
+#status {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+#status_light {
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  margin-right: 6px;
+}
+
+#status_light.red {
+  background: #810000;
+}
+
+#status_light.amber {
+  background: #ffcc00;
+}
+
+#status_light.green {
+  background: #00da4a;
+}
+
+.title {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+#script_list {
+  flex: 0 0 auto;
+  min-height: 80px;
+  background: #dddddd;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.script_list_entry {
+  display: block;
+  width: 100%;
+  text-decoration: none;
+  color: #333333;
+  padding: 5px;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+}
+
+.script_list_entry:hover {
+  background: #cccccc;
+}
+
+.script_list_empty {
+  display: block;
+  font-style: italic;
+  width: 100%;
+  text-decoration: none;
+  color: #666666;
+  padding: 5px;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+}
+
+#calls {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+#browser_calls,
+#unity_calls {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+#browser_calls {
+  padding-right: 5px;
+}
+
+#unity_calls {
+  padding-left: 5px;
+}
+
+.show_calls {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+}
+
+.show_calls .title {
+  margin: 0;
+  font-weight: bold;
+}
+
+#browser_calls_list,
+#unity_calls_list {
+  background: #333333;
+  border-radius: 5px;
+  margin-top: 10px;
+  padding: 10px;
+  flex: 1;
+  overflow-y: auto;
+  height: 100%;
+  max-height: 300px;
+  white-space: nowrap;
+}
+
+#browser_calls_list::-webkit-scrollbar,
+#unity_calls_list::-webkit-scrollbar {
+  display: none;
+}
+
+.calls_list_entry {
+  font-family: "Source Code Pro", monospace;
+  font-size: 10pt;
+  color: #dddddd;
+  padding: 5px;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.calls_list_entry:hover {
+  background: #555555;
+}
+
+.clear_button {
+  width: 20px;
+  height: 20px;
+  border: 0;
+  margin-left: 10px;
+  cursor: pointer;
+  background: url("delete.png");
+  background-size: cover;
+  background-position: 0 0;
+}
+
+.clear_button:hover {
+  background-position: 0 100%;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: 0.2s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.2s;
+  border-radius: 50%;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+input:not(:checked) + .slider {
+  background-color: #cccccc;
+}
+
+input:checked + .slider {
+  background-color: #00da4a;
+}
+
+@media (max-width: 600px) {
+  #browser_calls_list,
+  #unity_calls_list {
+    max-height: 200px;
+  }
+
+  .calls_list_entry {
+    font-size: 9pt;
+    padding: 4px;
+  }
+}
+
+@media (min-width: 768px) {
+  #calls {
+    flex-direction: row;
+  }
+  #browser_calls_list,
+  #unity_calls_list {
+    max-height: none;
+    height: auto;
+  }
+}

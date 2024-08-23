@@ -6,13 +6,14 @@ using AOT;
 using System;
 using SimpleJSON;
 using System.Collections;
+using UBB;
 
 
 namespace Playroom
 {
     public partial class PlayroomKit
     {
-        private static bool isPlayRoomInitialized;
+        protected static bool isPlayRoomInitialized;
 
         private static readonly Dictionary<string, Player> Players = new();
 
@@ -34,7 +35,6 @@ namespace Playroom
             public Dictionary<string, object> defaultPlayerStates = null;
 
             public bool matchmaking = false;
-
         }
 
         public class MatchMakingOptions
@@ -51,7 +51,6 @@ namespace Playroom
 #if UNITY_WEBGL && !UNITY_EDITOR
             WebGLInput.captureAllKeyboardInput = true;
 #endif
-
         }
 
         [MonoPInvokeCallback(typeof(Action<string>))]
@@ -63,17 +62,16 @@ namespace Playroom
 
         private static Action<string> onError;
 
-        public static void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null, Action onDisconnectCallback = null)
+        public static void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
+            Action onDisconnectCallback = null)
         {
             if (IsRunningInBrowser())
             {
                 isPlayRoomInitialized = true;
 
-
                 string onLaunchCallBackKey = CallbackManager.RegisterCallback(onLaunchCallBack, "onLaunchCallBack");
-                string onDisconnectCallBackKey = CallbackManager.RegisterCallback(onDisconnectCallback, "onDisconnectCallBack");
-
-                Debug.Log(onLaunchCallBackKey);
+                string onDisconnectCallBackKey =
+                    CallbackManager.RegisterCallback(onDisconnectCallback, "onDisconnectCallBack");
 
                 string optionsJson = null;
                 if (options != null)
@@ -83,7 +81,6 @@ namespace Playroom
 
                 if (options.skipLobby == false)
                 {
-
 #if UNITY_WEBGL && !UNITY_EDITOR
                         WebGLInput.captureAllKeyboardInput = false;
 #endif
@@ -98,96 +95,6 @@ namespace Playroom
                 MockInsertCoin(options, onLaunchCallBack);
             }
         }
-
-
-
-        private static string SerializeInitOptions(InitOptions options)
-        {
-            if (options == null) return null;
-
-            JSONNode node = JSON.Parse("{}");
-
-            node["streamMode"] = options.streamMode;
-            node["allowGamepads"] = options.allowGamepads;
-            node["baseUrl"] = options.baseUrl;
-
-            if (options.avatars != null)
-            {
-                JSONArray avatarsArray = new JSONArray();
-                foreach (string avatar in options.avatars)
-                {
-                    avatarsArray.Add(avatar);
-                }
-                node["avatars"] = avatarsArray;
-            }
-
-            node["roomCode"] = options.roomCode;
-            node["skipLobby"] = options.skipLobby;
-            node["reconnectGracePeriod"] = options.reconnectGracePeriod;
-
-            node["matchmaking"] = options.matchmaking;
-
-            if (options.maxPlayersPerRoom.HasValue)
-            {
-                node["maxPlayersPerRoom"] = options.maxPlayersPerRoom.Value;
-            }
-
-            if (options.gameId != null)
-            {
-                node["gameId"] = options.gameId;
-            }
-
-            node["discord"] = options.discord;
-
-            if (options.defaultStates != null)
-            {
-                JSONObject defaultStatesObject = new JSONObject();
-                foreach (var kvp in options.defaultStates)
-                {
-                    defaultStatesObject[kvp.Key] = ConvertValueToJSON(kvp.Value);
-                }
-                node["defaultStates"] = defaultStatesObject;
-            }
-
-            if (options.defaultPlayerStates != null)
-            {
-                JSONObject defaultPlayerStatesObject = new JSONObject();
-                foreach (var kvp in options.defaultPlayerStates)
-                {
-                    defaultPlayerStatesObject[kvp.Key] = ConvertValueToJSON(kvp.Value);
-                }
-                node["defaultPlayerStates"] = defaultPlayerStatesObject;
-            }
-
-
-            return node.ToString();
-        }
-
-        private static JSONNode ConvertValueToJSON(object value)
-        {
-            if (value is string stringValue)
-            {
-                return stringValue;
-            }
-            else if (value is int intValue)
-            {
-                return intValue;
-            }
-            else if (value is float floatValue)
-            {
-                return floatValue;
-            }
-            else if (value is bool boolValue)
-            {
-                return boolValue;
-            }
-            else
-            {
-                // Handle other types if needed
-                return JSON.Parse("{}");
-            }
-        }
-
 
 
         private static List<Action<Player>> OnPlayerJoinCallbacks = new();
@@ -215,6 +122,11 @@ namespace Playroom
             }
         }
 
+        public static void MockOnPlayerJoinWrapper(string playerId)
+        {
+            OnPlayerJoinWrapperCallback(playerId);
+        }
+
         public static Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
         {
             if (!isPlayRoomInitialized)
@@ -230,6 +142,7 @@ namespace Playroom
                     {
                         OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
                     }
+
                     var CallbackID = OnPlayerJoinInternal(__OnPlayerJoinCallbackHandler);
 
                     void Unsubscribe()
@@ -253,6 +166,7 @@ namespace Playroom
                         OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
                         __OnPlayerJoinCallbackHandler(PlayerId);
                     }
+
                     return null;
                 }
             }
@@ -295,8 +209,6 @@ namespace Playroom
         }
 
 
-
-
         public static bool IsHost()
         {
             if (IsRunningInBrowser())
@@ -318,7 +230,6 @@ namespace Playroom
         }
 
 
-
         public static bool IsStreamMode()
         {
             if (IsRunningInBrowser())
@@ -338,7 +249,6 @@ namespace Playroom
                 }
             }
         }
-
 
 
         public static Player MyPlayer()
@@ -366,8 +276,6 @@ namespace Playroom
         {
             return MyPlayer();
         }
-
-
 
 
         public static void OnDisconnect(Action callback)
@@ -475,8 +383,6 @@ namespace Playroom
         }
 
 
-
-
         public static void SetState(string key, Dictionary<string, int> values, bool reliable = false)
         {
             if (IsRunningInBrowser())
@@ -578,7 +484,6 @@ namespace Playroom
         }
 
 
-
         private static int GetStateInt(string key)
         {
             if (IsRunningInBrowser())
@@ -598,7 +503,6 @@ namespace Playroom
                 }
             }
         }
-
 
 
         private static float GetStateFloat(string key)
@@ -704,10 +608,7 @@ namespace Playroom
                     return default;
                 }
             }
-
         }
-
-
 
 
         [MonoPInvokeCallback(typeof(Action<string, string>))]
@@ -727,10 +628,8 @@ namespace Playroom
         }
 
 
-
-
-
         Action Callback = null;
+
         public void WaitForPlayerState(string playerID, string StateKey, Action onStateSetCallback = null)
         {
             if (IsRunningInBrowser())
@@ -819,8 +718,6 @@ namespace Playroom
         }
 
 
-
-
         public static void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
         {
             if (IsRunningInBrowser())
@@ -831,17 +728,6 @@ namespace Playroom
             }
         }
 
-        private static JSONArray CreateJsonArray(string[] array)
-        {
-            JSONArray jsonArray = new JSONArray();
-
-            foreach (string item in array)
-            {
-                jsonArray.Add(item);
-            }
-
-            return jsonArray;
-        }
 
         // it checks if the game is running in the browser or in the editor
         public static bool IsRunningInBrowser()
@@ -852,7 +738,6 @@ namespace Playroom
             return false;
 #endif
         }
-
 
 
         private static void UnsubscribeOnQuit()
@@ -886,47 +771,6 @@ namespace Playroom
             var jsonString = DpadJoystickInternal();
             Dpad myDpad = JsonUtility.FromJson<Dpad>(jsonString);
             return myDpad;
-        }
-
-        private static string ConvertJoystickOptionsToJson(JoystickOptions options)
-        {
-            JSONNode joystickOptionsJson = new JSONObject();
-            joystickOptionsJson["type"] = options.type;
-
-            // Serialize the buttons array
-            JSONArray buttonsArray = new JSONArray();
-            foreach (ButtonOptions button in options.buttons)
-            {
-                JSONObject buttonJson = new JSONObject();
-                buttonJson["id"] = button.id;
-                buttonJson["label"] = button.label;
-                buttonJson["icon"] = button.icon;
-                buttonsArray.Add(buttonJson);
-            }
-            joystickOptionsJson["buttons"] = buttonsArray;
-
-            // Serialize the zones property (assuming it's not null)
-            if (options.zones != null)
-            {
-                JSONObject zonesJson = new JSONObject();
-                zonesJson["up"] = ConvertButtonOptionsToJson(options.zones.up);
-                zonesJson["down"] = ConvertButtonOptionsToJson(options.zones.down);
-                zonesJson["left"] = ConvertButtonOptionsToJson(options.zones.left);
-                zonesJson["right"] = ConvertButtonOptionsToJson(options.zones.right);
-                joystickOptionsJson["zones"] = zonesJson;
-            }
-
-            return joystickOptionsJson.ToString();
-        }
-
-        // Function to convert ButtonOptions to JSON
-        private static JSONNode ConvertButtonOptionsToJson(ButtonOptions button)
-        {
-            JSONObject buttonJson = new JSONObject();
-            buttonJson["id"] = button.id;
-            buttonJson["label"] = button.label;
-            buttonJson["icon"] = button.icon;
-            return buttonJson;
         }
 
 
@@ -963,6 +807,7 @@ namespace Playroom
         }
 
         static Action startMatchmakingCallback = null;
+
         public static void StartMatchmaking(Action callback = null)
         {
             if (IsRunningInBrowser())
@@ -972,7 +817,8 @@ namespace Playroom
             }
             else
             {
-                Debug.LogError("[Mock Mode] Matchmaking is not supported in Mock Mode! yet.\nPlease build the project to test Matchmaking.");
+                Debug.LogError(
+                    "[Mock Mode] Matchmaking is not supported in Mock Mode! yet.\nPlease build the project to test Matchmaking.");
             }
         }
 
@@ -981,9 +827,5 @@ namespace Playroom
         {
             startMatchmakingCallback?.Invoke();
         }
-
-
     }
-
-
 }

@@ -15,6 +15,7 @@ public class GameManagerIsometric : MonoBehaviour
     [SerializeField] private static bool playerJoined;
     [SerializeField] private GameObject playerPrefab;
 
+    
 
     private void Start()
     {

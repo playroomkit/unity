@@ -1,52 +1,31 @@
 using UnityEngine;
 using Playroom;
-using AOT;
-using System;
 using TMPro;
-using System.Collections.Generic;
-
+using UnityEngine.Serialization;
 
 public class Lobby : MonoBehaviour
 {
-    [SerializeField] private List<string> playerNames = new();
-    [SerializeField] private TextMeshProUGUI currentPlayerName;
+    [SerializeField] private TextMeshProUGUI playerID;
 
-    [SerializeField] private List<Texture2D> Avatars = new();
-    
+    [SerializeField] private PlayroomKit.MockModeSelector mockModeSelector;
 
-    void Awake()
-    {
-        Initialize();
-    }
-
-    void Start()
-    {
-        currentPlayerName.text = playerNames[0];
-    }
-
-
-    private void Initialize()
+    public void Initialize()
     {
         PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
         {
             maxPlayersPerRoom = 2,
-            defaultPlayerStates = new() {
-                        {"score", 0},
-                    },
-
-        }, () =>
-        {
-            PlayroomKit.OnPlayerJoin(AddPlayer);
-        });
+            defaultPlayerStates = new()
+            {
+                { "score", 0 },
+            },
+        }, () => { PlayroomKit.OnPlayerJoin(AddPlayer); });
     }
 
     private void AddPlayer(PlayroomKit.Player player)
     {
-        string playerName = player.GetProfile().name;
+        Debug.Log("Player ID: " + player.id);
 
 
-        playerNames.Add(playerName);
+        playerID.text += $"{player.id} joined the game!";
     }
-
-    
 }
