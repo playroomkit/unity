@@ -1,6 +1,7 @@
 name: Create Unity Package on release tag
 
-on: [push, pull_request]
+on: 
+  [push, pull_request]
 
 jobs:
   echo:
@@ -9,10 +10,13 @@ jobs:
       contents: write
     steps:
     - uses: actions/checkout@v3
+    
     - run: |
         echo "Assets/PlayroomKit.meta" > metaList
         echo "Assets/Plugins.meta" >> metaList
+        echo "Assets/WebGLTemplates.meta" >> metaList
         find Assets/PlayroomKit/ -name \*.meta >> metaList
+        find Assets/WebGLTemplates/ -name \*.meta >> metaList
         echo metaList
 
     - run: mkdir output
@@ -24,6 +28,7 @@ jobs:
       with:
         package-path: 'output/playroomkit.unitypackage'
         include-files: metaList
+
     - uses: actions/upload-artifact@v3
       with:
         name: playroomkit.unitypackage
