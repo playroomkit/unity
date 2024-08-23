@@ -14,7 +14,7 @@ namespace Playroom
     /// </summary>
     public partial class PlayroomKit
     {
-        private static void MockInsertCoin(InitOptions options, Action onLaunchCallBack, GameObject aGameObject = null)
+        private static void MockInsertCoinBrowser(InitOptions options, Action onLaunchCallBack)
         {
             isPlayRoomInitialized = true;
 
@@ -23,7 +23,7 @@ namespace Playroom
             string optionsJson = null;
             if (options != null) optionsJson = SerializeInitOptions(options);
 
-            Debug.Log(aGameObject.name);
+            // Debug.Log(aGameObject.name);
 
             UnityBrowserBridge.Instance.ExecuteJS(
                 $"await InsertCoin({optionsJson}, '{onLaunchCallBack.GetMethodInfo().Name}', 'Manager')");

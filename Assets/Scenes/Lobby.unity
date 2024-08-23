@@ -123,24 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &407950540 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1943767788423411991, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
-  m_PrefabInstance: {fileID: 1593347703}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &407950543
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 407950540}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 120dfa1b0ad7e96479cb0286e61ad19d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ModeSelector: 0
 --- !u!1 &710978324
 GameObject:
   m_ObjectHideFlags: 0
@@ -822,16 +804,8 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1943767788423411988, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
-      propertyPath: webDriverDirectory
-      value: Assets\
-      objectReference: {fileID: 0}
-    - target: {fileID: 1943767788423411988, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
-      propertyPath: includeJavaScriptFiles.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1943767788423411988, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
       propertyPath: includeJavaScriptFiles.Array.data[0]
-      value: Playroomkit\src\index.js
+      value: Playroomkit\modules\PlayroomMockBridge.js
       objectReference: {fileID: 0}
     - target: {fileID: 1943767788423411989, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -880,10 +854,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1943767788423411991, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
-      insertIndex: 1
-      addedObject: {fileID: 407950543}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
 --- !u!1 &1609888204
 GameObject:
@@ -983,6 +954,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerID: {fileID: 710978326}
+  mockModeSelector: 1
 --- !u!4 &1661243509
 Transform:
   m_ObjectHideFlags: 0

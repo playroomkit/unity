@@ -23,7 +23,7 @@ namespace Playroom
         private static Dictionary<string, object> MockDictionary = new();
 
 
-        private void MockInsertCoin(InitOptions options, Action onLaunchCallBack)
+        private static void MockInsertCoinSimulated(InitOptions options, Action onLaunchCallBack)
         {
             isPlayRoomInitialized = true;
             Debug.Log("Coin Inserted");

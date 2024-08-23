@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Playroom;
 using TMPro;
@@ -7,7 +8,6 @@ public class Lobby : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI playerID;
 
-    [SerializeField] private PlayroomKit.MockModeSelector mockModeSelector;
 
     public void Initialize()
     {
