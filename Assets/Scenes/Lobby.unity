@@ -560,6 +560,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1149541435}
   m_CullTransparentMesh: 1
+--- !u!4 &1267884585 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1943767788423411989, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
+  m_PrefabInstance: {fileID: 1593347703}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1396231651
 GameObject:
   m_ObjectHideFlags: 0
@@ -654,6 +659,30 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1396231651}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &1396231654
 MonoBehaviour:
@@ -795,17 +824,63 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1465805239
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1465805241}
+  - component: {fileID: 1465805240}
+  m_Layer: 0
+  m_Name: MockModeManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1465805240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1465805239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 120dfa1b0ad7e96479cb0286e61ad19d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mockModeSelector: 1
+  insertCoinCaller: {fileID: 1661243507}
+--- !u!4 &1465805241
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1465805239}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1740579196}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1593347703
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1740579196}
     m_Modifications:
     - target: {fileID: 1943767788423411988, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
-      propertyPath: m_Enabled
-      value: 1
+      propertyPath: httpServerPort
+      value: 5500
       objectReference: {fileID: 0}
     - target: {fileID: 1943767788423411989, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -849,15 +924,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1943767788423411991, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
       propertyPath: m_Name
-      value: PlayroomMockModeHander
-      objectReference: {fileID: 0}
-    - target: {fileID: 1943767788423411991, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4137105055194106970, guid: b2ca0da73d4214f50b14277cc41e4d3c, type: 3}
-      propertyPath: mockModeSelector
-      value: 0
+      value: UnityBrowserBridge
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -943,7 +1010,7 @@ GameObject:
   - component: {fileID: 1661243509}
   - component: {fileID: 1661243508}
   m_Layer: 0
-  m_Name: LobbyManager
+  m_Name: Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -961,7 +1028,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f319f182028b0f44585cab28d640319b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerID: {fileID: 710978326}
 --- !u!4 &1661243509
 Transform:
   m_ObjectHideFlags: 0
@@ -977,6 +1043,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1740579195
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1740579196}
+  - component: {fileID: 1740579197}
+  m_Layer: 0
+  m_Name: EditorOnly
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1740579196
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1740579195}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1465805241}
+  - {fileID: 1267884585}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1740579197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1740579195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5c36dda9b2ab5d4fb051b90c2b88fc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -985,4 +1097,4 @@ SceneRoots:
   - {fileID: 1424704173}
   - {fileID: 1609888207}
   - {fileID: 1661243509}
-  - {fileID: 1593347703}
+  - {fileID: 1740579196}

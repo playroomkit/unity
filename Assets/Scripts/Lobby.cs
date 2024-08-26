@@ -1,31 +1,26 @@
 using System;
 using UnityEngine;
 using Playroom;
-using TMPro;
-using UnityEngine.Serialization;
+using UnityEngine.SceneManagement;
+
 
 public class Lobby : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI playerID;
-
-
     public void Initialize()
     {
         PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
         {
             maxPlayersPerRoom = 2,
+            skipLobby = true,
             defaultPlayerStates = new()
             {
                 { "score", 0 },
             },
-        }, () => { PlayroomKit.OnPlayerJoin(AddPlayer); });
+        }, onLaunchCallBack);
     }
 
-    private void AddPlayer(PlayroomKit.Player player)
+    private void onLaunchCallBack()
     {
-        Debug.Log("Player ID: " + player.id);
-
-
-        playerID.text += $"{player.id} joined the game!";
+        SceneManager.LoadScene("topdown");
     }
 }

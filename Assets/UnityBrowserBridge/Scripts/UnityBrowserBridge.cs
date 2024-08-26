@@ -123,7 +123,7 @@ namespace UBB
 		}
 
 		// initializes UnityBrowserBridge on application start
-		private void Start()
+		public void StartUBB()
 		{
 			// create web server
 			httpServer = new HttpServer(httpServerPort, Path.GetDirectoryName(AssetDatabase.GetAssetPath(indexFile)));

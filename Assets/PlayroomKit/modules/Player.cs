@@ -12,7 +12,6 @@ namespace Playroom
     // Player class
     public partial class PlayroomKit
     {
-
         public interface IPlayerInteraction
         {
             void InvokeOnQuitWrapperCallback();
@@ -23,8 +22,7 @@ namespace Playroom
             [Serializable]
             public class Profile
             {
-                [NonSerialized]
-                public UnityEngine.Color color;
+                [NonSerialized] public UnityEngine.Color color;
 
                 public JsonColor jsonColor;
                 public string name;
@@ -39,9 +37,6 @@ namespace Playroom
                     public string hexString;
                     public int hex;
                 }
-
-
-
             }
 
 
@@ -60,7 +55,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isPlayRoomInitialized)///
+                    if (!isPlayRoomInitialized) ///
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     else
                         Debug.Log("Mock Player Created");
@@ -280,14 +275,12 @@ namespace Playroom
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return default;
                 }
+
                 return MockGetState<T>(key);
-
             }
-
 
             public Dictionary<string, T> GetState<T>(string key, bool isReturnDictionary = false)
             {
-
                 if (IsRunningInBrowser() && isReturnDictionary)
                 {
                     var jsonString = GetPlayerStateDictionary(id, key);
@@ -421,7 +414,7 @@ namespace Playroom
                     }
                     else
                     {
-                        MockSetState(key, values);
+                        MockSetState(id, key, values);
                     }
                 }
             }
@@ -440,7 +433,7 @@ namespace Playroom
                     }
                     else
                     {
-                        MockSetState(key, values);
+                        MockSetState(id, key, values);
                     }
                 }
             }
@@ -459,7 +452,7 @@ namespace Playroom
                     }
                     else
                     {
-                        MockSetState(key, values);
+                        MockSetState(id, key, values);
                     }
                 }
             }
@@ -478,7 +471,7 @@ namespace Playroom
                     }
                     else
                     {
-                        MockSetState(key, values);
+                        MockSetState(id, key, values);
                     }
                 }
             }
@@ -513,7 +506,6 @@ namespace Playroom
                     }
                 }
             }
-
 
 
             private static Profile ParseProfile(string json)
@@ -568,7 +560,6 @@ namespace Playroom
                             name = "MockPlayer",
                             jsonColor = mockJsonColor,
                             photo = "testPhoto"
-
                         };
                         return testProfile;
                     }
@@ -609,7 +600,6 @@ namespace Playroom
             }
 
 
-
             private void SetStateHelper<T>(string id, string key, Dictionary<string, T> values, bool reliable = false)
             {
                 var jsonObject = new JSONObject();
@@ -633,11 +623,12 @@ namespace Playroom
             private static extern void KickInternal(string playerID, Action onKickCallBack = null);
 
             [DllImport("__Internal")]
-            private static extern void WaitForPlayerStateInternal(string playerID, string stateKey, Action onStateSetCallback = null);
+            private static extern void WaitForPlayerStateInternal(string playerID, string stateKey,
+                Action onStateSetCallback = null);
 
             [DllImport("__Internal")]
             private static extern void SetPlayerStateByPlayerId(string playerID, string key, int value,
-              bool reliable = false);
+                bool reliable = false);
 
             [DllImport("__Internal")]
             private static extern void SetPlayerStateFloatByPlayerId(string playerID, string key, string value,
@@ -649,7 +640,7 @@ namespace Playroom
 
             [DllImport("__Internal")]
             private static extern void SetPlayerStateDictionary(string playerID, string key, string jsonValues,
-               bool reliable = false);
+                bool reliable = false);
 
             [DllImport("__Internal")]
             private static extern void SetPlayerStateStringById(string playerID, string key, string value,

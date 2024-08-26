@@ -92,7 +92,9 @@ namespace Playroom
             }
             else
             {
+#if UNITY_EDITOR
                 MockInsertCoin(options, onLaunchCallBack);
+#endif
             }
         }
 
@@ -122,6 +124,7 @@ namespace Playroom
             }
         }
 
+
         public static void MockOnPlayerJoinWrapper(string playerId)
         {
             OnPlayerJoinWrapperCallback(playerId);
@@ -134,43 +137,39 @@ namespace Playroom
                 Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
                 return null;
             }
+
+            if (IsRunningInBrowser())
+            {
+                if (!OnPlayerJoinCallbacks.Contains(onPlayerJoinCallback))
+                {
+                    OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
+                }
+
+                var CallbackID = OnPlayerJoinInternal(__OnPlayerJoinCallbackHandler);
+
+                void Unsubscribe()
+                {
+                    OnPlayerJoinCallbacks.Remove(onPlayerJoinCallback);
+                    UnsubscribeOnPlayerJoin(CallbackID);
+                }
+
+                return Unsubscribe;
+            }
+
+            if (!isPlayRoomInitialized)
+            {
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+            }
             else
             {
-                if (IsRunningInBrowser())
-                {
-                    if (!OnPlayerJoinCallbacks.Contains(onPlayerJoinCallback))
-                    {
-                        OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
-                    }
-
-                    var CallbackID = OnPlayerJoinInternal(__OnPlayerJoinCallbackHandler);
-
-                    void Unsubscribe()
-                    {
-                        OnPlayerJoinCallbacks.Remove(onPlayerJoinCallback);
-                        UnsubscribeOnPlayerJoin(CallbackID);
-                    }
-
-                    return Unsubscribe;
-                }
-                else
-                {
-                    if (!isPlayRoomInitialized)
-                    {
-                        Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    }
-                    else
-                    {
-                        Debug.Log("On Player Join");
-                        var testPlayer = GetPlayer(PlayerId);
-                        OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
-                        __OnPlayerJoinCallbackHandler(PlayerId);
-                    }
-
-                    return null;
-                }
+#if UNITY_EDITOR
+                MockOnPlayerJoin(onPlayerJoinCallback);
+#endif
             }
+
+            return null;
         }
+
 
         private static void UnsubscribeOnPlayerJoin(string CallbackID)
         {

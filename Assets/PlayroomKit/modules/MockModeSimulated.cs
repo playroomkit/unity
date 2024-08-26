@@ -12,6 +12,7 @@ namespace Playroom
     /// </summary>
     public partial class PlayroomKit
     {
+#if UNITY_EDITOR
         private const string PlayerId = "mockplayerID123";
         private static bool mockIsStreamMode;
 
@@ -22,7 +23,6 @@ namespace Playroom
         ///</summary>
         private static Dictionary<string, object> MockDictionary = new();
 
-
         private static void MockInsertCoinSimulated(InitOptions options, Action onLaunchCallBack)
         {
             isPlayRoomInitialized = true;
@@ -32,7 +32,15 @@ namespace Playroom
             onLaunchCallBack?.Invoke();
         }
 
-        private static void MockSetState(string key, object value)
+        private static void MockOnPlayerJoinSimulated(Action<Player> onPlayerJoinCallback)
+        {
+            Debug.Log("On Player Join");
+            var testPlayer = GetPlayer(PlayerId);
+            OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
+            __OnPlayerJoinCallbackHandler(PlayerId);
+        }
+
+        private static void MockSetStateSimulated(string key, object value)
         {
             if (MockDictionary.ContainsKey(key))
                 MockDictionary[key] = value;
@@ -40,7 +48,8 @@ namespace Playroom
                 MockDictionary.Add(key, value);
         }
 
-        private static T MockGetState<T>(string key)
+
+        private static T MockGetStateSimulated<T>(string key)
         {
             if (MockDictionary.TryGetValue(key, out var value) && value is T typedValue)
             {
@@ -53,6 +62,7 @@ namespace Playroom
             }
         }
 
+
         private static Dictionary<string, (Action<string, string> callback, string response)> mockRegisterCallbacks =
             new();
 
@@ -64,7 +74,8 @@ namespace Playroom
             mockRegisterCallbacks.TryAdd(name, (rpcRegisterCallback, onResponseReturn));
         }
 
-        protected static void MockRpcCall(string name, object data, RpcMode mode, Action callbackOnResponse)
+
+        private static void MockRpcCall(string name, object data, RpcMode mode, Action callbackOnResponse)
         {
             mockResponseCallbacks.TryAdd(name, callbackOnResponse);
 
@@ -86,5 +97,6 @@ namespace Playroom
                 callback?.Invoke();
             }
         }
+#endif
     }
 }
