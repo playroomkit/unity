@@ -10,23 +10,23 @@ namespace Playroom
     {
         public enum MockModeSelector
         {
-            MockModeSimulated,
-            BrowserBridgeMode
+            Local,
+            BrowserBridge
         }
 
-        public static MockModeSelector CurrentMockMode { get; set; } = MockModeSelector.MockModeSimulated;
+        public static MockModeSelector CurrentMockMode { get; set; } = MockModeSelector.Local;
         // public static string MockManagerObjectName { get; set; }
 
         private static void MockInsertCoin(InitOptions options, Action onLaunchCallBack)
         {
             switch (CurrentMockMode)
             {
-                case MockModeSelector.MockModeSimulated:
+                case MockModeSelector.Local:
 
                     MockInsertCoinSimulated(options, onLaunchCallBack);
                     break;
 #if UNITY_EDITOR
-                case MockModeSelector.BrowserBridgeMode:
+                case MockModeSelector.BrowserBridge:
 
                     MockInsertCoinBrowser(options, onLaunchCallBack);
                     break;
@@ -39,11 +39,11 @@ namespace Playroom
         {
             switch (CurrentMockMode)
             {
-                case MockModeSelector.MockModeSimulated:
+                case MockModeSelector.Local:
                     MockOnPlayerJoinSimulated(onPlayerJoinCallback);
                     break;
 #if UNITY_EDITOR
-                case MockModeSelector.BrowserBridgeMode:
+                case MockModeSelector.BrowserBridge:
                     MockOnPlayerJoinBrowser(onPlayerJoinCallback);
                     break;
 #endif
@@ -54,11 +54,11 @@ namespace Playroom
         {
             switch (CurrentMockMode)
             {
-                case MockModeSelector.MockModeSimulated:
+                case MockModeSelector.Local:
                     MockSetStateSimulated(key, value);
                     break;
 #if UNITY_EDITOR
-                case MockModeSelector.BrowserBridgeMode:
+                case MockModeSelector.BrowserBridge:
                     MockSetStateBrowser(key, value, reliable);
                     break;
 #endif
@@ -69,12 +69,12 @@ namespace Playroom
         {
             switch (CurrentMockMode)
             {
-                case MockModeSelector.MockModeSimulated:
+                case MockModeSelector.Local:
                     MockSetStateSimulated(key, value);
                     break;
 
 #if UNITY_EDITOR
-                case MockModeSelector.BrowserBridgeMode:
+                case MockModeSelector.BrowserBridge:
                     MockPlayerSetStateBrowser(playerID, key, value, reliable);
 #endif
                     break;
@@ -85,11 +85,11 @@ namespace Playroom
         {
             switch (CurrentMockMode)
             {
-                case MockModeSelector.MockModeSimulated:
+                case MockModeSelector.Local:
                     return MockGetStateSimulated<T>(key);
 
 #if UNITY_EDITOR
-                case MockModeSelector.BrowserBridgeMode:
+                case MockModeSelector.BrowserBridge:
                     return MockGetStateBrowser<T>(key);
 #endif
                 default:
@@ -101,11 +101,11 @@ namespace Playroom
         {
             switch (CurrentMockMode)
             {
-                case MockModeSelector.MockModeSimulated:
+                case MockModeSelector.Local:
                     return MockGetStateSimulated<T>(key);
 
 #if UNITY_EDITOR
-                case MockModeSelector.BrowserBridgeMode:
+                case MockModeSelector.BrowserBridge:
                     return MockPlayerGetStateBrowser<T>(playerID, key);
 #endif
                 default:
