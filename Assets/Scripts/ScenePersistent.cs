@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+#if UNITY_EDITOR
 public class ScenePersistent : MonoBehaviour
 {
     private static ScenePersistent Instance { get; set; }
@@ -19,3 +18,4 @@ public class ScenePersistent : MonoBehaviour
         }
     }
 }
+#endif

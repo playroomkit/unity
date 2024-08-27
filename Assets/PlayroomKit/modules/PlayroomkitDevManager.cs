@@ -3,15 +3,14 @@ using UnityEngine;
 
 namespace Playroom
 {
-#if UNITY_EDITOR
-    public class PlayroomKitDevManager : MonoBehaviour
+    public class PlayroomkitDevManager : MonoBehaviour
     {
         [SerializeField] private PlayroomKit.MockModeSelector mockModeSelector = PlayroomKit.CurrentMockMode;
 
         [Tooltip("The GameObject which initializes multiplayer")] [SerializeField]
         private GameObject insertCoinCaller;
 
-
+#if UNITY_EDITOR
         private void Awake()
         {
             UpdateMockMode();
@@ -37,11 +36,11 @@ namespace Playroom
             PlayroomKit.RegisterGameObject("PlayerJoin", gameObject);
         }
 
+        // Called 
         private void GetPlayerID(string playerId)
         {
-            Debug.Log(playerId);
             PlayroomKit.MockOnPlayerJoinWrapper(playerId);
         }
-    }
 #endif
+    }
 }

@@ -12,7 +12,6 @@ namespace Playroom
     /// </summary>
     public partial class PlayroomKit
     {
-#if UNITY_EDITOR
         private const string PlayerId = "mockplayerID123";
         private static bool mockIsStreamMode;
 
@@ -97,6 +96,5 @@ namespace Playroom
                 callback?.Invoke();
             }
         }
-#endif
     }
 }

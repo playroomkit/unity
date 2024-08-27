@@ -17,14 +17,14 @@ OnPlayerJoin = function (gameObjectName) {
 
 SetState = function (key, value, reliable) {
     reliable = !!reliable;
-    
+
     console.log(key, value, reliable)
     Playroom.setState(key, value, reliable)
 }
 
 GetState = function (key) {
-    console.log(Playroom.getState(key))
-    return Playroom.getState(key)
+    console.log(JSON.stringify(Playroom.getState(key)))
+    return JSON.stringify(Playroom.getState(key))
 }
 
 
@@ -33,7 +33,7 @@ SetPlayerStateByPlayerId = function (playerId, key, value, reliable) {
     const players = window._multiplayer.getPlayers();
 
     reliable = !!reliable;
-    
+
     if (typeof players !== "object" || players === null) {
         console.error('The "players" variable is not an object:', players);
         return null;
@@ -46,11 +46,6 @@ SetPlayerStateByPlayerId = function (playerId, key, value, reliable) {
     }
 
     if (typeof playerState.setState === "function") {
-
-        // console.log(`Key: ${key}: Value: ${value} reliable: ${reliable} playerID: ${playerId}`)
-
-        // value = JSON.stringify(value)
-
         playerState.setState(key, value, reliable);
     } else {
         console.error(
@@ -83,11 +78,10 @@ GetPlayerStateByPlayerId = function (playerId, key) {
                 return null;
             }
 
-            // console.log(stateVal)
+            console.log(JSON.stringify(stateVal))
 
-            JSON.stringify(stateVal)
 
-            return stateVal;
+            return JSON.stringify(stateVal);
         } catch (error) {
             console.log("There was an error: " + error);
         }

@@ -123,7 +123,7 @@ namespace Playroom
                     else
                     {
                         Debug.Log($"PlayerState Set! Key: {key}, Value: {value}");
-                        MockSetState(key, value);
+                        MockSetState(id, key, value);
                     }
                 }
             }
@@ -143,8 +143,7 @@ namespace Playroom
                     }
                     else
                     {
-                        Debug.Log($"PlayerState Set! Key: {key}, Value: {value}");
-                        MockSetState(key, value);
+                        MockSetState(id, key, value);
                     }
                 }
             }
@@ -164,7 +163,7 @@ namespace Playroom
                     else
                     {
                         Debug.Log($"PlayerState Set! Key: {key}, Value: {value}");
-                        MockSetState(key, value);
+                        MockSetState(id, key, value);
                     }
                 }
             }
@@ -184,7 +183,7 @@ namespace Playroom
                     else
                     {
                         Debug.Log($"PlayerState Set! Key: {key}, Value: {value}");
-                        MockSetState(key, value);
+                        MockSetState(id, key, value);
                     }
                 }
             }
@@ -205,7 +204,7 @@ namespace Playroom
                     }
                     else
                     {
-                        MockSetState(key, value);
+                        MockSetState(id, key, value);
                     }
                 }
             }
@@ -276,7 +275,7 @@ namespace Playroom
                     return default;
                 }
 
-                return MockGetState<T>(key);
+                return MockGetState<T>(id, key);
             }
 
             public Dictionary<string, T> GetState<T>(string key, bool isReturnDictionary = false)

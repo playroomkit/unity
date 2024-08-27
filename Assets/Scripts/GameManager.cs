@@ -48,35 +48,32 @@ public class GameManager : MonoBehaviour
             score.text = $"IDK: {PlayroomKit.GetState<int>("global").ToString()}";
         }
 
-        if (playerJoined)
+        if (!playerJoined) return;
+
+        var myPlayer = playerID;
+        var index = players.IndexOf(myPlayer);
+
+        var player = PlayroomKit.GetPlayer(myPlayer);
+
+        // Move and sync the local player's position
+        playerGameObjects[index].GetComponent<Player>().Move();
+        player.SetState("pos", playerGameObjects[index].transform.position);
+
+
+        // Update other players' positions
+        for (var i = 0; i < players.Count; i++)
         {
-            var myPlayer = playerID;
-            var index = players.IndexOf(myPlayer);
+            // if (players[i] == myPlayer) continue;
 
-            var player = PlayroomKit.GetPlayer(myPlayer);
-
-            // Move and sync the local player's position
-            playerGameObjects[index].GetComponent<Player>().Move();
-            player.SetState("posX", playerGameObjects[index].transform.position.x);
-            player.SetState("posY", playerGameObjects[index].transform.position.y);
-
-            // Update other players' positions
-            for (var i = 0; i < players.Count; i++)
+            if (players[i] != null)
             {
-                if (players[i] == myPlayer) continue;
+                var posX = PlayroomKit.GetPlayer(players[i]).GetState<Vector3>("pos");
+                // var posY = PlayroomKit.GetPlayer(players[i]).GetState<float>("posY");
 
-                if (players[i] != null)
+                if (playerGameObjects != null)
                 {
-                    var otherPlayer = PlayroomKit.GetPlayer(players[i]);
-                    var posX = otherPlayer.GetState<float>("posX");
-                    var posY = otherPlayer.GetState<float>("posY");
-
-
-                    if (playerGameObjects != null)
-                    {
-                        Vector3 pos = new(posX, posY, 0);
-                        playerGameObjects[i].GetComponent<Transform>().position = pos;
-                    }
+                    // Vector3 pos = new(posX, posY, 0);
+                    playerGameObjects[i].GetComponent<Transform>().position = posX;
                 }
             }
         }

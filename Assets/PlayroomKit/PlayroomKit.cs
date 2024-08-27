@@ -92,9 +92,7 @@ namespace Playroom
             }
             else
             {
-#if UNITY_EDITOR
                 MockInsertCoin(options, onLaunchCallBack);
-#endif
             }
         }
 
@@ -125,6 +123,11 @@ namespace Playroom
         }
 
 
+        /// <summary>
+        /// This function is used by GetPlayerID in PlayroomKitDevManager, GetPlayer is only invoked
+        /// in mock mode by the JS bridge
+        /// </summary>
+        /// <param name="playerId"></param>
         public static void MockOnPlayerJoinWrapper(string playerId)
         {
             OnPlayerJoinWrapperCallback(playerId);
@@ -162,9 +165,7 @@ namespace Playroom
             }
             else
             {
-#if UNITY_EDITOR
                 MockOnPlayerJoin(onPlayerJoinCallback);
-#endif
             }
 
             return null;
@@ -460,25 +461,22 @@ namespace Playroom
 
 
         // GETTERS
-
-
         private static string GetStateString(string key)
         {
             if (IsRunningInBrowser())
             {
                 return GetStateStringInternal(key);
             }
+
+
+            if (!isPlayRoomInitialized)
+            {
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                return default;
+            }
             else
             {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return default;
-                }
-                else
-                {
-                    return MockGetState<string>(key);
-                }
+                return MockGetState<string>(key);
             }
         }
 

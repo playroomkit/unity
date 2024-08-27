@@ -8,9 +8,6 @@ namespace Playroom
     /// </summary>
     public partial class PlayroomKit
     {
-#if UNITY_EDITOR
-
-
         public enum MockModeSelector
         {
             MockModeSimulated,
@@ -28,11 +25,12 @@ namespace Playroom
 
                     MockInsertCoinSimulated(options, onLaunchCallBack);
                     break;
-
+#if UNITY_EDITOR
                 case MockModeSelector.BrowserBridgeMode:
 
                     MockInsertCoinBrowser(options, onLaunchCallBack);
                     break;
+#endif
             }
         }
 
@@ -44,10 +42,11 @@ namespace Playroom
                 case MockModeSelector.MockModeSimulated:
                     MockOnPlayerJoinSimulated(onPlayerJoinCallback);
                     break;
-
+#if UNITY_EDITOR
                 case MockModeSelector.BrowserBridgeMode:
                     MockOnPlayerJoinBrowser(onPlayerJoinCallback);
                     break;
+#endif
             }
         }
 
@@ -58,10 +57,11 @@ namespace Playroom
                 case MockModeSelector.MockModeSimulated:
                     MockSetStateSimulated(key, value);
                     break;
-
+#if UNITY_EDITOR
                 case MockModeSelector.BrowserBridgeMode:
                     MockSetStateBrowser(key, value, reliable);
                     break;
+#endif
             }
         }
 
@@ -73,8 +73,10 @@ namespace Playroom
                     MockSetStateSimulated(key, value);
                     break;
 
+#if UNITY_EDITOR
                 case MockModeSelector.BrowserBridgeMode:
                     MockPlayerSetStateBrowser(playerID, key, value, reliable);
+#endif
                     break;
             }
         }
@@ -86,15 +88,29 @@ namespace Playroom
                 case MockModeSelector.MockModeSimulated:
                     return MockGetStateSimulated<T>(key);
 
+#if UNITY_EDITOR
                 case MockModeSelector.BrowserBridgeMode:
                     return MockGetStateBrowser<T>(key);
-
+#endif
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
+        private static T MockGetState<T>(string playerID, string key)
+        {
+            switch (CurrentMockMode)
+            {
+                case MockModeSelector.MockModeSimulated:
+                    return MockGetStateSimulated<T>(key);
 
+#if UNITY_EDITOR
+                case MockModeSelector.BrowserBridgeMode:
+                    return MockPlayerGetStateBrowser<T>(playerID, key);
 #endif
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 }
