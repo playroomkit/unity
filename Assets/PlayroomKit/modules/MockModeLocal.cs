@@ -1,8 +1,5 @@
 using System;
-using System.Buffers.Text;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Playroom
@@ -95,6 +92,17 @@ namespace Playroom
             {
                 callback?.Invoke();
             }
+        }
+
+        // TODO: need to reimplement when local co-op is added
+        private static string MockGetRoomCodeLocal()
+        {
+            return "mock123";
+        }
+
+        private static Player MockMyPlayerLocal()
+        {
+            return GetPlayer(PlayerId);
         }
     }
 }

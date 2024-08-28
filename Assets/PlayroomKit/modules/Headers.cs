@@ -31,7 +31,7 @@ namespace Playroom
         private static extern string MyPlayerInternal();
 
         [DllImport("__Internal")]
-        public static extern string GetRoomCode();
+        public static extern string GetRoomCodeInternal();
 
         [DllImport("__Internal")]
         private static extern void OnDisconnectInternal(Action<string> callback);

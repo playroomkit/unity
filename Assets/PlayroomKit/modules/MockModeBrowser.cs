@@ -76,7 +76,7 @@ namespace Playroom
             var flag = reliable ? 1 : 0;
 
 #if UNITY_EDITOR
-         
+
             string jsonString = JsonUtility.ToJson(value);
 
 
@@ -91,7 +91,7 @@ namespace Playroom
             var returnVal =
                 UnityBrowserBridge.Instance.ExecuteJS<string>($"GetPlayerStateByPlayerId('{playerID}','{key}')");
 
-        
+
             if (typeof(T) == typeof(string))
             {
                 return (T)(object)returnVal;
@@ -102,7 +102,7 @@ namespace Playroom
                 try
                 {
                     var parsedObject = JsonUtility.FromJson<T>(returnVal);
-                 
+
                     return parsedObject;
                 }
                 catch
@@ -125,6 +125,18 @@ namespace Playroom
                 throw new InvalidCastException($"Cannot convert value of type '{typeof(string)}' to '{typeof(T)}'.");
             }
         }
+
+        private static string MockGetRoomCodeBrowser()
+        {
+            return UnityBrowserBridge.Instance.ExecuteJS<string>($"GetRoomCode()");
+        }
+
+        private static Player MockMyPlayerBrowser()
+        {
+            var id = UnityBrowserBridge.Instance.ExecuteJS<string>($"MyPlayer()");
+            return GetPlayer(id);
+        }
+
 #endif
     }
 }

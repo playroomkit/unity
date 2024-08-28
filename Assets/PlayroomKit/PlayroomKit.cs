@@ -13,7 +13,7 @@ namespace Playroom
 {
     public partial class PlayroomKit
     {
-        protected static bool isPlayRoomInitialized;
+        private static bool isPlayRoomInitialized;
 
         private static readonly Dictionary<string, Player> Players = new();
 
@@ -250,6 +250,15 @@ namespace Playroom
             }
         }
 
+        public static string GetRoomCode()
+        {
+            if (IsRunningInBrowser())
+            {
+                return GetRoomCodeInternal();
+            }
+
+            return MockGetRoomCode();
+        }
 
         public static Player MyPlayer()
         {
@@ -258,23 +267,15 @@ namespace Playroom
                 var id = MyPlayerInternal();
                 return GetPlayer(id);
             }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return null;
-                }
-                else
-                {
-                    return GetPlayer(PlayerId);
-                }
-            }
+
+            if (isPlayRoomInitialized) return MockMyPlayer();
+            Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+            return null;
         }
 
         public static Player Me()
         {
-            return MyPlayer();
+            return IsRunningInBrowser() ? MyPlayer() : MockMe();
         }
 
 

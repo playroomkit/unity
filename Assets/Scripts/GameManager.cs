@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using AOT;
 using Playroom;
 using TMPro;
-using UBB;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -14,7 +13,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     ///     List of players and their gameObjects.
     /// </summary>
-    [SerializeField] private List<string> players = new();
+    [SerializeField] private List<PlayroomKit.Player> players = new();
 
     private static readonly List<GameObject> playerGameObjects = new();
     private static readonly Dictionary<string, GameObject> PlayerDict = new();
@@ -41,6 +40,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetKey(KeyCode.K))
         {
             PlayroomKit.SetState("global", 500);
+            Debug.Log(PlayroomKit.GetRoomCode());
         }
 
         if (Input.GetKey(KeyCode.L))
@@ -50,10 +50,9 @@ public class GameManager : MonoBehaviour
 
         if (!playerJoined) return;
 
-        var myPlayer = playerID;
-        var index = players.IndexOf(myPlayer);
+        var player = PlayroomKit.Me();
+        var index = players.IndexOf(player);
 
-        var player = PlayroomKit.GetPlayer(myPlayer);
 
         // Move and sync the local player's position
         playerGameObjects[index].GetComponent<Player>().Move();
@@ -67,7 +66,7 @@ public class GameManager : MonoBehaviour
 
             if (players[i] != null)
             {
-                var posX = PlayroomKit.GetPlayer(players[i]).GetState<Vector3>("pos");
+                var posX = PlayroomKit.MyPlayer().GetState<Vector3>("pos");
                 // var posY = PlayroomKit.GetPlayer(players[i]).GetState<float>("posY");
 
                 if (playerGameObjects != null)
@@ -95,7 +94,7 @@ public class GameManager : MonoBehaviour
         Debug.Log($"<color=#ADD8E6>Player ID: {player.id}</color>");
 
         PlayerDict.Add(player.id, playerObj);
-        players.Add(player.id);
+        players.Add(player);
         playerGameObjects.Add(playerObj);
 
         playerJoined = true;
