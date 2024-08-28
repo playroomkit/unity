@@ -16,7 +16,6 @@ public class PrkMockInspector : Editor
         VisualElement root = new VisualElement();
         root.style.flexDirection = FlexDirection.Column;
 
-
         root.styleSheets.Add(styleSheet);
 
         // Mock Mode Dropdown with tooltip
@@ -26,20 +25,51 @@ public class PrkMockInspector : Editor
         mockModeLabel.AddToClassList("label");
 
         // Tooltip icon and box
-        var mockModeTooltipButton = new Button(() => ShowTooltip(mockModeContainer, "Mock Mode helps you test..."))
-            { text = "?" };
+        var mockModeTooltipButton = new Button(() => { })
+        {
+            text = "?",
+            tooltip = "Mock mode helps you test your game locally.\n\n1. Local (simulated): This mode runs in a local state, not connected to a server.\n\n2. Browser Bridge (live): This mode connects to a live multiplayer server.\n\nRead more in the docs."
+        };
         mockModeTooltipButton.AddToClassList("tooltip-button");
+
+        // Create a PopupField for Mock Mode Selector
+        var mockModeOptions = new List<string>
+        {
+            "Local (simulated)",
+            "Browser Bridge (live)"
+        };
+
+        var mockModeProperty = serializedObject.FindProperty("mockMode");
+        var initialIndex = (int)(PlayroomKit.MockModeSelector)mockModeProperty.enumValueIndex;
+
         var mockModeDropdown = new PopupField<string>(
-            new List<string> { "Local (simulated)", "Browser Bridge (live)" },
-            0
+            mockModeOptions,
+            initialIndex
         );
         mockModeDropdown.AddToClassList("dropdown");
 
+        // Register callback to handle changes in the dropdown
+        mockModeDropdown.RegisterValueChangedCallback(evt =>
+        {
+            var selectedString = evt.newValue;
+            PlayroomKit.MockModeSelector selectedEnum = PlayroomKit.MockModeSelector.Local; // Default value
+
+            if (selectedString == "Local (simulated)")
+            {
+                selectedEnum = PlayroomKit.MockModeSelector.Local;
+            }
+            else if (selectedString == "Browser Bridge (live)")
+            {
+                selectedEnum = PlayroomKit.MockModeSelector.BrowserBridge;
+            }
+
+            mockModeProperty.enumValueIndex = (int)selectedEnum;
+            serializedObject.ApplyModifiedProperties();
+        });
 
         mockModeContainer.Add(mockModeLabel);
         mockModeContainer.Add(mockModeTooltipButton);
         mockModeContainer.Add(mockModeDropdown);
-
 
         // Insert Coin Caller with tooltip
         VisualElement insertCoinContainer = new VisualElement();
@@ -48,9 +78,11 @@ public class PrkMockInspector : Editor
         var insertCoinLabel = new Label("Insert Coin Caller");
         insertCoinLabel.AddToClassList("label");
 
-        var insertCoinTooltipButton =
-            new Button(() => ShowTooltip(insertCoinContainer, "InsertCoin must be called in order..."))
-                { text = "?" };
+        var insertCoinTooltipButton = new Button
+        {
+            text = "?",
+            tooltip = ""
+        };
         insertCoinTooltipButton.AddToClassList("tooltip-button");
 
         var insertCoinField = new ObjectField()
@@ -64,55 +96,19 @@ public class PrkMockInspector : Editor
         insertCoinContainer.Add(insertCoinTooltipButton);
         insertCoinContainer.Add(insertCoinField);
 
-
         // Launch Player Button
         var launchPlayerButton = new Button(() => Debug.Log("Player Launched"))
         {
             text = "Launch Player"
         };
         launchPlayerButton.AddToClassList("button");
-
-        // launchPlayerButton.tooltip = "Launch another player by clicking below, wait for the new editor to open, then click 'Clone'.";
-
         launchPlayerButton.tooltip = "Launch another player by clicking below, wait for the new editor to open, then click 'Clone'.";
-        launchPlayerButton.AddToClassList("custom-tooltip");
-        launchPlayerButton.AddToClassList("button");
 
-        
         // Add elements to root
         root.Add(mockModeContainer);
         root.Add(insertCoinContainer);
         root.Add(launchPlayerButton);
 
         return root;
-    }
-    
-
-    
-    private void ShowTooltip(VisualElement container, string message)
-    {
-        // // Check if a tooltip already exists and remove it to avoid duplicates
-        // var existingTooltip = container.Q<Label>("tooltip");
-        // if (existingTooltip != null)
-        // {
-        //     container.Remove(existingTooltip);
-        // }
-        //
-        // // Create a new Label to display the tooltip message
-        // var tooltip = new Label(message)
-        // {
-        //     name = "tooltip"
-        // };
-        //
-        // // Apply the helpBox style class
-        // tooltip.AddToClassList("helpBox");
-        // tooltip.BringToFront();
-        // // Add the tooltip to the container
-        // container.Add(tooltip);
-        //
-        // // Optionally, you can remove the tooltip after a certain time
-        // // to simulate a disappearing tooltip.
-        // container.schedule.Execute(() => { container.Remove(tooltip); }).StartingIn(5000); // Remove after 5 seconds
-        Debug.Log("Show Tooltip");
     }
 }
