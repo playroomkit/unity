@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.AnimatedValues;
 
-[CustomEditor(typeof(PlayroomkitDevManager))]
+// [CustomEditor(typeof(Test))]
 public class PlayroomkitDevManagerEditor : Editor
 {
     private string[] mockModeOptions = new string[] { "Local (simulated)", "Browser Bridge (live)" };
