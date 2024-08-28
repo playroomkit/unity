@@ -18,12 +18,10 @@ OnPlayerJoin = function (gameObjectName) {
 SetState = function (key, value, reliable) {
   reliable = !!reliable;
 
-  console.log(key, value, reliable);
   Playroom.setState(key, value, reliable);
 };
 
 GetState = function (key) {
-  console.log(JSON.stringify(Playroom.getState(key)));
   return JSON.stringify(Playroom.getState(key));
 };
 
@@ -74,8 +72,6 @@ GetPlayerStateByPlayerId = function (playerId, key) {
         return null;
       }
 
-      console.log(JSON.stringify(stateVal));
-
       return JSON.stringify(stateVal);
     } catch (error) {
       console.log("There was an error: " + error);
@@ -92,4 +88,41 @@ GetRoomCode = function () {
 
 MyPlayer = function () {
   return Playroom.myPlayer().id;
+};
+
+IsHost = function () {
+  console.log(Playroom.isHost());
+  return Playroom.isHost();
+};
+
+IsStreamScreen = function () {
+  return Playroom.isStreamScreen();
+};
+
+GetProfile = function (playerId) {
+  const players = window._multiplayer.getPlayers();
+
+  if (typeof players !== "object" || players === null) {
+    console.error('The "players" variable is not an object:', players);
+    return null;
+  }
+
+  const playerState = players[playerId];
+
+  if (!playerState) {
+    console.error("Player with ID", playerId, "not found.");
+    return null;
+  }
+
+  if (typeof playerState.getProfile === "function") {
+    const profile = playerState.getProfile();
+    var returnStr = JSON.stringify(profile);
+
+    return returnStr;
+  } else {
+    console.error(
+      'The player state object does not have a "getProfile" method.'
+    );
+    return null;
+  }
 };

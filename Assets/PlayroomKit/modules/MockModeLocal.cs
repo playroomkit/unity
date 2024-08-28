@@ -104,5 +104,36 @@ namespace Playroom
         {
             return GetPlayer(PlayerId);
         }
+
+        private static bool MockIsHostLocal()
+        {
+            return true;
+        }
+
+        // TODO: need to reimplement when local co-op is added
+        private static bool MockIsStreamScreenLocal()
+        {
+            return mockIsStreamMode;
+        }
+
+        private static Player.Profile MockGetProfileLocal()
+        {
+            PlayroomKit.Player.Profile.PlayerProfileColor mockPlayerProfileColor = new()
+            {
+                r = 166,
+                g = 0,
+                b = 142,
+                hexString = "#a6008e"
+            };
+            ColorUtility.TryParseHtmlString(mockPlayerProfileColor.hexString, out UnityEngine.Color color1);
+            var testProfile = new Player.Profile()
+            {
+                color = color1,
+                name = "MockPlayer",
+                playerProfileColor = mockPlayerProfileColor,
+                photo = "testPhoto"
+            };
+            return testProfile;
+        }
     }
 }

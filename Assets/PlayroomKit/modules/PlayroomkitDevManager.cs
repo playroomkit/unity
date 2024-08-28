@@ -17,6 +17,9 @@ namespace Playroom
 #if UNITY_EDITOR
         private void Awake()
         {
+            if (PlayroomKit.CurrentMockMode == PlayroomKit.MockModeSelector.BrowserBridge)
+                UnityBrowserBridge.Instance.StartUBB();
+            
             UpdateMockMode();
 
             if (Instance == null)
@@ -32,8 +35,8 @@ namespace Playroom
 
         private void Start()
         {
-            if (PlayroomKit.CurrentMockMode == PlayroomKit.MockModeSelector.BrowserBridge)
-                UnityBrowserBridge.Instance.StartUBB();
+            // if (PlayroomKit.CurrentMockMode == PlayroomKit.MockModeSelector.BrowserBridge)
+            //     UnityBrowserBridge.Instance.StartUBB();
         }
 
         private void OnValidate()

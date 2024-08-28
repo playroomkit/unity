@@ -137,6 +137,26 @@ namespace Playroom
             return GetPlayer(id);
         }
 
+        private static bool MockIsHostBrowser()
+        {
+            return UnityBrowserBridge.Instance.ExecuteJS<bool>($"IsHost()");
+        }
+
+        private static bool MockIsStreamScreenBrowser()
+        {
+            return UnityBrowserBridge.Instance.ExecuteJS<bool>($"IsStreamScreen()");
+        }
+
+        private static Player.Profile MockGetProfileBrowser(string playerID)
+        {
+            string json = UnityBrowserBridge.Instance.ExecuteJS<string>($"GetProfile('{playerID}')");
+
+            Debug.Log(json);
+
+            var profileData = ParseProfile(json);
+            return profileData;
+        }
+
 #endif
     }
 }

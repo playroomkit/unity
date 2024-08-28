@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using AOT;
 using SimpleJSON;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Playroom
 {
@@ -24,12 +25,12 @@ namespace Playroom
             {
                 [NonSerialized] public UnityEngine.Color color;
 
-                public JsonColor jsonColor;
+                [FormerlySerializedAs("jsonColor")] public PlayerProfileColor playerProfileColor;
                 public string name;
                 public string photo;
 
                 [Serializable]
-                public class JsonColor
+                public class PlayerProfileColor
                 {
                     public int r;
                     public int g;
@@ -507,27 +508,6 @@ namespace Playroom
             }
 
 
-            private static Profile ParseProfile(string json)
-            {
-                var jsonNode = JSON.Parse(json);
-                var profileData = new Profile();
-                profileData.jsonColor = new Profile.JsonColor
-                {
-                    r = jsonNode["color"]["r"].AsInt,
-                    g = jsonNode["color"]["g"].AsInt,
-                    b = jsonNode["color"]["b"].AsInt,
-                    hexString = jsonNode["color"]["hexString"].Value,
-                    hex = jsonNode["color"]["hex"].AsInt
-                };
-
-                ColorUtility.TryParseHtmlString(profileData.jsonColor.hexString, out UnityEngine.Color color1);
-                profileData.color = color1;
-                profileData.name = jsonNode["name"].Value;
-                profileData.photo = jsonNode["photo"].Value;
-
-                return profileData;
-            }
-
             public Profile GetProfile()
             {
                 if (IsRunningInBrowser())
@@ -536,33 +516,10 @@ namespace Playroom
                     var profileData = ParseProfile(jsonString);
                     return profileData;
                 }
-                else
-                {
-                    if (!isPlayRoomInitialized)
-                    {
-                        Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                        return default;
-                    }
-                    else
-                    {
-                        Profile.JsonColor mockJsonColor = new()
-                        {
-                            r = 166,
-                            g = 0,
-                            b = 142,
-                            hexString = "#a6008e"
-                        };
-                        ColorUtility.TryParseHtmlString(mockJsonColor.hexString, out UnityEngine.Color color1);
-                        var testProfile = new Profile()
-                        {
-                            color = color1,
-                            name = "MockPlayer",
-                            jsonColor = mockJsonColor,
-                            photo = "testPhoto"
-                        };
-                        return testProfile;
-                    }
-                }
+
+                if (isPlayRoomInitialized) return MockGetProfile(id);
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                return default;
             }
 
 

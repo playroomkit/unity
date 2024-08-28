@@ -1,4 +1,5 @@
 using SimpleJSON;
+using UnityEngine;
 
 namespace Playroom
 {
@@ -7,7 +8,7 @@ namespace Playroom
     /// </summary>
     public partial class PlayroomKit
     {
-        protected static string SerializeInitOptions(InitOptions options)
+        private static string SerializeInitOptions(InitOptions options)
         {
             if (options == null) return null;
 
@@ -149,6 +150,27 @@ namespace Playroom
             buttonJson["label"] = button.label;
             buttonJson["icon"] = button.icon;
             return buttonJson;
+        }
+
+        private static Player.Profile ParseProfile(string json)
+        {
+            var jsonNode = JSON.Parse(json);
+            var profileData = new Player.Profile();
+            profileData.playerProfileColor = new Player.Profile.PlayerProfileColor
+            {
+                r = jsonNode["color"]["r"].AsInt,
+                g = jsonNode["color"]["g"].AsInt,
+                b = jsonNode["color"]["b"].AsInt,
+                hexString = jsonNode["color"]["hexString"].Value,
+                hex = jsonNode["color"]["hex"].AsInt
+            };
+
+            ColorUtility.TryParseHtmlString(profileData.playerProfileColor.hexString, out UnityEngine.Color color1);
+            profileData.color = color1;
+            profileData.name = jsonNode["name"].Value;
+            profileData.photo = jsonNode["photo"].Value;
+
+            return profileData;
         }
     }
 }

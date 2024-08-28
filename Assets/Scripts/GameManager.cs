@@ -28,7 +28,11 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        PlayroomKit.OnPlayerJoin(AddPlayer);
+        PlayroomKit.InsertCoin(new()
+            {
+                skipLobby = true,
+            },
+            () => PlayroomKit.OnPlayerJoin(AddPlayer));
     }
 
 
@@ -41,6 +45,7 @@ public class GameManager : MonoBehaviour
         {
             PlayroomKit.SetState("global", 500);
             Debug.Log(PlayroomKit.GetRoomCode());
+            PlayroomKit.IsHost();
         }
 
         if (Input.GetKey(KeyCode.L))
@@ -92,6 +97,9 @@ public class GameManager : MonoBehaviour
         var playerObj = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
 
         Debug.Log($"<color=#ADD8E6>Player ID: {player.id}</color>");
+
+        Debug.Log($"<color=#ADD8E6>Player Name: {player.GetProfile().color}</color>");
+        Debug.Log($"<color={player.GetProfile().playerProfileColor.hexString}>Player ID: {player.GetProfile().name}</color>");
 
         PlayerDict.Add(player.id, playerObj);
         players.Add(player);

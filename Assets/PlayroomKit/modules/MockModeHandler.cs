@@ -101,5 +101,28 @@ namespace Playroom
         }
 
         private static Player MockMe() => MockMyPlayer();
+
+        private static bool MockIsHost()
+        {
+            return ExecuteMockModeFunc(
+                MockIsHostLocal,
+                MockIsHostBrowser);
+        }
+
+        private static bool MockIsStreamScreen()
+        {
+            return ExecuteMockModeFunc(
+                MockIsStreamScreenLocal,
+                MockIsStreamScreenBrowser);
+        }
+
+
+        private static Player.Profile MockGetProfile(string id = null)
+        {
+            return ExecuteMockModeFunc(
+                MockGetProfileLocal,
+                () => MockGetProfileBrowser(id)
+            );
+        }
     }
 }

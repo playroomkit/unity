@@ -215,39 +215,24 @@ namespace Playroom
             {
                 return IsHostInternal();
             }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
+
+            if (isPlayRoomInitialized) return MockIsHost();
+            Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+            return false;
         }
 
 
-        public static bool IsStreamMode()
+        public static bool IsStreamScreen()
         {
             if (IsRunningInBrowser())
             {
                 return IsStreamModeInternal();
             }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return false;
-                }
-                else
-                {
-                    return mockIsStreamMode;
-                }
-            }
+
+            if (isPlayRoomInitialized) return MockIsStreamScreen();
+            Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+            return false;
+
         }
 
         public static string GetRoomCode()
