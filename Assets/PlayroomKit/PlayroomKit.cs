@@ -34,8 +34,27 @@ namespace Playroom
             public Dictionary<string, object> defaultStates = null;
             public Dictionary<string, object> defaultPlayerStates = null;
 
-            public bool matchmaking = false;
+            private object matchmakingField;
+
+            // Property to handle matchmaking as either boolean or MatchMakingOptions
+            public object matchmaking
+            {
+                get => matchmakingField;
+                set
+                {
+                    if (value is bool || value is MatchMakingOptions)
+                    {
+                        matchmakingField = value;
+                    }
+                    else
+                    {
+                        throw new ArgumentException(
+                            "matchmaking must be either a boolean or a MatchMakingOptions object.");
+                    }
+                }
+            }
         }
+
 
         public class MatchMakingOptions
         {

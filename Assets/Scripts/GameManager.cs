@@ -31,10 +31,15 @@ public class GameManager : MonoBehaviour
         PlayroomKit.InsertCoin(new()
             {
                 skipLobby = true,
+
                 defaultPlayerStates = new()
                 {
                     { "score", 69 },
                 },
+                matchmaking = new PlayroomKit.MatchMakingOptions
+                {
+                    waitBeforeCreatingNewRoom = 0
+                }
             },
             () => PlayroomKit.OnPlayerJoin(AddPlayer));
     }
@@ -54,8 +59,8 @@ public class GameManager : MonoBehaviour
         if (Input.GetKey(KeyCode.L))
         {
             var s = PlayroomKit.MyPlayer().GetState<int>("score");
-            
-            
+
+
             score.text = $"Score: {s}";
         }
 
@@ -99,7 +104,7 @@ public class GameManager : MonoBehaviour
         {
             PlayroomKit.ResetPlayersStates(new[] { "pos" }, () =>
             {
-                var defscore = PlayroomKit.GetState<int>("score");
+                var defscore = PlayroomKit.MyPlayer().GetState<int>("score");
                 score.text = defscore.ToString();
             });
         }

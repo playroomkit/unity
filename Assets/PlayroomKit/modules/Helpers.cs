@@ -12,7 +12,7 @@ namespace Playroom
         {
             if (options == null) return null;
 
-            JSONNode node = JSON.Parse("{}");
+            JSONNode node = new JSONObject();
 
             node["streamMode"] = options.streamMode;
             node["allowGamepads"] = options.allowGamepads;
@@ -33,7 +33,17 @@ namespace Playroom
             node["skipLobby"] = options.skipLobby;
             node["reconnectGracePeriod"] = options.reconnectGracePeriod;
 
-            node["matchmaking"] = options.matchmaking;
+            // Serialize matchmaking field
+            if (options.matchmaking is bool booleanMatchmaking)
+            {
+                node["matchmaking"] = booleanMatchmaking;
+            }
+            else if (options.matchmaking is MatchMakingOptions matchmakingOptions)
+            {
+                JSONNode matchmakingNode = new JSONObject();
+                matchmakingNode["waitBeforeCreatingNewRoom"] = matchmakingOptions.waitBeforeCreatingNewRoom;
+                node["matchmaking"] = matchmakingNode;
+            }
 
             if (options.maxPlayersPerRoom.HasValue)
             {
@@ -68,7 +78,6 @@ namespace Playroom
 
                 node["defaultPlayerStates"] = defaultPlayerStatesObject;
             }
-
 
             return node.ToString();
         }
