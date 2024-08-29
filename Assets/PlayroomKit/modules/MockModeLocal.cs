@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Playroom
@@ -17,7 +18,9 @@ namespace Playroom
         /// Reason: In Mock Mode, only a single player can be tested. 
         /// Ref: https://docs.joinplayroom.com/usage/unity#mock-mode
         ///</summary>
-        private static Dictionary<string, object> MockDictionary = new();
+        private static Dictionary<string, object> mockGlobalStatesDictionary = new();
+
+        private static Dictionary<string, object> mockPlayerStatesDictionary = new();
 
         private static void MockInsertCoinSimulated(InitOptions options, Action onLaunchCallBack)
         {
@@ -38,16 +41,43 @@ namespace Playroom
 
         private static void MockSetStateSimulated(string key, object value)
         {
-            if (MockDictionary.ContainsKey(key))
-                MockDictionary[key] = value;
+            if (mockGlobalStatesDictionary.ContainsKey(key))
+                mockGlobalStatesDictionary[key] = value;
             else
-                MockDictionary.Add(key, value);
+                mockGlobalStatesDictionary.Add(key, value);
+        }
+
+        private static void MockPlayerSetStateSimulated(string key, object value)
+        {
+            if (mockPlayerStatesDictionary.ContainsKey(key))
+                mockPlayerStatesDictionary[key] = value;
+            else
+                mockPlayerStatesDictionary.Add(key, value);
         }
 
 
         private static T MockGetStateSimulated<T>(string key)
         {
-            if (MockDictionary.TryGetValue(key, out var value) && value is T typedValue)
+            if (mockGlobalStatesDictionary.TryGetValue(key, out var value) && value is T typedValue)
+            {
+                return typedValue;
+            }
+            else
+            {
+                Debug.LogWarning($"No {key} in States or value is not of type {typeof(T)}");
+                return default;
+            }
+        }
+
+        private static T MockPlayerGetStateSimulated<T>(string key)
+        {
+            foreach (var (k, v) in mockPlayerStatesDictionary)
+            {
+                Debug.Log($"{k}:  {v}");
+            }
+
+
+            if (mockPlayerStatesDictionary.TryGetValue(key, out var value) && value is T typedValue)
             {
                 return typedValue;
             }
@@ -64,7 +94,7 @@ namespace Playroom
 
         private static Dictionary<string, Action> mockResponseCallbacks = new();
 
-        public static void MockRpcRegister(string name, Action<string, string> rpcRegisterCallback,
+        private static void MockRpcRegister(string name, Action<string, string> rpcRegisterCallback,
             string onResponseReturn = null)
         {
             mockRegisterCallbacks.TryAdd(name, (rpcRegisterCallback, onResponseReturn));
@@ -134,6 +164,44 @@ namespace Playroom
                 photo = "testPhoto"
             };
             return testProfile;
+        }
+
+        private static void MockStartMatchmakingLocal()
+        {
+            Debug.Log("Matchmaking doesn't work in local mock mode!");
+        }
+
+        private static void MockKickLocal(Action onKickCallback)
+        {
+            var player = GetPlayer(PlayerId);
+            Players.Remove(player.id);
+            onKickCallback?.Invoke();
+        }
+
+        // TODO: needs to be reimplemented for local co op mode.
+        private static void MockResetStatesLocal(string[] keysToExclude, Action onKickCallback)
+        {
+            List<string> keysToRemove =
+                mockGlobalStatesDictionary.Keys.Where(key => !keysToExclude.Contains(key)).ToList();
+            foreach (string key in keysToRemove) mockGlobalStatesDictionary.Remove(key);
+            onKickCallback?.Invoke();
+        }
+
+        private static void MockResetPlayersStatesLocal(string[] keysToExclude = null, Action onKickCallback = null)
+        {
+            if (keysToExclude == null || keysToExclude.Length == 0)
+            {
+                keysToExclude = Array.Empty<string>();
+            }
+
+            List<string> keysToRemove = mockPlayerStatesDictionary.Keys.Where(key => !keysToExclude.Contains(key)).ToList();
+
+            foreach (string key in keysToRemove)
+            {
+                mockPlayerStatesDictionary.Remove(key);
+            }
+
+            onKickCallback?.Invoke();
         }
     }
 }

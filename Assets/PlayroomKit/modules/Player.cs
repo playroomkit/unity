@@ -123,7 +123,6 @@ namespace Playroom
                     }
                     else
                     {
-                        Debug.Log($"PlayerState Set! Key: {key}, Value: {value}");
                         MockSetState(id, key, value);
                     }
                 }
@@ -488,7 +487,7 @@ namespace Playroom
             {
                 if (IsRunningInBrowser())
                 {
-                    OnKickCallBack = onKickCallBack;
+                    onKickCallBack = OnKickCallBack;
                     KickInternal(id, InvokeKickCallBack);
                 }
                 else
@@ -496,13 +495,10 @@ namespace Playroom
                     if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                        return;
                     }
                     else
                     {
-                        var player = GetPlayer(PlayerId);
-                        Players.Remove(player.id);
-                        onKickCallBack?.Invoke();
+                        MockKick(id, OnKickCallBack);
                     }
                 }
             }

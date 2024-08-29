@@ -42,6 +42,17 @@ SetPlayerStateByPlayerId = function (playerId, key, value, reliable) {
   }
 
   if (typeof playerState.setState === "function") {
+    console.log(
+      "Setting state for player",
+      playerId,
+      "key",
+      key,
+      "value",
+      value,
+      "reliable",
+      reliable
+    );
+
     playerState.setState(key, value, reliable);
   } else {
     console.error('The player state object does not have a "setState" method.');
@@ -71,6 +82,8 @@ GetPlayerStateByPlayerId = function (playerId, key) {
       if (stateVal === undefined) {
         return null;
       }
+
+      console.log(JSON.stringify(stateVal));
 
       return JSON.stringify(stateVal);
     } catch (error) {
@@ -125,4 +138,105 @@ GetProfile = function (playerId) {
     );
     return null;
   }
+};
+
+StartMatchmaking = async function () {
+  await Playroom.startMatchmaking();
+};
+
+OnDisconnect = async function (callback) {
+  Playroom.onDisconnect((e) => {
+    console.log(`Disconnected!`, e.code, e.reason);
+  });
+};
+
+WaitForState = async function (key, callback) {
+  await Playroom.waitForState(key, callback);
+};
+
+WaitForPlayerState = async function (playerId, stateKey, onStateSetCallback) {
+  if (!window.Playroom) {
+    console.error(
+      "Playroom library is not loaded. Please make sure to call InsertCoin first."
+    );
+    reject("Playroom library not loaded");
+    return;
+  }
+
+  const players = window._multiplayer.getPlayers();
+
+  if (typeof players !== "object" || players === null) {
+    console.error('The "players" variable is not an object:', players);
+    return null;
+  }
+  const playerState = players[playerId];
+
+  if (!playerState) {
+    console.error("Player with ID", playerId, "not found.");
+    return null;
+  }
+
+  await Playroom.waitForPlayerState(playerState, stateKey, onStateSetCallback);
+};
+
+Kick = async function (playerID) {
+  if (!window.Playroom) {
+    console.error(
+      "Playroom library is not loaded. Please make sure to call InsertCoin first."
+    );
+    reject("Playroom library not loaded");
+    return;
+  }
+
+  const players = window._multiplayer.getPlayers();
+
+  if (typeof players !== "object" || players === null) {
+    console.error('The "players" variable is not an object:', players);
+    return null;
+  }
+  const playerState = players[playerID];
+
+  if (!playerState) {
+    console.error("Player with ID", playerID, "not found.");
+    return null;
+  }
+
+  await playerState.kick();
+};
+
+OnQuit = function (playerID) {
+  if (!window.Playroom) {
+    console.error(
+      "Playroom library is not loaded. Please make sure to call InsertCoin first."
+    );
+    reject("Playroom library not loaded");
+    return;
+  }
+
+  const players = window._multiplayer.getPlayers();
+
+  if (typeof players !== "object" || players === null) {
+    console.error('The "players" variable is not an object:', players);
+    return null;
+  }
+  const playerState = players[playerID];
+
+  if (!playerState) {
+    console.error("Player with ID", playerID, "not found.");
+    return null;
+  }
+
+  playerState.onQuit((state) => {
+    console.log(`${state.id} quit!`);
+  });
+};
+
+ResetPlayersStates = async function (keysToExclude) {
+  console.log(keysToExclude);
+  await Playroom.resetPlayersStates(keysToExclude);
+};
+
+ResetStates = async function (keysToExclude) {
+  console.log(keysToExclude);
+  await Playroom.resetStates(keysToExclude);
 };

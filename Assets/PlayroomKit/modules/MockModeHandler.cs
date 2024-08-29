@@ -68,7 +68,7 @@ namespace Playroom
         private static void MockSetState(string playerID, string key, object value, bool reliable = false)
         {
             ExecuteMockModeAction(
-                () => MockSetStateSimulated(key, value),
+                () => MockPlayerSetStateSimulated(key, value),
                 () => MockPlayerSetStateBrowser(playerID, key, value, reliable));
         }
 
@@ -82,7 +82,7 @@ namespace Playroom
         private static T MockGetState<T>(string playerID, string key)
         {
             return ExecuteMockModeFunc(
-                () => MockGetStateSimulated<T>(key),
+                () => MockPlayerGetStateSimulated<T>(key),
                 () => MockPlayerGetStateBrowser<T>(playerID, key));
         }
 
@@ -116,13 +116,41 @@ namespace Playroom
                 MockIsStreamScreenBrowser);
         }
 
-
         private static Player.Profile MockGetProfile(string id = null)
         {
             return ExecuteMockModeFunc(
                 MockGetProfileLocal,
                 () => MockGetProfileBrowser(id)
             );
+        }
+
+        private static void MockStartMatchmaking()
+        {
+            ExecuteMockModeAction(
+                MockStartMatchmakingLocal,
+                MockStartMatchmakingBrowser);
+        }
+
+        private static void MockKick(string id = null, Action onKickCallback = null)
+        {
+            ExecuteMockModeAction(
+                () => MockKickLocal(onKickCallback),
+                () => MockKickBrowser(id));
+        }
+
+        private static void MockResetStates(string[] keysToExclude = null, Action onKickCallback = null)
+        {
+            ExecuteMockModeAction(
+                () => MockResetStatesLocal(keysToExclude, onKickCallback),
+                () => MockResetStatesBrowser(keysToExclude, onKickCallback));
+        }
+
+        private static void MockResetPlayersStates(string[] keysToExclude = null, Action onKickCallback = null,
+            string serializedKeysToExclude = null)
+        {
+            ExecuteMockModeAction(
+                () => MockResetPlayersStatesLocal(keysToExclude, onKickCallback),
+                () => ResetPlayersStatesBrowser(onKickCallback, serializedKeysToExclude));
         }
     }
 }

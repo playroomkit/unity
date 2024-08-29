@@ -31,6 +31,10 @@ public class GameManager : MonoBehaviour
         PlayroomKit.InsertCoin(new()
             {
                 skipLobby = true,
+                defaultPlayerStates = new()
+                {
+                    { "score", 69 },
+                },
             },
             () => PlayroomKit.OnPlayerJoin(AddPlayer));
     }
@@ -43,22 +47,26 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.K))
         {
-            PlayroomKit.SetState("global", 500);
+            PlayroomKit.MyPlayer().SetState("score", 500);
             Debug.Log(PlayroomKit.GetRoomCode());
-            PlayroomKit.IsHost();
         }
 
         if (Input.GetKey(KeyCode.L))
         {
-            score.text = $"IDK: {PlayroomKit.GetState<int>("global").ToString()}";
+            var s = PlayroomKit.MyPlayer().GetState<int>("score");
+            
+            
+            score.text = $"Score: {s}";
         }
+
+        Reset();
 
         if (!playerJoined) return;
 
         var player = PlayroomKit.Me();
         var index = players.IndexOf(player);
 
-
+        /*
         // Move and sync the local player's position
         playerGameObjects[index].GetComponent<Player>().Move();
         player.SetState("pos", playerGameObjects[index].transform.position);
@@ -81,6 +89,20 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+        */
+    }
+
+
+    private void Reset()
+    {
+        if (Input.GetKeyDown(KeyCode.R) && PlayroomKit.IsHost())
+        {
+            PlayroomKit.ResetPlayersStates(new[] { "pos" }, () =>
+            {
+                var defscore = PlayroomKit.GetState<int>("score");
+                score.text = defscore.ToString();
+            });
+        }
     }
 
 
@@ -99,7 +121,8 @@ public class GameManager : MonoBehaviour
         Debug.Log($"<color=#ADD8E6>Player ID: {player.id}</color>");
 
         Debug.Log($"<color=#ADD8E6>Player Name: {player.GetProfile().color}</color>");
-        Debug.Log($"<color={player.GetProfile().playerProfileColor.hexString}>Player ID: {player.GetProfile().name}</color>");
+        Debug.Log(
+            $"<color={player.GetProfile().playerProfileColor.hexString}>Player ID: {player.GetProfile().name}</color>");
 
         PlayerDict.Add(player.id, playerObj);
         players.Add(player);

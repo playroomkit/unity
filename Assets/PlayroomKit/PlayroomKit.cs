@@ -232,7 +232,6 @@ namespace Playroom
             if (isPlayRoomInitialized) return MockIsStreamScreen();
             Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
             return false;
-
         }
 
         public static string GetRoomCode()
@@ -686,6 +685,10 @@ namespace Playroom
                 string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
                 ResetStatesInternal(keysJson, InvokeResetCallBack);
             }
+            else
+            {
+                MockResetStates(keysToExclude);
+            }
         }
 
         [MonoPInvokeCallback(typeof(Action))]
@@ -708,6 +711,10 @@ namespace Playroom
                 onstatesReset = OnStatesReset;
                 string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
                 ResetPlayersStatesInternal(keysJson, InvokePlayersResetCallBack);
+            }
+            else
+            {
+                MockResetPlayersStates(keysToExclude, OnStatesReset);
             }
         }
 
@@ -800,8 +807,7 @@ namespace Playroom
             }
             else
             {
-                Debug.LogError(
-                    "[Mock Mode] Matchmaking is not supported in Mock Mode! yet.\nPlease build the project to test Matchmaking.");
+                MockStartMatchmaking();
             }
         }
 

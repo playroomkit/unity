@@ -30,6 +30,8 @@ namespace Playroom
         }
 
 
+#if UNITY_EDITOR
+
         private static void MockInsertCoinBrowser(InitOptions options, Action onLaunchCallBack)
         {
             isPlayRoomInitialized = true;
@@ -40,10 +42,9 @@ namespace Playroom
             if (options != null) optionsJson = SerializeInitOptions(options);
 
             var gameObjectName = GetGameObject("InsertCoin").name;
-#if UNITY_EDITOR
+
             UnityBrowserBridge.Instance.ExecuteJS(
                 $"await InsertCoin({optionsJson}, '{onLaunchCallBack.GetMethodInfo().Name}', '{gameObjectName}')");
-#endif
         }
 
         private static void MockOnPlayerJoinBrowser(Action<Player> onPlayerJoinCallback)
@@ -51,21 +52,18 @@ namespace Playroom
             if (!OnPlayerJoinCallbacks.Contains(onPlayerJoinCallback)) OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
 
             var gameObjectName = GetGameObject("PlayerJoin").name;
-#if UNITY_EDITOR
+
             UnityBrowserBridge.Instance.ExecuteJS($"OnPlayerJoin('{gameObjectName}')");
-#endif
         }
 
         private static void MockSetStateBrowser(string key, object value, bool reliable)
         {
             var flag = reliable ? 1 : 0;
-#if UNITY_EDITOR
+
             UnityBrowserBridge.Instance.ExecuteJS($"SetState('{key}', {value}, {flag})");
-#endif
         }
 
 
-#if UNITY_EDITOR
         private static T MockGetStateBrowser<T>(string key)
         {
             return UnityBrowserBridge.Instance.ExecuteJS<T>($"GetState('{key}')");
@@ -75,23 +73,28 @@ namespace Playroom
         {
             var flag = reliable ? 1 : 0;
 
-#if UNITY_EDITOR
 
-            string jsonString = JsonUtility.ToJson(value);
+            string jsonString;
+            if (value is int intValue)
+            {
+                jsonString = intValue.ToString();
+            }
+            else
+            {
+                jsonString = JsonUtility.ToJson(value);
+            }
 
 
             UnityBrowserBridge.Instance.ExecuteJS(
                 $"SetPlayerStateByPlayerId('{playerID}','{key}', {jsonString}, {flag})");
-#endif
         }
-
 
         private static T MockPlayerGetStateBrowser<T>(string playerID, string key)
         {
             var returnVal =
                 UnityBrowserBridge.Instance.ExecuteJS<string>($"GetPlayerStateByPlayerId('{playerID}','{key}')");
 
-
+            // Handle types with direct deserialization
             if (typeof(T) == typeof(string))
             {
                 return (T)(object)returnVal;
@@ -101,28 +104,47 @@ namespace Playroom
             {
                 try
                 {
-                    var parsedObject = JsonUtility.FromJson<T>(returnVal);
-
-                    return parsedObject;
+                    if (returnVal != null)
+                    {
+                        return (T)(object)JsonUtility.FromJson<Vector3>(returnVal);
+                    }
                 }
                 catch
                 {
-                    // Handle JSON parsing failure
                     throw new InvalidCastException($"Cannot parse JSON to type '{typeof(T)}'.");
                 }
             }
 
-            // Handle other types
+
             try
             {
-                T a = (T)Convert.ChangeType(returnVal, typeof(T));
-                Debug.Log(a.GetType());
-                return a;
+                if (typeof(T) == typeof(int))
+                {
+                    return (T)(object)int.Parse(returnVal);
+                }
+
+                if (typeof(T) == typeof(float))
+                {
+                    return (T)(object)float.Parse(returnVal);
+                }
+
+                if (typeof(T) == typeof(bool))
+                {
+                    return (T)(object)bool.Parse(returnVal);
+                }
+
+                if (typeof(T) == typeof(Color))
+                {
+                    return (T)(object)JsonUtility.FromJson<Color>(returnVal);
+                }
+
+                throw new InvalidCastException($"Cannot convert value of type '{typeof(string)}' to '{typeof(T)}'.");
             }
-            catch
+            catch (Exception ex)
             {
                 // Handle conversion failure
-                throw new InvalidCastException($"Cannot convert value of type '{typeof(string)}' to '{typeof(T)}'.");
+                throw new InvalidCastException(
+                    $"Error converting value of type '{typeof(string)}' to '{typeof(T)}': {ex.Message}");
             }
         }
 
@@ -157,6 +179,26 @@ namespace Playroom
             return profileData;
         }
 
+        private static void MockStartMatchmakingBrowser()
+        {
+            UnityBrowserBridge.Instance.ExecuteJS($"await StartMatchmaking()");
+        }
+
+        private static void MockKickBrowser(string playerID)
+        {
+            UnityBrowserBridge.Instance.ExecuteJS($"await Kick('{playerID}')");
+        }
+
+        private static void MockResetStatesBrowser(string[] keysToExclude, Action onKickCallback = null)
+        {
+            UnityBrowserBridge.Instance.ExecuteJS($"await ResetStates('{keysToExclude}')");
+        }
+
+        private static void ResetPlayersStatesBrowser(Action onKickCallback = null, string keysToExclude = null)
+        {
+            UnityBrowserBridge.Instance.ExecuteJS($"await ResetPlayersStates('{keysToExclude}')");
+            onKickCallback?.Invoke();
+        }
 #endif
     }
 }
