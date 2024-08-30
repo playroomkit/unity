@@ -51,11 +51,21 @@ namespace Playroom
         {
             if (!OnPlayerJoinCallbacks.Contains(onPlayerJoinCallback)) OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
 
-            var gameObjectName = GetGameObject("PlayerJoin").name;
+            var gameObjectName = GetGameObject("devManager").name;
 
 #if UNITY_EDITOR
             UnityBrowserBridge.Instance.ExecuteJS($"OnPlayerJoin('{gameObjectName}')");
 #endif
+        }
+
+        /// <summary>
+        /// This function is used by GetPlayerID in PlayroomKitDevManager, GetPlayer is only invoked
+        /// in mock mode by the JS bridge
+        /// </summary>
+        /// <param name="playerId"></param>
+        public static void MockOnPlayerJoinWrapper(string playerId)
+        {
+            OnPlayerJoinWrapperCallback(playerId);
         }
 
         private static void MockSetStateBrowser(string key, object value, bool reliable)
@@ -243,17 +253,39 @@ namespace Playroom
         private static void MockResetStatesBrowser(string[] keysToExclude, Action onKickCallback = null)
         {
 #if UNITY_EDITOR
-            UnityBrowserBridge.Instance.ExecuteJS($"await ResetStates('{keysToExclude}')");
+            UnityBrowserBridge.Instance.ExecuteJS($"await ResetStates('{keysToExclude}', '{onKickCallback}')");
+            onKickCallback?.Invoke();
 #endif
         }
 
 
-        private static void ResetPlayersStatesBrowser(Action onKickCallback = null, string keysToExclude = null)
+        private static void ResetPlayersStatesBrowser(string keysToExclude = null, Action onKickCallback = null)
         {
 #if UNITY_EDITOR
-            UnityBrowserBridge.Instance.ExecuteJS($"await ResetPlayersStates('{keysToExclude}')");
-#endif
+            var gameObjectName = GetGameObject("PlayerJoin").name;
+            UnityBrowserBridge.Instance.ExecuteJS(
+                $"await ResetPlayersStates('{keysToExclude}', {onKickCallback})");
             onKickCallback?.Invoke();
+#endif
+        }
+
+        private static void MockOnDisconnectBrowser(Action callback)
+        {
+#if UNITY_EDITOR
+            var go = GetGameObject("devManager").name;
+
+            UnityBrowserBridge.Instance.ExecuteJS(
+                $"OnDisconnect('{callback.Method.Name}', '{go}')");
+#endif
+        }
+
+        private static void MockWaitForStateBrowser(string key, Action<string> callback)
+        {
+#if UNITY_EDITOR
+            string gameObjectName = GetGameObject("devManager").name;
+            UnityBrowserBridge.Instance.ExecuteJS(
+                $"WaitForState('{key}', '{gameObjectName}')");
+#endif
         }
     }
 }

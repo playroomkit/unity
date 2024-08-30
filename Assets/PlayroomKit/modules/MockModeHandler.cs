@@ -47,42 +47,42 @@ namespace Playroom
         private static void MockInsertCoin(InitOptions options, Action onLaunchCallBack)
         {
             ExecuteMockModeAction(
-                () => MockInsertCoinSimulated(options, onLaunchCallBack),
+                () => MockInsertCoinLocal(options, onLaunchCallBack),
                 () => MockInsertCoinBrowser(options, onLaunchCallBack));
         }
 
         private static void MockOnPlayerJoin(Action<Player> onPlayerJoinCallback)
         {
             ExecuteMockModeAction(
-                () => MockOnPlayerJoinSimulated(onPlayerJoinCallback),
+                () => MockOnPlayerJoinLocal(onPlayerJoinCallback),
                 () => MockOnPlayerJoinBrowser(onPlayerJoinCallback));
         }
 
         private static void MockSetState(string key, object value, bool reliable = false)
         {
             ExecuteMockModeAction(
-                () => MockSetStateSimulated(key, value),
+                () => MockSetStateLocal(key, value),
                 () => MockSetStateBrowser(key, value, reliable));
         }
 
         private static void MockSetState(string playerID, string key, object value, bool reliable = false)
         {
             ExecuteMockModeAction(
-                () => MockPlayerSetStateSimulated(key, value),
+                () => MockPlayerSetStateLocal(key, value),
                 () => MockPlayerSetStateBrowser(playerID, key, value, reliable));
         }
 
         private static T MockGetState<T>(string key)
         {
             return ExecuteMockModeFunc(
-                () => MockGetStateSimulated<T>(key),
+                () => MockGetStateLocal<T>(key),
                 () => MockGetStateBrowser<T>(key));
         }
 
         private static T MockGetState<T>(string playerID, string key)
         {
             return ExecuteMockModeFunc(
-                () => MockPlayerGetStateSimulated<T>(key),
+                () => MockPlayerGetStateLocal<T>(key),
                 () => MockPlayerGetStateBrowser<T>(playerID, key));
         }
 
@@ -150,7 +150,21 @@ namespace Playroom
         {
             ExecuteMockModeAction(
                 () => MockResetPlayersStatesLocal(keysToExclude, onKickCallback),
-                () => ResetPlayersStatesBrowser(onKickCallback, serializedKeysToExclude));
+                () => ResetPlayersStatesBrowser(serializedKeysToExclude, onKickCallback));
+        }
+
+        private static void MockOnDisconnect(Action callback)
+        {
+            ExecuteMockModeAction(
+                () => MockOnDisconnectLocal(callback),
+                () => MockOnDisconnectBrowser(callback));
+        }
+
+        private static void MockWaitForState(string key, Action<string> callback)
+        {
+            ExecuteMockModeAction(
+                () => MockWaitForStateLocal(key, callback),
+                () => MockWaitForStateBrowser(key, callback));
         }
     }
 }

@@ -142,15 +142,7 @@ namespace Playroom
         }
 
 
-        /// <summary>
-        /// This function is used by GetPlayerID in PlayroomKitDevManager, GetPlayer is only invoked
-        /// in mock mode by the JS bridge
-        /// </summary>
-        /// <param name="playerId"></param>
-        public static void MockOnPlayerJoinWrapper(string playerId)
-        {
-            OnPlayerJoinWrapperCallback(playerId);
-        }
+
 
         public static Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
         {
@@ -284,8 +276,15 @@ namespace Playroom
 
         public static void OnDisconnect(Action callback)
         {
-            CallbackManager.RegisterCallback(callback);
-            OnDisconnectInternal(onDisconnectCallbackHandler);
+            if (IsRunningInBrowser())
+            {
+                CallbackManager.RegisterCallback(callback);
+                OnDisconnectInternal(onDisconnectCallbackHandler);
+            }
+            else
+            {
+                MockOnDisconnect(callback);
+            }
         }
 
 
@@ -623,27 +622,30 @@ namespace Playroom
             if (IsRunningInBrowser())
             {
                 CallbackManager.RegisterCallback(onStateSetCallback, stateKey);
-
                 WaitForStateInternal(stateKey, InvokeCallback);
+            }
+            else
+            {
+                MockWaitForState(stateKey, onStateSetCallback);
             }
         }
 
 
-        Action Callback = null;
+        Action WaitForPlayerCallback = null;
 
-        public void WaitForPlayerState(string playerID, string StateKey, Action onStateSetCallback = null)
+        public void WaitForPlayerState(string playerID, string stateKey, Action onStateSetCallback = null)
         {
             if (IsRunningInBrowser())
             {
-                Callback = onStateSetCallback;
-                WaitForPlayerStateInternal(playerID, StateKey, OnStateSetCallback);
+                WaitForPlayerCallback = onStateSetCallback;
+                WaitForPlayerStateInternal(playerID, stateKey, OnStateSetCallback);
             }
         }
 
         [MonoPInvokeCallback(typeof(Action))]
         void OnStateSetCallback()
         {
-            Callback?.Invoke();
+            WaitForPlayerCallback?.Invoke();
         }
 
 

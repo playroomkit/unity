@@ -32,16 +32,24 @@ public class GameManager : MonoBehaviour
             {
                 skipLobby = true,
 
-                defaultPlayerStates = new()
+                defaultStates = new()
                 {
-                    { "score", 69 },
+                    { "score", 0 },
                 },
-                matchmaking = new PlayroomKit.MatchMakingOptions
-                {
-                    waitBeforeCreatingNewRoom = 0
-                }
+               matchmaking = false
             },
             () => PlayroomKit.OnPlayerJoin(AddPlayer));
+    }
+
+
+    private void Start()
+    {
+        PlayroomKit.WaitForState("score", WaitingForScore);
+    }
+
+    private void WaitingForScore(string str)
+    {
+        Debug.Log($"{str} is null maybe?");
     }
 
 
@@ -52,17 +60,16 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.K))
         {
-            PlayroomKit.MyPlayer().SetState("score", 500);
+            PlayroomKit.SetState("score", 500);
             Debug.Log(PlayroomKit.GetRoomCode());
         }
 
         if (Input.GetKey(KeyCode.L))
         {
-            var s = PlayroomKit.MyPlayer().GetState<int>("score");
-
-
+            var s = PlayroomKit.GetState<int>("score");
             score.text = $"Score: {s}";
         }
+
 
         Reset();
 
@@ -100,10 +107,12 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R) && PlayroomKit.IsHost())
         {
-            PlayroomKit.ResetPlayersStates(new[] { "pos" }, () =>
+            PlayroomKit.ResetStates(new[] { "pos" }, () =>
             {
-                var defscore = PlayroomKit.MyPlayer().GetState<int>("score");
+                var defscore = PlayroomKit.GetState<int>("score");
                 score.text = defscore.ToString();
+
+                Debug.Log("Resetting Player states from Unity, Invoking from JS!");
             });
         }
     }

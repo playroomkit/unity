@@ -8,8 +8,6 @@
 
 OnPlayerJoin = function (gameObjectName) {
   Playroom.onPlayerJoin((player) => {
-    console.log("Player joined: " + player.id);
-
     unityInstance.SendMessage(gameObjectName, "GetPlayerID", player.id);
   });
 };
@@ -42,17 +40,6 @@ SetPlayerStateByPlayerId = function (playerId, key, value, reliable) {
   }
 
   if (typeof playerState.setState === "function") {
-    console.log(
-      "Setting state for player",
-      playerId,
-      "key",
-      key,
-      "value",
-      value,
-      "reliable",
-      reliable
-    );
-
     playerState.setState(key, value, reliable);
   } else {
     console.error('The player state object does not have a "setState" method.');
@@ -83,8 +70,6 @@ GetPlayerStateByPlayerId = function (playerId, key) {
         return null;
       }
 
-      console.log(JSON.stringify(stateVal));
-
       return JSON.stringify(stateVal);
     } catch (error) {
       console.log("There was an error: " + error);
@@ -104,7 +89,6 @@ MyPlayer = function () {
 };
 
 IsHost = function () {
-  console.log(Playroom.isHost());
   return Playroom.isHost();
 };
 
@@ -144,14 +128,26 @@ StartMatchmaking = async function () {
   await Playroom.startMatchmaking();
 };
 
-OnDisconnect = async function (callback) {
+OnDisconnect = async function (callbackName, gameObjectName) {
+  console.log("onDisconectCalled, ", callbackName, gameObjectName);
+
   Playroom.onDisconnect((e) => {
-    console.log(`Disconnected!`, e.code, e.reason);
+    console.log(`Disconnected!`, e.code, e.reason, typeof e);
+    unityInstance.SendMessage(gameObjectName, callbackName);
   });
 };
 
-WaitForState = async function (key, callback) {
-  await Playroom.waitForState(key, callback);
+WaitForState = function (stateKey, gameObjectName) {
+  Playroom.waitForState(stateKey)
+    .then((stateVal) => {
+      stateVal = JSON.stringify(stateVal);
+
+      unityInstance.SendMessage(gameObjectName, "InvokeWaitForState", stateVal);
+      console.log(gameObjectName, "InvokeWaitForState", stateVal);
+    })
+    .catch((error) => {
+      console.error("Error Waiting for state:", error);
+    });
 };
 
 WaitForPlayerState = async function (playerId, stateKey, onStateSetCallback) {
@@ -231,12 +227,10 @@ OnQuit = function (playerID) {
   });
 };
 
-ResetPlayersStates = async function (keysToExclude, callback) {
-  console.log(keysToExclude);
-  await Playroom.resetPlayersStates(keysToExclude, callback);
+ResetPlayersStates = async function (keysToExclude) {
+  await Playroom.resetPlayersStates(keysToExclude);
 };
 
 ResetStates = async function (keysToExclude) {
-  console.log(keysToExclude);
   await Playroom.resetStates(keysToExclude);
 };

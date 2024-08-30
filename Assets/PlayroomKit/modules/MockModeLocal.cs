@@ -22,7 +22,7 @@ namespace Playroom
 
         private static Dictionary<string, object> mockPlayerStatesDictionary = new();
 
-        private static void MockInsertCoinSimulated(InitOptions options, Action onLaunchCallBack)
+        private static void MockInsertCoinLocal(InitOptions options, Action onLaunchCallBack)
         {
             isPlayRoomInitialized = true;
             Debug.Log("Coin Inserted");
@@ -31,7 +31,7 @@ namespace Playroom
             onLaunchCallBack?.Invoke();
         }
 
-        private static void MockOnPlayerJoinSimulated(Action<Player> onPlayerJoinCallback)
+        private static void MockOnPlayerJoinLocal(Action<Player> onPlayerJoinCallback)
         {
             Debug.Log("On Player Join");
             var testPlayer = GetPlayer(PlayerId);
@@ -39,7 +39,7 @@ namespace Playroom
             __OnPlayerJoinCallbackHandler(PlayerId);
         }
 
-        private static void MockSetStateSimulated(string key, object value)
+        private static void MockSetStateLocal(string key, object value)
         {
             if (mockGlobalStatesDictionary.ContainsKey(key))
                 mockGlobalStatesDictionary[key] = value;
@@ -47,7 +47,7 @@ namespace Playroom
                 mockGlobalStatesDictionary.Add(key, value);
         }
 
-        private static void MockPlayerSetStateSimulated(string key, object value)
+        private static void MockPlayerSetStateLocal(string key, object value)
         {
             if (mockPlayerStatesDictionary.ContainsKey(key))
                 mockPlayerStatesDictionary[key] = value;
@@ -56,7 +56,7 @@ namespace Playroom
         }
 
 
-        private static T MockGetStateSimulated<T>(string key)
+        private static T MockGetStateLocal<T>(string key)
         {
             if (mockGlobalStatesDictionary.TryGetValue(key, out var value) && value is T typedValue)
             {
@@ -69,7 +69,7 @@ namespace Playroom
             }
         }
 
-        private static T MockPlayerGetStateSimulated<T>(string key)
+        private static T MockPlayerGetStateLocal<T>(string key)
         {
             foreach (var (k, v) in mockPlayerStatesDictionary)
             {
@@ -194,7 +194,8 @@ namespace Playroom
                 keysToExclude = Array.Empty<string>();
             }
 
-            List<string> keysToRemove = mockPlayerStatesDictionary.Keys.Where(key => !keysToExclude.Contains(key)).ToList();
+            List<string> keysToRemove =
+                mockPlayerStatesDictionary.Keys.Where(key => !keysToExclude.Contains(key)).ToList();
 
             foreach (string key in keysToRemove)
             {
@@ -202,6 +203,16 @@ namespace Playroom
             }
 
             onKickCallback?.Invoke();
+        }
+
+        private static void MockOnDisconnectLocal(Action callback)
+        {
+            callback?.Invoke();
+        }
+
+        private static void MockWaitForStateLocal(string key, Action<string> callback)
+        {
+            Debug.Log("Wait for state is not supported in local mode yet!");
         }
     }
 }

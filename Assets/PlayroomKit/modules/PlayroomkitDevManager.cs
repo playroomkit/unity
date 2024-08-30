@@ -56,7 +56,7 @@ namespace Playroom
         {
             PlayroomKit.CurrentMockMode = mockMode;
             PlayroomKit.RegisterGameObject("InsertCoin", insertCoinCaller);
-            PlayroomKit.RegisterGameObject("PlayerJoin", gameObject);
+            PlayroomKit.RegisterGameObject("devManager", gameObject);
         }
 
         // Called 
@@ -65,10 +65,12 @@ namespace Playroom
             PlayroomKit.MockOnPlayerJoinWrapper(playerId);
         }
 
-        private void HandlerCallback(Action callback)
+        private string InvokeWaitForState(string stateValue)
         {
-            // PlayroomKit.MockOnPlayerJoinWrapper(playerId);
+            Debug.Log(stateValue);
+            return stateValue;
         }
+
 #endif
     }
 }
