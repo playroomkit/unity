@@ -683,7 +683,7 @@ mergeInto(LibraryManager.library, {
     return buffer;
   },
 
-  GetRoomCode: function () {
+  GetRoomCodeInternal: function () {
     var roomCode = Playroom.getRoomCode();
     var bufferSize = lengthBytesUTF8(roomCode) + 1;
     var buffer = _malloc(bufferSize);

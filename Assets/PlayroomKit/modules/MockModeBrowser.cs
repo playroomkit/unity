@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UBB;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -30,8 +31,6 @@ namespace Playroom
         }
 
 
-#if UNITY_EDITOR
-
         private static void MockInsertCoinBrowser(InitOptions options, Action onLaunchCallBack)
         {
             isPlayRoomInitialized = true;
@@ -41,10 +40,11 @@ namespace Playroom
             string optionsJson = null;
             if (options != null) optionsJson = SerializeInitOptions(options);
 
+#if UNITY_EDITOR
             var gameObjectName = GetGameObject("InsertCoin").name;
-
             UnityBrowserBridge.Instance.ExecuteJS(
                 $"await InsertCoin({optionsJson}, '{onLaunchCallBack.GetMethodInfo().Name}', '{gameObjectName}')");
+#endif
         }
 
         private static void MockOnPlayerJoinBrowser(Action<Player> onPlayerJoinCallback)
@@ -53,20 +53,57 @@ namespace Playroom
 
             var gameObjectName = GetGameObject("PlayerJoin").name;
 
+#if UNITY_EDITOR
             UnityBrowserBridge.Instance.ExecuteJS($"OnPlayerJoin('{gameObjectName}')");
+#endif
         }
 
         private static void MockSetStateBrowser(string key, object value, bool reliable)
         {
             var flag = reliable ? 1 : 0;
 
+#if UNITY_EDITOR
             UnityBrowserBridge.Instance.ExecuteJS($"SetState('{key}', {value}, {flag})");
+#endif
         }
 
 
         private static T MockGetStateBrowser<T>(string key)
         {
-            return UnityBrowserBridge.Instance.ExecuteJS<T>($"GetState('{key}')");
+#if UNITY_EDITOR
+            string returnVal = UnityBrowserBridge.Instance.ExecuteJS<string>($"GetState('{key}')");
+            // Dictionary to map types to parsing functions
+            var typeParsers = new Dictionary<Type, Func<string, object>>()
+            {
+                { typeof(string), val => val },
+                { typeof(Vector2), val => JsonUtility.FromJson<Vector2>(val) },
+                { typeof(Vector3), val => JsonUtility.FromJson<Vector3>(val) },
+                { typeof(Quaternion), val => JsonUtility.FromJson<Quaternion>(val) },
+                { typeof(Color), val => JsonUtility.FromJson<Color>(val) },
+                { typeof(int), val => int.Parse(val) },
+                { typeof(float), val => float.Parse(val) },
+                { typeof(bool), val => bool.Parse(val) }
+            };
+
+            if (typeParsers.TryGetValue(typeof(T), out var parser))
+            {
+                try
+                {
+                    return (T)parser(returnVal);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidCastException(
+                        $"Error converting value of type '{typeof(string)}' to '{typeof(T)}': {ex.Message}");
+                }
+            }
+            else
+            {
+                throw new InvalidCastException($"Cannot convert value of type '{typeof(string)}' to '{typeof(T)}'.");
+            }
+#else
+            return default;
+#endif
         }
 
         private static void MockPlayerSetStateBrowser(string playerID, string key, object value, bool reliable = false)
@@ -85,120 +122,138 @@ namespace Playroom
             }
 
 
+#if UNITY_EDITOR
             UnityBrowserBridge.Instance.ExecuteJS(
                 $"SetPlayerStateByPlayerId('{playerID}','{key}', {jsonString}, {flag})");
+#endif
         }
 
         private static T MockPlayerGetStateBrowser<T>(string playerID, string key)
         {
+#if UNITY_EDITOR
+
+
             var returnVal =
                 UnityBrowserBridge.Instance.ExecuteJS<string>($"GetPlayerStateByPlayerId('{playerID}','{key}')");
 
-            // Handle types with direct deserialization
-            if (typeof(T) == typeof(string))
+
+            if (string.IsNullOrEmpty(returnVal))
             {
-                return (T)(object)returnVal;
+                throw new InvalidCastException(
+                    $"Received null or empty string for playerID '{playerID}' or key '{key}'. Cannot convert to '{typeof(T)}'.");
             }
 
-            if (typeof(T) == typeof(Vector2) || typeof(T) == typeof(Vector3))
+
+            // Dictionary to map types to parsing functions
+            var typeParsers = new Dictionary<Type, Func<string, object>>()
+            {
+                { typeof(string), val => val },
+                { typeof(Vector2), val => JsonUtility.FromJson<Vector2>(val) },
+                { typeof(Vector3), val => JsonUtility.FromJson<Vector3>(val) },
+                { typeof(Quaternion), val => JsonUtility.FromJson<Quaternion>(val) },
+                { typeof(Color), val => JsonUtility.FromJson<Color>(val) },
+                { typeof(int), val => int.Parse(val) },
+                { typeof(float), val => float.Parse(val) },
+                { typeof(bool), val => bool.Parse(val) }
+            };
+
+            if (typeParsers.TryGetValue(typeof(T), out var parser))
             {
                 try
                 {
-                    if (returnVal != null)
-                    {
-                        return (T)(object)JsonUtility.FromJson<Vector3>(returnVal);
-                    }
+                    return (T)parser(returnVal);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    throw new InvalidCastException($"Cannot parse JSON to type '{typeof(T)}'.");
+                    throw new InvalidCastException(
+                        $"Error converting value of type '{typeof(string)}' to '{typeof(T)}': {ex.Message}");
                 }
             }
-
-
-            try
+            else
             {
-                if (typeof(T) == typeof(int))
-                {
-                    return (T)(object)int.Parse(returnVal);
-                }
-
-                if (typeof(T) == typeof(float))
-                {
-                    return (T)(object)float.Parse(returnVal);
-                }
-
-                if (typeof(T) == typeof(bool))
-                {
-                    return (T)(object)bool.Parse(returnVal);
-                }
-
-                if (typeof(T) == typeof(Color))
-                {
-                    return (T)(object)JsonUtility.FromJson<Color>(returnVal);
-                }
-
                 throw new InvalidCastException($"Cannot convert value of type '{typeof(string)}' to '{typeof(T)}'.");
             }
-            catch (Exception ex)
-            {
-                // Handle conversion failure
-                throw new InvalidCastException(
-                    $"Error converting value of type '{typeof(string)}' to '{typeof(T)}': {ex.Message}");
-            }
+#else
+    return default;
+#endif
         }
 
         private static string MockGetRoomCodeBrowser()
         {
+#if UNITY_EDITOR
             return UnityBrowserBridge.Instance.ExecuteJS<string>($"GetRoomCode()");
+#else
+            return default;
+#endif
         }
 
         private static Player MockMyPlayerBrowser()
         {
+#if UNITY_EDITOR
             var id = UnityBrowserBridge.Instance.ExecuteJS<string>($"MyPlayer()");
             return GetPlayer(id);
+#else
+            return default;
+#endif
         }
 
         private static bool MockIsHostBrowser()
         {
+#if UNITY_EDITOR
             return UnityBrowserBridge.Instance.ExecuteJS<bool>($"IsHost()");
+#else
+            return default;
+#endif
         }
 
         private static bool MockIsStreamScreenBrowser()
         {
+#if UNITY_EDITOR
             return UnityBrowserBridge.Instance.ExecuteJS<bool>($"IsStreamScreen()");
+#else
+            return default;
+#endif
         }
 
         private static Player.Profile MockGetProfileBrowser(string playerID)
         {
+#if UNITY_EDITOR
             string json = UnityBrowserBridge.Instance.ExecuteJS<string>($"GetProfile('{playerID}')");
-
-            Debug.Log(json);
-
             var profileData = ParseProfile(json);
             return profileData;
+#else
+            return default;
+#endif
         }
 
         private static void MockStartMatchmakingBrowser()
         {
+#if UNITY_EDITOR
             UnityBrowserBridge.Instance.ExecuteJS($"await StartMatchmaking()");
+#endif
         }
 
         private static void MockKickBrowser(string playerID)
         {
+#if UNITY_EDITOR
             UnityBrowserBridge.Instance.ExecuteJS($"await Kick('{playerID}')");
+#endif
         }
 
         private static void MockResetStatesBrowser(string[] keysToExclude, Action onKickCallback = null)
         {
+#if UNITY_EDITOR
             UnityBrowserBridge.Instance.ExecuteJS($"await ResetStates('{keysToExclude}')");
+#endif
         }
+
 
         private static void ResetPlayersStatesBrowser(Action onKickCallback = null, string keysToExclude = null)
         {
+#if UNITY_EDITOR
             UnityBrowserBridge.Instance.ExecuteJS($"await ResetPlayersStates('{keysToExclude}')");
+#endif
             onKickCallback?.Invoke();
         }
-#endif
     }
 }

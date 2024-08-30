@@ -245,7 +245,7 @@ namespace Playroom
         {
             if (IsRunningInBrowser())
             {
-                return IsStreamModeInternal();
+                return IsStreamScreenInternal();
             }
 
             if (isPlayRoomInitialized) return MockIsStreamScreen();

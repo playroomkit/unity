@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
+using ParrelSync;
 
 
 namespace Playroom
@@ -27,6 +28,9 @@ namespace Playroom
             VisualElement insertCoinContainer = InsertCoinContainerCreator();
             Button launchPlayerButton = LaunchPlayerButtonCreator();
 
+            // launchPlayerButton.
+
+
             // Add elements to root
             root.Add(mockModeContainer);
             root.Add(insertCoinContainer);
@@ -35,9 +39,16 @@ namespace Playroom
             return root;
         }
 
+        private static void OpenClonesManager()
+        {
+            ClonesManagerWindow window = (ClonesManagerWindow)EditorWindow.GetWindow(typeof(ClonesManagerWindow));
+            window.titleContent = new GUIContent("Clones Manager");
+            window.Show();
+        }
+
         private static Button LaunchPlayerButtonCreator()
         {
-            var launchPlayerButton = new Button(() => Debug.Log("Player Launched"))
+            var launchPlayerButton = new Button(OpenClonesManager)
             {
                 text = "Launch Player"
             };

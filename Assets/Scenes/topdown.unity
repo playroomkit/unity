@@ -171,7 +171,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1477871171
+--- !u!1001 &1407290422
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -222,10 +222,6 @@ PrefabInstance:
     - target: {fileID: 3746181030263044757, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
-      propertyPath: mockMode
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
       propertyPath: insertCoinCaller
@@ -782,4 +778,4 @@ SceneRoots:
   - {fileID: 1713550133}
   - {fileID: 1054460207}
   - {fileID: 9039050244923637231}
-  - {fileID: 1477871171}
+  - {fileID: 1407290422}

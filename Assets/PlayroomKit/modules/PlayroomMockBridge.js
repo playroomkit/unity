@@ -231,9 +231,9 @@ OnQuit = function (playerID) {
   });
 };
 
-ResetPlayersStates = async function (keysToExclude) {
+ResetPlayersStates = async function (keysToExclude, callback) {
   console.log(keysToExclude);
-  await Playroom.resetPlayersStates(keysToExclude);
+  await Playroom.resetPlayersStates(keysToExclude, callback);
 };
 
 ResetStates = async function (keysToExclude) {

@@ -25,13 +25,13 @@ namespace Playroom
         private static extern bool IsHostInternal();
 
         [DllImport("__Internal")]
-        private static extern bool IsStreamModeInternal();
+        private static extern bool IsStreamScreenInternal();
 
         [DllImport("__Internal")]
         private static extern string MyPlayerInternal();
 
         [DllImport("__Internal")]
-        public static extern string GetRoomCodeInternal();
+        private static extern string GetRoomCodeInternal();
 
         [DllImport("__Internal")]
         private static extern void OnDisconnectInternal(Action<string> callback);

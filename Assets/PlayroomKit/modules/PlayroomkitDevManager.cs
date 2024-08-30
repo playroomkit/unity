@@ -1,5 +1,10 @@
+using System;
 using UBB;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using ParrelSync;
+#endif
 
 namespace Playroom
 {
@@ -17,11 +22,9 @@ namespace Playroom
 #if UNITY_EDITOR
         private void Awake()
         {
-            if (PlayroomKit.CurrentMockMode == PlayroomKit.MockModeSelector.BrowserBridge)
-                UnityBrowserBridge.Instance.StartUBB();
-            
-            UpdateMockMode();
-
+#if UNITY_EDITOR
+            if (ClonesManager.IsClone()) UnityBrowserBridge.Instance.httpServerPort += 1;
+#endif
             if (Instance == null)
             {
                 Instance = this;
@@ -31,6 +34,11 @@ namespace Playroom
             {
                 Destroy(gameObject);
             }
+
+            if (PlayroomKit.CurrentMockMode == PlayroomKit.MockModeSelector.BrowserBridge)
+                UnityBrowserBridge.Instance.StartUBB();
+
+            UpdateMockMode();
         }
 
         private void Start()
@@ -55,6 +63,11 @@ namespace Playroom
         private void GetPlayerID(string playerId)
         {
             PlayroomKit.MockOnPlayerJoinWrapper(playerId);
+        }
+
+        private void HandlerCallback(Action callback)
+        {
+            // PlayroomKit.MockOnPlayerJoinWrapper(playerId);
         }
 #endif
     }

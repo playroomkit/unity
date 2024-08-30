@@ -71,7 +71,6 @@ public class GameManager : MonoBehaviour
         var player = PlayroomKit.Me();
         var index = players.IndexOf(player);
 
-        /*
         // Move and sync the local player's position
         playerGameObjects[index].GetComponent<Player>().Move();
         player.SetState("pos", playerGameObjects[index].transform.position);
@@ -94,7 +93,6 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        */
     }
 
 
