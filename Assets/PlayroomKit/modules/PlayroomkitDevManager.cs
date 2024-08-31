@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UBB;
 using UnityEngine;
 
@@ -12,10 +13,12 @@ namespace Playroom
     {
         [SerializeField] private PlayroomKit.MockModeSelector mockMode = PlayroomKit.CurrentMockMode;
 
+
         [Tooltip(
             "InsertCoin() must be called in order to connect PlayroomKit server.\n\nChoose the gameObject (with the script) which calls InsertCoin.\n\nRead More in the docs")]
         [SerializeField]
         private GameObject insertCoinCaller;
+
 
         private static PlayroomkitDevManager Instance { get; set; }
 
@@ -41,12 +44,6 @@ namespace Playroom
             UpdateMockMode();
         }
 
-        private void Start()
-        {
-            // if (PlayroomKit.CurrentMockMode == PlayroomKit.MockModeSelector.BrowserBridge)
-            //     UnityBrowserBridge.Instance.StartUBB();
-        }
-
         private void OnValidate()
         {
             UpdateMockMode();
@@ -59,7 +56,7 @@ namespace Playroom
             PlayroomKit.RegisterGameObject("devManager", gameObject);
         }
 
-        // Called 
+        // Called from JS side for onPlayerJoin
         private void GetPlayerID(string playerId)
         {
             PlayroomKit.MockOnPlayerJoinWrapper(playerId);

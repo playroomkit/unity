@@ -128,25 +128,41 @@ StartMatchmaking = async function () {
   await Playroom.startMatchmaking();
 };
 
-OnDisconnect = async function (callbackName, gameObjectName) {
-  console.log("onDisconectCalled, ", callbackName, gameObjectName);
+OnDisconnect = async function (callbackkey) {
+  console.log("onDisconectCalled called", callbackkey);
 
   Playroom.onDisconnect((e) => {
     console.log(`Disconnected!`, e.code, e.reason, typeof e);
-    unityInstance.SendMessage(gameObjectName, callbackName);
+    unityInstance.SendMessage("CallbackManager", "InvokeCallback", callbackkey);
   });
 };
 
-WaitForState = function (stateKey, gameObjectName) {
+WaitForState = function (stateKey, callbackKey) {
   Playroom.waitForState(stateKey)
     .then((stateVal) => {
       stateVal = JSON.stringify(stateVal);
 
-      unityInstance.SendMessage(gameObjectName, "InvokeWaitForState", stateVal);
-      console.log(gameObjectName, "InvokeWaitForState", stateVal);
+      const data = {
+        key: callbackKey,
+        parameter: stateVal,
+      };
+
+      const jsonData = JSON.stringify(data);
+
+      console.log("Waiting for state:", jsonData);
+
+      unityInstance.SendMessage("CallbackManager", "InvokeCallback", jsonData);
     })
     .catch((error) => {
       console.error("Error Waiting for state:", error);
+      // unityInstance.SendMessage(
+      //   "CallbackManager",
+      //   "InvokeCallback",
+      //   JSON.stringify({
+      //     key: callbackKey,
+      //     parameter: JSON.stringify({ error: error.message }),
+      //   })
+      // );
     });
 };
 

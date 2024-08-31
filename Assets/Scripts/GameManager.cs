@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
                 {
                     { "score", 0 },
                 },
-               matchmaking = false
+                matchmaking = false
             },
             () => PlayroomKit.OnPlayerJoin(AddPlayer));
     }
@@ -44,7 +44,9 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        PlayroomKit.WaitForState("score", WaitingForScore);
+        PlayroomKit.WaitForState("score", (string str) => { Debug.Log("strrr"); });
+       
+        PlayroomKit.OnDisconnect(() => { Debug.Log("YES DISCONNECT"); });
     }
 
     private void WaitingForScore(string str)

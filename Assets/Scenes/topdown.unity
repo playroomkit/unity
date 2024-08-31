@@ -224,9 +224,61 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: mockMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
       propertyPath: insertCoinCaller
       value: 
       objectReference: {fileID: 1054460205}
+    - target: {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: additionalGameObjects.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: additionalGameObjects.Array.data[0].key
+      value: score
+      objectReference: {fileID: 0}
+    - target: {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: additionalGameObjects.Array.data[1].key
+      value: score
+      objectReference: {fileID: 0}
+    - target: {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: additionalGameObjects.Array.data[2].key
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: additionalGameObjects.Array.data[0].name
+      value: WaitForState
+      objectReference: {fileID: 0}
+    - target: {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: additionalGameObjects.Array.data[1].name
+      value: WaitForState
+      objectReference: {fileID: 0}
+    - target: {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: additionalGameObjects.Array.data[0].callbackName
+      value: WaitingForScore
+      objectReference: {fileID: 0}
+    - target: {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: additionalGameObjects.Array.data[0].targetObject
+      value: 
+      objectReference: {fileID: 1054460205}
+    - target: {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: additionalGameObjects.Array.data[1].callbackName
+      value: WaitingForScore
+      objectReference: {fileID: 0}
+    - target: {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: additionalGameObjects.Array.data[1].targetObject
+      value: 
+      objectReference: {fileID: 1054460205}
+    - target: {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: additionalGameObjects.Array.data[2].callbackName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: additionalGameObjects.Array.data[2].targetObject
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

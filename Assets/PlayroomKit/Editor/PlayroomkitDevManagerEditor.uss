@@ -69,9 +69,9 @@
 
 .button {
     align-self: center;
-    height: 25%;
+    height: 10%;
     width: 50%;
-    
+
     margin-bottom: 10px;
 }
 
@@ -81,7 +81,6 @@
     padding: 5px 10px;
     border-radius: 3px;
     font-size: 12px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     position: absolute;
 }
 

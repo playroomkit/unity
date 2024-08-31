@@ -5,6 +5,7 @@ using UBB;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Networking;
+using Random = System.Random;
 
 namespace Playroom
 {
@@ -272,19 +273,33 @@ namespace Playroom
         private static void MockOnDisconnectBrowser(Action callback)
         {
 #if UNITY_EDITOR
-            var go = GetGameObject("devManager").name;
+            string key = Guid.NewGuid().ToString();
+
+            string callbackKey = $"OnDisconnect_{key}";
+            GameObject callbackObject = new GameObject(callbackKey);
+
+            MockCallbackHandler handler = callbackObject.AddComponent<MockCallbackHandler>();
+            handler.SetCallback(callback);
+
 
             UnityBrowserBridge.Instance.ExecuteJS(
-                $"OnDisconnect('{callback.Method.Name}', '{go}')");
+                $"OnDisconnect('{callbackKey}')");
 #endif
         }
 
         private static void MockWaitForStateBrowser(string key, Action<string> callback)
         {
 #if UNITY_EDITOR
-            string gameObjectName = GetGameObject("devManager").name;
+            string callbackKey = $"WaitForState_{key}";
+            GameObject callbackObject = new GameObject($"WaitForStateCallback_{key}");
+
+            MockCallbackHandler handler = callbackObject.AddComponent<MockCallbackHandler>();
+            handler.SetCallback(callback);
+
+            CallBacksHandlerMock.Instance.RegisterCallback(callbackKey, callbackObject, "ExecuteCallback");
+
             UnityBrowserBridge.Instance.ExecuteJS(
-                $"WaitForState('{key}', '{gameObjectName}')");
+                $"WaitForState('{key}', '{callbackKey}')");
 #endif
         }
     }

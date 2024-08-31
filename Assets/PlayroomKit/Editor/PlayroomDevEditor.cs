@@ -5,7 +5,6 @@ using UnityEngine.UIElements;
 using System.Collections.Generic;
 using ParrelSync;
 
-
 namespace Playroom
 {
     [CustomEditor(typeof(PlayroomkitDevManager))]
@@ -27,9 +26,6 @@ namespace Playroom
             VisualElement mockModeContainer = MockModeContainerCreator();
             VisualElement insertCoinContainer = InsertCoinContainerCreator();
             Button launchPlayerButton = LaunchPlayerButtonCreator();
-
-            // launchPlayerButton.
-
 
             // Add elements to root
             root.Add(mockModeContainer);
@@ -64,7 +60,11 @@ namespace Playroom
             VisualElement insertCoinContainer = new VisualElement();
             insertCoinContainer.AddToClassList("insertCoinContainer");
 
-            var insertCoinLabel = new Label("Insert Coin Caller");
+            var insertCoinLabel = new Label("Insert Coin Caller")
+            {
+                tooltip =
+                    "InsertCoin() must be called in order to connect PlayroomKit server.\n\nChoose the gameObject (with the script) which calls InsertCoin.\n\nRead More in the docs"
+            };
             insertCoinLabel.AddToClassList("label");
 
             var insertCoinTooltipButton = new Button
