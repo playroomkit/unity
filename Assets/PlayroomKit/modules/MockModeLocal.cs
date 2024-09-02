@@ -94,14 +94,14 @@ namespace Playroom
 
         private static Dictionary<string, Action> mockResponseCallbacks = new();
 
-        private static void MockRpcRegister(string name, Action<string, string> rpcRegisterCallback,
+        private static void MockRpcRegisterLocal(string name, Action<string, string> rpcRegisterCallback,
             string onResponseReturn = null)
         {
             mockRegisterCallbacks.TryAdd(name, (rpcRegisterCallback, onResponseReturn));
         }
 
 
-        private static void MockRpcCall(string name, object data, RpcMode mode, Action callbackOnResponse)
+        private static void MockRpcCallLocal(string name, object data, RpcMode mode, Action callbackOnResponse = null)
         {
             mockResponseCallbacks.TryAdd(name, callbackOnResponse);
 

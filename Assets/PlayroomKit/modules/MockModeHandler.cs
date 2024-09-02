@@ -160,11 +160,25 @@ namespace Playroom
                 () => MockOnDisconnectBrowser(callback));
         }
 
-        private static void MockWaitForState(string key, Action<string> callback)
+        private static void MockWaitForState(string state, Action<string> callback)
         {
             ExecuteMockModeAction(
-                () => MockWaitForStateLocal(key, callback),
-                () => MockWaitForStateBrowser(key, callback));
+                () => MockWaitForStateLocal(state, callback),
+                () => MockWaitForStateBrowser(state, callback));
+        }
+
+        private static void MockRpcRegister(string name, Action<string, string> callback, string responseReturn)
+        {
+            ExecuteMockModeAction(
+                () => MockRpcRegisterLocal(name, callback),
+                () => MockRpcRegisterBrowser(name, callback));
+        }
+
+        private static void MockRpcCall(string name, object data, RpcMode mode, Action callbackOnResponse = null)
+        {
+            ExecuteMockModeAction(
+                () => MockRpcCallLocal(name, data, mode, callbackOnResponse),
+                () => MockRpcCallBrowser(name, data, mode, callbackOnResponse));
         }
     }
 }

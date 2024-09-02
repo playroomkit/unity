@@ -28,6 +28,12 @@ namespace Playroom
 
         public static void InvokeCallback(string key, params string[] args)
         {
+            foreach (var (ke1y, value) in callbacks)
+            {
+                Debug.Log(ke1y);
+            }
+
+
             if (callbacks.TryGetValue(key, out Delegate callback))
             {
                 if (callback is Action action && args.Length == 0) action?.Invoke();

@@ -36,9 +36,39 @@ namespace Playroom
 
         private Dictionary<string, (GameObject gameObject, string methodName)> callbacks = new();
 
-        public void RegisterCallback(string key, GameObject gameObject, string methodName)
+        public void RegisterCallbackObject(string key, GameObject gameObject, string methodName)
         {
-            callbacks[key] = (gameObject, methodName);
+            if (!callbacks.ContainsKey(key))
+            {
+                Debug.LogWarning($"Adding {key}, {gameObject.name} {methodName}");
+                callbacks.TryAdd(key, (gameObject, methodName));
+            }
+        }
+
+        public void HandleRPC(string jsonData)
+        {
+            Debug.LogWarning($"jsonData: {jsonData}");
+
+            var jsonNode = JSON.Parse(jsonData);
+
+            string key = jsonNode["key"];
+
+            string returnData = jsonNode["parameter"]["data"];
+            string callerId = jsonNode["parameter"]["callerId"];
+
+            if (callbacks.TryGetValue(key, out var callbackInfo))
+            {
+                Debug.LogWarning(
+                    $"key: {key}, gameObjectName: {callbackInfo.gameObject.name}, callbackName: {callbackInfo.methodName}");
+
+
+                callbackInfo.gameObject.SendMessage(callbackInfo.methodName, new string[] { returnData, callerId },
+                    SendMessageOptions.DontRequireReceiver);
+            }
+            else
+            {
+                Debug.LogWarning($"No callback registered for key: {key}");
+            }
         }
 
         public void InvokeCallback(string jsonData)
@@ -64,5 +94,12 @@ namespace Playroom
                 Debug.LogWarning($"No callback registered for key: {key}");
             }
         }
+    }
+
+    [System.Serializable]
+    public class RPCData
+    {
+        public string data;
+        public string callerId;
     }
 }

@@ -140,8 +140,6 @@ OnDisconnect = async function (callbackkey) {
 WaitForState = function (stateKey, callbackKey) {
   Playroom.waitForState(stateKey)
     .then((stateVal) => {
-      stateVal = JSON.stringify(stateVal);
-
       const data = {
         key: callbackKey,
         parameter: stateVal,
@@ -149,20 +147,10 @@ WaitForState = function (stateKey, callbackKey) {
 
       const jsonData = JSON.stringify(data);
 
-      console.log("Waiting for state:", jsonData);
-
       unityInstance.SendMessage("CallbackManager", "InvokeCallback", jsonData);
     })
     .catch((error) => {
       console.error("Error Waiting for state:", error);
-      // unityInstance.SendMessage(
-      //   "CallbackManager",
-      //   "InvokeCallback",
-      //   JSON.stringify({
-      //     key: callbackKey,
-      //     parameter: JSON.stringify({ error: error.message }),
-      //   })
-      // );
     });
 };
 
@@ -249,4 +237,25 @@ ResetPlayersStates = async function (keysToExclude) {
 
 ResetStates = async function (keysToExclude) {
   await Playroom.resetStates(keysToExclude);
+};
+
+RpcRegister = function (name, callbackKey) {
+  console.log(name);
+
+  Playroom.RPC.register(name, (data, caller) => {
+    const jsonData = {
+      key: callbackKey,
+      parameter: { data: data, callerId: caller.id },
+    };
+
+    const jsonString = JSON.stringify(jsonData);
+
+    console.log(jsonString);
+
+    unityInstance.SendMessage("CallbackManager", "HandleRPC", jsonString);
+  });
+};
+
+RpcCall = function (name, data) {
+  Playroom.RPC.call(name, data, Playroom.RPC.Mode.ALL);
 };

@@ -278,8 +278,8 @@ namespace Playroom
             string callbackKey = $"OnDisconnect_{key}";
             GameObject callbackObject = new GameObject(callbackKey);
 
-            MockCallbackHandler handler = callbackObject.AddComponent<MockCallbackHandler>();
-            handler.SetCallback(callback);
+            MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
+            invoker.SetCallback(callback, callbackKey);
 
 
             UnityBrowserBridge.Instance.ExecuteJS(
@@ -287,19 +287,44 @@ namespace Playroom
 #endif
         }
 
-        private static void MockWaitForStateBrowser(string key, Action<string> callback)
+        private static void MockWaitForStateBrowser(string state, Action<string> callback)
         {
 #if UNITY_EDITOR
-            string callbackKey = $"WaitForState_{key}";
-            GameObject callbackObject = new GameObject($"WaitForStateCallback_{key}");
+            string callbackKey = $"WaitForState_{state}";
+            GameObject callbackObject = new GameObject(callbackKey);
 
-            MockCallbackHandler handler = callbackObject.AddComponent<MockCallbackHandler>();
-            handler.SetCallback(callback);
+            MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
+            invoker.SetCallback(callback, callbackKey);
 
-            CallBacksHandlerMock.Instance.RegisterCallback(callbackKey, callbackObject, "ExecuteCallback");
+            CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
 
             UnityBrowserBridge.Instance.ExecuteJS(
-                $"WaitForState('{key}', '{callbackKey}')");
+                $"WaitForState('{state}', '{callbackKey}')");
+#endif
+        }
+
+        private static void MockRpcRegisterBrowser(string name, Action<string, string> callback,
+            string onResponseReturn = null)
+        {
+#if UNITY_EDITOR
+
+            string callbackKey = $"RpcEvent_{name}";
+            GameObject callbackObject = new GameObject(callbackKey);
+
+            MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
+            invoker.SetCallback(callback, callbackKey);
+
+            CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
+
+            UnityBrowserBridge.Instance.ExecuteJS(
+                $"RpcRegister('{name}', '{callbackKey}')");
+#endif
+        }
+
+        private static void MockRpcCallBrowser(string name, object data, RpcMode mode, Action callbackOnResponse = null)
+        {
+#if UNITY_EDITOR
+            UnityBrowserBridge.Instance.ExecuteJS($"RpcCall('{name}', '{data}')");
 #endif
         }
     }

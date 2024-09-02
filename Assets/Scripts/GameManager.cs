@@ -44,14 +44,18 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        PlayroomKit.WaitForState("score", (string str) => { Debug.Log("strrr"); });
-       
+        // PlayroomKit.WaitForState("score", (string str) => { Debug.Log($"score: {str}"); });
+
+        PlayroomKit.RpcRegister("score", logScore);
+        PlayroomKit.RpcRegister("lol",
+            ((data, caller) => Debug.LogWarning($"{data} by {PlayroomKit.GetPlayer(caller).GetProfile().name}")));
+
         PlayroomKit.OnDisconnect(() => { Debug.Log("YES DISCONNECT"); });
     }
 
-    private void WaitingForScore(string str)
+    private void logScore(string data, string sender)
     {
-        Debug.Log($"{str} is null maybe?");
+        Debug.LogWarning($"{data} by {PlayroomKit.GetPlayer(sender).GetProfile().name}");
     }
 
 
@@ -62,19 +66,22 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.K))
         {
-            PlayroomKit.SetState("score", 500);
+            // PlayroomKit.SetState("score", 500);
+            PlayroomKit.RpcCall("score", 500);
             Debug.Log(PlayroomKit.GetRoomCode());
         }
 
         if (Input.GetKey(KeyCode.L))
         {
             var s = PlayroomKit.GetState<int>("score");
+
+            PlayroomKit.RpcCall("score", "lol");
             score.text = $"Score: {s}";
         }
 
 
         Reset();
-
+/*
         if (!playerJoined) return;
 
         var player = PlayroomKit.Me();
@@ -102,6 +109,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+        */
     }
 
 

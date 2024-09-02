@@ -21,9 +21,11 @@ namespace Playroom
         private static List<string> rpcCalledEvents = new();
 
         [DllImport("__Internal")]
-        private extern static void RpcRegisterInternal(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null);
+        private static extern void RpcRegisterInternal(string name, Action<string, string> rpcRegisterCallback,
+            string onResponseReturn = null);
 
-        public static void RpcRegister(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null)
+        public static void RpcRegister(string name, Action<string, string> rpcRegisterCallback,
+            string onResponseReturn = null)
         {
             if (IsRunningInBrowser())
             {
@@ -46,7 +48,6 @@ namespace Playroom
                     var player = new Player(senderJson);
                     Players.Add(senderJson, player);
                 }
-
             }
             catch (Exception ex)
             {
@@ -69,7 +70,6 @@ namespace Playroom
             {
                 CallbackManager.InvokeCallback(name, dataJson, senderJson);
             }
-
         }
 
         [DllImport("__Internal")]
@@ -77,7 +77,7 @@ namespace Playroom
 
         private static Dictionary<string, List<Action>> OnResponseCallbacks = new Dictionary<string, List<Action>>();
 
-        public static void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse)
+        public static void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse = null)
         {
             if (IsRunningInBrowser())
             {
@@ -94,11 +94,13 @@ namespace Playroom
                         rpcCalledEvents.Add(name);
                     }
                 }
+
                 JSONArray jsonArray = new JSONArray();
                 foreach (string item in rpcCalledEvents)
                 {
                     jsonArray.Add(item);
                 }
+
                 string jsonString = jsonArray.ToString();
                 /* 
                 This is requrired to sync the rpc events between all players, without this players won't know which event has been called.
@@ -112,11 +114,10 @@ namespace Playroom
             {
                 MockRpcCall(name, data, mode, callbackOnResponse);
             }
-
         }
 
         // Default Mode
-        public static void RpcCall(string name, object data, Action callbackOnResponse)
+        public static void RpcCall(string name, object data, Action callbackOnResponse = null)
         {
             RpcCall(name, data, RpcMode.ALL, callbackOnResponse);
         }
@@ -164,6 +165,7 @@ namespace Playroom
             {
                 return data.ToString();
             }
+
             if (data is Vector2 vector2)
             {
                 return JsonUtility.ToJson(vector2);
@@ -195,6 +197,7 @@ namespace Playroom
                 {
                     dictNode[entry.Key.ToString()] = ConvertToJson(entry.Value);
                 }
+
                 return dictNode.ToString();
             }
             else if (data is IEnumerable enumerable)
@@ -204,6 +207,7 @@ namespace Playroom
                 {
                     arrayNode.Add(ConvertToJson(element));
                 }
+
                 return arrayNode.ToString();
             }
             else

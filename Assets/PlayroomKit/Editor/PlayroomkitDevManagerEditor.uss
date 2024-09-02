@@ -44,8 +44,7 @@
 }
 
 .tooltip-button:hover {
-    width: 28px;
-    height: 28px;
+    background-color: #383838;
 }
 
 
@@ -69,7 +68,7 @@
 
 .button {
     align-self: center;
-    height: 10%;
+    height: 25%;
     width: 50%;
 
     margin-bottom: 10px;
