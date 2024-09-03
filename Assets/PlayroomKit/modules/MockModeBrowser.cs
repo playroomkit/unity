@@ -73,8 +73,18 @@ namespace Playroom
         {
             var flag = reliable ? 1 : 0;
 
+            string jsonString;
+            if (value is int intValue)
+            {
+                jsonString = intValue.ToString();
+            }
+            else
+            {
+                jsonString = JsonUtility.ToJson(value);
+            }
+
 #if UNITY_EDITOR
-            UnityBrowserBridge.Instance.ExecuteJS($"SetState('{key}', {value}, {flag})");
+            UnityBrowserBridge.Instance.ExecuteJS($"SetState('{key}', '{jsonString}', {flag})");
 #endif
         }
 

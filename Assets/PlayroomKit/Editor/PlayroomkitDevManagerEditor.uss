@@ -83,3 +83,9 @@
     position: absolute;
 }
 
+.doc-link {
+    justify-content: center;
+    align-self: center;
+    
+    color: aqua;
+}

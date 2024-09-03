@@ -4,6 +4,7 @@ using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 using ParrelSync;
+using UnityEngine.Networking;
 
 namespace Playroom
 {
@@ -26,11 +27,13 @@ namespace Playroom
             VisualElement mockModeContainer = MockModeContainerCreator();
             VisualElement insertCoinContainer = InsertCoinContainerCreator();
             Button launchPlayerButton = LaunchPlayerButtonCreator();
+            VisualElement docsLink = DocumentationLinkCreator();
 
             // Add elements to root
             root.Add(mockModeContainer);
             root.Add(insertCoinContainer);
             root.Add(launchPlayerButton);
+            root.Add(docsLink);
 
             return root;
         }
@@ -142,6 +145,17 @@ namespace Playroom
             mockModeContainer.Add(mockModeTooltipButton);
             mockModeContainer.Add(mockModeDropdown);
             return mockModeContainer;
+        }
+
+        private static VisualElement DocumentationLinkCreator()
+        {
+            var docLink = new Label("Read more in the documentation ↗");
+            docLink.AddToClassList("doc-link");
+            docLink.tooltip = "https://docs.joinplayroom.com/usage/unity";
+
+            docLink.RegisterCallback<MouseUpEvent>(evt => { Application.OpenURL(docLink.tooltip); });
+
+            return docLink;
         }
     }
 }
