@@ -71,10 +71,6 @@ namespace Playroom
 
         private static T MockPlayerGetStateLocal<T>(string key)
         {
-            foreach (var (k, v) in mockPlayerStatesDictionary)
-            {
-                Debug.Log($"{k}:  {v}");
-            }
 
 
             if (mockPlayerStatesDictionary.TryGetValue(key, out var value) && value is T typedValue)

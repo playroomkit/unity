@@ -195,7 +195,7 @@ namespace Playroom
                 throw new InvalidCastException($"Cannot convert value of type '{typeof(string)}' to '{typeof(T)}'.");
             }
 #else
-    return default;
+            return default;
 #endif
         }
 
@@ -334,7 +334,8 @@ namespace Playroom
         private static void MockRpcCallBrowser(string name, object data, RpcMode mode, Action callbackOnResponse = null)
         {
 #if UNITY_EDITOR
-            UnityBrowserBridge.Instance.ExecuteJS($"RpcCall('{name}', '{data}')");
+            
+            UnityBrowserBridge.Instance.ExecuteJS($"RpcCall('{name}', '{data}', '{mode}')");
 #endif
         }
     }

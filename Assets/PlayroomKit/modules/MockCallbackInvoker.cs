@@ -25,21 +25,18 @@ namespace Playroom
 
         public void SetCallback(Action<string, string> cb, string key)
         {
-            Debug.Log("setting rpc callback to key: " + key);
-
             CallbackManager.RegisterCallback(cb, key);
         }
 
 
         public void ExecuteCallback(string result)
-        {
-            Debug.LogWarning("executing result: " + result);
+        {            
             StartCoroutine(ExecuteCallbackCoroutine(result));
         }
 
         public void ExecuteCallback(string[] result)
         {
-            Debug.LogWarning("executing result: " + result[0] + " + " + result[1]);
+       
             StartCoroutine(ExecuteCallbackCoroutine(result));
         }
 
@@ -51,7 +48,7 @@ namespace Playroom
         private IEnumerator ExecuteCallbackCoroutine(string result)
         {
             yield return new WaitForEndOfFrame();
-            Debug.LogWarning($"{gameObject.name} is invoking a callback with data: {result} and will be destroyed");
+           
             CallbackManager.InvokeCallback(gameObject.name, result);
             Destroy(gameObject);
         }
@@ -59,9 +56,6 @@ namespace Playroom
         private IEnumerator ExecuteCallbackCoroutine()
         {
             yield return new WaitForEndOfFrame();
-
-            Debug.LogWarning($"{gameObject.name} is invoking!");
-
             CallbackManager.InvokeCallback(gameObject.name);
             Destroy(gameObject);
         }
@@ -70,7 +64,6 @@ namespace Playroom
         private IEnumerator ExecuteCallbackCoroutine(string[] result)
         {
             yield return new WaitForEndOfFrame();
-            Debug.LogWarning($"{gameObject.name} is invoking a callback with data: {result} and will be destroyed");
             CallbackManager.InvokeCallback(gameObject.name, result[0], result[1]);
         }
     }

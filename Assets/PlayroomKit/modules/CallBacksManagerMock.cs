@@ -40,14 +40,14 @@ namespace Playroom
         {
             if (!callbacks.ContainsKey(key))
             {
-                Debug.LogWarning($"Adding {key}, {gameObject.name} {methodName}");
+
                 callbacks.TryAdd(key, (gameObject, methodName));
             }
         }
 
         public void HandleRPC(string jsonData)
         {
-            Debug.LogWarning($"jsonData: {jsonData}");
+
 
             var jsonNode = JSON.Parse(jsonData);
 
@@ -73,7 +73,7 @@ namespace Playroom
 
         public void InvokeCallback(string jsonData)
         {
-            Debug.LogWarning($"jsonData: {jsonData}");
+
 
             var jsonNode = JSON.Parse(jsonData);
 

@@ -256,6 +256,20 @@ RpcRegister = function (name, callbackKey) {
   });
 };
 
-RpcCall = function (name, data) {
-  Playroom.RPC.call(name, data, Playroom.RPC.Mode.ALL);
+RpcCall = function (name, data, rpcMode) {
+  let mode;
+
+  if (rpcMode === "ALL") {
+    mode = Playroom.RPC.Mode.ALL;
+  }
+
+  if (rpcMode === "OTHERS") {
+    mode = Playroom.RPC.Mode.OTHERS;
+  }
+
+  if (rpcMode === "HOST") {
+    mode = Playroom.RPC.Mode.HOST;
+  }
+
+  Playroom.RPC.call(name, data, mode);
 };

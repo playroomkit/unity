@@ -26,31 +26,42 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private string playerID;
 
-    private void Awake()
+    void Start()
     {
-        PlayroomKit.InsertCoin(new()
-            {
-                skipLobby = true,
+        // countdownText.gameObject.SetActive(false);
+        PlayroomKit.InsertCoin(new PlayroomKit.InitOptions
+        {
+            maxPlayersPerRoom = 15,
+        }, () =>
+        {
+            PlayroomKit.OnPlayerJoin(AddPlayer);
 
-                defaultStates = new()
-                {
-                    { "score", 0 },
-                },
-                matchmaking = false
-            },
-            () => PlayroomKit.OnPlayerJoin(AddPlayer));
+            Debug.Log(PlayroomKit.IsHost());
+
+            if (PlayroomKit.IsHost())
+            {
+                setRoomProperties();
+            }
+            else
+            {
+                CalculateRoomCreatedTime();
+            }
+        }, () => { Debug.Log("OnDisconnect callback"); });
     }
 
-
-    private void Start()
+    void setRoomProperties()
     {
-        // PlayroomKit.WaitForState("score", (string str) => { Debug.Log($"score: {str}"); });
+        PlayroomKit.SetState("roomCreated", DateTime.Now.ToString(), true);
+        var time = PlayroomKit.GetState<string>("roomCreated");
 
-        PlayroomKit.RpcRegister("score", logScore);
-        PlayroomKit.RpcRegister("lol",
-            ((data, caller) => Debug.LogWarning($"{data} by {PlayroomKit.GetPlayer(caller).GetProfile().name}")));
+        Debug.Log($"[Host]: {time}");
+        PlayroomKit.SetState("isGameStarted", false, true);
+    }
 
-        PlayroomKit.OnDisconnect(() => { Debug.Log("YES DISCONNECT"); });
+    void CalculateRoomCreatedTime()
+    {
+        string roomCreatedString = PlayroomKit.GetState<string>("roomCreated");
+        Debug.Log($"[Non Host]: {roomCreatedString}");
     }
 
     private void logScore(string data, string sender)
@@ -140,11 +151,11 @@ public class GameManager : MonoBehaviour
         var spawnPos = new Vector3(Random.Range(-4, 4), Random.Range(1, 5), 0);
         var playerObj = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
 
-        Debug.Log($"<color=#ADD8E6>Player ID: {player.id}</color>");
-
-        Debug.Log($"<color=#ADD8E6>Player Name: {player.GetProfile().color}</color>");
-        Debug.Log(
-            $"<color={player.GetProfile().playerProfileColor.hexString}>Player ID: {player.GetProfile().name}</color>");
+        // Debug.Log($"<color=#ADD8E6>Player ID: {player.id}</color>");
+        //
+        // Debug.Log($"<color=#ADD8E6>Player Name: {player.GetProfile().color}</color>");
+        // Debug.Log(
+        //     $"<color={player.GetProfile().playerProfileColor.hexString}>Player ID: {player.GetProfile().name}</color>");
 
         PlayerDict.Add(player.id, playerObj);
         players.Add(player);
