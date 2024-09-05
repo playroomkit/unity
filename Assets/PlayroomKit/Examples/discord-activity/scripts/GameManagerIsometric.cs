@@ -13,6 +13,7 @@ public class GameManagerIsometric : MonoBehaviour
     private static readonly Dictionary<string, GameObject> PlayerDict = new();
 
     [SerializeField] private static bool playerJoined;
+    [SerializeField] private string roomCode;
     [SerializeField] private GameObject playerPrefab;
 
 
@@ -23,7 +24,8 @@ public class GameManagerIsometric : MonoBehaviour
             maxPlayersPerRoom = 3,
             matchmaking = false,
             gameId = "<Insert GameID (from dev.joinplayroom.com)>",
-            discord = true
+            discord = true,
+            roomCode = roomCode,
         }, () => { PlayroomKit.OnPlayerJoin(AddPlayer); }, () => { Debug.Log("OnDisconnect callback"); });
     }
 

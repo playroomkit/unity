@@ -6,6 +6,7 @@ using AOT;
 using System;
 using SimpleJSON;
 using System.Collections;
+using UBB;
 
 
 namespace Playroom
@@ -33,9 +34,27 @@ namespace Playroom
             public Dictionary<string, object> defaultStates = null;
             public Dictionary<string, object> defaultPlayerStates = null;
 
-            public bool matchmaking = false;
+            private object matchmakingField;
 
+            // Property to handle matchmaking as either boolean or MatchMakingOptions
+            public object matchmaking
+            {
+                get => matchmakingField;
+                set
+                {
+                    if (value is bool || value is MatchMakingOptions)
+                    {
+                        matchmakingField = value;
+                    }
+                    else
+                    {
+                        throw new ArgumentException(
+                            "matchmaking must be either a boolean or a MatchMakingOptions object.");
+                    }
+                }
+            }
         }
+
 
         public class MatchMakingOptions
         {
@@ -51,7 +70,6 @@ namespace Playroom
 #if UNITY_WEBGL && !UNITY_EDITOR
             WebGLInput.captureAllKeyboardInput = true;
 #endif
-
         }
 
         [MonoPInvokeCallback(typeof(Action<string>))]
@@ -63,17 +81,16 @@ namespace Playroom
 
         private static Action<string> onError;
 
-        public static void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null, Action onDisconnectCallback = null)
+        public static void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
+            Action onDisconnectCallback = null)
         {
             if (IsRunningInBrowser())
             {
                 isPlayRoomInitialized = true;
 
-
                 string onLaunchCallBackKey = CallbackManager.RegisterCallback(onLaunchCallBack, "onLaunchCallBack");
-                string onDisconnectCallBackKey = CallbackManager.RegisterCallback(onDisconnectCallback, "onDisconnectCallBack");
-
-                Debug.Log(onLaunchCallBackKey);
+                string onDisconnectCallBackKey =
+                    CallbackManager.RegisterCallback(onDisconnectCallback, "onDisconnectCallBack");
 
                 string optionsJson = null;
                 if (options != null)
@@ -83,7 +100,6 @@ namespace Playroom
 
                 if (options.skipLobby == false)
                 {
-
 #if UNITY_WEBGL && !UNITY_EDITOR
                         WebGLInput.captureAllKeyboardInput = false;
 #endif
@@ -98,96 +114,6 @@ namespace Playroom
                 MockInsertCoin(options, onLaunchCallBack);
             }
         }
-
-
-
-        private static string SerializeInitOptions(InitOptions options)
-        {
-            if (options == null) return null;
-
-            JSONNode node = JSON.Parse("{}");
-
-            node["streamMode"] = options.streamMode;
-            node["allowGamepads"] = options.allowGamepads;
-            node["baseUrl"] = options.baseUrl;
-
-            if (options.avatars != null)
-            {
-                JSONArray avatarsArray = new JSONArray();
-                foreach (string avatar in options.avatars)
-                {
-                    avatarsArray.Add(avatar);
-                }
-                node["avatars"] = avatarsArray;
-            }
-
-            node["roomCode"] = options.roomCode;
-            node["skipLobby"] = options.skipLobby;
-            node["reconnectGracePeriod"] = options.reconnectGracePeriod;
-
-            node["matchmaking"] = options.matchmaking;
-
-            if (options.maxPlayersPerRoom.HasValue)
-            {
-                node["maxPlayersPerRoom"] = options.maxPlayersPerRoom.Value;
-            }
-
-            if (options.gameId != null)
-            {
-                node["gameId"] = options.gameId;
-            }
-
-            node["discord"] = options.discord;
-
-            if (options.defaultStates != null)
-            {
-                JSONObject defaultStatesObject = new JSONObject();
-                foreach (var kvp in options.defaultStates)
-                {
-                    defaultStatesObject[kvp.Key] = ConvertValueToJSON(kvp.Value);
-                }
-                node["defaultStates"] = defaultStatesObject;
-            }
-
-            if (options.defaultPlayerStates != null)
-            {
-                JSONObject defaultPlayerStatesObject = new JSONObject();
-                foreach (var kvp in options.defaultPlayerStates)
-                {
-                    defaultPlayerStatesObject[kvp.Key] = ConvertValueToJSON(kvp.Value);
-                }
-                node["defaultPlayerStates"] = defaultPlayerStatesObject;
-            }
-
-
-            return node.ToString();
-        }
-
-        private static JSONNode ConvertValueToJSON(object value)
-        {
-            if (value is string stringValue)
-            {
-                return stringValue;
-            }
-            else if (value is int intValue)
-            {
-                return intValue;
-            }
-            else if (value is float floatValue)
-            {
-                return floatValue;
-            }
-            else if (value is bool boolValue)
-            {
-                return boolValue;
-            }
-            else
-            {
-                // Handle other types if needed
-                return JSON.Parse("{}");
-            }
-        }
-
 
 
         private static List<Action<Player>> OnPlayerJoinCallbacks = new();
@@ -215,6 +141,9 @@ namespace Playroom
             }
         }
 
+
+
+
         public static Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
         {
             if (!isPlayRoomInitialized)
@@ -222,41 +151,37 @@ namespace Playroom
                 Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
                 return null;
             }
+
+            if (IsRunningInBrowser())
+            {
+                if (!OnPlayerJoinCallbacks.Contains(onPlayerJoinCallback))
+                {
+                    OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
+                }
+
+                var CallbackID = OnPlayerJoinInternal(__OnPlayerJoinCallbackHandler);
+
+                void Unsubscribe()
+                {
+                    OnPlayerJoinCallbacks.Remove(onPlayerJoinCallback);
+                    UnsubscribeOnPlayerJoin(CallbackID);
+                }
+
+                return Unsubscribe;
+            }
+
+            if (!isPlayRoomInitialized)
+            {
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+            }
             else
             {
-                if (IsRunningInBrowser())
-                {
-                    if (!OnPlayerJoinCallbacks.Contains(onPlayerJoinCallback))
-                    {
-                        OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
-                    }
-                    var CallbackID = OnPlayerJoinInternal(__OnPlayerJoinCallbackHandler);
-
-                    void Unsubscribe()
-                    {
-                        OnPlayerJoinCallbacks.Remove(onPlayerJoinCallback);
-                        UnsubscribeOnPlayerJoin(CallbackID);
-                    }
-
-                    return Unsubscribe;
-                }
-                else
-                {
-                    if (!isPlayRoomInitialized)
-                    {
-                        Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    }
-                    else
-                    {
-                        Debug.Log("On Player Join");
-                        var testPlayer = GetPlayer(PlayerId);
-                        OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
-                        __OnPlayerJoinCallbackHandler(PlayerId);
-                    }
-                    return null;
-                }
+                MockOnPlayerJoin(onPlayerJoinCallback);
             }
+
+            return null;
         }
+
 
         private static void UnsubscribeOnPlayerJoin(string CallbackID)
         {
@@ -295,51 +220,40 @@ namespace Playroom
         }
 
 
-
-
         public static bool IsHost()
         {
             if (IsRunningInBrowser())
             {
                 return IsHostInternal();
             }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
+
+            if (isPlayRoomInitialized) return MockIsHost();
+            Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+            return false;
         }
 
 
-
-        public static bool IsStreamMode()
+        public static bool IsStreamScreen()
         {
             if (IsRunningInBrowser())
             {
-                return IsStreamModeInternal();
+                return IsStreamScreenInternal();
             }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return false;
-                }
-                else
-                {
-                    return mockIsStreamMode;
-                }
-            }
+
+            if (isPlayRoomInitialized) return MockIsStreamScreen();
+            Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+            return false;
         }
 
+        public static string GetRoomCode()
+        {
+            if (IsRunningInBrowser())
+            {
+                return GetRoomCodeInternal();
+            }
 
+            return MockGetRoomCode();
+        }
 
         public static Player MyPlayer()
         {
@@ -348,32 +262,29 @@ namespace Playroom
                 var id = MyPlayerInternal();
                 return GetPlayer(id);
             }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return null;
-                }
-                else
-                {
-                    return GetPlayer(PlayerId);
-                }
-            }
+
+            if (isPlayRoomInitialized) return MockMyPlayer();
+            Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+            return null;
         }
 
         public static Player Me()
         {
-            return MyPlayer();
+            return IsRunningInBrowser() ? MyPlayer() : MockMe();
         }
-
-
 
 
         public static void OnDisconnect(Action callback)
         {
-            CallbackManager.RegisterCallback(callback);
-            OnDisconnectInternal(onDisconnectCallbackHandler);
+            if (IsRunningInBrowser())
+            {
+                CallbackManager.RegisterCallback(callback);
+                OnDisconnectInternal(onDisconnectCallbackHandler);
+            }
+            else
+            {
+                MockOnDisconnect(callback);
+            }
         }
 
 
@@ -475,8 +386,6 @@ namespace Playroom
         }
 
 
-
-
         public static void SetState(string key, Dictionary<string, int> values, bool reliable = false)
         {
             if (IsRunningInBrowser())
@@ -555,28 +464,24 @@ namespace Playroom
 
 
         // GETTERS
-
-
         private static string GetStateString(string key)
         {
             if (IsRunningInBrowser())
             {
                 return GetStateStringInternal(key);
             }
+
+
+            if (!isPlayRoomInitialized)
+            {
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                return default;
+            }
             else
             {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return default;
-                }
-                else
-                {
-                    return MockGetState<string>(key);
-                }
+                return MockGetState<string>(key);
             }
         }
-
 
 
         private static int GetStateInt(string key)
@@ -598,7 +503,6 @@ namespace Playroom
                 }
             }
         }
-
 
 
         private static float GetStateFloat(string key)
@@ -704,10 +608,7 @@ namespace Playroom
                     return default;
                 }
             }
-
         }
-
-
 
 
         [MonoPInvokeCallback(typeof(Action<string, string>))]
@@ -721,29 +622,30 @@ namespace Playroom
             if (IsRunningInBrowser())
             {
                 CallbackManager.RegisterCallback(onStateSetCallback, stateKey);
-
                 WaitForStateInternal(stateKey, InvokeCallback);
+            }
+            else
+            {
+                MockWaitForState(stateKey, onStateSetCallback);
             }
         }
 
 
+        Action WaitForPlayerCallback = null;
 
-
-
-        Action Callback = null;
-        public void WaitForPlayerState(string playerID, string StateKey, Action onStateSetCallback = null)
+        public void WaitForPlayerState(string playerID, string stateKey, Action onStateSetCallback = null)
         {
             if (IsRunningInBrowser())
             {
-                Callback = onStateSetCallback;
-                WaitForPlayerStateInternal(playerID, StateKey, OnStateSetCallback);
+                WaitForPlayerCallback = onStateSetCallback;
+                WaitForPlayerStateInternal(playerID, stateKey, OnStateSetCallback);
             }
         }
 
         [MonoPInvokeCallback(typeof(Action))]
         void OnStateSetCallback()
         {
-            Callback?.Invoke();
+            WaitForPlayerCallback?.Invoke();
         }
 
 
@@ -804,6 +706,10 @@ namespace Playroom
                 string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
                 ResetStatesInternal(keysJson, InvokeResetCallBack);
             }
+            else
+            {
+                MockResetStates(keysToExclude);
+            }
         }
 
         [MonoPInvokeCallback(typeof(Action))]
@@ -819,8 +725,6 @@ namespace Playroom
         }
 
 
-
-
         public static void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
         {
             if (IsRunningInBrowser())
@@ -829,19 +733,12 @@ namespace Playroom
                 string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
                 ResetPlayersStatesInternal(keysJson, InvokePlayersResetCallBack);
             }
-        }
-
-        private static JSONArray CreateJsonArray(string[] array)
-        {
-            JSONArray jsonArray = new JSONArray();
-
-            foreach (string item in array)
+            else
             {
-                jsonArray.Add(item);
+                MockResetPlayersStates(keysToExclude, OnStatesReset);
             }
-
-            return jsonArray;
         }
+
 
         // it checks if the game is running in the browser or in the editor
         public static bool IsRunningInBrowser()
@@ -852,7 +749,6 @@ namespace Playroom
             return false;
 #endif
         }
-
 
 
         private static void UnsubscribeOnQuit()
@@ -886,47 +782,6 @@ namespace Playroom
             var jsonString = DpadJoystickInternal();
             Dpad myDpad = JsonUtility.FromJson<Dpad>(jsonString);
             return myDpad;
-        }
-
-        private static string ConvertJoystickOptionsToJson(JoystickOptions options)
-        {
-            JSONNode joystickOptionsJson = new JSONObject();
-            joystickOptionsJson["type"] = options.type;
-
-            // Serialize the buttons array
-            JSONArray buttonsArray = new JSONArray();
-            foreach (ButtonOptions button in options.buttons)
-            {
-                JSONObject buttonJson = new JSONObject();
-                buttonJson["id"] = button.id;
-                buttonJson["label"] = button.label;
-                buttonJson["icon"] = button.icon;
-                buttonsArray.Add(buttonJson);
-            }
-            joystickOptionsJson["buttons"] = buttonsArray;
-
-            // Serialize the zones property (assuming it's not null)
-            if (options.zones != null)
-            {
-                JSONObject zonesJson = new JSONObject();
-                zonesJson["up"] = ConvertButtonOptionsToJson(options.zones.up);
-                zonesJson["down"] = ConvertButtonOptionsToJson(options.zones.down);
-                zonesJson["left"] = ConvertButtonOptionsToJson(options.zones.left);
-                zonesJson["right"] = ConvertButtonOptionsToJson(options.zones.right);
-                joystickOptionsJson["zones"] = zonesJson;
-            }
-
-            return joystickOptionsJson.ToString();
-        }
-
-        // Function to convert ButtonOptions to JSON
-        private static JSONNode ConvertButtonOptionsToJson(ButtonOptions button)
-        {
-            JSONObject buttonJson = new JSONObject();
-            buttonJson["id"] = button.id;
-            buttonJson["label"] = button.label;
-            buttonJson["icon"] = button.icon;
-            return buttonJson;
         }
 
 
@@ -963,6 +818,7 @@ namespace Playroom
         }
 
         static Action startMatchmakingCallback = null;
+
         public static void StartMatchmaking(Action callback = null)
         {
             if (IsRunningInBrowser())
@@ -972,7 +828,7 @@ namespace Playroom
             }
             else
             {
-                Debug.LogError("[Mock Mode] Matchmaking is not supported in Mock Mode! yet.\nPlease build the project to test Matchmaking.");
+                MockStartMatchmaking();
             }
         }
 
@@ -981,9 +837,5 @@ namespace Playroom
         {
             startMatchmakingCallback?.Invoke();
         }
-
-
     }
-
-
 }

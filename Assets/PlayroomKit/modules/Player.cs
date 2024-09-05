@@ -6,13 +6,13 @@ using System.Runtime.InteropServices;
 using AOT;
 using SimpleJSON;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Playroom
 {
     // Player class
     public partial class PlayroomKit
     {
-
         public interface IPlayerInteraction
         {
             void InvokeOnQuitWrapperCallback();
@@ -23,15 +23,14 @@ namespace Playroom
             [Serializable]
             public class Profile
             {
-                [NonSerialized]
-                public UnityEngine.Color color;
+                [NonSerialized] public UnityEngine.Color color;
 
-                public JsonColor jsonColor;
+                [FormerlySerializedAs("jsonColor")] public PlayerProfileColor playerProfileColor;
                 public string name;
                 public string photo;
 
                 [Serializable]
-                public class JsonColor
+                public class PlayerProfileColor
                 {
                     public int r;
                     public int g;
@@ -39,9 +38,6 @@ namespace Playroom
                     public string hexString;
                     public int hex;
                 }
-
-
-
             }
 
 
@@ -60,7 +56,7 @@ namespace Playroom
                 }
                 else
                 {
-                    if (!isPlayRoomInitialized)///
+                    if (!isPlayRoomInitialized) ///
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     else
                         Debug.Log("Mock Player Created");
@@ -127,8 +123,7 @@ namespace Playroom
                     }
                     else
                     {
-                        Debug.Log($"PlayerState Set! Key: {key}, Value: {value}");
-                        MockSetState(key, value);
+                        MockSetState(id, key, value);
                     }
                 }
             }
@@ -148,8 +143,7 @@ namespace Playroom
                     }
                     else
                     {
-                        Debug.Log($"PlayerState Set! Key: {key}, Value: {value}");
-                        MockSetState(key, value);
+                        MockSetState(id, key, value);
                     }
                 }
             }
@@ -169,7 +163,7 @@ namespace Playroom
                     else
                     {
                         Debug.Log($"PlayerState Set! Key: {key}, Value: {value}");
-                        MockSetState(key, value);
+                        MockSetState(id, key, value);
                     }
                 }
             }
@@ -189,7 +183,7 @@ namespace Playroom
                     else
                     {
                         Debug.Log($"PlayerState Set! Key: {key}, Value: {value}");
-                        MockSetState(key, value);
+                        MockSetState(id, key, value);
                     }
                 }
             }
@@ -210,7 +204,7 @@ namespace Playroom
                     }
                     else
                     {
-                        MockSetState(key, value);
+                        MockSetState(id, key, value);
                     }
                 }
             }
@@ -280,14 +274,12 @@ namespace Playroom
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return default;
                 }
-                return MockGetState<T>(key);
 
+                return MockGetState<T>(id, key);
             }
-
 
             public Dictionary<string, T> GetState<T>(string key, bool isReturnDictionary = false)
             {
-
                 if (IsRunningInBrowser() && isReturnDictionary)
                 {
                     var jsonString = GetPlayerStateDictionary(id, key);
@@ -421,7 +413,7 @@ namespace Playroom
                     }
                     else
                     {
-                        MockSetState(key, values);
+                        MockSetState(id, key, values);
                     }
                 }
             }
@@ -440,7 +432,7 @@ namespace Playroom
                     }
                     else
                     {
-                        MockSetState(key, values);
+                        MockSetState(id, key, values);
                     }
                 }
             }
@@ -459,7 +451,7 @@ namespace Playroom
                     }
                     else
                     {
-                        MockSetState(key, values);
+                        MockSetState(id, key, values);
                     }
                 }
             }
@@ -478,7 +470,7 @@ namespace Playroom
                     }
                     else
                     {
-                        MockSetState(key, values);
+                        MockSetState(id, key, values);
                     }
                 }
             }
@@ -495,7 +487,7 @@ namespace Playroom
             {
                 if (IsRunningInBrowser())
                 {
-                    OnKickCallBack = onKickCallBack;
+                    onKickCallBack = OnKickCallBack;
                     KickInternal(id, InvokeKickCallBack);
                 }
                 else
@@ -503,39 +495,14 @@ namespace Playroom
                     if (!isPlayRoomInitialized)
                     {
                         Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                        return;
                     }
                     else
                     {
-                        var player = GetPlayer(PlayerId);
-                        Players.Remove(player.id);
-                        onKickCallBack?.Invoke();
+                        MockKick(id, OnKickCallBack);
                     }
                 }
             }
 
-
-
-            private static Profile ParseProfile(string json)
-            {
-                var jsonNode = JSON.Parse(json);
-                var profileData = new Profile();
-                profileData.jsonColor = new Profile.JsonColor
-                {
-                    r = jsonNode["color"]["r"].AsInt,
-                    g = jsonNode["color"]["g"].AsInt,
-                    b = jsonNode["color"]["b"].AsInt,
-                    hexString = jsonNode["color"]["hexString"].Value,
-                    hex = jsonNode["color"]["hex"].AsInt
-                };
-
-                ColorUtility.TryParseHtmlString(profileData.jsonColor.hexString, out UnityEngine.Color color1);
-                profileData.color = color1;
-                profileData.name = jsonNode["name"].Value;
-                profileData.photo = jsonNode["photo"].Value;
-
-                return profileData;
-            }
 
             public Profile GetProfile()
             {
@@ -545,34 +512,10 @@ namespace Playroom
                     var profileData = ParseProfile(jsonString);
                     return profileData;
                 }
-                else
-                {
-                    if (!isPlayRoomInitialized)
-                    {
-                        Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                        return default;
-                    }
-                    else
-                    {
-                        Profile.JsonColor mockJsonColor = new()
-                        {
-                            r = 166,
-                            g = 0,
-                            b = 142,
-                            hexString = "#a6008e"
-                        };
-                        ColorUtility.TryParseHtmlString(mockJsonColor.hexString, out UnityEngine.Color color1);
-                        var testProfile = new Profile()
-                        {
-                            color = color1,
-                            name = "MockPlayer",
-                            jsonColor = mockJsonColor,
-                            photo = "testPhoto"
 
-                        };
-                        return testProfile;
-                    }
-                }
+                if (isPlayRoomInitialized) return MockGetProfile(id);
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                return default;
             }
 
 
@@ -609,7 +552,6 @@ namespace Playroom
             }
 
 
-
             private void SetStateHelper<T>(string id, string key, Dictionary<string, T> values, bool reliable = false)
             {
                 var jsonObject = new JSONObject();
@@ -633,11 +575,12 @@ namespace Playroom
             private static extern void KickInternal(string playerID, Action onKickCallBack = null);
 
             [DllImport("__Internal")]
-            private static extern void WaitForPlayerStateInternal(string playerID, string stateKey, Action onStateSetCallback = null);
+            private static extern void WaitForPlayerStateInternal(string playerID, string stateKey,
+                Action onStateSetCallback = null);
 
             [DllImport("__Internal")]
             private static extern void SetPlayerStateByPlayerId(string playerID, string key, int value,
-              bool reliable = false);
+                bool reliable = false);
 
             [DllImport("__Internal")]
             private static extern void SetPlayerStateFloatByPlayerId(string playerID, string key, string value,
@@ -649,7 +592,7 @@ namespace Playroom
 
             [DllImport("__Internal")]
             private static extern void SetPlayerStateDictionary(string playerID, string key, string jsonValues,
-               bool reliable = false);
+                bool reliable = false);
 
             [DllImport("__Internal")]
             private static extern void SetPlayerStateStringById(string playerID, string key, string value,

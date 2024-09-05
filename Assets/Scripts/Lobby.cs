@@ -1,52 +1,26 @@
+using System;
 using UnityEngine;
 using Playroom;
-using AOT;
-using System;
-using TMPro;
-using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 
 public class Lobby : MonoBehaviour
 {
-    [SerializeField] private List<string> playerNames = new();
-    [SerializeField] private TextMeshProUGUI currentPlayerName;
-
-    [SerializeField] private List<Texture2D> Avatars = new();
-    
-
-    void Awake()
-    {
-        Initialize();
-    }
-
-    void Start()
-    {
-        currentPlayerName.text = playerNames[0];
-    }
-
-
-    private void Initialize()
+    public void Initialize()
     {
         PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
         {
             maxPlayersPerRoom = 2,
-            defaultPlayerStates = new() {
-                        {"score", 0},
-                    },
-
-        }, () =>
-        {
-            PlayroomKit.OnPlayerJoin(AddPlayer);
-        });
+            skipLobby = true,
+            defaultPlayerStates = new()
+            {
+                { "score", 0 },
+            },
+        }, onLaunchCallBack);
     }
 
-    private void AddPlayer(PlayroomKit.Player player)
+    private void onLaunchCallBack()
     {
-        string playerName = player.GetProfile().name;
-
-
-        playerNames.Add(playerName);
+        SceneManager.LoadScene("topdown");
     }
-
-    
 }

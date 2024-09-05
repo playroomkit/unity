@@ -75,14 +75,14 @@ mergeInto(LibraryManager.library, {
    * @description Checks whether the local game is running in stream mode.
    * @returns {boolean} True if the local game is running in stream mode, otherwise false.
    */
-  IsStreamModeInternal: function () {
+  IsStreamScreenInternal: function () {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
       );
       return;
     }
-    return Playroom.isStreamMode();
+    return Playroom.isStreamScreen();
   },
 
   /**
@@ -683,7 +683,7 @@ mergeInto(LibraryManager.library, {
     return buffer;
   },
 
-  GetRoomCode: function () {
+  GetRoomCodeInternal: function () {
     var roomCode = Playroom.getRoomCode();
     var bufferSize = lengthBytesUTF8(roomCode) + 1;
     var buffer = _malloc(bufferSize);

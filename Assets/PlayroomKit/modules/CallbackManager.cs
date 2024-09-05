@@ -28,12 +28,16 @@ namespace Playroom
 
         public static void InvokeCallback(string key, params string[] args)
         {
+           
             if (callbacks.TryGetValue(key, out Delegate callback))
             {
                 if (callback is Action action && args.Length == 0) action?.Invoke();
                 else if (callback is Action<string> stringAction && args.Length == 1) stringAction?.Invoke(args[0]);
-                else if (callback is Action<string, string> doubleStringAction && args.Length == 2) doubleStringAction?.Invoke(args[0], args[1]);
-                else Debug.LogError($"Callback with key {key} is of unsupported type or incorrect number of arguments: {args[0]}!");
+                else if (callback is Action<string, string> doubleStringAction && args.Length == 2)
+                    doubleStringAction?.Invoke(args[0], args[1]);
+                else
+                    Debug.LogError(
+                        $"Callback with key {key} is of unsupported type or incorrect number of arguments: {args[0]}!");
             }
             else
             {
@@ -47,13 +51,11 @@ namespace Playroom
         }
 
 
-
         /// <summary>
         /// Calls an external method to convert a string associated with a given key, called from the JS side only.
         /// </summary>
         /// <param name="key">The key associated with the string to be converted.</param>
         [DllImport("__Internal")]
         private static extern void ConvertString(string key);
-
     }
 }

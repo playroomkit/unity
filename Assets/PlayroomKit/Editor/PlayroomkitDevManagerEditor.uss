@@ -1,0 +1,91 @@
+.label {
+    /*font-size: 14px;*/
+    color: white;
+    -unity-text-align: middle-center;
+}
+
+.mockModeContainer {
+    display: flex;
+    flex-direction: row;
+
+    justify-content: flex-start;
+    align-items: center;
+
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.dropdown {
+    width: 250px;
+    height: 25px;
+
+    background-color: #333;
+    color: white;
+    font-size: 14px;
+    border-color: white;
+    -unity-text-align: middle-center;
+
+    margin-left: 32px;
+}
+
+.tooltip-button {
+    width: 25px;
+    height: 25px;
+    background-color: #676767;
+
+    color: white;
+    font-size: 12px;
+    border-radius: 20px;
+    border-width: 1px;
+    border-color: white;
+
+    /*margin-left: 50px;*/
+    margin-right: 50px;
+}
+
+.tooltip-button:hover {
+    background-color: #383838;
+}
+
+
+.insertCoinContainer {
+    display: flex;
+    flex-direction: row;
+
+    justify-content: flex-start;
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+.insertCoinField {
+    /*display: initial;*/
+    margin: 0;
+    width: 250px;
+    height: 25px;
+    -unity-text-align: middle-left;
+}
+
+.button {
+    align-self: center;
+    height: 25%;
+    width: 50%;
+
+    margin-bottom: 10px;
+}
+
+.custom-tooltip {
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    position: absolute;
+}
+
+.doc-link {
+    justify-content: center;
+    align-self: center;
+    
+    color: aqua;
+}
