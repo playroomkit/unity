@@ -35,41 +35,12 @@ public class GameManager : MonoBehaviour
         }, () =>
         {
             PlayroomKit.OnPlayerJoin(AddPlayer);
-
-            Debug.Log(PlayroomKit.IsHost());
-
-            if (PlayroomKit.IsHost())
-            {
-                setRoomProperties();
-            }
-            else
-            {
-                CalculateRoomCreatedTime();
-            }
+            PlayroomKit.RpcRegister("score", (data, caller) => print($"{data} by {PlayroomKit.GetPlayer(caller).GetProfile().name}"));
         }, () => { Debug.Log("OnDisconnect callback"); });
     }
-
-    void setRoomProperties()
-    {
-        PlayroomKit.SetState("roomCreated", DateTime.Now.ToString(), true);
-        var time = PlayroomKit.GetState<string>("roomCreated");
-
-        Debug.Log($"[Host]: {time}");
-        PlayroomKit.SetState("isGameStarted", false, true);
-    }
-
-    void CalculateRoomCreatedTime()
-    {
-        string roomCreatedString = PlayroomKit.GetState<string>("roomCreated");
-        Debug.Log($"[Non Host]: {roomCreatedString}");
-    }
-
-    private void logScore(string data, string sender)
-    {
-        Debug.LogWarning($"{data} by {PlayroomKit.GetPlayer(sender).GetProfile().name}");
-    }
-
-
+    
+    
+    
     /// <summary>
     ///     Update the player position and sync.
     /// </summary>

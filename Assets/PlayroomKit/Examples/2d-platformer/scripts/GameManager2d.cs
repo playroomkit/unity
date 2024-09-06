@@ -55,6 +55,7 @@ public class GameManager2d : MonoBehaviour
         }, () =>
         {
             PlayroomKit.OnPlayerJoin(AddPlayer);
+            print($"[Unity Log] isHost: {PlayroomKit.IsHost()}");
         });
     }
 

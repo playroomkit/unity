@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   browser: 0
-  webDriverDirectory: Assets\
+  webDriverDirectory: 
   browserArguments: []
   httpServerPort: 6500
   indexFile: {fileID: 4900000, guid: f9b34a310cdb64b38a68c4c1319bf1a7, type: 3}
