@@ -81,6 +81,4 @@ package-lock.json.meta
 Assets/Plugins
 Assets/PlayroomKit/node_modules.meta
 /.idea
-Assets/chromedriver
 Assets/chromedriver*
-Assets/chromedriver.meta
