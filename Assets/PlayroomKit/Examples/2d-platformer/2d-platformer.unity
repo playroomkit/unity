@@ -224,6 +224,7 @@ MonoBehaviour:
   score: 0
   scoreTextPlayer1: {fileID: 1808725817}
   scoreTextPlayer2: {fileID: 2072156197}
+  roomCode: 
 --- !u!4 &330732770
 Transform:
   m_ObjectHideFlags: 0
@@ -239,7 +240,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &941470651
+--- !u!1001 &941343714
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -247,6 +248,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1488774288987972495, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: includeJavaScriptFiles.Array.data[0]
+      value: Playroomkit/modules/PlayroomMockBridge.js
+      objectReference: {fileID: 0}
     - target: {fileID: 1957495583081457048, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
       propertyPath: m_Name
       value: PlayroomMockManager
@@ -1123,4 +1128,4 @@ SceneRoots:
   - {fileID: 1036353976}
   - {fileID: 242246380}
   - {fileID: 1433174484}
-  - {fileID: 941470651}
+  - {fileID: 941343714}

@@ -26,6 +26,8 @@ public class GameManager2d : MonoBehaviour
 
     private static bool playerJoined;
 
+    public string roomCode = "ABC123";
+
     /// <summary>
     /// List of players and their gameObjects.
     /// </summary>
@@ -47,7 +49,7 @@ public class GameManager2d : MonoBehaviour
         PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
         {
             maxPlayersPerRoom = 2,
-
+            roomCode = "ABC123",
             defaultPlayerStates = new() {
                         {"score", 0},
                     },
@@ -148,6 +150,8 @@ public class GameManager2d : MonoBehaviour
             });
         }
     }
+    
+    
 
     /// <summary>
     /// Adds the "player" to the game scene.

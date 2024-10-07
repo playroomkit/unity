@@ -25,12 +25,12 @@ public class IsometricPlayerController : MonoBehaviour
         if (_input == Vector3.zero) return;
 
         var rot = Quaternion.LookRotation(_input.ToIso(), Vector3.up);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, rot, _turnSpeed * Time.deltaTime);
+        _rb.transform.rotation = Quaternion.RotateTowards(transform.rotation, rot, _turnSpeed * Time.deltaTime);
     }
 
     public void Move()
     {
-        transform.Translate(_input.normalized.magnitude * _speed * Time.deltaTime * transform.forward, Space.World);
+        _rb.transform.Translate(_input.normalized.magnitude * _speed * Time.deltaTime * transform.forward, Space.World);
     }
 }
 
