@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 1429187865}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657815, g: 0.49641192, b: 0.5748165, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -287,6 +287,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1488774288987972495, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: webDriverDirectory
+      value: Assets/
+      objectReference: {fileID: 0}
+    - target: {fileID: 1488774288987972495, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: includeJavaScriptFiles.Array.data[0]
+      value: Playroomkit/modules/PlayroomMockBridge.js
+      objectReference: {fileID: 0}
     - target: {fileID: 1957495583081457048, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
       propertyPath: m_Name
       value: PlayroomMockManager
