@@ -58,6 +58,25 @@ namespace Playroom
             UnityBrowserBridge.Instance.ExecuteJS($"OnPlayerJoin('{gameObjectName}')");
 #endif
         }
+        
+        private static void MockOnPlayerQuitBrowser(Action<Player> onPlayerJoinCallback)
+        {
+            if (!OnPlayerJoinCallbacks.Contains(onPlayerJoinCallback)) OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
+
+            var gameObjectName = GetGameObject("devManager").name;
+
+#if UNITY_EDITOR
+            UnityBrowserBridge.Instance.ExecuteJS($"OnPlayerQuit('{gameObjectName}')");
+#endif
+        }
+        
+        private static void MockOnPlayerQuitLocal(Action<string> onPlayerQuitCallback)
+        {
+            Debug.Log("On Player Quit");
+            var testPlayer = GetPlayer(PlayerId);
+            testPlayer.OnQuitCallbacks.Add(onPlayerQuitCallback);
+            __OnQuitInternalHandler(PlayerId);
+        }
 
         /// <summary>
         /// This function is used by GetPlayerID in PlayroomKitDevManager, GetPlayer is only invoked
