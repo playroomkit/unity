@@ -16,15 +16,14 @@ mergeInto(LibraryManager.library, {
     onLaunchCallBackKey = UTF8ToString(onLaunchCallBackKey);
     onQuitInternalCallbackKey = UTF8ToString(onQuitInternalCallbackKey);
 
+
     function OnLaunchCallBack() {
       var key = _ConvertString(onLaunchCallBackKey);
-      //dynCall("vi", onLaunchCallBack, [key]);
       {{{ makeDynCall('vi', 'onLaunchCallBack') }}}(key)
     }
 
     function OnDisconnectCallback() {
       var key = _ConvertString(onQuitInternalCallbackKey);
-      //dynCall("vi", 'onDisconnectCallback', [key]);
       {{{ makeDynCall('vi', 'onDisconnectCallback') }}}(key)
     }
     this.onPlayerJoinCallBacks = {};
@@ -46,7 +45,6 @@ mergeInto(LibraryManager.library, {
           stringToUTF8(id, buffer, bufferSize);
 
           player.onQuit(() => {
-            //dynCall("vi", onQuitInternalCallback, [buffer]);
             {{{ makeDynCall('vi', 'onQuitInternalCallback') }}}(buffer)
           });
         });
@@ -56,7 +54,6 @@ mergeInto(LibraryManager.library, {
         var bufferSize = lengthBytesUTF8(jsonString) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(jsonString, buffer, bufferSize);
-        //dynCall("vi", onError, [buffer]);
         {{{ makeDynCall('vi','onError') }}}(buffer)
       });
   },
@@ -143,8 +140,7 @@ mergeInto(LibraryManager.library, {
         var bufferSize = lengthBytesUTF8(id) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(id, buffer, bufferSize);
-
-        //dynCall("vi", functionPtr, [buffer]);
+        
         {{{ makeDynCall('vi', 'functionPtr') }}}(buffer)
       });
     } catch (error) {
@@ -706,7 +702,6 @@ mergeInto(LibraryManager.library, {
 
     Playroom.onDisconnect((e) => {
       console.log(`Disconnected!`, e.code, e.reason);
-      //dynCall("v", callback, []);
       {{{ makeDynCall('v', 'callback') }}}()
     });
   },
@@ -726,8 +721,7 @@ mergeInto(LibraryManager.library, {
         stateVal = JSON.stringify(stateVal);
 
         var key = _ConvertString(stateKey);
-
-        //dynCall("vii", onStateSetCallback, [key, stringToNewUTF8(stateVal)]);
+        
         {{{ makeDynCall('vii', 'onStateSetCallback') }}}(key, stringToNewUTF8(stateVal))
       })
       .catch((error) => {
@@ -764,7 +758,6 @@ mergeInto(LibraryManager.library, {
     stateKey = UTF8ToString(stateKey);
     Playroom.waitForPlayerState(playerState, stateKey)
       .then(() => {
-        //dynCall("v", onStateSetCallback, []);
         {{{ makeDynCall('v', 'onStateSetCallback') }}}()
       })
       .catch((error) => {
@@ -797,7 +790,6 @@ mergeInto(LibraryManager.library, {
     playerState
       .kick()
       .then(() => {
-        //dynCall("v", onKickCallBack, []);
         {{{ makeDynCall('v', 'onKickCallback') }}}()
       })
       .catch((error) => {
@@ -816,7 +808,6 @@ mergeInto(LibraryManager.library, {
     var keys = keysToExclude ? JSON.parse(UTF8ToString(keysToExclude)) : [];
     Playroom.resetStates(keys)
       .then(() => {
-       // dynCall("v", onStatesReset, []);
         {{{ makeDynCall('v', 'onStatesReset') }}}()
       })
       .catch((error) => {
@@ -836,7 +827,6 @@ mergeInto(LibraryManager.library, {
     var keys = keysToExclude ? JSON.parse(UTF8ToString(keysToExclude)) : [];
     Playroom.resetPlayersStates(keys)
       .then(() => {
-        //dynCall("v", onStatesReset, []);
         {{{ makeDynCall('v', 'onStatesReset') }}}()
       })
       .catch((error) => {
@@ -863,7 +853,6 @@ mergeInto(LibraryManager.library, {
       var buffer = _malloc(bufferSize);
       stringToUTF8(id, buffer, bufferSize);
 
-      //dynCall("vii", callback, [stringToNewUTF8(dataJson), buffer]);
       {{{ makeDynCall('vii', 'callback') }}}(stringToNewUTF8(dataJson), buffer)
 
       return onResponseReturn;
@@ -897,7 +886,6 @@ mergeInto(LibraryManager.library, {
 
       function onResponseCallback(responseData) {
         console.log("Response received: ", responseData);
-        //dynCall("v", callbackOnResponse, []);
         {{{ makeDynCall('v', 'callbackOnResponse') }}}()
       }
 
@@ -918,7 +906,6 @@ mergeInto(LibraryManager.library, {
     Playroom.startMatchmaking()
       .then(() => {
         console.log(`Player has joined a public room`);
-        //dynCall("v", callback, []);
         {{{ makeDynCall('v', 'callback') }}}()
       })
       .catch((error) => {
