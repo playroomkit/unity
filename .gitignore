@@ -80,3 +80,4 @@ package-lock.json
 package-lock.json.meta
 Assets/Plugins
 Assets/PlayroomKit/node_modules.meta
+/.idea
