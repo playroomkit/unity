@@ -21,6 +21,8 @@ namespace Playroom
         public static bool isPlayRoomInitialized;
         private static readonly Dictionary<string, Player> Players = new();
         
+        static Action startMatchmakingCallback = null;
+        
         public void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
             Action onDisconnectCallback = null)
         {
@@ -69,6 +71,62 @@ namespace Playroom
                 return player;
             }
         }
+        
+        public void SetState<T>(string key, T value, bool reliable = false)
+        {
+            if (!isPlayRoomInitialized)
+            {
+                Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
+                return;
+            }
+            _playroomService.SetState(key, value, reliable);
+        }
+        
+        public T GetState<T>(string key)
+        {
+            if (!isPlayRoomInitialized)
+            {
+                Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
+                return default;
+            }
+            return _playroomService.GetState<T>(key);
+        }
+        
+        public void RpcRegister(string name, Action<string, string> rpcRegisterCallback,
+            string onResponseReturn = null)
+        {
+            if (!isPlayRoomInitialized)
+            {
+                Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
+                return;
+            }
+            
+            _rpc.RpcRegister(name, rpcRegisterCallback, onResponseReturn);
+        }
+        
+        public void RpcCall(string name, object data, Action callbackOnResponse = null)
+        {
+            if (!isPlayRoomInitialized)
+            {
+                Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
+                return;
+            }
+            
+            _rpc.RpcCall(name, data, callbackOnResponse);
+        }
+        
+        public void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse = null)
+        {
+            if (!isPlayRoomInitialized)
+            {
+                Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
+                return;
+            }
+            
+            _rpc.RpcCall(name, data, mode, callbackOnResponse);
+        }
+        
+        
         //
         
 
@@ -193,330 +251,7 @@ namespace Playroom
                 MockOnDisconnect(callback);
             }
         }
-
-
-        public static void SetState(string key, string value, bool reliable = false)
-        {
-            if (IsRunningInBrowser())
-            {
-                SetStateString(key, value, reliable);
-            }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                }
-                else
-                {
-                    MockSetState(key, value);
-                }
-            }
-        }
-
-        public static void SetState(string key, int value, bool reliable = false)
-        {
-            if (IsRunningInBrowser())
-            {
-                SetStateInternal(key, value, reliable);
-            }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                }
-                else
-                {
-                    MockSetState(key, value);
-                }
-            }
-        }
-
-        public static void SetState(string key, float value, bool reliable = false)
-        {
-            if (IsRunningInBrowser())
-            {
-                var floatAsString = value.ToString(CultureInfo.InvariantCulture);
-                SetStateFloatInternal(key, floatAsString, reliable);
-            }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                }
-                else
-                {
-                    MockSetState(key, value);
-                }
-            }
-        }
-
-        public static void SetState(string key, object value, bool reliable = false)
-        {
-            if (IsRunningInBrowser())
-            {
-                string jsonString = JsonUtility.ToJson(value);
-                SetStateString(key, jsonString, reliable);
-            }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                }
-                else
-                {
-                    MockSetState(key, value);
-                }
-            }
-        }
-
-        public static void SetState(string key, bool value, bool reliable = false)
-        {
-            if (IsRunningInBrowser())
-            {
-                SetStateInternal(key, value, reliable);
-            }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                }
-                else
-                {
-                    MockSetState(key, value);
-                }
-            }
-        }
-
-
-        public static void SetState(string key, Dictionary<string, int> values, bool reliable = false)
-        {
-            if (IsRunningInBrowser())
-            {
-                SetStateHelper(key, values, reliable);
-            }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                }
-                else
-                {
-                    MockSetState(key, values);
-                }
-            }
-        }
-
-        public static void SetState(string key, Dictionary<string, float> values, bool reliable = false)
-        {
-            if (IsRunningInBrowser())
-            {
-                SetStateHelper(key, values, reliable);
-            }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                }
-                else
-                {
-                    MockSetState(key, values);
-                }
-            }
-        }
-
-        public static void SetState(string key, Dictionary<string, bool> values, bool reliable = false)
-        {
-            if (IsRunningInBrowser())
-            {
-                SetStateHelper(key, values, reliable);
-            }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                }
-                else
-                {
-                    MockSetState(key, values);
-                }
-            }
-        }
-
-        public static void SetState(string key, Dictionary<string, string> values, bool reliable = false)
-        {
-            if (IsRunningInBrowser())
-            {
-                SetStateHelper(key, values, reliable);
-            }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                }
-                else
-                {
-                    MockSetState(key, values);
-                }
-            }
-        }
-
-
-        // GETTERS
-        private static string GetStateString(string key)
-        {
-            if (IsRunningInBrowser())
-            {
-                return GetStateStringInternal(key);
-            }
-
-
-            if (!isPlayRoomInitialized)
-            {
-                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                return default;
-            }
-            else
-            {
-                return MockGetState<string>(key);
-            }
-        }
-
-
-        private static int GetStateInt(string key)
-        {
-            if (IsRunningInBrowser())
-            {
-                return GetStateIntInternal(key);
-            }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return default;
-                }
-                else
-                {
-                    return MockGetState<int>(key);
-                }
-            }
-        }
-
-
-        private static float GetStateFloat(string key)
-        {
-            if (IsRunningInBrowser())
-            {
-                return GetStateFloatInternal(key);
-            }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return default;
-                }
-                else
-                {
-                    return MockGetState<float>(key);
-                }
-            }
-        }
-
-        private static bool GetStateBool(string key)
-        {
-            if (IsRunningInBrowser())
-            {
-                var stateValue = GetStateInt(key);
-                return stateValue == 1 ? true :
-                    stateValue == 0 ? false :
-                    throw new InvalidOperationException($"GetStateBool: {key} is not a bool");
-            }
-            else
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return false;
-                }
-                else
-                {
-                    return MockGetState<bool>(key);
-                }
-            }
-        }
-
-        public static T GetState<T>(string key)
-        {
-            if (IsRunningInBrowser())
-            {
-                Type type = typeof(T);
-                if (type == typeof(int)) return (T)(object)GetStateInt(key);
-                else if (type == typeof(float)) return (T)(object)GetStateFloat(key);
-                else if (type == typeof(bool)) return (T)(object)GetStateBool(key);
-                else if (type == typeof(string)) return (T)(object)GetStateString(key);
-                else if (type == typeof(Vector2)) return JsonUtility.FromJson<T>(GetStateString(key));
-                else if (type == typeof(Vector3)) return JsonUtility.FromJson<T>(GetStateString(key));
-                else if (type == typeof(Vector4)) return JsonUtility.FromJson<T>(GetStateString(key));
-                else if (type == typeof(Quaternion)) return JsonUtility.FromJson<T>(GetStateString(key));
-                else
-                {
-                    Debug.LogError($"GetState<{type}> is not supported.");
-                    return default;
-                }
-            }
-            else
-            {
-                if (isPlayRoomInitialized)
-                {
-                    return MockGetState<T>(key);
-                }
-                else
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return default;
-                }
-            }
-        }
-
-
-        public static Dictionary<string, T> GetState<T>(string key, bool isReturnDictionary = false)
-        {
-            if (IsRunningInBrowser() && isReturnDictionary)
-            {
-                var jsonString = GetStateDictionaryInternal(key);
-                return ParseJsonToDictionary<T>(jsonString);
-            }
-            else
-            {
-                if (isPlayRoomInitialized)
-                {
-                    if (isReturnDictionary)
-                    {
-                        return MockGetState<Dictionary<string, T>>(key);
-                    }
-                    else
-                    {
-                        return default;
-                    }
-                }
-                else
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return default;
-                }
-            }
-        }
-
+        
 
         [MonoPInvokeCallback(typeof(Action<string, string>))]
         private static void InvokeCallback(string stateKey, string stateVal)
@@ -723,8 +458,7 @@ namespace Playroom
             public string x;
             public string y;
         }
-
-        static Action startMatchmakingCallback = null;
+        
 
         public static void StartMatchmaking(Action callback = null)
         {

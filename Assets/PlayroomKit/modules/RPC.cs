@@ -16,20 +16,7 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern void RpcRegisterInternal(string name, Action<string, string> rpcRegisterCallback,
             string onResponseReturn = null);
-
-        public static void RpcRegister(string name, Action<string, string> rpcRegisterCallback,
-            string onResponseReturn = null)
-        {
-            if (IsRunningInBrowser())
-            {
-                CallbackManager.RegisterCallback(rpcRegisterCallback, name);
-                RpcRegisterInternal(name, InvokeRpcRegisterCallBack, onResponseReturn);
-            }
-            else
-            {
-                MockRpcRegister(name, rpcRegisterCallback, onResponseReturn);
-            }
-        }
+        
 
         [MonoPInvokeCallback(typeof(Action<string, string>))]
         private static void InvokeRpcRegisterCallBack(string dataJson, string senderJson)
@@ -69,52 +56,8 @@ namespace Playroom
         private extern static void RpcCallInternal(string name, string data, RpcMode mode, Action callbackOnResponse);
 
         private static Dictionary<string, List<Action>> OnResponseCallbacks = new Dictionary<string, List<Action>>();
-
-        public static void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse = null)
-        {
-            if (IsRunningInBrowser())
-            {
-                string jsonData = ConvertToJson(data);
-                if (OnResponseCallbacks.ContainsKey(name))
-                {
-                    OnResponseCallbacks[name].Add(callbackOnResponse);
-                }
-                else
-                {
-                    OnResponseCallbacks.Add(name, new List<Action> { callbackOnResponse });
-                    if (!rpcCalledEvents.Contains(name))
-                    {
-                        rpcCalledEvents.Add(name);
-                    }
-                }
-
-                JSONArray jsonArray = new JSONArray();
-                foreach (string item in rpcCalledEvents)
-                {
-                    jsonArray.Add(item);
-                }
-
-                string jsonString = jsonArray.ToString();
-                /* 
-                This is requrired to sync the rpc events between all players, without this players won't know which event has been called.
-                this is a temporary fix, RPC's need to be handled within JS for better control.
-                */
-                SetState("rpcCalledEventName", jsonString, reliable: true);
-
-                RpcCallInternal(name, jsonData, mode, InvokeOnResponseCallback);
-            }
-            else
-            {
-                MockRpcCall(name, data, mode, callbackOnResponse);
-            }
-        }
-
-        // Default Mode
-        public static void RpcCall(string name, object data, Action callbackOnResponse = null)
-        {
-            RpcCall(name, data, RpcMode.ALL, callbackOnResponse);
-        }
-
+        
+        
         [MonoPInvokeCallback(typeof(Action))]
         private static void InvokeOnResponseCallback()
         {
