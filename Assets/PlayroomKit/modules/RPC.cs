@@ -11,13 +11,6 @@ namespace Playroom
     public partial class PlayroomKit
     {
         // RPC:
-        public enum RpcMode
-        {
-            ALL,
-            OTHERS,
-            HOST
-        }
-
         private static List<string> rpcCalledEvents = new();
 
         [DllImport("__Internal")]

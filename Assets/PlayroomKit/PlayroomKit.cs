@@ -20,6 +20,55 @@ namespace Playroom
         private IRPC _rpc;
         public static bool isPlayRoomInitialized;
         private static readonly Dictionary<string, Player> Players = new();
+        
+        public void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
+            Action onDisconnectCallback = null)
+        {
+            _playroomService.InsertCoin(options, onLaunchCallBack, onDisconnectCallback);
+        }
+        
+        public bool IsHost()
+        {
+            if (!isPlayRoomInitialized)
+            {
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                return false;
+            }
+            return _playroomService.IsHost();
+        }
+        
+        public Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
+        {
+            if (!isPlayRoomInitialized)
+            {
+                Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
+                return null;
+            }
+
+            return _playroomService.OnPlayerJoin(onPlayerJoinCallback);
+        }
+        
+        public static Player GetPlayer(string playerId)
+        {
+            if (Players.TryGetValue(playerId, out var player))
+            {
+                return player;
+            }
+            else
+            {
+                if (!IsRunningInBrowser())
+                {
+                    player = new Player(playerId, new LocalPlayerService());
+                }
+                else
+                {
+                    player = new Player(playerId, new PlayerService());
+                }
+
+                Players.Add(playerId, player);
+                return player;
+            }
+        }
         //
         
 
@@ -48,41 +97,6 @@ namespace Playroom
 
         private static Action<string> onError;
 
-        public static void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
-            Action onDisconnectCallback = null)
-        {
-            Debug.Log("PlayroomKit: InsertCoin");
-            if (IsRunningInBrowser())
-            {
-                isPlayRoomInitialized = true;
-
-                string onLaunchCallBackKey = CallbackManager.RegisterCallback(onLaunchCallBack, "onLaunchCallBack");
-                string onDisconnectCallBackKey =
-                    CallbackManager.RegisterCallback(onDisconnectCallback, "onDisconnectCallBack");
-
-                string optionsJson = null;
-                if (options != null)
-                {
-                    optionsJson = SerializeInitOptions(options);
-                }
-
-                if (options.skipLobby == false)
-                {
-#if UNITY_WEBGL && !UNITY_EDITOR
-                        WebGLInput.captureAllKeyboardInput = false;
-#endif
-                }
-
-                InsertCoinInternal(
-                    optionsJson, InvokeInsertCoin, __OnQuitInternalHandler, onDisconnectCallbackHandler,
-                    InvokeOnErrorInsertCoin, onLaunchCallBackKey, onDisconnectCallBackKey);
-            }
-            else
-            {
-                MockInsertCoin(options, onLaunchCallBack);
-            }
-        }
-
 
         private static List<Action<Player>> OnPlayerJoinCallbacks = new();
 
@@ -108,47 +122,7 @@ namespace Playroom
                 callback?.Invoke(player);
             }
         }
-
-
-
-
-        public static Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
-        {
-            if (!isPlayRoomInitialized)
-            {
-                Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
-                return null;
-            }
-
-            if (IsRunningInBrowser())
-            {
-                if (!OnPlayerJoinCallbacks.Contains(onPlayerJoinCallback))
-                {
-                    OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
-                }
-
-                var CallbackID = OnPlayerJoinInternal(__OnPlayerJoinCallbackHandler);
-
-                void Unsubscribe()
-                {
-                    OnPlayerJoinCallbacks.Remove(onPlayerJoinCallback);
-                    UnsubscribeOnPlayerJoin(CallbackID);
-                }
-
-                return Unsubscribe;
-            }
-
-            if (!isPlayRoomInitialized)
-            {
-                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-            }
-            else
-            {
-                MockOnPlayerJoin(onPlayerJoinCallback);
-            }
-
-            return null;
-        }
+        
 
 
         private static void UnsubscribeOnPlayerJoin(string CallbackID)
@@ -163,41 +137,6 @@ namespace Playroom
                 Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
 
             return Players;
-        }
-
-        public static Player GetPlayer(string playerId)
-        {
-            if (!isPlayRoomInitialized)
-            {
-                Debug.LogError(IsRunningInBrowser()
-                    ? "PlayroomKit is not loaded!. Please make sure to call InsertCoin first."
-                    : "[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                return default;
-            }
-
-            if (Players.TryGetValue(playerId, out var player))
-            {
-                return player;
-            }
-            else
-            {
-                player = new Player(playerId);
-                Players.Add(playerId, player);
-                return player;
-            }
-        }
-
-
-        public static bool IsHost()
-        {
-            if (IsRunningInBrowser())
-            {
-                return IsHostInternal();
-            }
-
-            if (isPlayRoomInitialized) return MockIsHost();
-            Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-            return false;
         }
 
 
