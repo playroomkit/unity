@@ -146,6 +146,11 @@ namespace Playroom
             return Players;
         }
         
+        public string GetRoomCode()
+        {
+            return _playroomService.GetRoomCode();
+        }
+        
         // DI END
         
 
@@ -219,16 +224,7 @@ namespace Playroom
             Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
             return false;
         }
-
-        public static string GetRoomCode()
-        {
-            if (IsRunningInBrowser())
-            {
-                return GetRoomCodeInternal();
-            }
-
-            return MockGetRoomCode();
-        }
+        
 
         public static Player MyPlayer()
         {
