@@ -143,7 +143,7 @@ public class GameManager2d : MonoBehaviour
 
             score = playerGameObjects[playerIndex].GetComponent<PlayerController2d>().ShootBullet(playerPosition, 50f, score);
 
-            _playroomKit.RpcCall("ShootBullet", score, PlayroomKit.RpcMode.OTHERS,  () =>
+            _playroomKit.RpcCall("ShootBullet", score, PlayroomKit.RpcMode.ALL,  () =>
             {
                 Debug.Log("Shooting bullet");
             });

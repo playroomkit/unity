@@ -22,6 +22,21 @@ namespace Playroom
         private static readonly Dictionary<string, Player> Players = new();
         
         static Action startMatchmakingCallback = null;
+
+
+        public PlayroomKit()
+        {
+            if (IsRunningInBrowser())
+            {
+                _playroomService = new PlayroomService(new PlayroomKitInterop());
+                _rpc = new RPC(this);
+            }
+            else
+            {
+                _playroomService = new LocalMockPlayroomService();
+                _rpc = new RPCLocal();
+            }
+        }
         
         public void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
             Action onDisconnectCallback = null)
