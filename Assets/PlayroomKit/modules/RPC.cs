@@ -20,6 +20,14 @@ namespace Playroom
                 _playroomKit = playroomKit;
                 _interop = new PlayroomKitInterop();
             }
+            
+            public RPC(PlayroomKit playroomKit, IInterop interop)
+            {
+                _playroomKit = playroomKit;
+                _interop = interop;
+            }
+            
+            
             public void RpcRegister(string name, Action<string, string> rpcRegisterCallback,
                 string onResponseReturn = null)
             {

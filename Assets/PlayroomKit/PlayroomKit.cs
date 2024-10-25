@@ -38,9 +38,10 @@ namespace Playroom
             }
         }
         
-        public  PlayroomKit(IPlayroomBase playroomService)
+        public  PlayroomKit(IPlayroomBase playroomService, IRPC rpc)
         {
             _playroomService = playroomService;
+            _rpc = rpc;
         }
         
         public void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
