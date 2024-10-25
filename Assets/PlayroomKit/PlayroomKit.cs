@@ -158,27 +158,7 @@ namespace Playroom
         {
             public int waitBeforeCreatingNewRoom = 5000;
         }
-
-        [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void InvokeInsertCoin(string key)
-        {
-            CallbackManager.InvokeCallback(key);
-
-
-#if UNITY_WEBGL && !UNITY_EDITOR
-            WebGLInput.captureAllKeyboardInput = true;
-#endif
-        }
-
-        [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void InvokeOnErrorInsertCoin(string error)
-        {
-            onError?.Invoke(error);
-            Debug.LogException(new Exception(error));
-        }
-
-        private static Action<string> onError;
-
+        
 
         private static List<Action<Player>> OnPlayerJoinCallbacks = new();
 
@@ -188,13 +168,7 @@ namespace Playroom
         {
             OnPlayerJoinWrapperCallback(id);
         }
-
-        [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void onDisconnectCallbackHandler(string key)
-        {
-            CallbackManager.InvokeCallback(key);
-        }
-
+        
 
         private static void OnPlayerJoinWrapperCallback(string id)
         {
@@ -205,14 +179,6 @@ namespace Playroom
             }
         }
         
-
-
-        private static void UnsubscribeOnPlayerJoin(string CallbackID)
-        {
-            UnsubscribeOnPlayerJoinInternal(CallbackID);
-        }
-        
-
         public static bool IsStreamScreen()
         {
             if (IsRunningInBrowser())
@@ -396,19 +362,7 @@ namespace Playroom
         {
             UnsubscribeOnQuitInternal();
         }
-
-        [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void __OnQuitInternalHandler(string playerId)
-        {
-            if (Players.TryGetValue(playerId, out Player player))
-            {
-                ((PlayroomKit.IPlayerInteraction)player).InvokeOnQuitWrapperCallback();
-            }
-            else
-            {
-                Debug.LogError("[__OnQuitInternalHandler] Couldn't find player with id " + playerId);
-            }
-        }
+        
 
 
         // Joystick
@@ -458,11 +412,5 @@ namespace Playroom
             public string y;
         }
         
-
-        [MonoPInvokeCallback(typeof(Action))]
-        private static void InvokeStartMatchmakingCallback()
-        {
-            startMatchmakingCallback?.Invoke();
-        }
     }
 }
