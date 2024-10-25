@@ -126,8 +126,27 @@ namespace Playroom
             _rpc.RpcCall(name, data, mode, callbackOnResponse);
         }
         
+        public void StartMatchmaking(Action callback = null)
+        {
+            _playroomService.StartMatchmaking(callback);
+        }
         
-        //
+        // it checks if the game is running in the browser or in the editor
+        public static bool IsRunningInBrowser()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+                return true;
+#else
+            return false;
+#endif
+        }
+        
+        public static Dictionary<string, Player> GetPlayers()
+        {
+            return Players;
+        }
+        
+        // DI END
         
 
         public class MatchMakingOptions
@@ -187,16 +206,7 @@ namespace Playroom
         {
             UnsubscribeOnPlayerJoinInternal(CallbackID);
         }
-
-
-        public static Dictionary<string, Player> GetPlayers()
-        {
-            if (!isPlayRoomInitialized)
-                Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
-
-            return Players;
-        }
-
+        
 
         public static bool IsStreamScreen()
         {
@@ -382,15 +392,8 @@ namespace Playroom
         }
 
 
-        // it checks if the game is running in the browser or in the editor
-        public static bool IsRunningInBrowser()
-        {
-#if UNITY_WEBGL && !UNITY_EDITOR
-                        return true;
-#else
-            return false;
-#endif
-        }
+       
+
 
 
         private static void UnsubscribeOnQuit()
@@ -459,19 +462,6 @@ namespace Playroom
             public string y;
         }
         
-
-        public static void StartMatchmaking(Action callback = null)
-        {
-            if (IsRunningInBrowser())
-            {
-                startMatchmakingCallback = callback;
-                StartMatchmakingInternal(InvokeStartMatchmakingCallback);
-            }
-            else
-            {
-                MockStartMatchmaking();
-            }
-        }
 
         [MonoPInvokeCallback(typeof(Action))]
         private static void InvokeStartMatchmakingCallback()
