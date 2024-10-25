@@ -34,7 +34,7 @@ public class GameManagerIsometric : MonoBehaviour
     {
         if (playerJoined)
         {
-            var myPlayer = MyPlayer();
+            var myPlayer = PlayroomKit.MyPlayer();
             var index = players.IndexOf(myPlayer);
 
             playerGameObjects[index].GetComponent<IsometricPlayerController>().LookAround();
