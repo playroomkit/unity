@@ -151,6 +151,12 @@ namespace Playroom
             return _playroomService.GetRoomCode();
         }
         
+        
+        public  void OnDisconnect(Action callback)
+        {
+            _playroomService.OnDisconnect(callback);
+        }
+        
         // DI END
         
 
@@ -211,18 +217,6 @@ namespace Playroom
         }
 
 
-        public static void OnDisconnect(Action callback)
-        {
-            if (IsRunningInBrowser())
-            {
-                CallbackManager.RegisterCallback(callback);
-                OnDisconnectInternal(onDisconnectCallbackHandler);
-            }
-            else
-            {
-                MockOnDisconnect(callback);
-            }
-        }
         
 
         [MonoPInvokeCallback(typeof(Action<string, string>))]

@@ -83,6 +83,10 @@ namespace Playroom
                 }
             }
 
+            public void OnDisconnect(Action callback)
+            {
+                callback?.Invoke();
+            }
         }
     }
 }

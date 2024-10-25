@@ -217,6 +217,12 @@ namespace Playroom
                     Debug.LogError("[__OnQuitInternalHandler] Couldn't find player with id " + playerId);
                 }
             }
+            
+            public void OnDisconnect(Action callback)
+            {
+                CallbackManager.RegisterCallback(callback);
+                _interop.OnDisconnectWrapper(onDisconnectCallbackHandler);
+            }
 
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void onDisconnectCallbackHandler(string key)

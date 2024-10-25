@@ -26,6 +26,8 @@ namespace Playroom
 
             public T GetState<T>(string key);
 
+            public void OnDisconnect(Action callback);
+
             [MonoPInvokeCallback(typeof(Action<string>))]
             protected static void __OnPlayerJoinCallbackHandler(string id)
             {
