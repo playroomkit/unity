@@ -25,10 +25,12 @@ namespace Playroom
             public string id;
             IPlayerBase _playerService;
 
+            private static int totalObjects = 0;
             public Player(string playerID, IPlayerBase playerService)
             {
                 this.id = playerID;
                 this._playerService = playerService;
+                totalObjects++;
             }
 
             public void SetState(string key, object value, bool reliable = false)
@@ -79,9 +81,6 @@ namespace Playroom
                     public int hex;
                 }
             }
-
-            
-            private static int totalObjects = 0;
             
 
             private List<Action<string>> OnQuitCallbacks = new();
