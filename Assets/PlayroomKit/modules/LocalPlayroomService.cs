@@ -82,7 +82,7 @@ namespace Playroom
                     return default;
                 }
             }
-
+            
             public void OnDisconnect(Action callback)
             {
                 callback?.Invoke();

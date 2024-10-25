@@ -56,7 +56,7 @@ namespace Playroom
                 Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                 return null;
             }
-            //
+            //DI END
             
             
             
@@ -82,25 +82,7 @@ namespace Playroom
 
             
             private static int totalObjects = 0;
-
-
-            public Player(string id)
-            {
-                this.id = id;
-                totalObjects++;
-
-                if (IsRunningInBrowser())
-                {
-                    // OnQuitCallbacks.Add(OnQuitDefaultCallback);
-                }
-                else
-                {
-                    if (!isPlayRoomInitialized) ///
-                        Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    else
-                        Debug.Log("Mock Player Created");
-                }
-            }
+            
 
             private List<Action<string>> OnQuitCallbacks = new();
 
