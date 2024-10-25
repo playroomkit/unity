@@ -45,19 +45,6 @@ namespace Playroom
                 return value;
             }
             
-            //temporary implementation
-            public static Player MyPlayer()
-            {
-                if (IsRunningInBrowser())
-                {
-                    var id = MyPlayerInternal();
-                    return GetPlayer(id);
-                }
-
-                if (isPlayRoomInitialized) return GetPlayer("mockplayerID123");
-                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                return null;
-            }
             //DI END
             
             

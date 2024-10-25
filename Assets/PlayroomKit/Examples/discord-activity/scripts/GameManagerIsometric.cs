@@ -16,29 +16,32 @@ public class GameManagerIsometric : MonoBehaviour
     [SerializeField] private string roomCode;
     [SerializeField] private GameObject playerPrefab;
 
+    private PlayroomKit _playroomKit = new PlayroomKit();
 
     private void Start()
     {
-        PlayroomKit.InsertCoin(new InitOptions
+        _playroomKit.InsertCoin(new InitOptions
         {
             maxPlayersPerRoom = 3,
             matchmaking = false,
             gameId = "<Insert GameID (from dev.joinplayroom.com)>",
             discord = true,
             roomCode = roomCode,
-        }, () => { PlayroomKit.OnPlayerJoin(AddPlayer); }, () => { Debug.Log("OnDisconnect callback"); });
+        }, () => { _playroomKit.OnPlayerJoin(AddPlayer); }, () => { Debug.Log("OnDisconnect callback"); });
     }
 
     private void Update()
     {
         if (playerJoined)
         {
-            var myPlayer = PlayroomKit.MyPlayer();
+            var myPlayer = MyPlayer();
             var index = players.IndexOf(myPlayer);
 
             playerGameObjects[index].GetComponent<IsometricPlayerController>().LookAround();
             players[index].SetState("angle", playerGameObjects[index].GetComponent<Transform>().rotation);
 
+            
+            
             playerGameObjects[index].GetComponent<IsometricPlayerController>().Move();
             players[index].SetState("move", playerGameObjects[index].GetComponent<Transform>().position);
 

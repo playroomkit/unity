@@ -22,7 +22,7 @@ namespace Playroom
                 mockResponseCallbacks.TryAdd(name, callbackOnResponse);
 
                 string stringData = Convert.ToString(data);
-                var player = Player.MyPlayer();
+                var player = MyPlayer();
 
                 if (mockRegisterCallbacks.TryGetValue(name, out var responseHandler))
                 {
