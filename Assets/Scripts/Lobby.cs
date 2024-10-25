@@ -6,9 +6,10 @@ using UnityEngine.SceneManagement;
 
 public class Lobby : MonoBehaviour
 {
+    private PlayroomKit _playroomKit = new PlayroomKit();
     public void Initialize()
     {
-        PlayroomKit.InsertCoin(new InitOptions()
+        _playroomKit.InsertCoin(new InitOptions()
         {
             maxPlayersPerRoom = 2,
             skipLobby = true,
