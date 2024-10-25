@@ -3,7 +3,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Playroom;
-using NSubstitute; // Mocking library, can use other mock libraries like Moq as well
+using NSubstitute;
+using NSubstitute.ReceivedExtensions; // Mocking library, can use other mock libraries like Moq as well
 
 public class PlayroomKitTests
 {
@@ -271,6 +272,20 @@ public void GetState_ShouldInvokeCorrectInternalFunction_ForAllTypes()
     Assert.AreEqual(new Quaternion(1.0f, 2.0f, 3.0f, 4.0f), quaternionValue);
     _interop.Received(5).GetStateStringWrapper("TestState");
 }
+
+
+    void HandleShoot(string data, string caller)
+    {
+        Debug.Log($"Caller: {caller}");
+        Debug.Log("Shoot called!");
+    }
+    
+    [Test]
+    public void RpcCall_ShouldInvokeCallback_()
+    {
+       _playroomKit.RpcRegister("Shoot", HandleShoot, "You shot!");
+       
+    }
 
  
     

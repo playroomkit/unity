@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 
 namespace Playroom
 {
@@ -140,6 +141,28 @@ namespace Playroom
             {
                 StartMatchmakingInternal(callback);
             }
+
+            public void RpcRegisterWrapper(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null)
+            {
+                RpcRegisterInternal(name, rpcRegisterCallback, onResponseReturn);
+            }
+
+            public void RpcCallWrapper(string name, string data, RpcMode mode, Action callbackOnResponse)
+            {
+                RpcCallInternal(name, data, mode, callbackOnResponse);
+            }
+            
+            
+            //Internal Functions
+            [DllImport("__Internal")]
+            private static extern void RpcRegisterInternal(string name, Action<string, string> rpcRegisterCallback,
+                string onResponseReturn = null);
+            
+            [DllImport("__Internal")]
+            private extern static void RpcCallInternal(string name, string data, RpcMode mode,
+                Action callbackOnResponse);
+            
+            //
         }
     }
 }
