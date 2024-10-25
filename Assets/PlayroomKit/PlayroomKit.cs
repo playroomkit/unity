@@ -44,6 +44,7 @@ namespace Playroom
         public static void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
             Action onDisconnectCallback = null)
         {
+            Debug.Log("PlayroomKit: InsertCoin");
             if (IsRunningInBrowser())
             {
                 isPlayRoomInitialized = true;
