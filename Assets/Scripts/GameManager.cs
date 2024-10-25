@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         // countdownText.gameObject.SetActive(false);
-        PlayroomKit.InsertCoin(new PlayroomKit.InitOptions
+        PlayroomKit.InsertCoin(new InitOptions
         {
             maxPlayersPerRoom = 15,
         }, () =>

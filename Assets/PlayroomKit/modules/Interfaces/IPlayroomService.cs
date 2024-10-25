@@ -6,7 +6,7 @@ namespace Playroom
 {
     public partial class PlayroomKit
     {
-        public interface IPlayroomBase
+        public interface IPlayroomService
         {
             protected static List<Action<Player>> OnPlayerJoinCallbacks = new();
 
@@ -34,7 +34,7 @@ namespace Playroom
             protected static void OnPlayerJoinWrapperCallback(string id)
             {
                 var player = GetPlayer(id);
-                foreach (var callback in IPlayroomBase.OnPlayerJoinCallbacks)
+                foreach (var callback in IPlayroomService.OnPlayerJoinCallbacks)
                 {
                     callback?.Invoke(player);
                 }

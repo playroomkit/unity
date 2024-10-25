@@ -19,7 +19,7 @@ public class GameManagerIsometric : MonoBehaviour
 
     private void Start()
     {
-        PlayroomKit.InsertCoin(new PlayroomKit.InitOptions
+        PlayroomKit.InsertCoin(new InitOptions
         {
             maxPlayersPerRoom = 3,
             matchmaking = false,

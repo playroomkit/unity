@@ -8,7 +8,7 @@ public class Lobby : MonoBehaviour
 {
     public void Initialize()
     {
-        PlayroomKit.InsertCoin(new PlayroomKit.InitOptions()
+        PlayroomKit.InsertCoin(new InitOptions()
         {
             maxPlayersPerRoom = 2,
             skipLobby = true,
