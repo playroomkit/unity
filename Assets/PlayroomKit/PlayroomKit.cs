@@ -38,6 +38,11 @@ namespace Playroom
             }
         }
         
+        public  PlayroomKit(IPlayroomBase playroomService)
+        {
+            _playroomService = playroomService;
+        }
+        
         public void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
             Action onDisconnectCallback = null)
         {
