@@ -33,6 +33,8 @@ public class GameManager2d : MonoBehaviour
     private static readonly List<GameObject> playerGameObjects = new();
     private static Dictionary<string, GameObject> PlayerDict = new();
 
+    private PlayroomKit _playroomKit = new PlayroomKit();
+
 
     void Awake()
     {
@@ -44,7 +46,7 @@ public class GameManager2d : MonoBehaviour
     /// </summary>
     private void Initialize()
     {
-        PlayroomKit.InsertCoin(new InitOptions()
+        _playroomKit.InsertCoin(new InitOptions()
         {
             maxPlayersPerRoom = 2,
             defaultPlayerStates = new() {
@@ -53,8 +55,8 @@ public class GameManager2d : MonoBehaviour
 
         }, () =>
         {
-            PlayroomKit.OnPlayerJoin(AddPlayer);
-            print($"[Unity Log] isHost: {PlayroomKit.IsHost()}");
+            _playroomKit.OnPlayerJoin(AddPlayer);
+            print($"[Unity Log] isHost: {_playroomKit.IsHost()}");
         });
     }
 
@@ -63,7 +65,7 @@ public class GameManager2d : MonoBehaviour
     /// </summary>
     void Start()
     {
-        PlayroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
+        _playroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
 
     }
 
@@ -141,7 +143,7 @@ public class GameManager2d : MonoBehaviour
 
             score = playerGameObjects[playerIndex].GetComponent<PlayerController2d>().ShootBullet(playerPosition, 50f, score);
 
-            PlayroomKit.RpcCall("ShootBullet", score, PlayroomKit.RpcMode.OTHERS,  () =>
+            _playroomKit.RpcCall("ShootBullet", score, PlayroomKit.RpcMode.OTHERS,  () =>
             {
                 Debug.Log("Shooting bullet");
             });
