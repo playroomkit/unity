@@ -10,147 +10,73 @@ namespace Playroom
 {
     public partial class PlayroomKit
     {
-        // RPC:
-        private static List<string> rpcCalledEvents = new();
-
-        [DllImport("__Internal")]
-        private static extern void RpcRegisterInternal(string name, Action<string, string> rpcRegisterCallback,
-            string onResponseReturn = null);
-        
-
-        [MonoPInvokeCallback(typeof(Action<string, string>))]
-        private static void InvokeRpcRegisterCallBack(string dataJson, string senderJson)
+        public class RPC : IRPC
         {
-            try
+            private PlayroomKit _playroomKit;
+
+            public RPC(PlayroomKit playroomKit)
             {
-                if (!Players.ContainsKey(senderJson))
-                {
-                    var player = new Player(senderJson);
-                    Players.Add(senderJson, player);
-                }
+                _playroomKit = playroomKit;
             }
-            catch (Exception ex)
+            public void RpcRegister(string name, Action<string, string> rpcRegisterCallback,
+                string onResponseReturn = null)
             {
-                Debug.LogError(ex.Message);
+                    Debug.Log("RPC Register: " + name);
+                    CallbackManager.RegisterCallback(rpcRegisterCallback, name);
+                    RpcRegisterInternal(name, IRPC.InvokeRpcRegisterCallBack, onResponseReturn);
+                
             }
+            
 
-
-            List<string> updatedRpcCalledEvents = new();
-            // This state is required to update the called rpc events list, (Temp fix see RpcCall for more) 
-            string nameJson = GetState<string>("rpcCalledEventName");
-
-            JSONArray jsonArray = JSON.Parse(nameJson).AsArray;
-            foreach (JSONNode node in jsonArray)
+            public void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse = null)
             {
-                string item = node.Value;
-                updatedRpcCalledEvents.Add(item);
-            }
-
-            foreach (string name in updatedRpcCalledEvents)
-            {
-                CallbackManager.InvokeCallback(name, dataJson, senderJson);
-            }
-        }
-
-        [DllImport("__Internal")]
-        private extern static void RpcCallInternal(string name, string data, RpcMode mode, Action callbackOnResponse);
-
-        private static Dictionary<string, List<Action>> OnResponseCallbacks = new Dictionary<string, List<Action>>();
-        
-        
-        [MonoPInvokeCallback(typeof(Action))]
-        private static void InvokeOnResponseCallback()
-        {
-            var namesToRemove = new List<string>();
-
-            foreach (string name in rpcCalledEvents)
-            {
-                try
-                {
-                    if (OnResponseCallbacks.TryGetValue(name, out List<Action> callbacks))
+                    Debug.Log("RPC Call: " + name);
+                    string jsonData = IRPC.ConvertToJson(data);
+                    if (IRPC.OnResponseCallbacks.ContainsKey(name))
                     {
-                        foreach (var callback in callbacks)
-                        {
-                            callback?.Invoke();
-                        }
-
-                        namesToRemove.Add(name);
+                        IRPC.OnResponseCallbacks[name].Add(callbackOnResponse);
                     }
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"C#: Error in Invoking callback for RPC event name: '{name}': {ex.Message}");
-                }
+                    else
+                    {
+                        IRPC.OnResponseCallbacks.Add(name, new List<Action> { callbackOnResponse });
+                        if (!IRPC.rpcCalledEvents.Contains(name))
+                        {
+                            IRPC.rpcCalledEvents.Add(name);
+                        }
+                    }
+
+                    JSONArray jsonArray = new JSONArray();
+                    foreach (string item in IRPC.rpcCalledEvents)
+                    {
+                        jsonArray.Add(item);
+                    }
+
+                    string jsonString = jsonArray.ToString();
+                    /*
+                    This is requrired to sync the rpc events between all players, without this players won't know which event has been called.
+                    this is a temporary fix, RPC's need to be handled within JS for better control.
+                    */
+                    
+                    _playroomKit.SetState("rpcCalledEventName", jsonString, reliable: true);
+
+                    RpcCallInternal(name, jsonData, mode, IRPC.InvokeOnResponseCallback);
             }
 
-            foreach (var name in namesToRemove)
+            // Default Mode
+            public void RpcCall(string name, object data, Action callbackOnResponse = null)
             {
-                rpcCalledEvents.Remove(name);
-                OnResponseCallbacks.Remove(name);
+                RpcCall(name, data, RpcMode.ALL, callbackOnResponse);
             }
+            
+            
+            [DllImport("__Internal")]
+            private static extern void RpcRegisterInternal(string name, Action<string, string> rpcRegisterCallback,
+                string onResponseReturn = null);
+            
+            [DllImport("__Internal")]
+            private extern static void RpcCallInternal(string name, string data, RpcMode mode,
+                Action callbackOnResponse);
         }
 
-
-        private static string ConvertToJson(object data)
-        {
-            if (data == null)
-            {
-                return null;
-            }
-            else if (data.GetType().IsPrimitive || data is string)
-            {
-                return data.ToString();
-            }
-
-            if (data is Vector2 vector2)
-            {
-                return JsonUtility.ToJson(vector2);
-            }
-            else if (data is Vector3 vector3)
-            {
-                return JsonUtility.ToJson(vector3);
-            }
-            else if (data is Vector4 vector4)
-            {
-                return JsonUtility.ToJson(vector4);
-            }
-            else if (data is Quaternion quaternion)
-            {
-                return JsonUtility.ToJson(quaternion);
-            }
-            else
-            {
-                return ConvertComplexToJson(data);
-            }
-        }
-
-        private static string ConvertComplexToJson(object data)
-        {
-            if (data is IDictionary dictionary)
-            {
-                JSONObject dictNode = new JSONObject();
-                foreach (DictionaryEntry entry in dictionary)
-                {
-                    dictNode[entry.Key.ToString()] = ConvertToJson(entry.Value);
-                }
-
-                return dictNode.ToString();
-            }
-            else if (data is IEnumerable enumerable)
-            {
-                JSONArray arrayNode = new JSONArray();
-                foreach (object element in enumerable)
-                {
-                    arrayNode.Add(ConvertToJson(element));
-                }
-
-                return arrayNode.ToString();
-            }
-            else
-            {
-                Debug.Log($"{data} is '{data.GetType()}' which is currently not supported by RPC!");
-                return JSON.Parse("{}").ToString();
-            }
-        }
     }
 }
