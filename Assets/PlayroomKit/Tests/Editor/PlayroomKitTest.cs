@@ -394,6 +394,41 @@ public void GetState_ShouldInvokeCorrectInternalFunction_ForAllTypes()
         );
     }
 
+    [Test]
+    public void ResetPlayersStates_ShouldInvokeWrapperWithCorrectParams()
+    {
+        JSONArray CreateJsonArray(string[] array)
+        {
+            JSONArray jsonArray = new JSONArray();
+
+            foreach (string item in array)
+            {
+                jsonArray.Add(item);
+            }
+
+            return jsonArray;
+        }
+
+        // Arrange
+        var keysToExclude = new[] { "pos" };
+        var expectedKeysJson = CreateJsonArray(keysToExclude).ToString(); // Assuming CreateJsonArray is available
+        bool callbackInvoked = false;
+        
+        // Act
+        _playroomKit.ResetPlayersStates(keysToExclude, () =>
+        {
+            callbackInvoked = true;
+        });
+
+    // Assert
+        _interop.Received(1).ResetPlayersStatesWrapper(
+            expectedKeysJson,
+            Arg.Any<Action>() // Verifying an Action was passed in, allowing flexibility
+        );
+        
+    }
+
+
     
     
 
