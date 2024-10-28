@@ -256,7 +256,7 @@ namespace Playroom
             {
                 onstatesReset = OnStatesReset;
                 string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
-                _interop.ResetPlayersStatesWrapper(keysJson, InvokeResetCallBack);
+                _interop.ResetStatesWrapper(keysJson, InvokeResetCallBack);
             }
             
             [MonoPInvokeCallback(typeof(Action))]

@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Playroom;
 using NSubstitute;
-using NSubstitute.ReceivedExtensions; // Mocking library, can use other mock libraries like Moq as well
+using NSubstitute.ReceivedExtensions;
+using SimpleJSON; // Mocking library, can use other mock libraries like Moq as well
 
 public class PlayroomKitTests
 {
@@ -361,6 +362,38 @@ public void GetState_ShouldInvokeCorrectInternalFunction_ForAllTypes()
         _playroomKit.WaitForPlayerState(playerId,state, Callback);
         _interop.Received(1).WaitForPlayerStateWrapper(playerId, state, Arg.Any<Action>());
     }
+
+    [Test]
+    public void ResetStates_ShouldInvokeInternal_WhenCalled()
+    {
+        JSONArray CreateJsonArray(string[] array)
+        {
+            JSONArray jsonArray = new JSONArray();
+
+            foreach (string item in array)
+            {
+                jsonArray.Add(item);
+            }
+
+            return jsonArray;
+        }
+        
+        // Arrange
+        var expectedKeysJson = CreateJsonArray(new[] { "pos" }).ToString(); // Assuming CreateJsonArray is available
+
+        // Act
+        _playroomKit.ResetStates(new[] { "pos" }, () =>
+        {
+            Debug.Log("Resetting Player states from Unity, Invoking from JS!");
+        });
+
+        // Assert
+        _interop.Received(1).ResetStatesWrapper(
+            expectedKeysJson, 
+            Arg.Any<Action>() // Match any Action since the exact callback function may vary
+        );
+    }
+
     
     
 
