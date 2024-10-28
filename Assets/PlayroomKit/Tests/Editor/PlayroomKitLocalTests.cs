@@ -114,6 +114,22 @@ public class PlayroomKitLocalTests
         
         Assert.IsTrue(callbackInvoked, "Callback should be invoked");
     }
+    
+    [Test]
+    public void ResetPlayersStates_InvokeCallback()
+    {
+        // Arrange
+        var keysToExclude = new[] { "pos" };
+        bool callbackInvoked = false;
+
+        // Act
+        _playroomKit.ResetPlayersStates(keysToExclude, () => callbackInvoked = true);
+        
+        //Assert
+        Assert.IsTrue(callbackInvoked, "Callback should be invoked");
+    }
+
+
 
     
 }
