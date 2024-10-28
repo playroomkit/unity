@@ -33,9 +33,9 @@ namespace Playroom
 
         private static void MockOnPlayerJoinLocal(Action<Player> onPlayerJoinCallback)
         {
-            Debug.Log("On Player Join");
-            var testPlayer = GetPlayer(PlayerId);
-            OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
+            // Debug.Log("On Player Join");
+            // var testPlayer = GetPlayer(PlayerId);
+            // OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
             throw new NotImplementedException();
         }
 

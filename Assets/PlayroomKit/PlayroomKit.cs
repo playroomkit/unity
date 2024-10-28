@@ -178,18 +178,6 @@ namespace Playroom
             _playroomService.OnDisconnect(callback);
         }
         
-        // DI END
-        
-
-        public class MatchMakingOptions
-        {
-            public int waitBeforeCreatingNewRoom = 5000;
-        }
-        
-
-        private static List<Action<Player>> OnPlayerJoinCallbacks = new();
-        
-        
         public bool IsStreamScreen()
         {
             if (!isPlayRoomInitialized)
@@ -200,6 +188,17 @@ namespace Playroom
             
             return _playroomService.IsStreamScreen();
         }
+        
+        // DI END
+        
+
+        public class MatchMakingOptions
+        {
+            public int waitBeforeCreatingNewRoom = 5000;
+        }
+        
+        
+
         
 
         public static Player MyPlayer()
