@@ -194,6 +194,11 @@ namespace Playroom
             _playroomService.WaitForState(stateKey, onStateSetCallback);
         }
         
+        public void WaitForPlayerState(string playerID, string stateKey, Action onStateSetCallback = null)
+        {
+            _playroomService.WaitForPlayerState(playerID, stateKey, onStateSetCallback);
+        }
+        
         // DI END
         
 
@@ -219,25 +224,6 @@ namespace Playroom
         public static Player Me()
         {
             return IsRunningInBrowser() ? MyPlayer() : MockMe();
-        }
-        
-        
-        Action WaitForPlayerCallback = null;
-        
-
-        public void WaitForPlayerState(string playerID, string stateKey, Action onStateSetCallback = null)
-        {
-            if (IsRunningInBrowser())
-            {
-                WaitForPlayerCallback = onStateSetCallback;
-                WaitForPlayerStateInternal(playerID, stateKey, OnStateSetCallback);
-            }
-        }
-
-        [MonoPInvokeCallback(typeof(Action))]
-        void OnStateSetCallback()
-        {
-            WaitForPlayerCallback?.Invoke();
         }
         
 

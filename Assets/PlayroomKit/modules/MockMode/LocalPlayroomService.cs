@@ -100,6 +100,12 @@ namespace Playroom
                 Debug.Log("Wait for state is not supported in local mode yet!");
                 throw new NotImplementedException();
             }
+
+            public void WaitForPlayerState(string playerID, string stateKey, Action onStateSetCallback = null)
+            {
+                Debug.Log("Wait for player state is not supported in local mode yet!");
+                throw new NotImplementedException();
+            }
         }
     }
 }
