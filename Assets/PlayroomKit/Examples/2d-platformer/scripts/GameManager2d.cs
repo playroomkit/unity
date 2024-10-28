@@ -117,6 +117,9 @@ public class GameManager2d : MonoBehaviour
                 if (players[i] != null)
                 {
                     var pos = players[i].GetState<Vector3>("pos");
+                    
+                    Debug.Log(pos);
+                    
                     var color = players[i].GetState<Color>("color");
                     if (playerGameObjects != null)
                     {

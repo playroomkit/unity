@@ -1,11 +1,12 @@
+#if UNITY_EDITOR
+
+
 using UnityEngine;
 using UnityEditor;
-
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 using ParrelSync;
-using UnityEditor.UIElements;
-using UnityEngine.Networking;
+using UnityEditor.Search;
 
 namespace Playroom
 {
@@ -160,3 +161,4 @@ namespace Playroom
         }
     }
 }
+#endif
