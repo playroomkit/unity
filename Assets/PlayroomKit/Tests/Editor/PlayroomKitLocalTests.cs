@@ -86,4 +86,21 @@ public class PlayroomKitLocalTests
         mockPlayroomService.Received(1).StartMatchmaking(Arg.Any<Action>());
     }
     
+    [Test]
+    public void IsStreamScreen_ShouldReturnFalse_WhenCalled()
+    {
+        _playroomKit.InsertCoin(new InitOptions()
+        {
+            maxPlayersPerRoom = 2,
+            defaultPlayerStates = new() { {"score", 0}, },
+        }, () =>
+        {
+            
+        });
+
+        var isStream = _playroomKit.IsStreamScreen();
+        Debug.Log(isStream);
+        Assert.IsFalse(isStream, "IsStreamScreen should be false.");
+    }
+    
 }
