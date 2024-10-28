@@ -502,7 +502,13 @@ public void GetState_ShouldInvokeCorrectInternalFunction_ForAllTypes()
         // Assert
         _interop.Received(1).CreateJoystickWrapper(expectedJsonStr);
     }
-    
+
+    [Test]
+    public void MyPlayer_ShouldInvokeInternal()
+    {
+        _playroomKit.MyPlayer();
+        _interop.Received(1).MyPlayerWrapper();
+    }
 
     [Test]
     public void IsRunningInBrowser_ShouldReturnCorrectPlatform()
