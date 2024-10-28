@@ -33,7 +33,7 @@ public class GameManager2d : MonoBehaviour
     private static readonly List<GameObject> playerGameObjects = new();
     private static Dictionary<string, GameObject> PlayerDict = new();
 
-    private PlayroomKit _playroomKit = new PlayroomKit();
+    private PlayroomKit _playroomKit = new();
 
 
     void Awake()
@@ -66,7 +66,6 @@ public class GameManager2d : MonoBehaviour
     void Start()
     {
         _playroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
-
     }
 
     /// <summary>

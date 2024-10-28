@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using NSubstitute;  // For mocking the IPlayerService interface
+using NSubstitute; // For mocking the IPlayerService interface
 using Playroom;
 
 public class PlayerTests
@@ -29,7 +29,7 @@ public class PlayerTests
         _player.SetState(key, value, reliable);
 
         // Assert
-        _mockPlayerService.Received(1).SetState(id: "test",key, value, reliable);
+        _mockPlayerService.Received(1).SetState(id: "test", key, value, reliable);
     }
 
     [Test]
@@ -40,7 +40,7 @@ public class PlayerTests
         int value = 50;
 
         // Act
-        _player.SetState(key, value);  // Do not specify reliable
+        _player.SetState(key, value); // Do not specify reliable
 
         // Assert
         _mockPlayerService.Received(1).SetState(id: "test", key, value, false);
@@ -54,7 +54,7 @@ public class PlayerTests
         int expectedValue = 100;
 
         // Mock the return value from GetState
-        _mockPlayerService.GetState<int>(id: "test",key).Returns(expectedValue);
+        _mockPlayerService.GetState<int>(id: "test", key).Returns(expectedValue);
 
         // Act
         int result = _player.GetState<int>(key);
@@ -74,8 +74,8 @@ public class PlayerTests
         int expectedIntValue = 200;
 
         // Mock the return values from GetState
-        _mockPlayerService.GetState<string>(id: "test",stringKey).Returns(expectedStringValue);
-        _mockPlayerService.GetState<int>(id: "test",intKey).Returns(expectedIntValue);
+        _mockPlayerService.GetState<string>(id: "test", stringKey).Returns(expectedStringValue);
+        _mockPlayerService.GetState<int>(id: "test", intKey).Returns(expectedIntValue);
 
         // Act
         string name = _player.GetState<string>(stringKey);

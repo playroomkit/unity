@@ -1,7 +1,7 @@
 namespace Playroom
 {
-    public class Playroomkit
-    {
-        // TODO USE THIS 
-    }
+    // public class ServiceHandler
+    // {
+    //     TODO: When partial class is refactored we use this to check which service to run based on current platform
+    // }
 }

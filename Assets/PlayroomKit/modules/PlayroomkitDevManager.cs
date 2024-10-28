@@ -19,7 +19,7 @@ namespace Playroom
         [SerializeField]
         private GameObject insertCoinCaller;
 
-        [SerializeField] private bool toggleDebugLogs = false;
+        // [SerializeField] private bool toggleDebugLogs = false;
 
         private static PlayroomkitDevManager Instance { get; set; }
 
