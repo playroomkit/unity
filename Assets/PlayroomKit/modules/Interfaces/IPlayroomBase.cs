@@ -28,6 +28,8 @@ namespace Playroom
 
             public void OnDisconnect(Action callback);
 
+            public bool IsStreamScreen();
+
             [MonoPInvokeCallback(typeof(Action<string>))]
             protected static void __OnPlayerJoinCallbackHandler(string id)
             {

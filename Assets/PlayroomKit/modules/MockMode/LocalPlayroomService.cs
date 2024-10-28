@@ -11,6 +11,8 @@ namespace Playroom
             private Dictionary<string, object> mockGlobalStates = new();
 
             private const string PlayerId = "mockplayerID123";
+            
+            private static bool mockIsStreamMode;
 
             public Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
             {
@@ -86,6 +88,11 @@ namespace Playroom
             public void OnDisconnect(Action callback)
             {
                 callback?.Invoke();
+            }
+
+            public bool IsStreamScreen()
+            {
+                return mockIsStreamMode;
             }
         }
     }

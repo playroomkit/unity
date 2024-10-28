@@ -190,16 +190,15 @@ namespace Playroom
         private static List<Action<Player>> OnPlayerJoinCallbacks = new();
         
         
-        public static bool IsStreamScreen()
+        public bool IsStreamScreen()
         {
-            if (IsRunningInBrowser())
+            if (!isPlayRoomInitialized)
             {
-                return IsStreamScreenInternal();
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                return false;
             }
-
-            if (isPlayRoomInitialized) return MockIsStreamScreen();
-            Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-            return false;
+            
+            return _playroomService.IsStreamScreen();
         }
         
 

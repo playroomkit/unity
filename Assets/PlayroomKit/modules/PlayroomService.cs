@@ -224,6 +224,11 @@ namespace Playroom
                 _interop.OnDisconnectWrapper(onDisconnectCallbackHandler);
             }
 
+            public bool IsStreamScreen()
+            {
+                return _interop.IsStreamScreenWrapper();
+            }
+
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void onDisconnectCallbackHandler(string key)
             {
