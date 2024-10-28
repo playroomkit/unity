@@ -61,6 +61,12 @@ namespace Playroom
             string DpadJoystickWrapper();
 
             void StartMatchmakingWrapper(Action callback);
+            
+            void RpcRegisterWrapper(string name, Action<string, string> rpcRegisterCallback,
+                string onResponseReturn = null);
+            
+            void RpcCallWrapper(string name, string data, RpcMode mode,
+                Action callbackOnResponse);
         }
     }
 }

@@ -3,13 +3,15 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Playroom;
-using NSubstitute; // Mocking library, can use other mock libraries like Moq as well
+using NSubstitute;
+using NSubstitute.ReceivedExtensions; // Mocking library, can use other mock libraries like Moq as well
 
 public class PlayroomKitTests
 {
     private PlayroomKit _playroomKit;
     private PlayroomKit.IPlayroomBase _mockPlayroomService;
     private PlayroomKit.IInterop _interop;
+    private PlayroomKit.IRPC _rpc;
     
     [SetUp]
     public void SetUp()
@@ -17,10 +19,13 @@ public class PlayroomKitTests
         _interop = Substitute.For<PlayroomKit.IInterop>();
         // Initialize the mock PlayroomService
         _mockPlayroomService = new PlayroomKit.PlayroomService(_interop);
+        _rpc = new PlayroomKit.RPC(_playroomKit, _interop);
         
         // Since PlayroomKit uses a private field for the service, we'll need to simulate it or test through the public API
-        _playroomKit = new PlayroomKit(_mockPlayroomService);
+        _playroomKit = new PlayroomKit(_mockPlayroomService, _rpc);
     }
+    
+
 
     [Test]
     public void GetPlayer_ShouldReturnSamePlayer_ForSameId()
@@ -44,7 +49,7 @@ public class PlayroomKitTests
         // No need to call DoNotCallBase() because it's an interface
         PlayroomKit.IPlayroomBase playroomService = new PlayroomKit.PlayroomService(interopMock);
 
-        PlayroomKit playroomKit = new PlayroomKit(playroomService);
+        PlayroomKit playroomKit = new PlayroomKit(playroomService, _rpc);
 
         playroomKit.InsertCoin(new InitOptions()
         {
@@ -65,6 +70,8 @@ public class PlayroomKitTests
             Arg.Any<string>()            // Any string for onDisconnectCallBackKey
         );
     }
+    
+
     
     [Test]
     public void InternalInsertCoin_LaunchCallBackShouldBeInvoked()
@@ -89,7 +96,7 @@ public class PlayroomKitTests
         
         PlayroomKit.IPlayroomBase playroomService = new PlayroomKit.PlayroomService(interopMock);
 
-        PlayroomKit playroomKit = new PlayroomKit(playroomService);
+        PlayroomKit playroomKit = new PlayroomKit(playroomService, _rpc);
         
         bool onLaunchInvoked = false;
         playroomKit.InsertCoin(new InitOptions()
@@ -271,6 +278,52 @@ public void GetState_ShouldInvokeCorrectInternalFunction_ForAllTypes()
     Assert.AreEqual(new Quaternion(1.0f, 2.0f, 3.0f, 4.0f), quaternionValue);
     _interop.Received(5).GetStateStringWrapper("TestState");
 }
+
+
+    [Test]
+    public void RpcRegister_ShouldInvokeInternal_WhenCalled()
+    {
+       
+        
+        void HandleShoot(string data, string caller)
+        {
+            Debug.Log($"Caller: {caller}");
+            Debug.Log("Shoot called!");
+        }
+
+        _playroomKit.RpcRegister("Shoot", HandleShoot, "You shot!");
+        _interop.Received(1).RpcRegisterWrapper("Shoot", Arg.Any<Action<string, string>>(), "You shot!");
+        
+        
+    }
+    
+    [Test]
+    public void RpcCall_ShouldInvokeCallback_WhenCalled()
+    {
+        bool receivedCalled = false;
+        _interop.When(x => x.RpcCallWrapper(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                PlayroomKit.RpcMode.ALL,
+                Arg.Any<Action>()
+            ))
+            .Do(callInfo => {
+                var callback = callInfo.ArgAt<Action>(3); // Index 1 for onLaunch callback
+                callback.Invoke(); 
+            });
+        
+        int score = 0;
+        _playroomKit.RpcCall("Shoot","score", PlayroomKit.RpcMode.ALL,  () =>
+        {
+            receivedCalled = true;
+        });
+        
+        UnityEngine.Assertions.Assert.IsTrue(receivedCalled);
+    }
+    
+    
+    
+
 
  
     

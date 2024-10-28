@@ -13,17 +13,27 @@ namespace Playroom
         public class RPC : IRPC
         {
             private PlayroomKit _playroomKit;
+            private readonly IInterop _interop;
 
             public RPC(PlayroomKit playroomKit)
             {
                 _playroomKit = playroomKit;
+                _interop = new PlayroomKitInterop();
             }
+            
+            public RPC(PlayroomKit playroomKit, IInterop interop)
+            {
+                _playroomKit = playroomKit;
+                _interop = interop;
+            }
+            
+            
             public void RpcRegister(string name, Action<string, string> rpcRegisterCallback,
                 string onResponseReturn = null)
             {
                     Debug.Log("RPC Register: " + name);
                     CallbackManager.RegisterCallback(rpcRegisterCallback, name);
-                    RpcRegisterInternal(name, IRPC.InvokeRpcRegisterCallBack, onResponseReturn);
+                    _interop.RpcRegisterWrapper(name, IRPC.InvokeRpcRegisterCallBack, onResponseReturn);
                 
             }
             
@@ -59,7 +69,7 @@ namespace Playroom
                     
                     _playroomKit.SetState("rpcCalledEventName", jsonString, reliable: true);
 
-                    RpcCallInternal(name, jsonData, mode, IRPC.InvokeOnResponseCallback);
+                    _interop.RpcCallWrapper(name, jsonData, mode, IRPC.InvokeOnResponseCallback);
             }
 
             // Default Mode
@@ -68,14 +78,6 @@ namespace Playroom
                 RpcCall(name, data, RpcMode.ALL, callbackOnResponse);
             }
             
-            
-            [DllImport("__Internal")]
-            private static extern void RpcRegisterInternal(string name, Action<string, string> rpcRegisterCallback,
-                string onResponseReturn = null);
-            
-            [DllImport("__Internal")]
-            private extern static void RpcCallInternal(string name, string data, RpcMode mode,
-                Action callbackOnResponse);
         }
 
     }

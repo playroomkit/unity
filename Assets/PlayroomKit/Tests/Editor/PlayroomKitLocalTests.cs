@@ -10,6 +10,7 @@ public class PlayroomKitLocalTests
     private PlayroomKit _playroomKit;
     private PlayroomKit.IPlayroomBase _mockPlayroomService;
     private PlayroomKit.IInterop _interop;
+    private PlayroomKit.IRPC _rpc;
     
     [SetUp]
     public void SetUp()
@@ -17,16 +18,16 @@ public class PlayroomKitLocalTests
         _interop = Substitute.For<PlayroomKit.IInterop>();
         // Initialize the mock PlayroomService
         _mockPlayroomService = new PlayroomKit.LocalMockPlayroomService();
-        
+        _rpc = new PlayroomKit.RPC(_playroomKit, _interop);
         // Since PlayroomKit uses a private field for the service, we'll need to simulate it or test through the public API
-        _playroomKit = new PlayroomKit(_mockPlayroomService);
+        _playroomKit = new PlayroomKit(_mockPlayroomService, _rpc);
     }
     
     [Test]
     public void InsertCoin_ShouldBeInvoked()
     {
         var mockPlayroomService = Substitute.For<PlayroomKit.IPlayroomBase>();
-        var playroomKit = new PlayroomKit(mockPlayroomService);
+        var playroomKit = new PlayroomKit(mockPlayroomService, _rpc);
         
         playroomKit.InsertCoin(new InitOptions()
         {
@@ -45,8 +46,8 @@ public class PlayroomKitLocalTests
     {
         bool playerJoined = false;
         PlayroomKit.Player testPlayer = null;
-
-        var playroomKit = new PlayroomKit(new PlayroomKit.LocalMockPlayroomService());
+        var playerId = "mockplayerID123";
+        var playroomKit = new PlayroomKit(new PlayroomKit.LocalMockPlayroomService(), _rpc);
         
         playroomKit.InsertCoin(new InitOptions()
         {
@@ -79,7 +80,7 @@ public class PlayroomKitLocalTests
         var mockPlayroomService = Substitute.For<PlayroomKit.IPlayroomBase>();
         
         // Since PlayroomKit uses a private field for the service, we'll need to simulate it or test through the public API
-        var playroomKit = new PlayroomKit(mockPlayroomService);
+        var playroomKit = new PlayroomKit(mockPlayroomService, _rpc);
         playroomKit.StartMatchmaking();
         
         mockPlayroomService.Received(1).StartMatchmaking(Arg.Any<Action>());
