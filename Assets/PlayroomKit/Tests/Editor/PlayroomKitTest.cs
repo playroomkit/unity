@@ -347,6 +347,22 @@ public void GetState_ShouldInvokeCorrectInternalFunction_ForAllTypes()
     }
     
     
+    [Test]
+    public void WaitForPlayerState_ShouldInvokeInternal_WhenCalled()
+    {
+        void Callback()
+        {
+            Debug.Log($"Callback called!");
+        }
+
+        var playerId = "1234";
+        var state = "state";
+
+        _playroomKit.WaitForPlayerState(playerId,state, Callback);
+        _interop.Received(1).WaitForPlayerStateWrapper(playerId, state, Arg.Any<Action>());
+    }
+    
+    
 
     [Test]
     public void IsRunningInBrowser_ShouldReturnCorrectPlatform()

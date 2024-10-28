@@ -239,8 +239,8 @@ namespace Playroom
             Action WaitForPlayerCallback = null;
             public void WaitForPlayerState(string playerID, string stateKey, Action onStateSetCallback = null)
             {
-                    WaitForPlayerCallback = onStateSetCallback;
-                    _interop.WaitForPlayerStateWrapper(playerID, stateKey, OnStateSetCallback);
+                WaitForPlayerCallback = onStateSetCallback;
+                _interop.WaitForPlayerStateWrapper(playerID, stateKey, OnStateSetCallback);
             }
 
             [MonoPInvokeCallback(typeof(Action))]
