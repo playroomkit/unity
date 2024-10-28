@@ -28,7 +28,7 @@ namespace Playroom
             get => matchmakingField;
             set
             {
-                if (value is bool || value is PlayroomKit.MatchMakingOptions)
+                if (value is bool || value is MatchMakingOptions)
                 {
                     matchmakingField = value;
                 }
@@ -39,5 +39,11 @@ namespace Playroom
                 }
             }
         }
+    }
+    
+            
+    public class MatchMakingOptions
+    {
+        public int waitBeforeCreatingNewRoom = 5000;
     }
 }

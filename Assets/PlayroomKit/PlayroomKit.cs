@@ -222,11 +222,6 @@ namespace Playroom
         
         // DI END
         
-
-        public class MatchMakingOptions
-        {
-            public int waitBeforeCreatingNewRoom = 5000;
-        }
         
 
         public static Player MyPlayer()

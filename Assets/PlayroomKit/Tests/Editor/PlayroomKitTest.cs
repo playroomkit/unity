@@ -502,11 +502,6 @@ public void GetState_ShouldInvokeCorrectInternalFunction_ForAllTypes()
         // Assert
         _interop.Received(1).CreateJoystickWrapper(expectedJsonStr);
     }
-
-
-
-
-    
     
 
     [Test]
