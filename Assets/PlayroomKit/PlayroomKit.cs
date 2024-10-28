@@ -199,6 +199,11 @@ namespace Playroom
             _playroomService.WaitForPlayerState(playerID, stateKey, onStateSetCallback);
         }
         
+        public void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null)
+        {
+            _playroomService.ResetStates(keysToExclude, OnStatesReset);
+        }
+        
         // DI END
         
 
@@ -255,26 +260,9 @@ namespace Playroom
 
         private static Action onstatesReset;
         private static Action onplayersStatesReset;
+        
 
-        public static void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null)
-        {
-            if (IsRunningInBrowser())
-            {
-                onstatesReset = OnStatesReset;
-                string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
-                ResetStatesInternal(keysJson, InvokeResetCallBack);
-            }
-            else
-            {
-                MockResetStates(keysToExclude);
-            }
-        }
 
-        [MonoPInvokeCallback(typeof(Action))]
-        private static void InvokeResetCallBack()
-        {
-            onstatesReset?.Invoke();
-        }
 
         [MonoPInvokeCallback(typeof(Action))]
         private static void InvokePlayersResetCallBack()

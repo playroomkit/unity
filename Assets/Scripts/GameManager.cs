@@ -101,7 +101,7 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R) && _playroomKit.IsHost())
         {
-            PlayroomKit.ResetStates(new[] { "pos" }, () =>
+            _playroomKit.ResetStates(new[] { "pos" }, () =>
             {
                 var defscore = _playroomKit.GetState<int>("score");
                 score.text = defscore.ToString();

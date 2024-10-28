@@ -242,12 +242,29 @@ namespace Playroom
                 WaitForPlayerCallback = onStateSetCallback;
                 _interop.WaitForPlayerStateWrapper(playerID, stateKey, OnStateSetCallback);
             }
-
+            
             [MonoPInvokeCallback(typeof(Action))]
             void OnStateSetCallback()
             {
                 WaitForPlayerCallback?.Invoke();
             }
+            
+            private static Action onstatesReset;
+            private static Action onplayersStatesReset;
+
+            public void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null)
+            {
+                onstatesReset = OnStatesReset;
+                string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
+                _interop.ResetPlayersStatesWrapper(keysJson, InvokeResetCallBack);
+            }
+            
+            [MonoPInvokeCallback(typeof(Action))]
+            private static void InvokeResetCallBack()
+            {
+                onstatesReset?.Invoke();
+            }
+            
 
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void onDisconnectCallbackHandler(string key)

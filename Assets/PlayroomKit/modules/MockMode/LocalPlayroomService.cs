@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Playroom
@@ -105,6 +106,14 @@ namespace Playroom
             {
                 Debug.Log("Wait for player state is not supported in local mode yet!");
                 throw new NotImplementedException();
+            }
+
+            public void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null)
+            {
+                List<string> keysToRemove =
+                    mockGlobalStatesDictionary.Keys.Where(key => !keysToExclude.Contains(key)).ToList();
+                foreach (string key in keysToRemove) mockGlobalStatesDictionary.Remove(key);
+                OnStatesReset?.Invoke();
             }
         }
     }

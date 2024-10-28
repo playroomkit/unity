@@ -34,6 +34,8 @@ namespace Playroom
 
             public void WaitForPlayerState(string playerID, string stateKey, Action onStateSetCallback = null);
 
+            public void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null);
+
             [MonoPInvokeCallback(typeof(Action<string>))]
             protected static void __OnPlayerJoinCallbackHandler(string id)
             {
