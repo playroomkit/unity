@@ -189,6 +189,11 @@ namespace Playroom
             return _playroomService.IsStreamScreen();
         }
         
+        public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
+        {
+            _playroomService.WaitForState(stateKey, onStateSetCallback);
+        }
+        
         // DI END
         
 
@@ -219,6 +224,8 @@ namespace Playroom
 
 
         Action WaitForPlayerCallback = null;
+        
+        
 
         public void WaitForPlayerState(string playerID, string stateKey, Action onStateSetCallback = null)
         {

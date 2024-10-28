@@ -327,12 +327,25 @@ public void GetState_ShouldInvokeCorrectInternalFunction_ForAllTypes()
         _playroomKit.IsStreamScreen();
         _interop.Received(1).IsStreamScreenWrapper();
     }
-    
-    
-    
 
+    [Test]
+    public void WaitForState_ShouldInvokeInternal_WhenCalled()
+    {
+        
+        void Callback(string data, string caller)
+        {
+            Debug.Log($"Callback called!");
+        }
 
- 
+        void Callback2(string data)
+        {
+            Debug.Log($"Callback called!");
+        }
+
+        _playroomKit.WaitForState("state", Callback2);
+        _interop.Received(1).WaitForStateWrapper("state",Arg.Any<Action<string, string>>());
+    }
+    
     
 
     [Test]
