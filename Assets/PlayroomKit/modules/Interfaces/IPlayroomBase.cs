@@ -46,6 +46,8 @@ namespace Playroom
 
             public Dpad DpadJoystick();
 
+            public void UnsubscribeOnQuit();
+
             [MonoPInvokeCallback(typeof(Action<string>))]
             protected static void __OnPlayerJoinCallbackHandler(string id)
             {

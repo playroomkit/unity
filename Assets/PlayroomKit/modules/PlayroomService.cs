@@ -296,6 +296,11 @@ namespace Playroom
                 return myDpad;
             }
 
+            public void UnsubscribeOnQuit()
+            {
+                _interop.UnsubscribeOnQuitWrapper();
+            }
+
             [MonoPInvokeCallback(typeof(Action))]
             private static void InvokePlayersResetCallBack()
             {

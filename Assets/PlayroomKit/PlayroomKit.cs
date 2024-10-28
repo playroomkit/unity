@@ -241,15 +241,12 @@ namespace Playroom
             return _playroomService.Me();
         }
         
-        // DI END
-        
-        
-        
-        private static void UnsubscribeOnQuit()
+        private void UnsubscribeOnQuit()
         {
-            UnsubscribeOnQuitInternal();
+            _playroomService.UnsubscribeOnQuit();
         }
         
+        // DI END
         
     }
 }

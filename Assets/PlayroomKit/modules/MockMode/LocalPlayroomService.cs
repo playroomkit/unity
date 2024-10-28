@@ -153,8 +153,11 @@ namespace Playroom
             {
                 throw new NotImplementedException();
             }
-            
-            
+
+            public void UnsubscribeOnQuit()
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }
