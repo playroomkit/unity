@@ -264,6 +264,19 @@ namespace Playroom
             {
                 onstatesReset?.Invoke();
             }
+
+            public void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
+            {
+                onstatesReset = OnStatesReset;
+                string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
+                _interop.ResetPlayersStatesWrapper(keysJson, InvokePlayersResetCallBack);
+            }
+            
+            [MonoPInvokeCallback(typeof(Action))]
+            private static void InvokePlayersResetCallBack()
+            {
+                onplayersStatesReset?.Invoke();
+            }
             
 
             [MonoPInvokeCallback(typeof(Action<string>))]

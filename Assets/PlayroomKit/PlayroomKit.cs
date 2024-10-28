@@ -204,6 +204,11 @@ namespace Playroom
             _playroomService.ResetStates(keysToExclude, OnStatesReset);
         }
         
+        public void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
+        {
+            _playroomService.ResetPlayersStates(keysToExclude, OnStatesReset);
+        }
+        
         // DI END
         
 
@@ -256,43 +261,12 @@ namespace Playroom
 
             return dictionary;
         }
-
-
-        private static Action onstatesReset;
-        private static Action onplayersStatesReset;
         
-
-
-
-        [MonoPInvokeCallback(typeof(Action))]
-        private static void InvokePlayersResetCallBack()
-        {
-            onplayersStatesReset?.Invoke();
-        }
-
-
-        public static void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
-        {
-            if (IsRunningInBrowser())
-            {
-                onstatesReset = OnStatesReset;
-                string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
-                ResetPlayersStatesInternal(keysJson, InvokePlayersResetCallBack);
-            }
-            else
-            {
-                MockResetPlayersStates(keysToExclude, OnStatesReset);
-            }
-        }
-        
-
-
         private static void UnsubscribeOnQuit()
         {
             UnsubscribeOnQuitInternal();
         }
         
-
 
         // Joystick
         public static void CreateJoyStick(JoystickOptions options)

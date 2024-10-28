@@ -115,6 +115,24 @@ namespace Playroom
                 foreach (string key in keysToRemove) mockGlobalStatesDictionary.Remove(key);
                 OnStatesReset?.Invoke();
             }
+
+            public void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
+            {
+                if (keysToExclude == null || keysToExclude.Length == 0)
+                {
+                    keysToExclude = Array.Empty<string>();
+                }
+
+                List<string> keysToRemove =
+                    mockPlayerStatesDictionary.Keys.Where(key => !keysToExclude.Contains(key)).ToList();
+
+                foreach (string key in keysToRemove)
+                {
+                    mockPlayerStatesDictionary.Remove(key);
+                }
+
+                OnStatesReset?.Invoke();
+            }
         }
     }
 }
