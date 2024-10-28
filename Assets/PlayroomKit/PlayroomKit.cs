@@ -197,9 +197,6 @@ namespace Playroom
             public int waitBeforeCreatingNewRoom = 5000;
         }
         
-        
-
-        
 
         public static Player MyPlayer()
         {
@@ -218,28 +215,7 @@ namespace Playroom
         {
             return IsRunningInBrowser() ? MyPlayer() : MockMe();
         }
-
-
         
-
-        [MonoPInvokeCallback(typeof(Action<string, string>))]
-        private static void InvokeCallback(string stateKey, string stateVal)
-        {
-            CallbackManager.InvokeCallback(stateKey, stateVal);
-        }
-
-        public static void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
-        {
-            if (IsRunningInBrowser())
-            {
-                CallbackManager.RegisterCallback(onStateSetCallback, stateKey);
-                WaitForStateInternal(stateKey, InvokeCallback);
-            }
-            else
-            {
-                MockWaitForState(stateKey, onStateSetCallback);
-            }
-        }
 
 
         Action WaitForPlayerCallback = null;

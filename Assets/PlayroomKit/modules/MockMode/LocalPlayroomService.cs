@@ -94,6 +94,12 @@ namespace Playroom
             {
                 return mockIsStreamMode;
             }
+
+            public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
+            {
+                Debug.Log("Wait for state is not supported in local mode yet!");
+                throw new NotImplementedException();
+            }
         }
     }
 }

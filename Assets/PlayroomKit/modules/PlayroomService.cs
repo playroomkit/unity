@@ -229,6 +229,12 @@ namespace Playroom
                 return _interop.IsStreamScreenWrapper();
             }
 
+            public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
+            {
+                CallbackManager.RegisterCallback(onStateSetCallback, stateKey);
+                _interop.WaitForStateWrapper(stateKey, IPlayroomBase.InvokeCallback);
+            }
+
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void onDisconnectCallbackHandler(string key)
             {

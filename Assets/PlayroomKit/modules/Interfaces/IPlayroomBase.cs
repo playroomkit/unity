@@ -30,6 +30,8 @@ namespace Playroom
 
             public bool IsStreamScreen();
 
+            public void WaitForState(string stateKey, Action<string> onStateSetCallback = null);
+
             [MonoPInvokeCallback(typeof(Action<string>))]
             protected static void __OnPlayerJoinCallbackHandler(string id)
             {
@@ -43,6 +45,13 @@ namespace Playroom
                 {
                     callback?.Invoke(player);
                 }
+            }
+            
+            
+            [MonoPInvokeCallback(typeof(Action<string, string>))]
+            protected static void InvokeCallback(string stateKey, string stateVal)
+            {
+                CallbackManager.InvokeCallback(stateKey, stateVal);
             }
         }
     }
