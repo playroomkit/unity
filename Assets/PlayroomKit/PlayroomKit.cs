@@ -221,10 +221,8 @@ namespace Playroom
             return IsRunningInBrowser() ? MyPlayer() : MockMe();
         }
         
-
-
-        Action WaitForPlayerCallback = null;
         
+        Action WaitForPlayerCallback = null;
         
 
         public void WaitForPlayerState(string playerID, string stateKey, Action onStateSetCallback = null)
@@ -241,27 +239,7 @@ namespace Playroom
         {
             WaitForPlayerCallback?.Invoke();
         }
-
-
-        // Utils:
-        private static void SetStateHelper<T>(string key, Dictionary<string, T> values, bool reliable = false)
-        {
-            var jsonObject = new JSONObject();
-
-            // Add key-value pairs to the JSON object
-            foreach (var kvp in values)
-            {
-                // Convert the value to double before adding to JSONNode
-                var value = Convert.ToDouble(kvp.Value);
-                jsonObject.Add(kvp.Key, value);
-            }
-
-            // Serialize the JSON object to a string
-            var jsonString = jsonObject.ToString();
-
-            // Output the JSON string
-            SetStateDictionary(key, jsonString, reliable);
-        }
+        
 
         private static Dictionary<string, T> ParseJsonToDictionary<T>(string jsonString)
         {
@@ -332,10 +310,7 @@ namespace Playroom
                 MockResetPlayersStates(keysToExclude, OnStatesReset);
             }
         }
-
-
-       
-
+        
 
 
         private static void UnsubscribeOnQuit()
