@@ -320,6 +320,13 @@ public void GetState_ShouldInvokeCorrectInternalFunction_ForAllTypes()
         
         UnityEngine.Assertions.Assert.IsTrue(receivedCalled);
     }
+
+    [Test]
+    public void IsStreamScreen_ShouldInvokeInternal_WhenCalled()
+    {
+        _playroomKit.IsStreamScreen();
+        _interop.Received(1).IsStreamScreenWrapper();
+    }
     
     
     
