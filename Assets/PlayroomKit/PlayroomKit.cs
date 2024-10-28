@@ -188,23 +188,7 @@ namespace Playroom
         
 
         private static List<Action<Player>> OnPlayerJoinCallbacks = new();
-
-
-        [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void __OnPlayerJoinCallbackHandler(string id)
-        {
-            OnPlayerJoinWrapperCallback(id);
-        }
         
-
-        private static void OnPlayerJoinWrapperCallback(string id)
-        {
-            var player = GetPlayer(id);
-            foreach (var callback in OnPlayerJoinCallbacks)
-            {
-                callback?.Invoke(player);
-            }
-        }
         
         public static bool IsStreamScreen()
         {

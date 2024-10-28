@@ -85,7 +85,7 @@ namespace Playroom
         /// <param name="playerId"></param>
         public static void MockOnPlayerJoinWrapper(string playerId)
         {
-            OnPlayerJoinWrapperCallback(playerId);
+            throw new NotImplementedException("MockOnPlayerJoinWrapper");
         }
 
         private static void MockSetStateBrowser(string key, object value, bool reliable)

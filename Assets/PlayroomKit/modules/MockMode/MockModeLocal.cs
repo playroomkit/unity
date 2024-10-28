@@ -36,7 +36,7 @@ namespace Playroom
             Debug.Log("On Player Join");
             var testPlayer = GetPlayer(PlayerId);
             OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
-            __OnPlayerJoinCallbackHandler(PlayerId);
+            throw new NotImplementedException();
         }
 
         private static void MockSetStateLocal(string key, object value)
