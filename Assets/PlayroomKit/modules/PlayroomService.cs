@@ -68,6 +68,17 @@ namespace Playroom
                     InvokeOnErrorInsertCoin, onLaunchCallBackKey, onDisconnectCallBackKey);
             }
 
+            public Player MyPlayer()
+            {
+                var id = _interop.MyPlayerWrapper();
+                return GetPlayer(id);
+            }
+
+            public Player Me()
+            {
+                return MyPlayer();
+            }
+
             public bool IsHost()
             {
                 return _interop.IsHostWrapper();
@@ -223,6 +234,79 @@ namespace Playroom
                 CallbackManager.RegisterCallback(callback);
                 _interop.OnDisconnectWrapper(onDisconnectCallbackHandler);
             }
+
+            public bool IsStreamScreen()
+            {
+                return _interop.IsStreamScreenWrapper();
+            }
+
+            public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
+            {
+                CallbackManager.RegisterCallback(onStateSetCallback, stateKey);
+                _interop.WaitForStateWrapper(stateKey, IPlayroomBase.InvokeCallback);
+            }
+            
+            
+            Action WaitForPlayerCallback = null;
+            public void WaitForPlayerState(string playerID, string stateKey, Action onStateSetCallback = null)
+            {
+                WaitForPlayerCallback = onStateSetCallback;
+                _interop.WaitForPlayerStateWrapper(playerID, stateKey, OnStateSetCallback);
+            }
+            
+            [MonoPInvokeCallback(typeof(Action))]
+            void OnStateSetCallback()
+            {
+                WaitForPlayerCallback?.Invoke();
+            }
+            
+            private static Action onstatesReset;
+            private static Action onplayersStatesReset;
+
+            public void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null)
+            {
+                onstatesReset = OnStatesReset;
+                string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
+                _interop.ResetStatesWrapper(keysJson, InvokeResetCallBack);
+            }
+            
+            [MonoPInvokeCallback(typeof(Action))]
+            private static void InvokeResetCallBack()
+            {
+                onstatesReset?.Invoke();
+            }
+
+            public void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
+            {
+                onstatesReset = OnStatesReset;
+                string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
+                _interop.ResetPlayersStatesWrapper(keysJson, InvokePlayersResetCallBack);
+            }
+
+            public void CreateJoyStick(JoystickOptions options)
+            {
+                var jsonStr = ConvertJoystickOptionsToJson(options);
+                _interop.CreateJoystickWrapper(jsonStr);
+            }
+
+            public Dpad DpadJoystick()
+            {
+                var jsonString = DpadJoystickInternal();
+                Dpad myDpad = JsonUtility.FromJson<Dpad>(jsonString);
+                return myDpad;
+            }
+
+            public void UnsubscribeOnQuit()
+            {
+                _interop.UnsubscribeOnQuitWrapper();
+            }
+
+            [MonoPInvokeCallback(typeof(Action))]
+            private static void InvokePlayersResetCallBack()
+            {
+                onplayersStatesReset?.Invoke();
+            }
+            
 
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void onDisconnectCallbackHandler(string key)

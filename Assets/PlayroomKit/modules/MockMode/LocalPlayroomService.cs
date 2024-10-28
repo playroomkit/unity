@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Playroom
@@ -11,6 +12,8 @@ namespace Playroom
             private Dictionary<string, object> mockGlobalStates = new();
 
             private const string PlayerId = "mockplayerID123";
+            
+            private static bool mockIsStreamMode;
 
             public Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
             {
@@ -35,6 +38,16 @@ namespace Playroom
                 string optionsJson = null;
                 if (options != null) optionsJson = SerializeInitOptions(options);
                 onLaunchCallBack?.Invoke();
+            }
+
+            public Player MyPlayer()
+            {
+                return GetPlayer(PlayerId);
+            }
+
+            public Player Me()
+            {
+                return GetPlayer(PlayerId);
             }
 
             public bool IsHost()
@@ -86,6 +99,64 @@ namespace Playroom
             public void OnDisconnect(Action callback)
             {
                 callback?.Invoke();
+            }
+
+            public bool IsStreamScreen()
+            {
+                return mockIsStreamMode;
+            }
+
+            public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
+            {
+                Debug.Log("Wait for state is not supported in local mode yet!");
+                throw new NotImplementedException();
+            }
+
+            public void WaitForPlayerState(string playerID, string stateKey, Action onStateSetCallback = null)
+            {
+                Debug.Log("Wait for player state is not supported in local mode yet!");
+                throw new NotImplementedException();
+            }
+
+            public void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null)
+            {
+                List<string> keysToRemove =
+                    mockGlobalStatesDictionary.Keys.Where(key => !keysToExclude.Contains(key)).ToList();
+                foreach (string key in keysToRemove) mockGlobalStatesDictionary.Remove(key);
+                OnStatesReset?.Invoke();
+            }
+
+            public void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
+            {
+                if (keysToExclude == null || keysToExclude.Length == 0)
+                {
+                    keysToExclude = Array.Empty<string>();
+                }
+
+                List<string> keysToRemove =
+                    mockPlayerStatesDictionary.Keys.Where(key => !keysToExclude.Contains(key)).ToList();
+
+                foreach (string key in keysToRemove)
+                {
+                    mockPlayerStatesDictionary.Remove(key);
+                }
+
+                OnStatesReset?.Invoke();
+            }
+
+            public void CreateJoyStick(JoystickOptions options)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Dpad DpadJoystick()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void UnsubscribeOnQuit()
+            {
+                throw new NotImplementedException();
             }
         }
     }

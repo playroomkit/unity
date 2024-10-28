@@ -50,13 +50,14 @@ namespace Playroom
 
         private static void MockOnPlayerJoinBrowser(Action<Player> onPlayerJoinCallback)
         {
-            if (!OnPlayerJoinCallbacks.Contains(onPlayerJoinCallback)) OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
-
-            var gameObjectName = GetGameObject("devManager").name;
-
-#if UNITY_EDITOR
-            UnityBrowserBridge.Instance.ExecuteJS($"OnPlayerJoin('{gameObjectName}')");
-#endif
+            throw new NotImplementedException();
+//             if (!OnPlayerJoinCallbacks.Contains(onPlayerJoinCallback)) OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
+//
+//             var gameObjectName = GetGameObject("devManager").name;
+//
+// #if UNITY_EDITOR
+//             UnityBrowserBridge.Instance.ExecuteJS($"OnPlayerJoin('{gameObjectName}')");
+// #endif
         }
 
 //         private static void MockOnPlayerQuitBrowser(Action<Player> onPlayerJoinCallback)
@@ -85,7 +86,7 @@ namespace Playroom
         /// <param name="playerId"></param>
         public static void MockOnPlayerJoinWrapper(string playerId)
         {
-            OnPlayerJoinWrapperCallback(playerId);
+            throw new NotImplementedException("MockOnPlayerJoinWrapper");
         }
 
         private static void MockSetStateBrowser(string key, object value, bool reliable)

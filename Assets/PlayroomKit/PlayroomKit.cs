@@ -38,9 +38,10 @@ namespace Playroom
             }
         }
         
-        public  PlayroomKit(IPlayroomBase playroomService)
+        public  PlayroomKit(IPlayroomBase playroomService, IRPC rpc)
         {
             _playroomService = playroomService;
+            _rpc = rpc;
         }
         
         public void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
@@ -177,254 +178,75 @@ namespace Playroom
             _playroomService.OnDisconnect(callback);
         }
         
-        // DI END
-        
-
-        public class MatchMakingOptions
+        public bool IsStreamScreen()
         {
-            public int waitBeforeCreatingNewRoom = 5000;
-        }
-        
-
-        private static List<Action<Player>> OnPlayerJoinCallbacks = new();
-
-
-        [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void __OnPlayerJoinCallbackHandler(string id)
-        {
-            OnPlayerJoinWrapperCallback(id);
-        }
-        
-
-        private static void OnPlayerJoinWrapperCallback(string id)
-        {
-            var player = GetPlayer(id);
-            foreach (var callback in OnPlayerJoinCallbacks)
+            if (!isPlayRoomInitialized)
             {
-                callback?.Invoke(player);
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                return false;
             }
+            
+            return _playroomService.IsStreamScreen();
         }
         
-        public static bool IsStreamScreen()
+        public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
         {
-            if (IsRunningInBrowser())
-            {
-                return IsStreamScreenInternal();
-            }
-
-            if (isPlayRoomInitialized) return MockIsStreamScreen();
-            Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-            return false;
+            _playroomService.WaitForState(stateKey, onStateSetCallback);
         }
         
-
-        public static Player MyPlayer()
-        {
-            if (IsRunningInBrowser())
-            {
-                var id = MyPlayerInternal();
-                return GetPlayer(id);
-            }
-
-            if (isPlayRoomInitialized) return MockMyPlayer();
-            Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-            return null;
-        }
-
-        public static Player Me()
-        {
-            return IsRunningInBrowser() ? MyPlayer() : MockMe();
-        }
-
-
-        
-
-        [MonoPInvokeCallback(typeof(Action<string, string>))]
-        private static void InvokeCallback(string stateKey, string stateVal)
-        {
-            CallbackManager.InvokeCallback(stateKey, stateVal);
-        }
-
-        public static void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
-        {
-            if (IsRunningInBrowser())
-            {
-                CallbackManager.RegisterCallback(onStateSetCallback, stateKey);
-                WaitForStateInternal(stateKey, InvokeCallback);
-            }
-            else
-            {
-                MockWaitForState(stateKey, onStateSetCallback);
-            }
-        }
-
-
-        Action WaitForPlayerCallback = null;
-
         public void WaitForPlayerState(string playerID, string stateKey, Action onStateSetCallback = null)
         {
-            if (IsRunningInBrowser())
-            {
-                WaitForPlayerCallback = onStateSetCallback;
-                WaitForPlayerStateInternal(playerID, stateKey, OnStateSetCallback);
-            }
-        }
-
-        [MonoPInvokeCallback(typeof(Action))]
-        void OnStateSetCallback()
-        {
-            WaitForPlayerCallback?.Invoke();
-        }
-
-
-        // Utils:
-        private static void SetStateHelper<T>(string key, Dictionary<string, T> values, bool reliable = false)
-        {
-            var jsonObject = new JSONObject();
-
-            // Add key-value pairs to the JSON object
-            foreach (var kvp in values)
-            {
-                // Convert the value to double before adding to JSONNode
-                var value = Convert.ToDouble(kvp.Value);
-                jsonObject.Add(kvp.Key, value);
-            }
-
-            // Serialize the JSON object to a string
-            var jsonString = jsonObject.ToString();
-
-            // Output the JSON string
-            SetStateDictionary(key, jsonString, reliable);
-        }
-
-        private static Dictionary<string, T> ParseJsonToDictionary<T>(string jsonString)
-        {
-            var dictionary = new Dictionary<string, T>();
-            var jsonNode = JSON.Parse(jsonString);
-
-            foreach (var kvp in jsonNode.AsObject)
-            {
-                T value = default; // Initialize the value to default value of T
-
-                // Parse the JSONNode value to the desired type (T)
-                if (typeof(T) == typeof(float))
-                    value = (T)(object)kvp.Value.AsFloat;
-                else if (typeof(T) == typeof(int))
-                    value = (T)(object)kvp.Value.AsInt;
-                else if (typeof(T) == typeof(bool))
-                    value = (T)(object)kvp.Value.AsBool;
-                else
-                    Debug.LogError("Unsupported type: " + typeof(T).FullName);
-
-                dictionary.Add(kvp.Key, value);
-            }
-
-            return dictionary;
-        }
-
-
-        private static Action onstatesReset;
-        private static Action onplayersStatesReset;
-
-        public static void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null)
-        {
-            if (IsRunningInBrowser())
-            {
-                onstatesReset = OnStatesReset;
-                string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
-                ResetStatesInternal(keysJson, InvokeResetCallBack);
-            }
-            else
-            {
-                MockResetStates(keysToExclude);
-            }
-        }
-
-        [MonoPInvokeCallback(typeof(Action))]
-        private static void InvokeResetCallBack()
-        {
-            onstatesReset?.Invoke();
-        }
-
-        [MonoPInvokeCallback(typeof(Action))]
-        private static void InvokePlayersResetCallBack()
-        {
-            onplayersStatesReset?.Invoke();
-        }
-
-
-        public static void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
-        {
-            if (IsRunningInBrowser())
-            {
-                onstatesReset = OnStatesReset;
-                string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
-                ResetPlayersStatesInternal(keysJson, InvokePlayersResetCallBack);
-            }
-            else
-            {
-                MockResetPlayersStates(keysToExclude, OnStatesReset);
-            }
-        }
-
-
-       
-
-
-
-        private static void UnsubscribeOnQuit()
-        {
-            UnsubscribeOnQuitInternal();
+            _playroomService.WaitForPlayerState(playerID, stateKey, onStateSetCallback);
         }
         
-
-
+        public void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null)
+        {
+            _playroomService.ResetStates(keysToExclude, OnStatesReset);
+        }
+        
+        public void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
+        {
+            _playroomService.ResetPlayersStates(keysToExclude, OnStatesReset);
+        }
+        
         // Joystick
-        public static void CreateJoyStick(JoystickOptions options)
+        public  void CreateJoyStick(JoystickOptions options)
         {
-            var jsonStr = ConvertJoystickOptionsToJson(options);
-            CreateJoystickInternal(jsonStr);
+            _playroomService.CreateJoyStick(options);
         }
 
-        public static Dpad DpadJoystick()
+        public Dpad DpadJoystick()
         {
-            var jsonString = DpadJoystickInternal();
-            Dpad myDpad = JsonUtility.FromJson<Dpad>(jsonString);
-            return myDpad;
+            return _playroomService.DpadJoystick();
+        }
+        
+        public Player MyPlayer()
+        {
+            if (!isPlayRoomInitialized)
+            {
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                return null;
+            }
+            return _playroomService.MyPlayer();
         }
 
-
-        public class JoystickOptions
+        public Player Me()
         {
-            public string type = "angular"; // default = angular, can be dpad
-
-            public ButtonOptions[] buttons;
-            public ZoneOptions zones = null;
+            if (!isPlayRoomInitialized)
+            {
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                return null;
+            }
+            
+            return _playroomService.Me();
         }
-
-        [Serializable]
-        public class ButtonOptions
+        
+        private void UnsubscribeOnQuit()
         {
-            public string id = null;
-            public string label = "";
-            public string icon = null;
+            _playroomService.UnsubscribeOnQuit();
         }
-
-        public class ZoneOptions
-        {
-            public ButtonOptions up = null;
-            public ButtonOptions down = null;
-            public ButtonOptions left = null;
-            public ButtonOptions right = null;
-        }
-
-
-        [Serializable]
-        public class Dpad
-        {
-            public string x;
-            public string y;
-        }
+        
+        // DI END
         
     }
 }
