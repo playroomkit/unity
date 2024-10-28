@@ -1,3 +1,4 @@
+using System;
 using SimpleJSON;
 using UnityEngine;
 
@@ -118,6 +119,38 @@ namespace Playroom
 
             return jsonArray;
         }
+        
+        public class JoystickOptions
+        {
+            public string type = "angular"; // default = angular, can be dpad
+
+            public ButtonOptions[] buttons;
+            public ZoneOptions zones = null;
+        }
+
+        [Serializable]
+        public class ButtonOptions
+        {
+            public string id = null;
+            public string label = "";
+            public string icon = null;
+        }
+
+        public class ZoneOptions
+        {
+            public ButtonOptions up = null;
+            public ButtonOptions down = null;
+            public ButtonOptions left = null;
+            public ButtonOptions right = null;
+        }
+
+
+        [Serializable]
+        public class Dpad
+        {
+            public string x;
+            public string y;
+        }
 
         private static string ConvertJoystickOptionsToJson(JoystickOptions options)
         {
@@ -181,5 +214,8 @@ namespace Playroom
 
             return profileData;
         }
+        
+        
+        
     }
 }

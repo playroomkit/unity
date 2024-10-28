@@ -133,6 +133,18 @@ namespace Playroom
 
                 OnStatesReset?.Invoke();
             }
+
+            public void CreateJoyStick(JoystickOptions options)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Dpad DpadJoystick()
+            {
+                throw new NotImplementedException();
+            }
+            
+            
         }
     }
 }

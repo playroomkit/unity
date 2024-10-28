@@ -38,6 +38,10 @@ namespace Playroom
 
             public void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null);
 
+            public void CreateJoyStick(JoystickOptions options);
+
+            public Dpad DpadJoystick();
+
             [MonoPInvokeCallback(typeof(Action<string>))]
             protected static void __OnPlayerJoinCallbackHandler(string id)
             {

@@ -209,6 +209,17 @@ namespace Playroom
             _playroomService.ResetPlayersStates(keysToExclude, OnStatesReset);
         }
         
+        // Joystick
+        public  void CreateJoyStick(JoystickOptions options)
+        {
+            _playroomService.CreateJoyStick(options);
+        }
+
+        public Dpad DpadJoystick()
+        {
+            return _playroomService.DpadJoystick();
+        }
+        
         // DI END
         
 
@@ -267,53 +278,6 @@ namespace Playroom
             UnsubscribeOnQuitInternal();
         }
         
-
-        // Joystick
-        public static void CreateJoyStick(JoystickOptions options)
-        {
-            var jsonStr = ConvertJoystickOptionsToJson(options);
-            CreateJoystickInternal(jsonStr);
-        }
-
-        public static Dpad DpadJoystick()
-        {
-            var jsonString = DpadJoystickInternal();
-            Dpad myDpad = JsonUtility.FromJson<Dpad>(jsonString);
-            return myDpad;
-        }
-
-
-        public class JoystickOptions
-        {
-            public string type = "angular"; // default = angular, can be dpad
-
-            public ButtonOptions[] buttons;
-            public ZoneOptions zones = null;
-        }
-
-        [Serializable]
-        public class ButtonOptions
-        {
-            public string id = null;
-            public string label = "";
-            public string icon = null;
-        }
-
-        public class ZoneOptions
-        {
-            public ButtonOptions up = null;
-            public ButtonOptions down = null;
-            public ButtonOptions left = null;
-            public ButtonOptions right = null;
-        }
-
-
-        [Serializable]
-        public class Dpad
-        {
-            public string x;
-            public string y;
-        }
         
     }
 }

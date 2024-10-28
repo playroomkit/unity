@@ -271,7 +271,20 @@ namespace Playroom
                 string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
                 _interop.ResetPlayersStatesWrapper(keysJson, InvokePlayersResetCallBack);
             }
-            
+
+            public void CreateJoyStick(JoystickOptions options)
+            {
+                var jsonStr = ConvertJoystickOptionsToJson(options);
+                _interop.CreateJoystickWrapper(jsonStr);
+            }
+
+            public Dpad DpadJoystick()
+            {
+                var jsonString = DpadJoystickInternal();
+                Dpad myDpad = JsonUtility.FromJson<Dpad>(jsonString);
+                return myDpad;
+            }
+
             [MonoPInvokeCallback(typeof(Action))]
             private static void InvokePlayersResetCallBack()
             {
