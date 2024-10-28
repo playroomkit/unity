@@ -220,27 +220,29 @@ namespace Playroom
             return _playroomService.DpadJoystick();
         }
         
+        public Player MyPlayer()
+        {
+            if (!isPlayRoomInitialized)
+            {
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                return null;
+            }
+            return _playroomService.MyPlayer();
+        }
+
+        public Player Me()
+        {
+            if (!isPlayRoomInitialized)
+            {
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                return null;
+            }
+            
+            return _playroomService.Me();
+        }
+        
         // DI END
         
-        
-
-        public static Player MyPlayer()
-        {
-            if (IsRunningInBrowser())
-            {
-                var id = MyPlayerInternal();
-                return GetPlayer(id);
-            }
-
-            if (isPlayRoomInitialized) return MockMyPlayer();
-            Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-            return null;
-        }
-
-        public static Player Me()
-        {
-            return IsRunningInBrowser() ? MyPlayer() : MockMe();
-        }
         
 
         private static Dictionary<string, T> ParseJsonToDictionary<T>(string jsonString)

@@ -174,11 +174,11 @@ namespace Playroom
                 () => MockRpcRegisterBrowser(name, callback));
         }
 
-        private static void MockRpcCall(string name, object data, RpcMode mode, Action callbackOnResponse = null)
-        {
-            ExecuteMockModeAction(
-                () => MockRpcCallLocal(name, data, mode, callbackOnResponse),
-                () => MockRpcCallBrowser(name, data, mode, callbackOnResponse));
-        }
+        // private static void MockRpcCall(string name, object data, RpcMode mode, Action callbackOnResponse = null)
+        // {
+        //     ExecuteMockModeAction(
+        //         () => MockRpcCallLocal(name, data, mode, callbackOnResponse),
+        //         () => MockRpcCallBrowser(name, data, mode, callbackOnResponse));
+        // }
     }
 }

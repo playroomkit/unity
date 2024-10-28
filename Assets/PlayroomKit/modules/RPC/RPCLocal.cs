@@ -12,6 +12,9 @@ namespace Playroom
                 new();
             
             private static Dictionary<string, Action> mockResponseCallbacks = new();
+            
+            private readonly IInterop _interop;
+            
             public void RpcRegister(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null)
             {
                 mockRegisterCallbacks.TryAdd(name, (rpcRegisterCallback, onResponseReturn));
@@ -22,7 +25,7 @@ namespace Playroom
                 mockResponseCallbacks.TryAdd(name, callbackOnResponse);
 
                 string stringData = Convert.ToString(data);
-                var player = MyPlayer();
+                var player = GetPlayer("mockplayerID123");
 
                 if (mockRegisterCallbacks.TryGetValue(name, out var responseHandler))
                 {

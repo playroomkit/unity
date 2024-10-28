@@ -68,6 +68,17 @@ namespace Playroom
                     InvokeOnErrorInsertCoin, onLaunchCallBackKey, onDisconnectCallBackKey);
             }
 
+            public Player MyPlayer()
+            {
+                var id = _interop.MyPlayerWrapper();
+                return GetPlayer(id);
+            }
+
+            public Player Me()
+            {
+                return MyPlayer();
+            }
+
             public bool IsHost()
             {
                 return _interop.IsHostWrapper();

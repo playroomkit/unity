@@ -40,6 +40,16 @@ namespace Playroom
                 onLaunchCallBack?.Invoke();
             }
 
+            public Player MyPlayer()
+            {
+                return GetPlayer(PlayerId);
+            }
+
+            public Player Me()
+            {
+                return GetPlayer(PlayerId);
+            }
+
             public bool IsHost()
             {
                 return true;

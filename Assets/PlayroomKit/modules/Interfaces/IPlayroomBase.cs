@@ -16,6 +16,10 @@ namespace Playroom
             public void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
                 Action onDisconnectCallback = null);
 
+            public Player MyPlayer();
+
+            public Player Me();
+
             public bool IsHost();
 
             public string GetRoomCode();

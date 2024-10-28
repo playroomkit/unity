@@ -102,7 +102,7 @@ public class GameManager2d : MonoBehaviour
     {
         if (playerJoined)
         {
-            var myPlayer = PlayroomKit.MyPlayer();
+            var myPlayer = _playroomKit.MyPlayer();
             var index = players.IndexOf(myPlayer);
 
             playerGameObjects[index].GetComponent<PlayerController2d>().Move();

@@ -97,28 +97,28 @@ namespace Playroom
         }
 
 
-        private static void MockRpcCallLocal(string name, object data, RpcMode mode, Action callbackOnResponse = null)
-        {
-            mockResponseCallbacks.TryAdd(name, callbackOnResponse);
-
-            string stringData = Convert.ToString(data);
-            var player = MyPlayer();
-
-            if (mockRegisterCallbacks.TryGetValue(name, out var responseHandler))
-            {
-                responseHandler.callback?.Invoke(stringData, player.id);
-
-                if (!string.IsNullOrEmpty(responseHandler.response))
-                {
-                    Debug.Log($"Response received: {responseHandler.response}");
-                }
-            }
-
-            if (mockResponseCallbacks.TryGetValue(name, out var callback))
-            {
-                callback?.Invoke();
-            }
-        }
+        // private static void MockRpcCallLocal(string name, object data, RpcMode mode, Action callbackOnResponse = null)
+        // {
+        //     mockResponseCallbacks.TryAdd(name, callbackOnResponse);
+        //
+        //     string stringData = Convert.ToString(data);
+        //     var player = _MyPlayer();
+        //
+        //     if (mockRegisterCallbacks.TryGetValue(name, out var responseHandler))
+        //     {
+        //         responseHandler.callback?.Invoke(stringData, player.id);
+        //
+        //         if (!string.IsNullOrEmpty(responseHandler.response))
+        //         {
+        //             Debug.Log($"Response received: {responseHandler.response}");
+        //         }
+        //     }
+        //
+        //     if (mockResponseCallbacks.TryGetValue(name, out var callback))
+        //     {
+        //         callback?.Invoke();
+        //     }
+        // }
 
         // TODO: need to reimplement when local co-op is added
         private static string MockGetRoomCodeLocal()
