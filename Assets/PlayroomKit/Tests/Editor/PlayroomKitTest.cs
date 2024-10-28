@@ -427,6 +427,83 @@ public void GetState_ShouldInvokeCorrectInternalFunction_ForAllTypes()
         );
         
     }
+    
+    
+    [Test]
+    public void CreateJoyStick_ShouldInvokeInteropWithCorrectJson()
+    {
+        // Arrange
+        
+        static string ConvertJoystickOptionsToJson(PlayroomKit.JoystickOptions options)
+        {
+            JSONNode joystickOptionsJson = new JSONObject();
+            joystickOptionsJson["type"] = options.type;
+
+            // Serialize the buttons array
+            JSONArray buttonsArray = new JSONArray();
+            foreach (PlayroomKit.ButtonOptions button in options.buttons)
+            {
+                JSONObject buttonJson = new JSONObject();
+                buttonJson["id"] = button.id;
+                buttonJson["label"] = button.label;
+                buttonJson["icon"] = button.icon;
+                buttonsArray.Add(buttonJson);
+            }
+
+            joystickOptionsJson["buttons"] = buttonsArray;
+
+            // Serialize the zones property (assuming it's not null)
+            if (options.zones != null)
+            {
+                JSONObject zonesJson = new JSONObject();
+                zonesJson["up"] = ConvertButtonOptionsToJson(options.zones.up);
+                zonesJson["down"] = ConvertButtonOptionsToJson(options.zones.down);
+                zonesJson["left"] = ConvertButtonOptionsToJson(options.zones.left);
+                zonesJson["right"] = ConvertButtonOptionsToJson(options.zones.right);
+                joystickOptionsJson["zones"] = zonesJson;
+            }
+
+            return joystickOptionsJson.ToString();
+        }
+
+        // Function to convert ButtonOptions to JSON
+        static JSONNode ConvertButtonOptionsToJson(PlayroomKit.ButtonOptions button)
+        {
+            JSONObject buttonJson = new JSONObject();
+            buttonJson["id"] = button.id;
+            buttonJson["label"] = button.label;
+            buttonJson["icon"] = button.icon;
+            return buttonJson;
+        }
+        
+        var joystickOptions = new PlayroomKit.JoystickOptions
+        {
+            type = "dpad",
+            buttons = new[]
+            {
+                new PlayroomKit.ButtonOptions { id = "btn1", label = "Jump", icon = "jump_icon" },
+                new PlayroomKit.ButtonOptions { id = "btn2", label = "Run", icon = "run_icon" }
+            },
+            zones = new PlayroomKit.ZoneOptions
+            {
+                up = new PlayroomKit.ButtonOptions { id = "up", label = "Move Up", icon = "up_icon" },
+                down = new PlayroomKit.ButtonOptions { id = "down", label = "Move Down", icon = "down_icon" },
+                left = new PlayroomKit.ButtonOptions { id = "left", label = "Move Left", icon = "left_icon" },
+                right = new PlayroomKit.ButtonOptions { id = "right", label = "Move Right", icon = "right_icon" }
+            }
+        };
+    
+        // Assuming ConvertJoystickOptionsToJson is either available or mocked
+        var expectedJsonStr = ConvertJoystickOptionsToJson(joystickOptions);
+
+        // Act
+        _playroomKit.CreateJoyStick(joystickOptions);
+
+        // Assert
+        _interop.Received(1).CreateJoystickWrapper(expectedJsonStr);
+    }
+
+
 
 
     
