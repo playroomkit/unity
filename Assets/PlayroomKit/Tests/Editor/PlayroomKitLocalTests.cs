@@ -103,6 +103,17 @@ public class PlayroomKitLocalTests
         Assert.IsFalse(isStream, "IsStreamScreen should be false.");
     }
     
-    
+    [Test]
+    public void ResetStates_ShouldInvokeCallback()
+    {
+        var keysToExclude = new[] { "pos" };
+        bool callbackInvoked = false;
+
+        // Act
+        _playroomKit.ResetStates(keysToExclude, () => callbackInvoked = true);
+        
+        Assert.IsTrue(callbackInvoked, "Callback should be invoked");
+    }
+
     
 }
