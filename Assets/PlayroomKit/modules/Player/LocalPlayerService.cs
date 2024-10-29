@@ -85,6 +85,13 @@ namespace Playroom
                 {
                     throw new NotImplementedException();
                 }
+
+                public void Kick(string id, Action OnKickCallBack = null)
+                {
+                    var player = GetPlayer(PlayerId);
+                    Players.Remove(player.id);
+                    IPlayerBase.onKickCallBack?.Invoke();
+                }
             }
         }
     }

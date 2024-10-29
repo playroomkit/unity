@@ -136,6 +136,20 @@ namespace Playroom
                     return Unsubscribe;
                 }
                 
+
+
+                public void Kick(string id, Action OnKickCallBack = null)
+                {
+                    IPlayerBase.onKickCallBack = OnKickCallBack;
+                    KickInternal(id, InvokeKickCallBack);
+                }
+                
+                [MonoPInvokeCallback(typeof(Action))]
+                private static void InvokeKickCallBack()
+                {
+                    IPlayerBase.onKickCallBack?.Invoke();
+                }
+
                 [MonoPInvokeCallback(typeof(Action))]
                 private void OnQuitWrapperCallback(string id)
                 {

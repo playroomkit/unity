@@ -108,6 +108,17 @@ namespace Playroom
 
                 return _playerService.OnQuit(callback);
             }
+            
+            public void Kick(Action OnKickCallBack = null)
+            {
+                if (!isPlayRoomInitialized)
+                { 
+                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                    return;
+                }
+                
+                _playerService.Kick(id, OnKickCallBack);
+            }
 
             
             //DI END
@@ -155,35 +166,6 @@ namespace Playroom
                 {
                     WaitForPlayerStateInternal(id, StateKey, onStateSetCallback);
                 }
-            }
-
-            public void Kick(Action OnKickCallBack = null)
-            {
-                if (IsRunningInBrowser())
-                {
-                    onKickCallBack = OnKickCallBack;
-                    KickInternal(id, InvokeKickCallBack);
-                }
-                else
-                {
-                    if (!isPlayRoomInitialized)
-                    {
-                        Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    }
-                    else
-                    {
-                        MockKick(id, OnKickCallBack);
-                    }
-                }
-            }
-
-
-            private static Action onKickCallBack = null;
-
-            [MonoPInvokeCallback(typeof(Action))]
-            private static void InvokeKickCallBack()
-            {
-                onKickCallBack?.Invoke();
             }
             
 
