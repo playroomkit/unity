@@ -92,6 +92,11 @@ namespace Playroom
                     Players.Remove(player.id);
                     IPlayerBase.onKickCallBack?.Invoke();
                 }
+
+                public void WaitForState(string id, string StateKey, Action onStateSetCallback = null)
+                {
+                    throw new NotImplementedException();
+                }
             }
         }
     }

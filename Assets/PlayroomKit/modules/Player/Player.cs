@@ -119,7 +119,18 @@ namespace Playroom
                 
                 _playerService.Kick(id, OnKickCallBack);
             }
+            
+            
+                        
+            public void WaitForState(string StateKey, Action onStateSetCallback = null)
+            {
+                if (!isPlayRoomInitialized)
+                {
+                    Debug.LogError("Playroom not initialized yet! Please call InsertCoin.");
+                }
 
+                _playerService.WaitForState(id, StateKey, onStateSetCallback);
+            }
             
             //DI END
             
@@ -156,28 +167,7 @@ namespace Playroom
 
                 Players.Remove(id);
             }
-
             
-            
-            
-            public void WaitForState(string StateKey, Action onStateSetCallback = null)
-            {
-                if (IsRunningInBrowser())
-                {
-                    WaitForPlayerStateInternal(id, StateKey, onStateSetCallback);
-                }
-            }
-            
-
-            [DllImport("__Internal")]
-            private static extern void KickInternal(string playerID, Action onKickCallBack = null);
-
-            [DllImport("__Internal")]
-            private static extern void WaitForPlayerStateInternal(string playerID, string stateKey,
-                Action onStateSetCallback = null);
-            
-            [DllImport("__Internal")]
-            private static extern string GetProfileByPlayerId(string playerID);
         }
     }
 }

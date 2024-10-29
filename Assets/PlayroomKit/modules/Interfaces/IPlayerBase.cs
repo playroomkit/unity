@@ -18,6 +18,8 @@ namespace Playroom
                 public Profile GetProfile(string id);
                 public Action OnQuit(Action<string> callback);
                 public void Kick(string id, Action OnKickCallBack = null);
+
+                public void WaitForState(string id, string StateKey, Action onStateSetCallback = null);
                 
                 protected static Action onKickCallBack = null;
 
