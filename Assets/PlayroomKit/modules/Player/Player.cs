@@ -143,16 +143,12 @@ namespace Playroom
 
             public Profile GetProfile()
             {
-                if (IsRunningInBrowser())
+                if (!isPlayRoomInitialized)
                 {
-                    var jsonString = GetProfileByPlayerId(id);
-                    var profileData = ParseProfile(jsonString);
-                    return profileData;
+                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                    return default;
                 }
-
-                if (isPlayRoomInitialized) return MockGetProfile(id);
-                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                return default;
+                return _playerService.GetProfile(id);
             }
 
 
