@@ -1,11 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Runtime.InteropServices;
-using AOT;
 using System;
-using SimpleJSON;
-using Playroom;
+
 
 
 
@@ -78,11 +74,11 @@ namespace Playroom
             {
                 if (!IsRunningInBrowser())
                 {
-                    player = new Player(playerId, new LocalPlayerService());
+                    player = new Player(playerId, new Player.LocalPlayerService());
                 }
                 else
                 {
-                    player = new Player(playerId, new PlayerService());
+                    player = new Player(playerId, new Player.PlayerService());
                 }
 
                 Players.Add(playerId, player);

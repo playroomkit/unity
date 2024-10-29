@@ -134,7 +134,7 @@ namespace Playroom
                 {
                     if (!Players.ContainsKey(senderJson))
                     {
-                        var player = new Player(senderJson, new PlayerService());
+                        var player = new Player(senderJson, new Player.PlayerService());
                         Players.Add(senderJson, player);
                     }
                 }

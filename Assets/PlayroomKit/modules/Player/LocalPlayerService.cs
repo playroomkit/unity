@@ -3,31 +3,58 @@ using UnityEngine;
 
 namespace Playroom
 {
-    public class LocalPlayerService : IPlayerBase
+    public partial class PlayroomKit
     {
-
-        private static Dictionary<string, object> mockPlayerStatesDictionary = new();
-
-        public void SetState(string id, string key, object value, bool reliable = false)
+        public partial class Player
         {
-            Debug.Log($"MockPlayerService setState: {key} => {value}");
-            if (mockPlayerStatesDictionary.ContainsKey(key))
-                mockPlayerStatesDictionary[key] = value;
-            else
-                mockPlayerStatesDictionary.Add(key, value);
-        }
+            public class LocalPlayerService : IPlayerBase
+            {
 
-        public T GetState<T>(string id, string key)
-        {
-            if (mockPlayerStatesDictionary.TryGetValue(key, out var value) && value is T typedValue)
-            {
-                return typedValue;
-            }
-            else
-            {
-                Debug.LogWarning($"No {key} in States or value is not of type {typeof(T)}");
-                return default;
+                private static Dictionary<string, object> mockPlayerStatesDictionary = new();
+
+                public void SetState(string id, string key, object value, bool reliable = false)
+                {
+                    Debug.Log($"MockPlayerService setState: {key} => {value}");
+                    if (mockPlayerStatesDictionary.ContainsKey(key))
+                        mockPlayerStatesDictionary[key] = value;
+                    else
+                        mockPlayerStatesDictionary.Add(key, value);
+                }
+
+                public T GetState<T>(string id, string key)
+                {
+                    if (mockPlayerStatesDictionary.TryGetValue(key, out var value) && value is T typedValue)
+                    {
+                        return typedValue;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"No {key} in States or value is not of type {typeof(T)}");
+                        return default;
+                    }
+                }
+
+                public Profile GetProfile(string id)
+                {
+                    Profile.PlayerProfileColor mockPlayerProfileColor = new()
+                    {
+                        r = 166,
+                        g = 0,
+                        b = 142,
+                        hexString = "#a6008e"
+                    };
+                    ColorUtility.TryParseHtmlString(mockPlayerProfileColor.hexString, out UnityEngine.Color color1);
+                    var testProfile = new Profile()
+                    {
+                        color = color1,
+                        name = "MockPlayer",
+                        playerProfileColor = mockPlayerProfileColor,
+                        photo = "testPhoto"
+                    };
+                    return testProfile;
+                }
             }
         }
     }
+    
 }

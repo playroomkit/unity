@@ -5,13 +5,13 @@ using Playroom;
 public class PlayerTests
 {
     private PlayroomKit.Player _player;
-    private IPlayerBase _mockPlayerService;
+    private PlayroomKit.Player.IPlayerBase _mockPlayerService;
 
     [SetUp]
     public void SetUp()
     {
         // Mock the IPlayerService
-        _mockPlayerService = Substitute.For<IPlayerBase>();
+        _mockPlayerService = Substitute.For<PlayroomKit.Player.IPlayerBase>();
 
         // Create a new Player object with the mock service
         _player = new PlayroomKit.Player("TestPlayer", _mockPlayerService);

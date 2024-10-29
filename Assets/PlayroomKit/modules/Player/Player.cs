@@ -13,12 +13,7 @@ namespace Playroom
     // Player class
     public partial class PlayroomKit
     {
-        public interface IPlayerInteraction
-        {
-            void InvokeOnQuitWrapperCallback();
-        }
-
-        public class Player : IPlayerInteraction
+        public partial class Player
         {
             
             //DI
@@ -91,7 +86,7 @@ namespace Playroom
                         callback?.Invoke(id);
             }
 
-            void IPlayerInteraction.InvokeOnQuitWrapperCallback()
+            void InvokeOnQuitWrapperCallback()
             {
                 OnQuitWrapperCallback();
             }
