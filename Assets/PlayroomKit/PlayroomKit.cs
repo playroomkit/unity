@@ -13,8 +13,6 @@ namespace Playroom
 {
     public partial class PlayroomKit
     {
-        
-        //DI
         private IPlayroomBase _playroomService;
         private static PlayroomKit _instance;
         private IRPC _rpc;
@@ -22,7 +20,6 @@ namespace Playroom
         private static readonly Dictionary<string, Player> Players = new();
         
         static Action startMatchmakingCallback = null;
-
 
         public PlayroomKit()
         {
