@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using NUnit.Framework;
 using NSubstitute; // For mocking the IPlayerService interface
@@ -187,4 +188,80 @@ public class PlayerTests
         Assert.AreEqual(expectedProfile.playerProfileColor.hexString, result.playerProfileColor.hexString, "Player profile color hex string did not match.");
         Assert.AreEqual(expectedProfile.playerProfileColor.hex, result.playerProfileColor.hex, "Player profile color hex value did not match.");
     }
+    
+    [Test]
+        public void OnQuit_WhenInitialized_AddsCallbackAndReturnsUnsubscribeAction()
+        {
+            // Arrange
+            Action<string> callback = msg => { };
+            
+            // Act
+            var unsubscribe = _player.OnQuit(callback);
+
+            // Assert
+            Assert.IsNotNull(unsubscribe, "Expected unsubscribe action to be returned.");
+            
+            // Check that the callback is added to the list
+            unsubscribe.Invoke(); // Calling unsubscribe should remove the callback
+            
+            // Internal check: Ensure callback list no longer contains the callback after unsubscribe
+            
+        }
+
+        [Test]
+        public void Kick_WhenInitialized_CallsKickPlayerWrapperWithCorrectParameters()
+        {
+            // Arrange
+            Action onKickCallback = () => { };
+
+            // Act
+            _player.Kick(onKickCallback);
+
+            // Assert
+            _interop.Received(1).KickPlayerWrapper(testId, Arg.Any<Action>());
+        }
+
+        [Test]
+        public void Kick_CallsInvokeKickInternal_CallbackIsInvoked()
+        {
+            // Arrange
+            bool callbackInvoked = false;
+            Action onKickCallback = () => { callbackInvoked = true; };
+            
+            
+                        
+            // Set up the mock to invoke the callback when KickPlayerWrapper is called
+            _interop.When(x => x.KickPlayerWrapper(
+                    Arg.Any<string>(), // id
+                    Arg.Any<Action>()  // onKick callback
+                ))
+                .Do(callInfo =>
+                {
+                    var kickCallback = callInfo.ArgAt<Action>(1); // Correct index for the callback argument
+                    kickCallback?.Invoke(); // Invoke the callback
+                });
+            
+            //Act
+            _player.Kick(onKickCallback);
+            
+
+            
+            // Assert
+            _interop.Received(1).KickPlayerWrapper(testId, Arg.Invoke());
+            Assert.IsTrue(callbackInvoked, "Expected the onKickCallback to be invoked.");
+        }
+
+        [Test]
+        public void WaitForState_WhenInitialized_CallsWaitForPlayerStateWrapperWithCorrectParameters()
+        {
+            // Arrange
+            Action onStateSetCallback = () => { };
+
+            // Act
+            _player.WaitForState(testKey, onStateSetCallback);
+
+            // Assert
+            _interop.Received(1).WaitForPlayerStateWrapper(testId, testKey, onStateSetCallback);
+        }
+        
 }
