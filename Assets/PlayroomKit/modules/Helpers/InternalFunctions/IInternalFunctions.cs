@@ -67,6 +67,31 @@ namespace Playroom
             
             void RpcCallWrapper(string name, string data, RpcMode mode,
                 Action callbackOnResponse);
+            
+            
+            //Player Functions
+            void KickPlayerWrapper(string playerID, Action onKickCallback = null);
+
+            void SetPlayerStateIntWrapper(string playerID, string key, int value, bool reliable = false);
+
+            void SetPlayerStateFloatWrapper(string playerID, string key, string value, bool reliable = false);
+
+            void SetPlayerStateBoolWrapper(string playerID, string key, bool value, bool reliable = false);
+
+            void SetPlayerStateDictionaryWrapper(string playerID, string key, string jsonValues, bool reliable = false);
+
+            void SetPlayerStateStringWrapper(string playerID, string key, string value, bool reliable = false);
+
+            int GetPlayerStateIntWrapper(string playerID, string key);
+
+            float GetPlayerStateFloatWrapper(string playerID, string key);
+
+            string GetPlayerStateStringWrapper(string playerID, string key);
+
+            string GetPlayerStateDictionaryWrapper(string playerID, string key);
+
+            string GetProfileWrapper(string playerID);
+            //
         }
     }
 }

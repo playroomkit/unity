@@ -11,25 +11,37 @@ namespace Playroom
         {
             public class PlayerService : IPlayerBase
             {
-                private static Dictionary<string, object> mockPlayerStatesDictionary = new();
+                
+                private readonly IInterop _interop;
+
+                public PlayerService()
+                {
+                    _interop = new PlayroomKitInterop();
+                }
+
+                public PlayerService(IInterop interop)
+                {
+                    _interop = interop;
+                }
 
                 public void SetState(string id, string key, object value, bool reliable = false)
                 {
                     string jsonString = JsonUtility.ToJson(value);
                     // Debug.Log(jsonString);
-                    SetPlayerStateStringById(id, key, jsonString, reliable);
+                    _interop.SetPlayerStateStringWrapper(id, key, jsonString, reliable);
                 }
 
                 public T GetState<T>(string id, string key)
                 {
+                    ;
                     Type type = typeof(T);
-                    if (type == typeof(int)) return (T)(object)GetPlayerStateIntById(id, key);
-                    else if (type == typeof(float)) return (T)(object)GetPlayerStateFloatById(id, key);
+                    if (type == typeof(int)) return (T)(object)_interop.GetPlayerStateIntWrapper(id, key);
+                    else if (type == typeof(float)) return (T)(object)_interop.GetPlayerStateFloatWrapper(id, key);
                     else if (type == typeof(bool)) return (T)(object)GetPlayerStateBoolById(id, key);
-                    else if (type == typeof(string)) return (T)(object)GetPlayerStateStringById(id, key);
+                    else if (type == typeof(string)) return (T)(object)_interop.GetPlayerStateStringWrapper(id, key);
                     else if (type == typeof(Vector3))
                     {
-                        string json = GetPlayerStateStringById(id, key);
+                        string json = _interop.GetPlayerStateStringWrapper(id, key);
                         if (json != null)
                         {
                             return (T)(object)JsonUtility.FromJson<Vector3>(json);
@@ -41,7 +53,7 @@ namespace Playroom
                     }
                     else if (type == typeof(Color))
                     {
-                        string json = GetPlayerStateStringById(id, key);
+                        string json = _interop.GetPlayerStateStringWrapper(id, key);
                         if (json != null)
                         {
                             return (T)(object)JsonUtility.FromJson<Color>(json);
@@ -53,7 +65,7 @@ namespace Playroom
                     }
                     else if (type == typeof(Vector2))
                     {
-                        string json = GetPlayerStateStringById(id, key);
+                        string json = _interop.GetPlayerStateStringWrapper(id, key);
                         if (json != null)
                         {
                             return (T)(object)JsonUtility.FromJson<Vector2>(json);
@@ -65,7 +77,7 @@ namespace Playroom
                     }
                     else if (type == typeof(Quaternion))
                     {
-                        string json = GetPlayerStateStringById(id, key);
+                        string json = _interop.GetPlayerStateStringWrapper(id, key);
                         if (json != null)
                         {
                             return (T)(object)JsonUtility.FromJson<Quaternion>(json);
@@ -81,62 +93,20 @@ namespace Playroom
 
                 public Profile GetProfile(string id)
                 {
-                    var jsonString = GetProfileByPlayerId(id);
+                    var jsonString = _interop.GetProfileWrapper(id);
                     var profileData = ParseProfile(jsonString);
                     return profileData;
                 }
 
-                private static bool GetPlayerStateBoolById(string id, string key)
+                private bool GetPlayerStateBoolById(string id, string key)
                 {
-                    var stateValue = GetPlayerStateIntById(id, key);
+                    var stateValue = _interop.GetPlayerStateIntWrapper(id, key);
                     return stateValue == 1 ? true :
                         stateValue == 0 ? false :
                         throw new InvalidOperationException($"GetStateBool: {key} is not a bool");
                 }
-
-
-                [DllImport("__Internal")]
-                private static extern void KickInternal(string playerID, Action onKickCallBack = null);
-
-                [DllImport("__Internal")]
-                private static extern void WaitForPlayerStateInternal(string playerID, string stateKey,
-                    Action onStateSetCallback = null);
-
-                [DllImport("__Internal")]
-                private static extern void SetPlayerStateByPlayerId(string playerID, string key, int value,
-                    bool reliable = false);
-
-                [DllImport("__Internal")]
-                private static extern void SetPlayerStateFloatByPlayerId(string playerID, string key, string value,
-                    bool reliable = false);
-
-                [DllImport("__Internal")]
-                private static extern void SetPlayerStateByPlayerId(string playerID, string key, bool value,
-                    bool reliable = false);
-
-                [DllImport("__Internal")]
-                private static extern void SetPlayerStateDictionary(string playerID, string key, string jsonValues,
-                    bool reliable = false);
-
-                [DllImport("__Internal")]
-                private static extern void SetPlayerStateStringById(string playerID, string key, string value,
-                    bool reliable = false);
-
-                [DllImport("__Internal")]
-                private static extern int GetPlayerStateIntById(string playerID, string key);
-
-                [DllImport("__Internal")]
-                private static extern float GetPlayerStateFloatById(string playerID, string key);
-
-                [DllImport("__Internal")]
-                private static extern string GetPlayerStateStringById(string playerID, string key);
-
-
-                [DllImport("__Internal")]
-                private static extern string GetPlayerStateDictionary(string playerID, string key);
-
-                [DllImport("__Internal")]
-                private static extern string GetProfileByPlayerId(string playerID);
+                
+                
             }
         }
     }

@@ -107,11 +107,6 @@ namespace Playroom
                 WaitForStateInternal(stateKey, onStateSetCallback);
             }
 
-            public void WaitForPlayerStateWrapper(string playerID, string stateKey, Action onStateSetCallback)
-            {
-                WaitForPlayerStateInternal(playerID, stateKey, onStateSetCallback);
-            }
-
             public void ResetStatesWrapper(string keysToExclude = null, Action OnStatesReset = null)
             {
                 ResetStatesInternal(keysToExclude, OnStatesReset);
@@ -163,6 +158,118 @@ namespace Playroom
                 Action callbackOnResponse);
             
             //
+            
+            
+            //Player 
+            // Wrapper for KickInternal
+            public void KickPlayerWrapper(string playerID, Action onKickCallback = null)
+            {
+                KickInternal(playerID, onKickCallback);
+            }
+
+            // Wrapper for WaitForPlayerStateInternal
+            public void WaitForPlayerStateWrapper(string playerID, string stateKey, Action onStateSetCallback = null)
+            {
+                WaitForPlayerStateInternal(playerID, stateKey, onStateSetCallback);
+            }
+
+            // Wrapper for SetPlayerStateByPlayerId (int version)
+            public void SetPlayerStateIntWrapper(string playerID, string key, int value, bool reliable = false)
+            {
+                SetPlayerStateByPlayerId(playerID, key, value, reliable);
+            }
+
+            // Wrapper for SetPlayerStateFloatByPlayerId
+            public void SetPlayerStateFloatWrapper(string playerID, string key, string value, bool reliable = false)
+            {
+                SetPlayerStateFloatByPlayerId(playerID, key, value, reliable);
+            }
+
+            // Wrapper for SetPlayerStateByPlayerId (bool version)
+            public void SetPlayerStateBoolWrapper(string playerID, string key, bool value, bool reliable = false)
+            {
+                SetPlayerStateByPlayerId(playerID, key, value, reliable);
+            }
+
+            // Wrapper for SetPlayerStateDictionary
+            public void SetPlayerStateDictionaryWrapper(string playerID, string key, string jsonValues, bool reliable = false)
+            {
+                SetPlayerStateDictionary(playerID, key, jsonValues, reliable);
+            }
+
+            // Wrapper for SetPlayerStateStringById
+            public void SetPlayerStateStringWrapper(string playerID, string key, string value, bool reliable = false)
+            {
+                SetPlayerStateStringById(playerID, key, value, reliable);
+            }
+
+            // Wrapper for GetPlayerStateIntById
+            public int GetPlayerStateIntWrapper(string playerID, string key)
+            {
+                return GetPlayerStateIntById(playerID, key);
+            }
+
+            // Wrapper for GetPlayerStateFloatById
+            public float GetPlayerStateFloatWrapper(string playerID, string key)
+            {
+                return GetPlayerStateFloatById(playerID, key);
+            }
+
+            // Wrapper for GetPlayerStateStringById
+            public string GetPlayerStateStringWrapper(string playerID, string key)
+            {
+                return GetPlayerStateStringById(playerID, key);
+            }
+
+            // Wrapper for GetPlayerStateDictionary
+            public string GetPlayerStateDictionaryWrapper(string playerID, string key)
+            {
+                return GetPlayerStateDictionary(playerID, key);
+            }
+
+            // Wrapper for GetProfileByPlayerId
+            public string GetProfileWrapper(string playerID)
+            {
+                return GetProfileByPlayerId(playerID);
+            }
+
+            // Internal static DllImport declarations
+            [DllImport("__Internal")]
+            private static extern void KickInternal(string playerID, Action onKickCallback = null);
+
+            [DllImport("__Internal")]
+            private static extern void WaitForPlayerStateInternal(string playerID, string stateKey, Action onStateSetCallback = null);
+
+            [DllImport("__Internal")]
+            private static extern void SetPlayerStateByPlayerId(string playerID, string key, int value, bool reliable = false);
+
+            [DllImport("__Internal")]
+            private static extern void SetPlayerStateFloatByPlayerId(string playerID, string key, string value, bool reliable = false);
+
+            [DllImport("__Internal")]
+            private static extern void SetPlayerStateByPlayerId(string playerID, string key, bool value, bool reliable = false);
+
+            [DllImport("__Internal")]
+            private static extern void SetPlayerStateDictionary(string playerID, string key, string jsonValues, bool reliable = false);
+
+            [DllImport("__Internal")]
+            private static extern void SetPlayerStateStringById(string playerID, string key, string value, bool reliable = false);
+
+            [DllImport("__Internal")]
+            private static extern int GetPlayerStateIntById(string playerID, string key);
+
+            [DllImport("__Internal")]
+            private static extern float GetPlayerStateFloatById(string playerID, string key);
+
+            [DllImport("__Internal")]
+            private static extern string GetPlayerStateStringById(string playerID, string key);
+
+            [DllImport("__Internal")]
+            private static extern string GetPlayerStateDictionary(string playerID, string key);
+
+            [DllImport("__Internal")]
+            private static extern string GetProfileByPlayerId(string playerID);
+        
         }
     }
 }
