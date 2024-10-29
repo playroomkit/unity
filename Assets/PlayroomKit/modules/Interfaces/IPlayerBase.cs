@@ -9,17 +9,17 @@ namespace Playroom
         {
             public interface IPlayerBase
             {
-                void SetState(string id, string key, int value, bool reliable = false);
-                void SetState(string id, string key, float value, bool reliable = false);
-                void SetState(string id, string key, bool value, bool reliable = false);
-                void SetState(string id, string key, string value, bool reliable = false);
-                void SetState(string id, string key, object value, bool reliable = false);
-                public T GetState<T>(string id, string key);
-                public Profile GetProfile(string id);
+                void SetState(string key, int value, bool reliable = false);
+                void SetState(string key, float value, bool reliable = false);
+                void SetState(string key, bool value, bool reliable = false);
+                void SetState(string key, string value, bool reliable = false);
+                void SetState(string key, object value, bool reliable = false);
+                public T GetState<T>(string key);
+                public Profile GetProfile();
                 public Action OnQuit(Action<string> callback);
-                public void Kick(string id, Action OnKickCallBack = null);
+                public void Kick(Action OnKickCallBack = null);
 
-                public void WaitForState(string id, string StateKey, Action onStateSetCallback = null);
+                public void WaitForState(string StateKey, Action onStateSetCallback = null);
                 
                 protected static Action onKickCallBack = null;
 

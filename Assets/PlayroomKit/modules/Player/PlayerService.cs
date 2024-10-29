@@ -14,58 +14,61 @@ namespace Playroom
             public class PlayerService : IPlayerBase
             {
                 
+                private string _id;
+                
                 private readonly IInterop _interop;
 
-                public PlayerService()
+                public PlayerService(string id)
                 {
+                    _id = id;
                     _interop = new PlayroomKitInterop();
                 }
 
-                public PlayerService(IInterop interop)
+                public PlayerService(string id, IInterop interop)
                 {
+                    _id = id;
                     _interop = interop;
                 }
                 
                 
-                public void SetState(string id,string key, int value, bool reliable = false)
+                public void SetState(string key, int value, bool reliable = false)
                 {
-                    _interop.SetPlayerStateIntWrapper(id, key, value, reliable);
+                    _interop.SetPlayerStateIntWrapper(_id, key, value, reliable);
                 }
 
-                public void SetState(string id,string key, float value, bool reliable = false)
+                public void SetState(string key, float value, bool reliable = false)
                 {
-                    _interop.SetPlayerStateFloatWrapper(id, key, value.ToString(CultureInfo.InvariantCulture), reliable);
+                    _interop.SetPlayerStateFloatWrapper(_id, key, value.ToString(CultureInfo.InvariantCulture), reliable);
                 }
 
-                public void SetState(string id, string key, bool value, bool reliable = false)
+                public void SetState(string key, bool value, bool reliable = false)
                 {
-                    _interop.SetPlayerStateBoolWrapper(id, key, value, reliable);
+                    _interop.SetPlayerStateBoolWrapper(_id, key, value, reliable);
                 }
 
-                public void SetState(string id, string key, string value, bool reliable = false)
+                public void SetState(string key, string value, bool reliable = false)
                 {
-                    _interop.SetPlayerStateStringWrapper(id, key, value, reliable);
+                    _interop.SetPlayerStateStringWrapper(_id, key, value, reliable);
                 }
 
-                public void SetState(string id, string key, object value, bool reliable = false)
+                public void SetState(string key, object value, bool reliable = false)
                 {
                     string jsonString = JsonUtility.ToJson(value);
-                    _interop.SetPlayerStateStringWrapper(id, key, jsonString, reliable);
+                    _interop.SetPlayerStateStringWrapper(_id, key, jsonString, reliable);
                 }
                 
                 
 
-                public T GetState<T>(string id, string key)
+                public T GetState<T>(string key)
                 {
-                    ;
                     Type type = typeof(T);
-                    if (type == typeof(int)) return (T)(object)_interop.GetPlayerStateIntWrapper(id, key);
-                    else if (type == typeof(float)) return (T)(object)_interop.GetPlayerStateFloatWrapper(id, key);
-                    else if (type == typeof(bool)) return (T)(object)GetPlayerStateBoolById(id, key);
-                    else if (type == typeof(string)) return (T)(object)_interop.GetPlayerStateStringWrapper(id, key);
+                    if (type == typeof(int)) return (T)(object)_interop.GetPlayerStateIntWrapper(_id, key);
+                    else if (type == typeof(float)) return (T)(object)_interop.GetPlayerStateFloatWrapper(_id, key);
+                    else if (type == typeof(bool)) return (T)(object)GetPlayerStateBoolById(key);
+                    else if (type == typeof(string)) return (T)(object)_interop.GetPlayerStateStringWrapper(_id, key);
                     else if (type == typeof(Vector3))
                     {
-                        string json = _interop.GetPlayerStateStringWrapper(id, key);
+                        string json = _interop.GetPlayerStateStringWrapper(_id, key);
                         if (json != null)
                         {
                             return (T)(object)JsonUtility.FromJson<Vector3>(json);
@@ -77,7 +80,7 @@ namespace Playroom
                     }
                     else if (type == typeof(Color))
                     {
-                        string json = _interop.GetPlayerStateStringWrapper(id, key);
+                        string json = _interop.GetPlayerStateStringWrapper(_id, key);
                         if (json != null)
                         {
                             return (T)(object)JsonUtility.FromJson<Color>(json);
@@ -89,7 +92,7 @@ namespace Playroom
                     }
                     else if (type == typeof(Vector2))
                     {
-                        string json = _interop.GetPlayerStateStringWrapper(id, key);
+                        string json = _interop.GetPlayerStateStringWrapper(_id, key);
                         if (json != null)
                         {
                             return (T)(object)JsonUtility.FromJson<Vector2>(json);
@@ -101,7 +104,7 @@ namespace Playroom
                     }
                     else if (type == typeof(Quaternion))
                     {
-                        string json = _interop.GetPlayerStateStringWrapper(id, key);
+                        string json = _interop.GetPlayerStateStringWrapper(_id, key);
                         if (json != null)
                         {
                             return (T)(object)JsonUtility.FromJson<Quaternion>(json);
@@ -115,9 +118,9 @@ namespace Playroom
                 }
 
 
-                public Profile GetProfile(string id)
+                public Profile GetProfile()
                 {
-                    var jsonString = _interop.GetProfileWrapper(id);
+                    var jsonString = _interop.GetProfileWrapper(_id);
                     var profileData = ParseProfile(jsonString);
                     return profileData;
                 }
@@ -138,15 +141,15 @@ namespace Playroom
                 
 
 
-                public void Kick(string id, Action OnKickCallBack = null)
+                public void Kick(Action OnKickCallBack = null)
                 {
                     IPlayerBase.onKickCallBack = OnKickCallBack;
-                    _interop.KickPlayerWrapper(id, InvokeKickCallBack);
+                    _interop.KickPlayerWrapper(_id, InvokeKickCallBack);
                 }
 
-                public void WaitForState(string id, string StateKey, Action onStateSetCallback = null)
+                public void WaitForState(string StateKey, Action onStateSetCallback = null)
                 {
-                    _interop.WaitForPlayerStateWrapper(id, StateKey, onStateSetCallback);
+                    _interop.WaitForPlayerStateWrapper(_id, StateKey, onStateSetCallback);
                 }
 
                 [MonoPInvokeCallback(typeof(Action))]
@@ -168,14 +171,13 @@ namespace Playroom
                     OnQuitWrapperCallback(id);
                 }
 
-                private bool GetPlayerStateBoolById(string id, string key)
+                private bool GetPlayerStateBoolById(string key)
                 {
-                    var stateValue = _interop.GetPlayerStateIntWrapper(id, key);
+                    var stateValue = _interop.GetPlayerStateIntWrapper(_id, key);
                     return stateValue == 1 ? true :
                         stateValue == 0 ? false :
                         throw new InvalidOperationException($"GetStateBool: {key} is not a bool");
                 }
-                
                 
             }
         }

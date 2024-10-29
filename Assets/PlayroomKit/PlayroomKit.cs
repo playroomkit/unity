@@ -74,11 +74,11 @@ namespace Playroom
             {
                 if (!IsRunningInBrowser())
                 {
-                    player = new Player(playerId, new Player.LocalPlayerService());
+                    player = new Player(playerId, new Player.LocalPlayerService(playerId));
                 }
                 else
                 {
-                    player = new Player(playerId, new Player.PlayerService());
+                    player = new Player(playerId, new Player.PlayerService(playerId));
                 }
 
                 Players.Add(playerId, player);

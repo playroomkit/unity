@@ -11,9 +11,17 @@ namespace Playroom
             public class LocalPlayerService : IPlayerBase
             {
 
+                private string _id;
+
+                public LocalPlayerService(string id)
+                {
+                    _id = id;
+                }
+                
+
                 private static Dictionary<string, object> mockPlayerStatesDictionary = new();
 
-                public void SetStateHelper<T>(string id, string key, T value, bool reliable = false)
+                public void SetStateHelper<T>(string key, T value, bool reliable = false)
                 {
                     Debug.Log($"MockPlayerService setState: {key} => {value}");
                     if (mockPlayerStatesDictionary.ContainsKey(key))
@@ -22,33 +30,33 @@ namespace Playroom
                         mockPlayerStatesDictionary.Add(key, value);
                 }
 
-                public void SetState(string id, string key, int value, bool reliable = false)
+                public void SetState(string key, int value, bool reliable = false)
                 {
-                    SetStateHelper(id, key, value, reliable);
+                    SetStateHelper(key, value, reliable);
                         
                 }
 
-                public void SetState(string id, string key, float value, bool reliable = false)
+                public void SetState(string key, float value, bool reliable = false)
                 {
-                    SetStateHelper(id, key, value, reliable);
+                    SetStateHelper(key, value, reliable);
                 }
 
-                public void SetState(string id, string key, bool value, bool reliable = false)
+                public void SetState(string key, bool value, bool reliable = false)
                 {
-                    SetStateHelper(id, key, value, reliable);
+                    SetStateHelper(key, value, reliable);
                 }
 
-                public void SetState(string id, string key, string value, bool reliable = false)
+                public void SetState(string key, string value, bool reliable = false)
                 {
-                    SetStateHelper(id, key, value, reliable);
+                    SetStateHelper(key, value, reliable);
                 }
 
-                public void SetState(string id, string key, object value, bool reliable = false)
+                public void SetState(string key, object value, bool reliable = false)
                 {
-                    SetStateHelper(id, key, value, reliable);
+                    SetStateHelper(key, value, reliable);
                 }
 
-                public T GetState<T>(string id, string key)
+                public T GetState<T>(string key)
                 {
                     if (mockPlayerStatesDictionary.TryGetValue(key, out var value) && value is T typedValue)
                     {
@@ -61,7 +69,7 @@ namespace Playroom
                     }
                 }
 
-                public Profile GetProfile(string id)
+                public Profile GetProfile()
                 {
                     Profile.PlayerProfileColor mockPlayerProfileColor = new()
                     {
@@ -86,14 +94,14 @@ namespace Playroom
                     throw new NotImplementedException();
                 }
 
-                public void Kick(string id, Action OnKickCallBack = null)
+                public void Kick(Action OnKickCallBack = null)
                 {
                     var player = GetPlayer(PlayerId);
                     Players.Remove(player.id);
                     IPlayerBase.onKickCallBack?.Invoke();
                 }
 
-                public void WaitForState(string id, string StateKey, Action onStateSetCallback = null)
+                public void WaitForState(string StateKey, Action onStateSetCallback = null)
                 {
                     throw new NotImplementedException();
                 }

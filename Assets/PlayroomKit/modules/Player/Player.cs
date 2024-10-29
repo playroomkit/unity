@@ -35,7 +35,7 @@ namespace Playroom
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
                 }
-                _playerService.SetState(id, key, value, reliable);
+                _playerService.SetState(key, value, reliable);
             }
 
             public void SetState(string key, float value, bool reliable = false)
@@ -45,7 +45,7 @@ namespace Playroom
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
                 }
-                _playerService.SetState(id, key, value, reliable);
+                _playerService.SetState(key, value, reliable);
             }
             
 
@@ -56,7 +56,7 @@ namespace Playroom
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
                 }
-                _playerService.SetState(id, key, value, reliable);
+                _playerService.SetState(key, value, reliable);
             }
 
             public void SetState(string key, string value, bool reliable = false)
@@ -66,7 +66,7 @@ namespace Playroom
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
                 }
-                _playerService.SetState(id, key, value, reliable);
+                _playerService.SetState(key, value, reliable);
             }
 
             // Overload for complex objects, which will be serialized to JSON
@@ -77,14 +77,14 @@ namespace Playroom
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
                 }
-                _playerService.SetState(id, key, value, reliable);
+                _playerService.SetState(key, value, reliable);
             }
 
             
             public T GetState<T>(string key)
             {
                 Type type = typeof(T);
-                var value = _playerService.GetState<T>(id, key);
+                var value = _playerService.GetState<T>(key);
                 return value;
             }
             
@@ -95,7 +95,7 @@ namespace Playroom
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return default;
                 }
-                return _playerService.GetProfile(id);
+                return _playerService.GetProfile();
             }
             
             public Action OnQuit(Action<string> callback)
@@ -117,11 +117,9 @@ namespace Playroom
                     return;
                 }
                 
-                _playerService.Kick(id, OnKickCallBack);
+                _playerService.Kick(OnKickCallBack);
             }
             
-            
-                        
             public void WaitForState(string StateKey, Action onStateSetCallback = null)
             {
                 if (!isPlayRoomInitialized)
@@ -129,7 +127,7 @@ namespace Playroom
                     Debug.LogError("Playroom not initialized yet! Please call InsertCoin.");
                 }
 
-                _playerService.WaitForState(id, StateKey, onStateSetCallback);
+                _playerService.WaitForState(StateKey, onStateSetCallback);
             }
             
             //DI END

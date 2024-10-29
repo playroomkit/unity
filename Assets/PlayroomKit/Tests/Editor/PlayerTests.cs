@@ -28,7 +28,7 @@ public class PlayerTests
         });
         _interop = Substitute.For<PlayroomKit.IInterop>();
         // Mock the IPlayerService
-        _mockPlayerService = new PlayroomKit.Player.PlayerService(_interop);
+        _mockPlayerService = new PlayroomKit.Player.PlayerService(testId, _interop);
 
         // Create a new Player object with the mock service
         _player = new PlayroomKit.Player(testId, _mockPlayerService);
@@ -115,7 +115,7 @@ public class PlayerTests
         int expectedValue = 100;
 
         // Mock the return value from GetState
-        _mockPlayerService.GetState<int>(_player.id, key).Returns(expectedValue);
+        _mockPlayerService.GetState<int>(key).Returns(expectedValue);
 
         // Act
         int result = _player.GetState<int>(key);
@@ -135,8 +135,8 @@ public class PlayerTests
         int expectedIntValue = 200;
 
         // Mock the return values from GetState
-        _mockPlayerService.GetState<string>(_player.id, stringKey).Returns(expectedStringValue);
-        _mockPlayerService.GetState<int>(_player.id, intKey).Returns(expectedIntValue);
+        _mockPlayerService.GetState<string>(stringKey).Returns(expectedStringValue);
+        _mockPlayerService.GetState<int>(intKey).Returns(expectedIntValue);
 
         // Act
         string name = _player.GetState<string>(stringKey);
