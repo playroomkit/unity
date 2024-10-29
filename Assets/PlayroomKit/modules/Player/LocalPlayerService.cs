@@ -12,13 +12,39 @@ namespace Playroom
 
                 private static Dictionary<string, object> mockPlayerStatesDictionary = new();
 
-                public void SetState(string id, string key, object value, bool reliable = false)
+                public void SetStateHelper<T>(string id, string key, T value, bool reliable = false)
                 {
                     Debug.Log($"MockPlayerService setState: {key} => {value}");
                     if (mockPlayerStatesDictionary.ContainsKey(key))
                         mockPlayerStatesDictionary[key] = value;
                     else
                         mockPlayerStatesDictionary.Add(key, value);
+                }
+
+                public void SetState(string id, string key, int value, bool reliable = false)
+                {
+                    SetStateHelper(id, key, value, reliable);
+                        
+                }
+
+                public void SetState(string id, string key, float value, bool reliable = false)
+                {
+                    SetStateHelper(id, key, value, reliable);
+                }
+
+                public void SetState(string id, string key, bool value, bool reliable = false)
+                {
+                    SetStateHelper(id, key, value, reliable);
+                }
+
+                public void SetState(string id, string key, string value, bool reliable = false)
+                {
+                    SetStateHelper(id, key, value, reliable);
+                }
+
+                public void SetState(string id, string key, object value, bool reliable = false)
+                {
+                    SetStateHelper(id, key, value, reliable);
                 }
 
                 public T GetState<T>(string id, string key)

@@ -1,6 +1,8 @@
+using System.Globalization;
 using NUnit.Framework;
 using NSubstitute; // For mocking the IPlayerService interface
 using Playroom;
+using UnityEngine;
 
 public class PlayerTests
 {
@@ -8,6 +10,9 @@ public class PlayerTests
     private PlayroomKit.Player _player;
     private PlayroomKit.Player.IPlayerBase _mockPlayerService;
     private PlayroomKit.IInterop _interop;
+    
+    private string testId = "test_player_id";
+    private string testKey = "test_key";
 
     [SetUp]
     public void SetUp()
@@ -26,38 +31,81 @@ public class PlayerTests
         _mockPlayerService = new PlayroomKit.Player.PlayerService(_interop);
 
         // Create a new Player object with the mock service
-        _player = new PlayroomKit.Player("TestPlayer", _mockPlayerService);
+        _player = new PlayroomKit.Player(testId, _mockPlayerService);
         
     }
 
-    [Test]
-    public void SetState_ShouldCallSetStateOnPlayerService_WithCorrectParameters()
-    {
-        // Arrange
-        string key = "health";
-        int value = 100;
-        bool reliable = false;
+           [Test]
+        public void SetState_Int_CallsIntWrapperWithCorrectParameters()
+        {
+            // Arrange
+            int testValue = 100;
+            bool reliable = true;
 
-        // Act
-        _player.SetState(key, value, reliable);
+            // Act
+            _player.SetState(testKey, testValue, reliable);
 
-        // Assert
-        _interop.Received(1).SetPlayerStateIntWrapper(_player.id, key, value, false);
-    }
+            // Assert
+            _interop.Received(1).SetPlayerStateIntWrapper(testId, testKey, testValue, reliable);
+        }
 
-    [Test]
-    public void SetState_ShouldUseDefaultReliableParameter_WhenNotProvided()
-    {
-        // Arrange
-        string key = "armor";
-        int value = 50;
+        [Test]
+        public void SetState_Float_CallsFloatWrapperWithCorrectParameters()
+        {
+            // Arrange
+            float testValue = 3.14f;
+            bool reliable = false;
 
-        // Act
-        _player.SetState(key, value); // Do not specify reliable
+            // Act
+            _player.SetState(testKey, testValue, reliable);
 
-        // Assert
-        _interop.Received(1).SetPlayerStateIntWrapper(_player.id, key, value, false);
-    }
+            // Assert
+            _interop.Received(1).SetPlayerStateFloatWrapper(testId, testKey, testValue.ToString(CultureInfo.InvariantCulture), reliable);
+        }
+
+        [Test]
+        public void SetState_Bool_CallsBoolWrapperWithCorrectParameters()
+        {
+            // Arrange
+            bool testValue = true;
+            bool reliable = true;
+
+            // Act
+            _player.SetState(testKey, testValue, reliable);
+
+            // Assert
+            _interop.Received(1).SetPlayerStateBoolWrapper(testId, testKey, testValue, reliable);
+        }
+
+        [Test]
+        public void SetState_String_CallsStringWrapperWithCorrectParameters()
+        {
+            // Arrange
+            string testValue = "TestValue";
+            bool reliable = false;
+
+            // Act
+            _player.SetState(testKey, testValue, reliable);
+
+            // Assert
+            _interop.Received(1).SetPlayerStateStringWrapper(testId, testKey, testValue, reliable);
+        }
+
+        [Test]
+        public void SetState_Object_CallsObjectWrapperWithSerializedJson()
+        {
+            // Arrange
+            var testObject = new { testProperty = "Test" };
+            bool reliable = true;
+            string expectedJson = JsonUtility.ToJson(testObject);
+
+            // Act
+            _player.SetState(testKey, testObject, reliable);
+
+            // Assert
+            _interop.Received(1).SetPlayerStateStringWrapper(testId, testKey, expectedJson, reliable);
+        }
+        
 
     [Test]
     public void GetState_ShouldReturnCorrectValue_FromPlayerService()
@@ -102,8 +150,7 @@ public class PlayerTests
     [Test]
     public void GetProfile_ShouldReturnProfileWithParsedData()
     {
-        // Arrange
-        string testId = "TestPlayer";
+        
         // Mock JSON string that GetProfileWrapper would return
         string jsonString = "{\"name\": \"PlayerName\", \"photo\": \"player_photo_url\", \"color\": { \"r\": 255, \"g\": 128, \"b\": 64, \"hexString\": \"#FF8040\", \"hex\": 16744448 }}";
             
@@ -121,15 +168,15 @@ public class PlayerTests
                 hex = 16744448 
             } 
         };
-
-
+        
         // Mock the GetProfileWrapper method to return the predefined JSON string
         _interop.GetProfileWrapper(testId).Returns(jsonString);
         
-        _interop.Received(1).GetProfileWrapper(testId);
 
         // Act
         var result = _player.GetProfile();
+        
+        _interop.Received(1).GetProfileWrapper(testId);
         
         // Assert with error messages
         Assert.AreEqual(expectedProfile.name, result.name, "Profile name did not match the expected value.");

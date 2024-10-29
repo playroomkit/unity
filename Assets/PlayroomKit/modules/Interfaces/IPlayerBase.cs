@@ -9,6 +9,10 @@ namespace Playroom
         {
             public interface IPlayerBase
             {
+                void SetState(string id, string key, int value, bool reliable = false);
+                void SetState(string id, string key, float value, bool reliable = false);
+                void SetState(string id, string key, bool value, bool reliable = false);
+                void SetState(string id, string key, string value, bool reliable = false);
                 void SetState(string id, string key, object value, bool reliable = false);
                 public T GetState<T>(string id, string key);
 

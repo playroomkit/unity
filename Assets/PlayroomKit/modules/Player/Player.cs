@@ -27,11 +27,59 @@ namespace Playroom
                 this._playerService = playerService;
                 totalObjects++;
             }
-
-            public void SetState(string key, object value, bool reliable = false)
+            
+            public void SetState(string key, int value, bool reliable = false)
             {
+                if (!isPlayRoomInitialized)
+                {
+                    Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
+                    return;
+                }
                 _playerService.SetState(id, key, value, reliable);
             }
+
+            public void SetState(string key, float value, bool reliable = false)
+            {
+                if (!isPlayRoomInitialized)
+                {
+                    Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
+                    return;
+                }
+                _playerService.SetState(id, key, value, reliable);
+            }
+            
+
+            public void SetState(string key, bool value, bool reliable = false)
+            {
+                if (!isPlayRoomInitialized)
+                {
+                    Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
+                    return;
+                }
+                _playerService.SetState(id, key, value, reliable);
+            }
+
+            public void SetState(string key, string value, bool reliable = false)
+            {
+                if (!isPlayRoomInitialized)
+                {
+                    Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
+                    return;
+                }
+                _playerService.SetState(id, key, value, reliable);
+            }
+
+            // Overload for complex objects, which will be serialized to JSON
+            public void SetState(string key, object value, bool reliable = false)
+            {
+                if (!isPlayRoomInitialized)
+                {
+                    Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
+                    return;
+                }
+                _playerService.SetState(id, key, value, reliable);
+            }
+
             
             public T GetState<T>(string key)
             {

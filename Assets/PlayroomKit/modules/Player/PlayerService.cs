@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 using System.Runtime.InteropServices;
 
@@ -23,13 +24,35 @@ namespace Playroom
                 {
                     _interop = interop;
                 }
+                
+                
+                public void SetState(string id,string key, int value, bool reliable = false)
+                {
+                    _interop.SetPlayerStateIntWrapper(id, key, value, reliable);
+                }
+
+                public void SetState(string id,string key, float value, bool reliable = false)
+                {
+                    _interop.SetPlayerStateFloatWrapper(id, key, value.ToString(CultureInfo.InvariantCulture), reliable);
+                }
+
+                public void SetState(string id, string key, bool value, bool reliable = false)
+                {
+                    _interop.SetPlayerStateBoolWrapper(id, key, value, reliable);
+                }
+
+                public void SetState(string id, string key, string value, bool reliable = false)
+                {
+                    _interop.SetPlayerStateStringWrapper(id, key, value, reliable);
+                }
 
                 public void SetState(string id, string key, object value, bool reliable = false)
                 {
                     string jsonString = JsonUtility.ToJson(value);
-                    // Debug.Log(jsonString);
                     _interop.SetPlayerStateStringWrapper(id, key, jsonString, reliable);
                 }
+                
+                
 
                 public T GetState<T>(string id, string key)
                 {
