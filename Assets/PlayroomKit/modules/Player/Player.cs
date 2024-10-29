@@ -88,6 +88,28 @@ namespace Playroom
                 return value;
             }
             
+            public Profile GetProfile()
+            {
+                if (!isPlayRoomInitialized)
+                {
+                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                    return default;
+                }
+                return _playerService.GetProfile(id);
+            }
+            
+            public Action OnQuit(Action<string> callback)
+            {
+                if (!isPlayRoomInitialized)
+                {
+                    Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
+                    return null;
+                }
+
+                return _playerService.OnQuit(callback);
+            }
+
+            
             //DI END
             
             
@@ -113,9 +135,7 @@ namespace Playroom
             }
             
 
-            private List<Action<string>> OnQuitCallbacks = new();
-
-
+            
             private void OnQuitDefaultCallback()
             {
                 if (!isPlayRoomInitialized)
@@ -126,39 +146,8 @@ namespace Playroom
                 Players.Remove(id);
             }
 
-            [MonoPInvokeCallback(typeof(Action))]
-            private void OnQuitWrapperCallback()
-            {
-                if (OnQuitCallbacks != null)
-                    foreach (var callback in OnQuitCallbacks)
-                        callback?.Invoke(id);
-            }
-
-            void InvokeOnQuitWrapperCallback()
-            {
-                OnQuitWrapperCallback();
-            }
-
-            public Action OnQuit(Action<string> callback)
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
-                    return null;
-                }
-                else
-                {
-                    OnQuitCallbacks.Add(callback);
-
-                    void Unsubscribe()
-                    {
-                        OnQuitCallbacks.Remove(callback);
-                    }
-
-                    return Unsubscribe;
-                }
-            }
-
+            
+            
             
             public void WaitForState(string StateKey, Action onStateSetCallback = null)
             {
@@ -186,17 +175,6 @@ namespace Playroom
                         MockKick(id, OnKickCallBack);
                     }
                 }
-            }
-
-
-            public Profile GetProfile()
-            {
-                if (!isPlayRoomInitialized)
-                {
-                    Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
-                    return default;
-                }
-                return _playerService.GetProfile(id);
             }
 
 

@@ -17,7 +17,9 @@ namespace Playroom
                 public T GetState<T>(string id, string key);
 
                 public Profile GetProfile(string id);
-                
+
+                public Action OnQuit(Action<string> callback);
+
             }
         }
     }

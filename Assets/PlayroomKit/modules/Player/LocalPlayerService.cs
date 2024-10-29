@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -78,6 +79,11 @@ namespace Playroom
                         photo = "testPhoto"
                     };
                     return testProfile;
+                }
+
+                public Action OnQuit(Action<string> callback)
+                {
+                    throw new NotImplementedException();
                 }
             }
         }

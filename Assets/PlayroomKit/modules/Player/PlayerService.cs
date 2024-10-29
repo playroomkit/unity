@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 using System.Runtime.InteropServices;
+using AOT;
 
 namespace Playroom
 {
@@ -119,6 +120,33 @@ namespace Playroom
                     var jsonString = _interop.GetProfileWrapper(id);
                     var profileData = ParseProfile(jsonString);
                     return profileData;
+                }
+                    
+                private List<Action<string>> OnQuitCallbacks = new();
+                
+                public Action OnQuit(Action<string> callback)
+                {
+                    OnQuitCallbacks.Add(callback);
+
+                    void Unsubscribe()
+                    {
+                        OnQuitCallbacks.Remove(callback);
+                    }
+
+                    return Unsubscribe;
+                }
+                
+                [MonoPInvokeCallback(typeof(Action))]
+                private void OnQuitWrapperCallback(string id)
+                {
+                    if (OnQuitCallbacks != null)
+                        foreach (var callback in OnQuitCallbacks)
+                            callback?.Invoke(id);
+                }
+
+                void InvokeOnQuitWrapperCallback(string id)
+                {
+                    OnQuitWrapperCallback(id);
                 }
 
                 private bool GetPlayerStateBoolById(string id, string key)
