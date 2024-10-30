@@ -289,4 +289,13 @@ public class GameManagerDemo : MonoBehaviour
     {
         PlayroomKit.WaitForState("color", something => { logsText.text = $"After waiting we get: {something}"; });
     }
+
+    public void ResetStates()
+    {
+        PlayroomKit.ResetPlayersStates(null, () =>
+        {
+            logsText.text =
+                $"All Player States were Reset\n e.g: Color: {PlayroomKit.MyPlayer().GetState<Color>("color")}";
+        });
+    }
 }
