@@ -18,6 +18,8 @@ namespace Playroom
                     _id = id;
                 }
                 
+                private Dictionary<(string playerID, string stateKey), Action> stateCallbacks = new();
+                
 
                 private static Dictionary<string, object> mockPlayerStatesDictionary = new();
 
@@ -28,6 +30,15 @@ namespace Playroom
                         mockPlayerStatesDictionary[key] = value;
                     else
                         mockPlayerStatesDictionary.Add(key, value);
+                    
+                    var callbackkey = (_id, key);
+                    if (stateCallbacks.TryGetValue(callbackkey, out var callback))
+                    {
+                        // Invoke the callback and remove it from the dictionary (assuming one-time trigger)
+                        callback.Invoke();
+                        stateCallbacks.Remove(callbackkey);
+                        Debug.Log($"Callback invoked for PlayerID: {_id}, StateKey: {key}");
+                    }
                 }
 
                 public void SetState(string key, int value, bool reliable = false)
@@ -102,9 +113,16 @@ namespace Playroom
                     IPlayerBase.onKickCallBack?.Invoke();
                 }
 
-                public void WaitForState(string StateKey, Action onStateSetCallback = null)
+                public void WaitForState(string stateKey, Action onStateSetCallback = null)
                 {
-                    Debug.Log($"WaitForState is not implemented for Local");
+                    if (onStateSetCallback == null)
+                        return; // No callback provided, nothing to register
+
+                    // Register the callback in the stateCallbacks dictionary
+                    var key = (_id, stateKey);
+                    stateCallbacks[key] = onStateSetCallback;
+
+                    Debug.Log($"Callback registered for PlayerID: {_id}, StateKey: {stateKey}");
                 }
             }
         }
