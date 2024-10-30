@@ -103,8 +103,9 @@ public class GameManagerDemo : MonoBehaviour
 
             playerGameObjects[index].GetComponent<PlayerController>().Move();
             players[index].SetState("move", playerGameObjects[index].GetComponent<Transform>().position);
-            
-            logsText.text = $"Setting Position of Player at: {playerGameObjects[index].GetComponent<Transform>().position}";
+
+            logsText.text =
+                $"Setting Position of Player at: {playerGameObjects[index].GetComponent<Transform>().position}";
         }
     }
 
@@ -118,7 +119,7 @@ public class GameManagerDemo : MonoBehaviour
                     var pos = players[i].GetState<Vector3>("move");
                     logsText.text = $"Getting and Player Pos: {pos}";
 
-                    
+
                     var rotate = players[i].GetState<Quaternion>("angle");
 
                     if (playerGameObjects[i] != null)
@@ -232,6 +233,7 @@ public class GameManagerDemo : MonoBehaviour
     {
         PlayroomKit.RpcRegister("ShootLaser", HandleScoreUpdate, "You shot a bullet!");
         Debug.Log($"Shoot function registered");
+        logsText.text = "ShootLaser RPC registered";
     }
 
     void HandleScoreUpdate(string data, string caller)
@@ -245,6 +247,7 @@ public class GameManagerDemo : MonoBehaviour
             if (playerController != null)
             {
                 playerController.scoreText.text = $"{data}";
+                logsText.text = $"Data from RPC: {data}";
             }
             else
             {
@@ -263,13 +266,15 @@ public class GameManagerDemo : MonoBehaviour
         var myPlayer = PlayroomKit.MyPlayer();
         var index = players.IndexOf(myPlayer);
         score = playerGameObjects[index].GetComponent<RaycastGun>().ShootLaser(score);
-        PlayroomKit.RpcCall("ShootLaser", score, PlayroomKit.RpcMode.OTHERS, () => { Debug.Log("Shooting bullet"); });
+        PlayroomKit.RpcCall("ShootLaser", score, PlayroomKit.RpcMode.ALL,
+            () => { logsText.text = "ShootLaser RPC Called"; });
     }
 
     public void GetRoomCode()
     {
         var roomcode = PlayroomKit.GetRoomCode();
         Debug.Log($"Room code: {roomcode}");
+        logsText.text = $"Current RoomCode: {roomcode}";
     }
 
     // Update is called once per frame
