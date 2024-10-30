@@ -23,13 +23,14 @@ public class GameManagerDemo : MonoBehaviour
     [SerializeField] private TMP_Dropdown colorDropDown;
     [SerializeField] private TextMeshProUGUI logsText;
 
+    private PlayroomKit _playroomKit = new();
     
     // Update is called once per frame
     private void Update()
     {
         if (playerJoined)
         {
-            var myPlayer = PlayroomKit.MyPlayer();
+            var myPlayer = _playroomKit.MyPlayer();
             var index = players.IndexOf(myPlayer);
 
             //ShootLaser(index);
@@ -41,7 +42,7 @@ public class GameManagerDemo : MonoBehaviour
 
     public void InsertCoin()
     {
-        PlayroomKit.InsertCoin(new PlayroomKit.InitOptions
+        _playroomKit.InsertCoin(new _playroomKit.InitOptions
         {
             maxPlayersPerRoom = 3,
             matchmaking = false,
@@ -59,12 +60,12 @@ public class GameManagerDemo : MonoBehaviour
 
     public void OnPlayerJoin()
     {
-        PlayroomKit.OnPlayerJoin(AddPlayer);
+        _playroomKit.OnPlayerJoin(AddPlayer);
         logsText.text = "OnPlayerJoin called, invoking Add Player";
     }
 
 
-    private void AddPlayer(PlayroomKit.Player player)
+    private void AddPlayer(_playroomKit.Player player)
     {
         var playerObj = Instantiate(playerPrefab,
             new Vector3(Random.Range(-5, 5), 2f, Random.Range(-5, 5)), Quaternion.identity);
@@ -108,7 +109,7 @@ public class GameManagerDemo : MonoBehaviour
     {
         if (playerJoined)
         {
-            var myPlayer = PlayroomKit.MyPlayer();
+            var myPlayer = _playroomKit.MyPlayer();
             var index = players.IndexOf(myPlayer);
 
             playerGameObjects[index].GetComponent<PlayerController>().LookAround();
@@ -143,7 +144,7 @@ public class GameManagerDemo : MonoBehaviour
     {
         if (playerJoined)
         {
-            var myPlayer = PlayroomKit.MyPlayer();
+            var myPlayer = _playroomKit.MyPlayer();
             myPlayer.SetState("color", color);
             logsText.text = $"setting color to {color}";
         }
@@ -151,7 +152,7 @@ public class GameManagerDemo : MonoBehaviour
 
     public void GetPlayerProfile()
     {
-        var profile = PlayroomKit.MyPlayer().GetProfile();
+        var profile = _playroomKit.MyPlayer().GetProfile();
         var name = profile.name;
         var color = profile.color;
         var photo = profile.photo;
@@ -233,14 +234,14 @@ public class GameManagerDemo : MonoBehaviour
 
     public void RegisterRpcShoot()
     {
-        PlayroomKit.RpcRegister("ShootLaser", HandleScoreUpdate, "You shot a bullet!");
+        _playroomKit.RpcRegister("ShootLaser", HandleScoreUpdate, "You shot a bullet!");
         Debug.Log("Shoot function registered");
         logsText.text = "ShootLaser RPC registered";
     }
 
     private void HandleScoreUpdate(string data, string caller)
     {
-        var player = PlayroomKit.GetPlayer(caller);
+        var player = _playroomKit.GetPlayer(caller);
         Debug.Log($"Caller: {caller}, Player Name: {player?.GetProfile().name}, Data: {data}");
 
         if (PlayerDict.TryGetValue(caller, out var playerObj))
@@ -265,40 +266,40 @@ public class GameManagerDemo : MonoBehaviour
 
     public void ShootLaser()
     {
-        var myPlayer = PlayroomKit.MyPlayer();
+        var myPlayer = _playroomKit.MyPlayer();
         var index = players.IndexOf(myPlayer);
         score = playerGameObjects[index].GetComponent<RaycastGun>().ShootLaser(score);
-        PlayroomKit.RpcCall("ShootLaser", score, PlayroomKit.RpcMode.ALL,
+        _playroomKit.RpcCall("ShootLaser", score, _playroomKit.RpcMode.ALL,
             () => { logsText.text = "ShootLaser RPC Called"; });
     }
 
     public void GetRoomCode()
     {
-        var roomcode = PlayroomKit.GetRoomCode();
+        var roomcode = _playroomKit.GetRoomCode();
         Debug.Log($"Room code: {roomcode}");
         logsText.text = $"Current RoomCode: {roomcode}";
     }
 
     public void IsHost()
     {
-        bool isHost = PlayroomKit.IsHost();
+        bool isHost = _playroomKit.IsHost();
         Debug.Log("isHost: " + isHost);
-        logsText.text = $"{PlayroomKit.MyPlayer().GetProfile().name} is host?: {isHost}";
+        logsText.text = $"{_playroomKit.MyPlayer().GetProfile().name} is host?: {isHost}";
     }
 
     public void WaitForState()
     {
-        PlayroomKit.WaitForState("color", something => { logsText.text = $"After waiting we get: {something}"; });
+        _playroomKit.WaitForState("color", something => { logsText.text = $"After waiting we get: {something}"; });
     }
 
     public void ResetPlayerStates()
     {
-        PlayroomKit.ResetPlayersStates(null, () =>
+        _playroomKit.ResetPlayersStates(null, () =>
         {
             logsText.text =
-                $"All Player States were Reset\n e.g: Color: {PlayroomKit.MyPlayer().GetState<Color>("color")}";
+                $"All Player States were Reset\n e.g: Color: {_playroomKit.MyPlayer().GetState<Color>("color")}";
 
-            var player = PlayroomKit.MyPlayer();
+            var player = _playroomKit.MyPlayer();
             var color = player.GetState<Color>("color");
             var pos = player.GetState<Vector3>("pos");
 
