@@ -277,4 +277,16 @@ public class GameManagerDemo : MonoBehaviour
         Debug.Log($"Room code: {roomcode}");
         logsText.text = $"Current RoomCode: {roomcode}";
     }
+
+    public void IsHost()
+    {
+        bool isHost = PlayroomKit.IsHost();
+        Debug.Log("isHost: " + isHost);
+        logsText.text = $"{PlayroomKit.MyPlayer().GetProfile().name} is host?: {isHost}";
+    }
+
+    public void WaitForState()
+    {
+        PlayroomKit.WaitForState("color", something => { logsText.text = $"After waiting we get: {something}"; });
+    }
 }
