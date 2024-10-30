@@ -10,6 +10,8 @@ namespace Playroom
         public class LocalMockPlayroomService : IPlayroomBase
         {
             private Dictionary<string, object> mockGlobalStates = new();
+            
+            private Dictionary<string, Action<string>> stateCallbacks = new();
 
             private const string PlayerId = "mockplayerID123";
             
@@ -72,6 +74,14 @@ namespace Playroom
                     mockGlobalStates[key] = value;
                 else
                     mockGlobalStates.Add(key, value);
+                
+                if (stateCallbacks.TryGetValue(key, out var callback))
+                {
+                    // Invoke the callback with the stateKey as the parameter
+                    callback.Invoke(key);
+                    stateCallbacks.Remove(key); // Remove callback after invocation (one-time trigger)
+                    Debug.Log($"Callback invoked for StateKey: {key}");
+                }
             }
 
             public T GetState<T>(string key)
@@ -108,8 +118,13 @@ namespace Playroom
 
             public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
             {
-                Debug.Log("Wait for state is not supported in local mode yet!");
-                throw new NotImplementedException();
+                if (onStateSetCallback == null)
+                    return; // No callback provided, nothing to register
+
+                // Register the callback in the stateCallbacks dictionary
+                stateCallbacks[stateKey] = onStateSetCallback;
+
+                Debug.Log($"Callback registered for StateKey: {stateKey}");
             }
 
             public void WaitForPlayerState(string playerID, string stateKey, Action onStateSetCallback = null)

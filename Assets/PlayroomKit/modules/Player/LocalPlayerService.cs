@@ -91,7 +91,8 @@ namespace Playroom
 
                 public Action OnQuit(Action<string> callback)
                 {
-                    throw new NotImplementedException();
+                    Debug.Log($"OnQuit is not implemented for local");
+                    return null;
                 }
 
                 public void Kick(Action OnKickCallBack = null)
@@ -103,7 +104,7 @@ namespace Playroom
 
                 public void WaitForState(string StateKey, Action onStateSetCallback = null)
                 {
-                    throw new NotImplementedException();
+                    Debug.Log($"WaitForState is not implemented for Local");
                 }
             }
         }

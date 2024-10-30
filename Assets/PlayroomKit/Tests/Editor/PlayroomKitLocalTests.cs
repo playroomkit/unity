@@ -138,6 +138,21 @@ public class PlayroomKitLocalTests
     }
 
 
+    [Test]
+    public void WaitForState_ShouldInvokeCallback_WhenStateIsSet()
+    {
+        bool callbackInvoked = false;
+        _playroomKit.WaitForState("winner", key =>
+        {
+           callbackInvoked = true;
+        });
+        
+        _playroomKit.SetState("winner", true);
+        
+        Assert.IsTrue(callbackInvoked, "Callback should be invoked");
+    }
+
+
 
     
 }
