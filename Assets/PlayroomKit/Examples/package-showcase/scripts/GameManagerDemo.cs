@@ -240,7 +240,7 @@ public class GameManagerDemo : MonoBehaviour
 
     private void HandleScoreUpdate(string data, string caller)
     {
-        var player = _playroomKit.GetPlayer(caller);
+        var player = PlayroomKit.GetPlayer(caller);
         Debug.Log($"Caller: {caller}, Player Name: {player?.GetProfile().name}, Data: {data}");
 
         if (PlayerDict.TryGetValue(caller, out var playerObj))
@@ -275,7 +275,7 @@ public class GameManagerDemo : MonoBehaviour
     public void GetRoomCode()
     {
         var roomcode = _playroomKit.GetRoomCode();
-        Debug.Log($"Room code: {roomcode}");
+        Debug.Log($"Room code: {roomcode}");    
         logsText.text = $"Current RoomCode: {roomcode}";
     }
 
