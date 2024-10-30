@@ -2082,9 +2082,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomCode: abc
   playerPrefab: {fileID: 2603315019977810228, guid: 991d8aeb1a3df4bab87efb7c472bfa1a, type: 3}
+  score: 0
   getDropDown: {fileID: 916618229}
   colorDropDown: {fileID: 778435531}
-  score: 0
+  logsText: {fileID: 1947520232}
 --- !u!1 &916618227
 GameObject:
   m_ObjectHideFlags: 0
@@ -2604,7 +2605,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 893908563}
         m_TargetAssemblyTypeName: GameManagerDemo, Assembly-CSharp
-        m_MethodName: InsertCoin
+        m_MethodName: OnPlayerJoin
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

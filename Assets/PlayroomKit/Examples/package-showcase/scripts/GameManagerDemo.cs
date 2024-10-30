@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using AOT;
-using OpenQA.Selenium.DevTools.V94.Debugger;
 using Playroom;
+using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
-using TMPro;
-using UnityEditor;
 
 public class GameManagerDemo : MonoBehaviour
 {
@@ -18,12 +16,26 @@ public class GameManagerDemo : MonoBehaviour
     [SerializeField] private static bool playerJoined;
     [SerializeField] private string roomCode;
     [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private int score = 0;
+    [SerializeField] private int score;
 
     [Header("UI")]
     [SerializeField] private TMP_Dropdown getDropDown;
     [SerializeField] private TMP_Dropdown colorDropDown;
     [SerializeField] private TextMeshProUGUI logsText;
+
+    // Update is called once per frame
+    private void Update()
+    {
+        if (playerJoined)
+        {
+            var myPlayer = PlayroomKit.MyPlayer();
+            var index = players.IndexOf(myPlayer);
+
+            //ShootLaser(index);
+            playerGameObjects[index].GetComponent<PlayerController>().LookAround();
+            playerGameObjects[index].GetComponent<PlayerController>().Move();
+        }
+    }
 
 
     public void InsertCoin()
@@ -32,7 +44,7 @@ public class GameManagerDemo : MonoBehaviour
         {
             maxPlayersPerRoom = 3,
             matchmaking = false,
-            roomCode = roomCode,
+            roomCode = roomCode
         }, () =>
         {
             Debug.Log("Game Launched!");
@@ -91,7 +103,7 @@ public class GameManagerDemo : MonoBehaviour
         }
     }
 
-    public void SetStatePosition()
+    private void SetStatePosition()
     {
         if (playerJoined)
         {
@@ -109,10 +121,9 @@ public class GameManagerDemo : MonoBehaviour
         }
     }
 
-    public void GetStatePosition()
+    private void GetStatePosition()
     {
         if (playerJoined)
-        {
             for (var i = 0; i < players.Count; i++)
                 if (players[i] != null)
                 {
@@ -123,19 +134,17 @@ public class GameManagerDemo : MonoBehaviour
                     var rotate = players[i].GetState<Quaternion>("angle");
 
                     if (playerGameObjects[i] != null)
-                    {
                         playerGameObjects[i].GetComponent<Transform>().SetPositionAndRotation(pos, rotate);
-                    }
                 }
-        }
     }
 
-    public void SetStateColor(Color color)
+    private void SetStateColor(Color color)
     {
         if (playerJoined)
         {
             var myPlayer = PlayroomKit.MyPlayer();
             myPlayer.SetState("color", color);
+            logsText.text = $"setting color to {color}";
         }
     }
 
@@ -146,24 +155,20 @@ public class GameManagerDemo : MonoBehaviour
         var color = profile.color;
         var photo = profile.photo;
         Debug.Log($"name: {name}, color: {color}, photo: {photo}");
-        logsText.text = $"Getting Player Profile..\n\nname: {name}\nColor: {color}\nPhotoURL: {photo}";
+        logsText.text = $"Getting Player Profile\n\nName: {name}\nColor: {color}\nPhotoURL: {photo}\n";
     }
 
-    public void GetStateColor()
+    private void GetStateColor()
     {
         if (playerJoined)
-        {
             for (var i = 0; i < players.Count; i++)
                 if (players[i] != null)
                 {
                     var color = players[i].GetState<Color>("color");
 
                     if (playerGameObjects[i] != null)
-                    {
                         playerGameObjects[i].GetComponent<Renderer>().material.color = color;
-                    }
                 }
-        }
     }
 
 
@@ -179,8 +184,6 @@ public class GameManagerDemo : MonoBehaviour
                 GetStateColor();
                 break;
             case 2:
-                break;
-            default:
                 break;
         }
     }
@@ -215,11 +218,9 @@ public class GameManagerDemo : MonoBehaviour
                         break;
                 }
 
-                SetStateColor(color: color);
+                SetStateColor(color);
                 break;
             case 2:
-                break;
-            default:
                 break;
         }
     }
@@ -232,16 +233,16 @@ public class GameManagerDemo : MonoBehaviour
     public void RegisterRpcShoot()
     {
         PlayroomKit.RpcRegister("ShootLaser", HandleScoreUpdate, "You shot a bullet!");
-        Debug.Log($"Shoot function registered");
+        Debug.Log("Shoot function registered");
         logsText.text = "ShootLaser RPC registered";
     }
 
-    void HandleScoreUpdate(string data, string caller)
+    private void HandleScoreUpdate(string data, string caller)
     {
         var player = PlayroomKit.GetPlayer(caller);
         Debug.Log($"Caller: {caller}, Player Name: {player?.GetProfile().name}, Data: {data}");
 
-        if (PlayerDict.TryGetValue(caller, out GameObject playerObj))
+        if (PlayerDict.TryGetValue(caller, out var playerObj))
         {
             var playerController = playerObj.GetComponent<PlayerController>();
             if (playerController != null)
@@ -275,20 +276,5 @@ public class GameManagerDemo : MonoBehaviour
         var roomcode = PlayroomKit.GetRoomCode();
         Debug.Log($"Room code: {roomcode}");
         logsText.text = $"Current RoomCode: {roomcode}";
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (playerJoined)
-        {
-            var myPlayer = PlayroomKit.MyPlayer();
-            var index = players.IndexOf(myPlayer);
-
-            //ShootLaser(index);
-
-            playerGameObjects[index].GetComponent<PlayerController>().LookAround();
-            playerGameObjects[index].GetComponent<PlayerController>().Move();
-        }
     }
 }
