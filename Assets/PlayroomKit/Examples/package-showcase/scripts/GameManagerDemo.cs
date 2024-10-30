@@ -24,7 +24,7 @@ public class GameManagerDemo : MonoBehaviour
     [SerializeField] private TextMeshProUGUI logsText;
 
     private PlayroomKit _playroomKit = new();
-    
+
     // Update is called once per frame
     private void Update()
     {
@@ -42,7 +42,7 @@ public class GameManagerDemo : MonoBehaviour
 
     public void InsertCoin()
     {
-        _playroomKit.InsertCoin(new _playroomKit.InitOptions
+        _playroomKit.InsertCoin(new InitOptions
         {
             maxPlayersPerRoom = 3,
             matchmaking = false,
@@ -64,8 +64,7 @@ public class GameManagerDemo : MonoBehaviour
         logsText.text = "OnPlayerJoin called, invoking Add Player";
     }
 
-
-    private void AddPlayer(_playroomKit.Player player)
+    private void AddPlayer(PlayroomKit.Player player)
     {
         var playerObj = Instantiate(playerPrefab,
             new Vector3(Random.Range(-5, 5), 2f, Random.Range(-5, 5)), Quaternion.identity);
@@ -269,7 +268,7 @@ public class GameManagerDemo : MonoBehaviour
         var myPlayer = _playroomKit.MyPlayer();
         var index = players.IndexOf(myPlayer);
         score = playerGameObjects[index].GetComponent<RaycastGun>().ShootLaser(score);
-        _playroomKit.RpcCall("ShootLaser", score, _playroomKit.RpcMode.ALL,
+        _playroomKit.RpcCall("ShootLaser", score, PlayroomKit.RpcMode.ALL,
             () => { logsText.text = "ShootLaser RPC Called"; });
     }
 

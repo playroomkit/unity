@@ -64,7 +64,7 @@ namespace Playroom
             return _playroomService.OnPlayerJoin(onPlayerJoinCallback);
         }
         
-        public static Player GetPlayer(string playerId)
+        public  Player GetPlayer(string playerId)
         {
             if (Players.TryGetValue(playerId, out var player))
             {
