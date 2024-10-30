@@ -290,12 +290,22 @@ public class GameManagerDemo : MonoBehaviour
         PlayroomKit.WaitForState("color", something => { logsText.text = $"After waiting we get: {something}"; });
     }
 
-    public void ResetStates()
+    public void ResetPlayerStates()
     {
         PlayroomKit.ResetPlayersStates(null, () =>
         {
             logsText.text =
                 $"All Player States were Reset\n e.g: Color: {PlayroomKit.MyPlayer().GetState<Color>("color")}";
+
+            var player = PlayroomKit.MyPlayer();
+            var color = player.GetState<Color>("color");
+            var pos = player.GetState<Vector3>("pos");
+
+            if (PlayerDict.TryGetValue(player.id, out var Player))
+            {
+                Player.GetComponent<Renderer>().material.color = color;
+                Player.GetComponent<Transform>().position = pos;
+            }
         });
     }
 }
