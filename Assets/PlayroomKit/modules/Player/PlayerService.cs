@@ -139,16 +139,24 @@ namespace Playroom
                 }
 
 
-                public void Kick(Action OnKickCallBack = null)
+                public void Kick(Action onKickCallBack = null)
                 {
-                    IPlayerBase.onKickCallBack = OnKickCallBack;
+                    IPlayerBase.onKickCallBack = onKickCallBack;
                     _interop.KickPlayerWrapper(_id, InvokeKickCallBack);
                 }
 
 
-                public void WaitForState(string StateKey, Action<string> onStateSetCallback = null)
+                private static Action<string> onSetState;
+                public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
                 {
-                    _interop.WaitForPlayerStateWrapper(_id, StateKey, onStateSetCallback);
+                    onSetState = onStateSetCallback;
+                    _interop.WaitForPlayerStateWrapper(_id, stateKey, InvokeKickCallBack);
+                }
+                
+                [MonoPInvokeCallback(typeof(Action<string>))]
+                private static void InvokeKickCallBack(string data)
+                {
+                    onSetState?.Invoke(data);
                 }
 
                 [MonoPInvokeCallback(typeof(Action))]

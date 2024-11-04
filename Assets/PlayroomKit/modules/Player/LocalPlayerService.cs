@@ -98,7 +98,7 @@ namespace Playroom
                     return null;
                 }
 
-                public void Kick(Action OnKickCallBack = null)
+                public void Kick(Action onKickCallBack = null)
                 {
                     var player = GetPlayer(_id);
                     Players.Remove(player.id);
