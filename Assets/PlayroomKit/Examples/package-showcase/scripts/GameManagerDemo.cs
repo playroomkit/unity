@@ -267,7 +267,7 @@ public class GameManagerDemo : MonoBehaviour
     {
         var myPlayer = _playroomKit.MyPlayer();
         var index = players.IndexOf(myPlayer);
-        score = playerGameObjects[index].GetComponent<RaycastGun>().ShootLaser(score);
+        score = playerGameObjects[index].GetComponent<Laser>().ShootLaser(score);
         _playroomKit.RpcCall("ShootLaser", score, PlayroomKit.RpcMode.ALL,
             () => { logsText.text = "ShootLaser RPC Called"; });
     }

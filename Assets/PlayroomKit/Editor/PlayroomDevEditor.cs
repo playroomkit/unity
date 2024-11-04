@@ -134,10 +134,10 @@ namespace Playroom
                 {
                     selectedEnum = PlayroomKit.MockModeSelector.Local;
                 }
-                else if (selectedString == "Browser Bridge (live)")
-                {
-                    selectedEnum = PlayroomKit.MockModeSelector.BrowserBridge;
-                }
+                // else if (selectedString == "Browser Bridge (live)")
+                // {
+                //     selectedEnum = PlayroomKit.MockModeSelector.BrowserBridge;
+                // }
 
                 mockModeProperty.enumValueIndex = (int)selectedEnum;
                 serializedObject.ApplyModifiedProperties();

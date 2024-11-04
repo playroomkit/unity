@@ -14,8 +14,7 @@ namespace Playroom
         [SerializeField] private PlayroomKit.MockModeSelector mockMode = PlayroomKit.CurrentMockMode;
 
 
-        [Tooltip(
-            "InsertCoin() must be called in order to connect PlayroomKit server.\n\nChoose the gameObject (with the script) which calls InsertCoin.\n\nRead More in the docs")]
+        [Tooltip("InsertCoin() must be called in order to connect PlayroomKit server.\n\nChoose the gameObject (with the script) which calls InsertCoin.\n\nRead More in the docs")]
         [SerializeField]
         private GameObject insertCoinCaller;
 
@@ -39,8 +38,8 @@ namespace Playroom
                 Destroy(gameObject);
             }
 
-            if (PlayroomKit.CurrentMockMode == PlayroomKit.MockModeSelector.BrowserBridge)
-                UnityBrowserBridge.Instance.StartUBB();
+            // if (PlayroomKit.CurrentMockMode == PlayroomKit.MockModeSelector.BrowserBridge)
+            //     UnityBrowserBridge.Instance.StartUBB();
 
             UpdateMockMode();
         }
