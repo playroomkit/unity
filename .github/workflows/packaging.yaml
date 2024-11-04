@@ -3,7 +3,7 @@ name: Create Unity Package on release tag
 on:
   push:
     tags:
-      - v0.*
+      - v*
 
 jobs:
   echo:
