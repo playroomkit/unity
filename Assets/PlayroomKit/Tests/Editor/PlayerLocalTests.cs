@@ -13,7 +13,6 @@ public class PlayerLocalTests
     private PlayroomKit.IInterop _interop;
     
     private string testId = "test_player_id";
-    private string testKey = "test_key";
 
     [SetUp]
     public void SetUp()

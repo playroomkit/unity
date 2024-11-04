@@ -312,9 +312,8 @@ public void GetState_ShouldInvokeCorrectInternalFunction_ForAllTypes()
                 var callback = callInfo.ArgAt<Action>(3); // Index 1 for onLaunch callback
                 callback.Invoke(); 
             });
-        
-        int score = 0;
-        _playroomKit.RpcCall("Shoot","score", PlayroomKit.RpcMode.ALL,  () =>
+
+        _playroomKit.RpcCall("Shoot","data is score", PlayroomKit.RpcMode.ALL,  () =>
         {
             receivedCalled = true;
         });
@@ -332,12 +331,6 @@ public void GetState_ShouldInvokeCorrectInternalFunction_ForAllTypes()
     [Test]
     public void WaitForState_ShouldInvokeInternal_WhenCalled()
     {
-        
-        void Callback(string data, string caller)
-        {
-            Debug.Log($"Callback called!");
-        }
-
         void Callback2(string data)
         {
             Debug.Log($"Callback called!");
@@ -412,12 +405,11 @@ public void GetState_ShouldInvokeCorrectInternalFunction_ForAllTypes()
         // Arrange
         var keysToExclude = new[] { "pos" };
         var expectedKeysJson = CreateJsonArray(keysToExclude).ToString(); // Assuming CreateJsonArray is available
-        bool callbackInvoked = false;
-        
+
         // Act
         _playroomKit.ResetPlayersStates(keysToExclude, () =>
         {
-            callbackInvoked = true;
+            Debug.Log("Reset Player States are ");
         });
 
     // Assert

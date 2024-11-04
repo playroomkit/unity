@@ -45,8 +45,6 @@ public class PlayroomKitLocalTests
     public void OnPlayerJoin_PlayerShouldBeAdded()
     {
         bool playerJoined = false;
-        PlayroomKit.Player testPlayer = null;
-        var playerId = "mockplayerID123";
         var playroomKit = new PlayroomKit(new PlayroomKit.LocalMockPlayroomService(), _rpc);
         
         playroomKit.InsertCoin(new InitOptions()
