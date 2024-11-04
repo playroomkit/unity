@@ -1,10 +1,12 @@
+#if UNITY_EDITOR
+
+
 using UnityEngine;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 using ParrelSync;
-using UnityEngine.Networking;
+using UnityEditor.Search;
 
 namespace Playroom
 {
@@ -110,7 +112,7 @@ namespace Playroom
             var mockModeOptions = new List<string>
             {
                 "Local (simulated)",
-                "Browser Bridge (live)"
+                // "Browser Bridge (live)"
             };
 
             var mockModeProperty = serializedObject.FindProperty("mockMode");
@@ -132,10 +134,10 @@ namespace Playroom
                 {
                     selectedEnum = PlayroomKit.MockModeSelector.Local;
                 }
-                else if (selectedString == "Browser Bridge (live)")
-                {
-                    selectedEnum = PlayroomKit.MockModeSelector.BrowserBridge;
-                }
+                // else if (selectedString == "Browser Bridge (live)")
+                // {
+                //     selectedEnum = PlayroomKit.MockModeSelector.BrowserBridge;
+                // }
 
                 mockModeProperty.enumValueIndex = (int)selectedEnum;
                 serializedObject.ApplyModifiedProperties();
@@ -159,3 +161,4 @@ namespace Playroom
         }
     }
 }
+#endif

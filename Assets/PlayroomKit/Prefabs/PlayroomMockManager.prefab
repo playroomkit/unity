@@ -96,5 +96,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 120dfa1b0ad7e96479cb0286e61ad19d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mockMode: 1
+  mockMode: 0
   insertCoinCaller: {fileID: 0}
