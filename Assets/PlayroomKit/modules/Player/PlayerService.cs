@@ -13,9 +13,8 @@ namespace Playroom
         {
             public class PlayerService : IPlayerBase
             {
-                
                 private string _id;
-                
+
                 private readonly IInterop _interop;
 
                 public PlayerService(string id)
@@ -29,8 +28,8 @@ namespace Playroom
                     _id = id;
                     _interop = interop;
                 }
-                
-                
+
+
                 public void SetState(string key, int value, bool reliable = false)
                 {
                     _interop.SetPlayerStateIntWrapper(_id, key, value, reliable);
@@ -38,7 +37,8 @@ namespace Playroom
 
                 public void SetState(string key, float value, bool reliable = false)
                 {
-                    _interop.SetPlayerStateFloatWrapper(_id, key, value.ToString(CultureInfo.InvariantCulture), reliable);
+                    _interop.SetPlayerStateFloatWrapper(_id, key, value.ToString(CultureInfo.InvariantCulture),
+                        reliable);
                 }
 
                 public void SetState(string key, bool value, bool reliable = false)
@@ -56,8 +56,7 @@ namespace Playroom
                     string jsonString = JsonUtility.ToJson(value);
                     _interop.SetPlayerStateStringWrapper(_id, key, jsonString, reliable);
                 }
-                
-                
+
 
                 public T GetState<T>(string key)
                 {
@@ -124,9 +123,9 @@ namespace Playroom
                     var profileData = ParseProfile(jsonString);
                     return profileData;
                 }
-                    
+
                 private List<Action<string>> OnQuitCallbacks = new();
-                
+
                 public Action OnQuit(Action<string> callback)
                 {
                     OnQuitCallbacks.Add(callback);
@@ -138,7 +137,6 @@ namespace Playroom
 
                     return Unsubscribe;
                 }
-                
 
 
                 public void Kick(Action OnKickCallBack = null)
@@ -147,7 +145,8 @@ namespace Playroom
                     _interop.KickPlayerWrapper(_id, InvokeKickCallBack);
                 }
 
-                public void WaitForState(string StateKey, Action onStateSetCallback = null)
+
+                public void WaitForState(string StateKey, Action<string> onStateSetCallback = null)
                 {
                     _interop.WaitForPlayerStateWrapper(_id, StateKey, onStateSetCallback);
                 }
@@ -178,7 +177,6 @@ namespace Playroom
                         stateValue == 0 ? false :
                         throw new InvalidOperationException($"GetStateBool: {key} is not a bool");
                 }
-                
             }
         }
     }

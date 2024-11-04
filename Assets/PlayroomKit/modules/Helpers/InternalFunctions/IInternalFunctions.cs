@@ -48,7 +48,7 @@ namespace Playroom
 
             void WaitForStateWrapper(string stateKey, Action<string, string> onStateSetCallback);
 
-            void WaitForPlayerStateWrapper(string playerID, string stateKey, Action onStateSetCallback);
+            void WaitForPlayerStateWrapper(string playerID, string stateKey, Action<string> onStateSetCallback);
 
             void ResetStatesWrapper(string keysToExclude = null, Action OnStatesReset = null);
 

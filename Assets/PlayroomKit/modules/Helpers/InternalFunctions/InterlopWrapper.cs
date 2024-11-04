@@ -168,7 +168,7 @@ namespace Playroom
             }
 
             // Wrapper for WaitForPlayerStateInternal
-            public void WaitForPlayerStateWrapper(string playerID, string stateKey, Action onStateSetCallback = null)
+            public void WaitForPlayerStateWrapper(string playerID, string stateKey, Action<string> onStateSetCallback = null)
             {
                 WaitForPlayerStateInternal(playerID, stateKey, onStateSetCallback);
             }
@@ -238,7 +238,7 @@ namespace Playroom
             private static extern void KickInternal(string playerID, Action onKickCallback = null);
 
             [DllImport("__Internal")]
-            private static extern void WaitForPlayerStateInternal(string playerID, string stateKey, Action onStateSetCallback = null);
+            private static extern void WaitForPlayerStateInternal(string playerID, string stateKey, Action<string> onStateSetCallback = null);
 
             [DllImport("__Internal")]
             private static extern void SetPlayerStateByPlayerId(string playerID, string key, int value, bool reliable = false);

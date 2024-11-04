@@ -19,7 +19,7 @@ namespace Playroom
                 public Action OnQuit(Action<string> callback);
                 public void Kick(Action OnKickCallBack = null);
 
-                public void WaitForState(string StateKey, Action onStateSetCallback = null);
+                public void WaitForState(string stateKey, Action<string> onStateSetCallback = null);
                 
                 protected static Action onKickCallBack = null;
 

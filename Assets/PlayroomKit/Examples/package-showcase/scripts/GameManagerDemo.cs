@@ -275,7 +275,7 @@ public class GameManagerDemo : MonoBehaviour
     public void GetRoomCode()
     {
         var roomcode = _playroomKit.GetRoomCode();
-        Debug.Log($"Room code: {roomcode}");    
+        Debug.Log($"Room code: {roomcode}");
         logsText.text = $"Current RoomCode: {roomcode}";
     }
 
@@ -289,6 +289,8 @@ public class GameManagerDemo : MonoBehaviour
     public void WaitForState()
     {
         _playroomKit.WaitForState("color", something => { logsText.text = $"After waiting we get: {something}"; });
+        _playroomKit.MyPlayer().WaitForState("color",
+            data => { Debug.Log($"data from WaitForPlayer state, color: {data}"); });
     }
 
     public void ResetPlayerStates()

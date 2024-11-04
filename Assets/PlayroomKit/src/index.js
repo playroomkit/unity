@@ -757,8 +757,8 @@ mergeInto(LibraryManager.library, {
 
     stateKey = UTF8ToString(stateKey);
     Playroom.waitForPlayerState(playerState, stateKey)
-      .then(() => {
-        {{{ makeDynCall('v', 'onStateSetCallback') }}}()
+      .then((stateVal) => {
+        {{{ makeDynCall('vii', 'onStateSetCallback') }}}(key, stringToNewUTF8(stateVal))
       })
       .catch((error) => {
         console.error("Error waiting for state:", error);

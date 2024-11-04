@@ -10,12 +10,14 @@ namespace Playroom
         public class LocalMockPlayroomService : IPlayroomBase
         {
             private Dictionary<string, object> mockGlobalStates = new();
-            
-            private Dictionary<string, Action<string>> stateCallbacks = new();
+
+            // private Dictionary<string, Action<string>> stateCallbacks = new();
 
             private const string PlayerId = "mockplayerID123";
-            
+
             private static bool mockIsStreamMode;
+            private Dictionary<string, string> mockGlobalStatesDictionary = new();
+            private Dictionary<string, string> mockPlayerStatesDictionary = new();
 
             public Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
             {
@@ -74,14 +76,8 @@ namespace Playroom
                     mockGlobalStates[key] = value;
                 else
                     mockGlobalStates.Add(key, value);
-                
-                if (stateCallbacks.TryGetValue(key, out var callback))
-                {
-                    // Invoke the callback with the stateKey as the parameter
-                    callback.Invoke(key);
-                    stateCallbacks.Remove(key); // Remove callback after invocation (one-time trigger)
-                    Debug.Log($"Callback invoked for StateKey: {key}");
-                }
+
+                CallbackManager.InvokeCallback(key, value as string);
             }
 
             public T GetState<T>(string key)
@@ -105,7 +101,7 @@ namespace Playroom
                     return default;
                 }
             }
-            
+
             public void OnDisconnect(Action callback)
             {
                 callback?.Invoke();
@@ -119,18 +115,14 @@ namespace Playroom
             public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
             {
                 if (onStateSetCallback == null)
-                    return; // No callback provided, nothing to register
+                    return; 
 
-                // Register the callback in the stateCallbacks dictionary
-                stateCallbacks[stateKey] = onStateSetCallback;
-
-                Debug.Log($"Callback registered for StateKey: {stateKey}");
+                CallbackManager.RegisterCallback(onStateSetCallback, stateKey);
             }
 
-            public void WaitForPlayerState(string playerID, string stateKey, Action onStateSetCallback = null)
+            public void WaitForPlayerState(string playerID, string stateKey, Action<string> onStateSetCallback = null)
             {
-                Debug.Log("Wait for player state is not supported in local mode yet!");
-                throw new NotImplementedException();
+                CallbackManager.RegisterCallback(onStateSetCallback, $"{stateKey}_{playerID}");
             }
 
             public void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null)

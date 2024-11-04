@@ -187,7 +187,7 @@ namespace Playroom
             _playroomService.WaitForState(stateKey, onStateSetCallback);
         }
         
-        public void WaitForPlayerState(string playerID, string stateKey, Action onStateSetCallback = null)
+        public void WaitForPlayerState(string playerID, string stateKey, Action<string> onStateSetCallback = null)
         {
             _playroomService.WaitForPlayerState(playerID, stateKey, onStateSetCallback);
         }

@@ -247,17 +247,17 @@ namespace Playroom
             }
             
             
-            Action WaitForPlayerCallback = null;
-            public void WaitForPlayerState(string playerID, string stateKey, Action onStateSetCallback = null)
+            Action<string> WaitForPlayerCallback = null;
+            public void WaitForPlayerState(string playerID, string stateKey, Action<string> onStateSetCallback = null)
             {
                 WaitForPlayerCallback = onStateSetCallback;
                 _interop.WaitForPlayerStateWrapper(playerID, stateKey, OnStateSetCallback);
             }
             
-            [MonoPInvokeCallback(typeof(Action))]
-            void OnStateSetCallback()
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            void OnStateSetCallback(string data)
             {
-                WaitForPlayerCallback?.Invoke();
+                WaitForPlayerCallback?.Invoke(data);
             }
             
             private static Action onstatesReset;
