@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using SimpleJSON;
 using UnityEngine;
 
@@ -118,6 +120,38 @@ namespace Playroom
 
             return jsonArray;
         }
+        
+        public class JoystickOptions
+        {
+            public string type = "angular"; // default = angular, can be dpad
+
+            public ButtonOptions[] buttons;
+            public ZoneOptions zones = null;
+        }
+
+        [Serializable]
+        public class ButtonOptions
+        {
+            public string id = null;
+            public string label = "";
+            public string icon = null;
+        }
+
+        public class ZoneOptions
+        {
+            public ButtonOptions up = null;
+            public ButtonOptions down = null;
+            public ButtonOptions left = null;
+            public ButtonOptions right = null;
+        }
+
+
+        [Serializable]
+        public class Dpad
+        {
+            public string x;
+            public string y;
+        }
 
         private static string ConvertJoystickOptionsToJson(JoystickOptions options)
         {
@@ -181,5 +215,32 @@ namespace Playroom
 
             return profileData;
         }
+        
+        private static Dictionary<string, T> ParseJsonToDictionary<T>(string jsonString)
+        {
+            var dictionary = new Dictionary<string, T>();
+            var jsonNode = JSON.Parse(jsonString);
+
+            foreach (var kvp in jsonNode.AsObject)
+            {
+                T value = default; // Initialize the value to default value of T
+
+                // Parse the JSONNode value to the desired type (T)
+                if (typeof(T) == typeof(float))
+                    value = (T)(object)kvp.Value.AsFloat;
+                else if (typeof(T) == typeof(int))
+                    value = (T)(object)kvp.Value.AsInt;
+                else if (typeof(T) == typeof(bool))
+                    value = (T)(object)kvp.Value.AsBool;
+                else
+                    Debug.LogError("Unsupported type: " + typeof(T).FullName);
+
+                dictionary.Add(kvp.Key, value);
+            }
+
+            return dictionary;
+        }
+        
+        
     }
 }

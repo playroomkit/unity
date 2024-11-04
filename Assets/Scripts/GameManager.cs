@@ -26,16 +26,18 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private string playerID;
 
+    private PlayroomKit _playroomKit = new PlayroomKit();
+
     void Start()
     {
         // countdownText.gameObject.SetActive(false);
-        PlayroomKit.InsertCoin(new InitOptions
+        _playroomKit.InsertCoin(new InitOptions
         {
             maxPlayersPerRoom = 15,
         }, () =>
         {
-            PlayroomKit.OnPlayerJoin(AddPlayer);
-            PlayroomKit.RpcRegister("score", (data, caller) => print($"{data} by {PlayroomKit.GetPlayer(caller).GetProfile().name}"));
+            _playroomKit.OnPlayerJoin(AddPlayer);
+            _playroomKit.RpcRegister("score", (data, caller) => print($"{data} by {PlayroomKit.GetPlayer(caller).GetProfile().name}"));
         }, () => { Debug.Log("OnDisconnect callback"); });
     }
     
@@ -49,15 +51,15 @@ public class GameManager : MonoBehaviour
         if (Input.GetKey(KeyCode.K))
         {
             // PlayroomKit.SetState("score", 500);
-            PlayroomKit.RpcCall("score", 500);
-            Debug.Log(PlayroomKit.GetRoomCode());
+            _playroomKit.RpcCall("score", 500);
+            Debug.Log(_playroomKit.GetRoomCode());
         }
 
         if (Input.GetKey(KeyCode.L))
         {
-            var s = PlayroomKit.GetState<int>("score");
+            var s = _playroomKit.GetState<int>("score");
 
-            PlayroomKit.RpcCall("score", "lol");
+            _playroomKit.RpcCall("score", "lol");
             score.text = $"Score: {s}";
         }
 
@@ -97,11 +99,11 @@ public class GameManager : MonoBehaviour
 
     private void Reset()
     {
-        if (Input.GetKeyDown(KeyCode.R) && PlayroomKit.IsHost())
+        if (Input.GetKeyDown(KeyCode.R) && _playroomKit.IsHost())
         {
-            PlayroomKit.ResetStates(new[] { "pos" }, () =>
+            _playroomKit.ResetStates(new[] { "pos" }, () =>
             {
-                var defscore = PlayroomKit.GetState<int>("score");
+                var defscore = _playroomKit.GetState<int>("score");
                 score.text = defscore.ToString();
 
                 Debug.Log("Resetting Player states from Unity, Invoking from JS!");

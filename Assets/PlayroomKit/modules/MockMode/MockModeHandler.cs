@@ -10,11 +10,12 @@ namespace Playroom
         public enum MockModeSelector
         {
             Local,
-            BrowserBridge
         }
 
         public static MockModeSelector CurrentMockMode { get; set; } = MockModeSelector.Local;
 
+        // TODO : This will be removed when BrowserMockMode service is updated using the new architecture.
+        /*
         private static void ExecuteMockModeAction(Action localAction, Action browserAction)
         {
             switch (CurrentMockMode)
@@ -180,5 +181,7 @@ namespace Playroom
                 () => MockRpcCallLocal(name, data, mode, callbackOnResponse),
                 () => MockRpcCallBrowser(name, data, mode, callbackOnResponse));
         }
+        
+        */
     }
 }
