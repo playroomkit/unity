@@ -112,7 +112,7 @@ namespace Playroom
             var mockModeOptions = new List<string>
             {
                 "Local (simulated)",
-                "Browser Bridge (live)"
+                // "Browser Bridge (live)"
             };
 
             var mockModeProperty = serializedObject.FindProperty("mockMode");
