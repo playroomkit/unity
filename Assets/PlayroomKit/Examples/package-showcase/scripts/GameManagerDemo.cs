@@ -292,6 +292,7 @@ public class GameManagerDemo : MonoBehaviour
     /// </summary>
     public void WaitForState()
     {
+        logsText.text = "Waiting for color to be set";
         _playroomKit.MyPlayer().WaitForState("color",
             data =>
             {
