@@ -32,7 +32,7 @@ public class PlayerLocalTests
     }
 
     [Test]
-    public void WaitForState_ShouldInvokeCallback_WhenStateIsSet()
+    public void WaitForState_RegisterCallback()
     {
         _player.WaitForState("winner", (data) =>
         {
@@ -42,7 +42,7 @@ public class PlayerLocalTests
     }
 
     [Test]
-    public void PlayerSetStateForWaitForState()
+    public void WaitForState_ShouldBeInvokedWhenSetIsSet()
     {
         _player.SetState("winner", true);
     }

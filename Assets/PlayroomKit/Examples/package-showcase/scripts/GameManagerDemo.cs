@@ -286,11 +286,19 @@ public class GameManagerDemo : MonoBehaviour
         logsText.text = $"{_playroomKit.MyPlayer().GetProfile().name} is host?: {isHost}";
     }
 
+    
+    /// <summary>
+    /// First Click the WaitForState button, then set the color using the dropdown and pressing the SetState button
+    /// </summary>
     public void WaitForState()
     {
-        _playroomKit.WaitForState("color", something => { logsText.text = $"After waiting we get: {something}"; });
         _playroomKit.MyPlayer().WaitForState("color",
-            data => { Debug.Log($"data from WaitForPlayer state, color: {data}"); });
+            data =>
+            {
+                Debug.Log($"data from WaitForPlayer state, color: {data}");
+
+                logsText.text += "\nData from WaitForPlayer state, color: {data}";
+            });
     }
 
     public void ResetPlayerStates()
