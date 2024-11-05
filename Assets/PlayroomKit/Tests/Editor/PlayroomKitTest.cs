@@ -344,16 +344,16 @@ public void GetState_ShouldInvokeCorrectInternalFunction_ForAllTypes()
     [Test]
     public void WaitForPlayerState_ShouldInvokeInternal_WhenCalled()
     {
-        void Callback()
+        void Callback(string data)
         {
-            Debug.Log($"Callback called!");
+            Debug.Log($"Callback called!: " + data);
         }
 
         var playerId = "1234";
         var state = "state";
 
         _playroomKit.WaitForPlayerState(playerId,state, Callback);
-        _interop.Received(1).WaitForPlayerStateWrapper(playerId, state, Arg.Any<Action>());
+        _interop.Received(1).WaitForPlayerStateWrapper(playerId, state, Arg.Any<Action<string>>());
     }
 
     [Test]

@@ -120,7 +120,7 @@ namespace Playroom
                 _playerService.Kick(OnKickCallBack);
             }
             
-            public void WaitForState(string StateKey, Action onStateSetCallback = null)
+            public void WaitForState(string StateKey, Action<string> onStateSetCallback = null)
             {
                 if (!isPlayRoomInitialized)
                 {

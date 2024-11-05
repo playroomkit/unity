@@ -10,16 +10,15 @@ namespace Playroom
         {
             public class LocalPlayerService : IPlayerBase
             {
-
                 private string _id;
 
                 public LocalPlayerService(string id)
                 {
                     _id = id;
                 }
-                
+
                 private Dictionary<(string playerID, string stateKey), Action> stateCallbacks = new();
-                
+
 
                 private static Dictionary<string, object> mockPlayerStatesDictionary = new();
 
@@ -30,21 +29,14 @@ namespace Playroom
                         mockPlayerStatesDictionary[key] = value;
                     else
                         mockPlayerStatesDictionary.Add(key, value);
-                    
-                    var callbackkey = (_id, key);
-                    if (stateCallbacks.TryGetValue(callbackkey, out var callback))
-                    {
-                        // Invoke the callback and remove it from the dictionary (assuming one-time trigger)
-                        callback.Invoke();
-                        stateCallbacks.Remove(callbackkey);
-                        Debug.Log($"Callback invoked for PlayerID: {_id}, StateKey: {key}");
-                    }
+
+                    Debug.Log(value);
+                    CallbackManager.InvokeCallback($"{key}_{_id}", value.ToString());
                 }
 
                 public void SetState(string key, int value, bool reliable = false)
                 {
                     SetStateHelper(key, value, reliable);
-                        
                 }
 
                 public void SetState(string key, float value, bool reliable = false)
@@ -106,26 +98,23 @@ namespace Playroom
                     return null;
                 }
 
-                public void Kick(Action OnKickCallBack = null)
+                public void Kick(Action onKickCallBack = null)
                 {
-                    var player = GetPlayer(PlayerId);
+                    var player = GetPlayer(_id);
                     Players.Remove(player.id);
                     IPlayerBase.onKickCallBack?.Invoke();
                 }
 
-                public void WaitForState(string stateKey, Action onStateSetCallback = null)
+                public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
                 {
                     if (onStateSetCallback == null)
-                        return; // No callback provided, nothing to register
+                        return;
 
-                    // Register the callback in the stateCallbacks dictionary
-                    var key = (_id, stateKey);
-                    stateCallbacks[key] = onStateSetCallback;
-
-                    Debug.Log($"Callback registered for PlayerID: {_id}, StateKey: {stateKey}");
+                    string key = $"{stateKey}_{_id}";
+                    CallbackManager.RegisterCallback(onStateSetCallback, key);
+                    Debug.Log($"Callback registered, the key is: {key}");
                 }
             }
         }
     }
-    
 }

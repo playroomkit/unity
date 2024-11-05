@@ -11,7 +11,7 @@ public class PlayerLocalTests
     private PlayroomKit.Player _player;
     private PlayroomKit.Player.IPlayerBase _mockPlayerService;
     private PlayroomKit.IInterop _interop;
-    
+
     private string testId = "test_player_id";
 
     [SetUp]
@@ -22,11 +22,8 @@ public class PlayerLocalTests
         _playroomKit.InsertCoin(new InitOptions()
         {
             maxPlayersPerRoom = 2,
-            defaultPlayerStates = new() { {"score", 0}, },
-        }, () =>
-        {
-            
-        });
+            defaultPlayerStates = new() { { "score", 0 }, },
+        }, () => { });
         // Mock the IPlayerService
         _mockPlayerService = new PlayroomKit.Player.LocalPlayerService(testId);
 
@@ -35,16 +32,18 @@ public class PlayerLocalTests
     }
 
     [Test]
-    public void WaitForState_ShouldInvokeCallback_WhenStateIsSet()
+    public void WaitForState_RegisterCallback()
     {
-        bool callbackInvoked = false;
-        _player.WaitForState("winner",() =>
+        _player.WaitForState("winner", (data) =>
         {
-            callbackInvoked = true;
+            Debug.Log("winner data: " + data);
+            Assert.IsTrue(bool.Parse(data), "Callback should be invoked");
         });
-        
+    }
+
+    [Test]
+    public void WaitForState_ShouldBeInvokedWhenSetIsSet()
+    {
         _player.SetState("winner", true);
-        
-        Assert.IsTrue(callbackInvoked, "Callback should be invoked");
     }
 }
