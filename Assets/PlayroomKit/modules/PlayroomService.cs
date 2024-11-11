@@ -90,11 +90,10 @@ namespace Playroom
                 return _interop.GetRoomCodeWrapper();
             }
 
-            static Action startMatchmakingCallback = null;
 
             public void StartMatchmaking(Action callback = null)
             {
-                startMatchmakingCallback = callback;
+                CallbackManager.RegisterCallback(callback, "matchMakingStarted");
                 _interop.StartMatchmakingWrapper(InvokeStartMatchmakingCallback);
             }
 
@@ -196,7 +195,7 @@ namespace Playroom
             [MonoPInvokeCallback(typeof(Action))]
             private static void InvokeStartMatchmakingCallback()
             {
-                startMatchmakingCallback?.Invoke();
+                CallbackManager.InvokeCallback("matchMakingStarted");
             }
 
             [MonoPInvokeCallback(typeof(Action<string>))]
