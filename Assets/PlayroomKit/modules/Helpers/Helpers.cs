@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SimpleJSON;
 using UnityEngine;
@@ -121,13 +120,6 @@ namespace Playroom
             return jsonArray;
         }
 
-
-        [Serializable]
-        public class Dpad
-        {
-            public string x;
-            public string y;
-        }
 
         private static string ConvertJoystickOptionsToJson(JoystickOptions options)
         {

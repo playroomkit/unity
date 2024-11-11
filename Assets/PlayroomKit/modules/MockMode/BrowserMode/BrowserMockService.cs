@@ -112,7 +112,7 @@ namespace Playroom
             throw new NotImplementedException();
         }
 
-        public PlayroomKit.Dpad DpadJoystick()
+        public Dpad DpadJoystick()
         {
             throw new NotImplementedException();
         }
