@@ -107,7 +107,7 @@ namespace Playroom
 
         #region Joystick Mehtods
 
-        public void CreateJoyStick(PlayroomKit.JoystickOptions options)
+        public void CreateJoyStick(JoystickOptions options)
         {
             throw new NotImplementedException();
         }

@@ -121,14 +121,6 @@ namespace Playroom
             return jsonArray;
         }
 
-        [Serializable]
-        public class ButtonOptions
-        {
-            public string id = null;
-            public string label = "";
-            public string icon = null;
-        }
-
 
         [Serializable]
         public class Dpad
