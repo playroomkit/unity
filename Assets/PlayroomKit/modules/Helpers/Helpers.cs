@@ -120,14 +120,6 @@ namespace Playroom
 
             return jsonArray;
         }
-        
-        public class JoystickOptions
-        {
-            public string type = "angular"; // default = angular, can be dpad
-
-            public ButtonOptions[] buttons;
-            public ZoneOptions zones = null;
-        }
 
         [Serializable]
         public class ButtonOptions
@@ -135,14 +127,6 @@ namespace Playroom
             public string id = null;
             public string label = "";
             public string icon = null;
-        }
-
-        public class ZoneOptions
-        {
-            public ButtonOptions up = null;
-            public ButtonOptions down = null;
-            public ButtonOptions left = null;
-            public ButtonOptions right = null;
         }
 
 
@@ -240,7 +224,5 @@ namespace Playroom
 
             return dictionary;
         }
-        
-        
     }
 }
