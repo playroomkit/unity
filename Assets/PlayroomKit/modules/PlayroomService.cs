@@ -54,7 +54,7 @@ namespace Playroom
                     CallbackManager.RegisterCallback(onDisconnectCallback, "onDisconnectCallBack");
 
                 string optionsJson = null;
-                if (options != null) optionsJson = SerializeInitOptions(options);
+                if (options != null) optionsJson = Helpers.SerializeInitOptions(options);
 
                 if (options.skipLobby == false)
                 {
@@ -115,11 +115,11 @@ namespace Playroom
                 {
                     float floatValue = (float)(object)value;
                     var floatAsString = floatValue.ToString(CultureInfo.InvariantCulture);
-                    _interop.SetStateFloatWrapper(key, floatAsString, reliable); 
+                    _interop.SetStateFloatWrapper(key, floatAsString, reliable);
                 }
-                else if (value is object) 
+                else if (value is object)
                 {
-                    Debug.Log("SetState "+ key + ", value is " + value + "of type " + value.GetType());
+                    Debug.Log("SetState " + key + ", value is " + value + "of type " + value.GetType());
                     string jsonString = JsonUtility.ToJson(value);
                     _interop.SetStateStringWrapper(key, jsonString, reliable);
                 }
@@ -128,14 +128,13 @@ namespace Playroom
                     throw new InvalidOperationException($"Unsupported type: {typeof(T).Name}");
                 }
             }
-            
+
             public void SetState<T>(string key, Dictionary<string, T> values, bool reliable = false)
             {
                 var jsonObject = new JSONObject();
 
                 foreach (var kvp in values)
                 {
-
                     var value = Convert.ToDouble(kvp.Value);
                     jsonObject.Add(kvp.Key, value);
                 }
@@ -143,7 +142,7 @@ namespace Playroom
                 var jsonString = jsonObject.ToString();
                 _interop.SetStateDictionaryWrapper(key, jsonString, reliable);
             }
-            
+
             public void SetState(string key, string value, bool reliable = false)
             {
                 _interop.SetStateStringWrapper(key, value, reliable);
@@ -221,7 +220,7 @@ namespace Playroom
                     Debug.LogError("[__OnQuitInternalHandler] Couldn't find player with id " + playerId);
                 }
             }
-            
+
             public void OnDisconnect(Action callback)
             {
                 CallbackManager.RegisterCallback(callback);
@@ -238,31 +237,32 @@ namespace Playroom
                 CallbackManager.RegisterCallback(onStateSetCallback, stateKey);
                 _interop.WaitForStateWrapper(stateKey, IPlayroomBase.InvokeCallback);
             }
-            
-            
+
+
             Action<string> WaitForPlayerCallback = null;
+
             public void WaitForPlayerState(string playerID, string stateKey, Action<string> onStateSetCallback = null)
             {
                 WaitForPlayerCallback = onStateSetCallback;
                 _interop.WaitForPlayerStateWrapper(playerID, stateKey, OnStateSetCallback);
             }
-            
+
             [MonoPInvokeCallback(typeof(Action<string>))]
             void OnStateSetCallback(string data)
             {
                 WaitForPlayerCallback?.Invoke(data);
             }
-            
+
             private static Action onstatesReset;
             private static Action onplayersStatesReset;
 
             public void ResetStates(string[] keysToExclude = null, Action onStatesReset = null)
             {
                 onstatesReset = onStatesReset;
-                string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
+                string keysJson = keysToExclude != null ? Helpers.CreateJsonArray(keysToExclude).ToString() : null;
                 _interop.ResetStatesWrapper(keysJson, InvokeResetCallBack);
             }
-            
+
             [MonoPInvokeCallback(typeof(Action))]
             private static void InvokeResetCallBack()
             {
@@ -272,13 +272,13 @@ namespace Playroom
             public void ResetPlayersStates(string[] keysToExclude = null, Action onStatesReset = null)
             {
                 onstatesReset = onStatesReset;
-                string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
+                string keysJson = keysToExclude != null ?  Helpers.CreateJsonArray(keysToExclude).ToString() : null;
                 _interop.ResetPlayersStatesWrapper(keysJson, InvokePlayersResetCallBack);
             }
 
             public void CreateJoyStick(JoystickOptions options)
             {
-                var jsonStr = ConvertJoystickOptionsToJson(options);
+                string jsonStr = Helpers.ConvertJoystickOptionsToJson(options);
                 _interop.CreateJoystickWrapper(jsonStr);
             }
 
@@ -299,7 +299,7 @@ namespace Playroom
             {
                 onplayersStatesReset?.Invoke();
             }
-            
+
 
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void onDisconnectCallbackHandler(string key)
@@ -321,7 +321,7 @@ namespace Playroom
             {
                 _interop.UnsubscribeOnPlayerJoinWrapper(callbackID);
             }
-            
+
             // GETTERS
             private string GetStateString(string key)
             {

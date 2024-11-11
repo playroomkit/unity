@@ -120,7 +120,7 @@ namespace Playroom
                 public Profile GetProfile()
                 {
                     var jsonString = _interop.GetProfileWrapper(_id);
-                    var profileData = ParseProfile(jsonString);
+                    var profileData = Helpers.ParseProfile(jsonString);
                     return profileData;
                 }
 

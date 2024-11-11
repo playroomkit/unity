@@ -35,7 +35,7 @@ namespace Playroom
                 IsPlayRoomInitialized = true;
                 Debug.Log("Coin Inserted");
                 string optionsJson = null;
-                if (options != null) optionsJson = SerializeInitOptions(options);
+                if (options != null) optionsJson = Helpers.SerializeInitOptions(options);
                 onLaunchCallBack?.Invoke();
             }
 

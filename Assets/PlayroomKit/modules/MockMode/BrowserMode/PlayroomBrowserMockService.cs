@@ -3,7 +3,7 @@ using UBB;
 
 namespace Playroom
 {
-    public class BrowserMockService : PlayroomKit.IPlayroomBase
+    public class PlayroomBrowserMockService : PlayroomKit.IPlayroomBase
     {
         private UnityBrowserBridge _ubb; 
         
@@ -15,10 +15,15 @@ namespace Playroom
             // start ubb before inserting coin
             _ubb = UnityBrowserBridge.Instance;
             _ubb.StartUBB();
+            
+            string optionsJson = null;
+            if (options != null) optionsJson = Helpers.SerializeInitOptions(options);
+
+            
+            
+            // _ubb.ExecuteJS<>()
 
             PlayroomKit.IsPlayRoomInitialized = true;
-
-
         }
 
         public Action OnPlayerJoin(Action<PlayroomKit.Player> onPlayerJoinCallback)

@@ -40,7 +40,7 @@ namespace Playroom
             Debug.Log("Coin Inserted!");
 
             string optionsJson = null;
-            if (options != null) optionsJson = SerializeInitOptions(options);
+            if (options != null) optionsJson = Helpers.SerializeInitOptions(options);
 
 #if UNITY_EDITOR
             var gameObjectName = GetGameObject("InsertCoin").name;
@@ -261,7 +261,7 @@ namespace Playroom
         {
 #if UNITY_EDITOR
             string json = UnityBrowserBridge.Instance.ExecuteJS<string>($"GetProfile('{playerID}')");
-            var profileData = ParseProfile(json);
+            var profileData = Helpers.ParseProfile(json);
             return profileData;
 #else
             return default;
