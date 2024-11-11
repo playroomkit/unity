@@ -15,6 +15,11 @@ namespace Playroom
     {
         public StyleSheet styleSheet;
 
+        public void OnEnable()
+        {
+            styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/PlayroomKit/Editor/PlayroomkitDevManagerEditor.uss");
+        }
+
         public override VisualElement CreateInspectorGUI()
         {
             VisualElement root = new VisualElement
@@ -24,6 +29,12 @@ namespace Playroom
                     flexDirection = FlexDirection.Column
                 }
             };
+
+            if (styleSheet == null)
+            {
+                Debug.LogError("Style sheet is null");
+            }
+
             root.styleSheets.Add(styleSheet);
 
             VisualElement mockModeContainer = MockModeContainerCreator();
@@ -128,7 +139,7 @@ namespace Playroom
             mockModeDropdown.RegisterValueChangedCallback(evt =>
             {
                 var selectedString = evt.newValue;
-                PlayroomKit.MockModeSelector selectedEnum = PlayroomKit.MockModeSelector.Local; // Default value
+                PlayroomKit.MockModeSelector selectedEnum = PlayroomKit.MockModeSelector.Local;
 
                 if (selectedString == "Local (simulated)")
                 {

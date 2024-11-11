@@ -17,10 +17,7 @@ namespace Playroom
         [Tooltip("InsertCoin() must be called in order to connect PlayroomKit server.\n\nChoose the gameObject (with the script) which calls InsertCoin.\n\nRead More in the docs")]
         [SerializeField]
         private GameObject insertCoinCaller;
-
-        [Tooltip("This is used for enabling / disabling logs in the editor.")]
-        [SerializeField] private bool editorLogs = true;
-
+        
         private static PlayroomkitDevManager Instance { get; set; }
 
 #if UNITY_EDITOR
@@ -38,10 +35,7 @@ namespace Playroom
             {
                 Destroy(gameObject);
             }
-
-            // if (PlayroomKit.CurrentMockMode == PlayroomKit.MockModeSelector.BrowserBridge)
-            //     UnityBrowserBridge.Instance.StartUBB();
-
+            
             UpdateMockMode();
         }
 
