@@ -10,7 +10,6 @@ namespace Playroom
     public class PlayroomBrowserMockService : PlayroomKit.IPlayroomBase
     {
         private UnityBrowserBridge _ubb;
-      
 
         private void CallJs(string jsFunctionName, string callbackName = null, string gameObjectName = null,
             bool isAsync = false, params string[] args)
@@ -25,9 +24,10 @@ namespace Playroom
             _ubb.ExecuteJS(jsCall);
         }
 
-
-
-
+        public static void MockOnPlayerJoinWrapper(string playerId)
+        {
+            PlayroomKit.IPlayroomBase.OnPlayerJoinWrapperCallback(playerId);
+        }
 
         #region Initialization Methods
 
