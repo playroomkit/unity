@@ -1,15 +1,23 @@
 ﻿using System;
+using UBB;
 
 namespace Playroom
 {
     public class BrowserMockService : PlayroomKit.IPlayroomBase
     {
+        private UnityBrowserBridge _ubb; 
+        
         #region Initialization Methods
 
         public void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
             Action onDisconnectCallback = null)
         {
-            throw new NotImplementedException();
+            // start ubb before inserting coin
+            _ubb = UnityBrowserBridge.Instance;
+            _ubb.StartUBB();
+            
+                    
+                
         }
 
         public Action OnPlayerJoin(Action<PlayroomKit.Player> onPlayerJoinCallback)

@@ -34,7 +34,7 @@ namespace UBB
 		/// <summary>
 		/// Static singleton property to access UnityBrowserBridge instance. 
 		/// </summary>
-		public static UnityBrowserBridge Instance { get; private set; }
+		// public static UnityBrowserBridge Instance { get; private set; }
 
 		/// <summary>
 		/// Browser to be used
@@ -84,10 +84,33 @@ namespace UBB
 		/// <value><code>True</code> after the browser is ready and all resources have been loaded.</value>
 		public bool Ready { get; set; } = false;
 
-		// sets instance property on awake
-		private void Awake()
+		// Create a singleton instance, called from InsertCoin
+
+		private static UnityBrowserBridge _instance;
+		public static UnityBrowserBridge Instance
 		{
-			Instance = this;
+			get
+			{
+				if (_instance == null)
+				{
+					CreateInstance();
+				}
+				return _instance;
+			}
+			private set => _instance = value;
+		}
+
+		public static void CreateInstance()
+		{
+			if (_instance == null)
+			{
+				_instance = FindObjectOfType<UnityBrowserBridge>();
+				if (_instance == null)
+				{
+					Debug.LogError("No UnityBrowserBridge component found in the scene. Please ensure it is attached to a GameObject.");
+					return;
+				}
+			}
 		}
 
 		// invoked after application has been terminated
