@@ -15,9 +15,10 @@ namespace Playroom
             // start ubb before inserting coin
             _ubb = UnityBrowserBridge.Instance;
             _ubb.StartUBB();
-            
-                    
-                
+
+            PlayroomKit.IsPlayRoomInitialized = true;
+
+
         }
 
         public Action OnPlayerJoin(Action<PlayroomKit.Player> onPlayerJoinCallback)
