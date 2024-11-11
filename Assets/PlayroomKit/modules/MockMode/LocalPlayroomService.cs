@@ -10,14 +10,9 @@ namespace Playroom
         public class LocalMockPlayroomService : IPlayroomBase
         {
             private Dictionary<string, object> mockGlobalStates = new();
-
-            // private Dictionary<string, Action<string>> stateCallbacks = new();
-
             private const string PlayerId = "mockplayerID123";
 
             private static bool mockIsStreamMode;
-            private Dictionary<string, string> mockGlobalStatesDictionary = new();
-            private Dictionary<string, string> mockPlayerStatesDictionary = new();
 
             public Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
             {
@@ -128,12 +123,12 @@ namespace Playroom
             public void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null)
             {
                 List<string> keysToRemove =
-                    mockGlobalStatesDictionary.Keys.Where(key => !keysToExclude.Contains(key)).ToList();
-                foreach (string key in keysToRemove) mockGlobalStatesDictionary.Remove(key);
+                    mockGlobalStates.Keys.Where(key => !keysToExclude.Contains(key)).ToList();
+                foreach (string key in keysToRemove) mockGlobalStates.Remove(key);
                 OnStatesReset?.Invoke();
             }
 
-            public void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
+            public void ResetPlayersStates(string[] keysToExclude = null, Action onStatesReset = null)
             {
                 if (keysToExclude == null || keysToExclude.Length == 0)
                 {
@@ -141,14 +136,14 @@ namespace Playroom
                 }
 
                 List<string> keysToRemove =
-                    mockPlayerStatesDictionary.Keys.Where(key => !keysToExclude.Contains(key)).ToList();
+                    Player.LocalPlayerService.GetMockPlayerStates().Keys.Where(key => !keysToExclude.Contains(key)).ToList();
 
                 foreach (string key in keysToRemove)
                 {
-                    mockPlayerStatesDictionary.Remove(key);
+                    Player.LocalPlayerService.GetMockPlayerStates().Remove(key);
                 }
 
-                OnStatesReset?.Invoke();
+                onStatesReset?.Invoke();
             }
 
             public void CreateJoyStick(JoystickOptions options)

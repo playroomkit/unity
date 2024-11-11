@@ -40,7 +40,7 @@ namespace Playroom
 
             public void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null);
 
-            public void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null);
+            public void ResetPlayersStates(string[] keysToExclude = null, Action onStatesReset = null);
 
             public void CreateJoyStick(JoystickOptions options);
 

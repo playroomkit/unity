@@ -262,6 +262,7 @@ public class GameManagerDemo : MonoBehaviour
     }
 
 
+
     public void ShootLaser()
     {
         var myPlayer = _playroomKit.MyPlayer();

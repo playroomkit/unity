@@ -71,7 +71,7 @@ namespace Playroom
             public Player MyPlayer()
             {
                 var id = _interop.MyPlayerWrapper();
-                return GetPlayer(id);
+                return GetPlayerById(id);
             }
 
             public Player Me()
@@ -100,8 +100,6 @@ namespace Playroom
 
             public void SetState<T>(string key, T value, bool reliable = false)
             {
-                //#Debug.Log("SetState "+ key + ", value is " + value + "of type " + value.GetType());
-                // Use type checking to call the correct overload of SetStateWrapper
                 if (value is string)
                 {
                     _interop.SetStateStringWrapper(key, (string)(object)value, reliable);
@@ -118,9 +116,9 @@ namespace Playroom
                 {
                     float floatValue = (float)(object)value;
                     var floatAsString = floatValue.ToString(CultureInfo.InvariantCulture);
-                    _interop.SetStateFloatWrapper(key, floatAsString, reliable); // Assumes float is serialized as string
+                    _interop.SetStateFloatWrapper(key, floatAsString, reliable); 
                 }
-                else if (value is object) // For JSON-like object, you'd serialize it to JSON (example using Newtonsoft.Json)
+                else if (value is object) 
                 {
                     Debug.Log("SetState "+ key + ", value is " + value + "of type " + value.GetType());
                     string jsonString = JsonUtility.ToJson(value);
@@ -136,18 +134,14 @@ namespace Playroom
             {
                 var jsonObject = new JSONObject();
 
-                // Add key-value pairs to the JSON object
                 foreach (var kvp in values)
                 {
-                    // Convert the value to double before adding to JSONNode
+
                     var value = Convert.ToDouble(kvp.Value);
                     jsonObject.Add(kvp.Key, value);
                 }
 
-                // Serialize the JSON object to a string
                 var jsonString = jsonObject.ToString();
-
-                // Output the JSON string
                 _interop.SetStateDictionaryWrapper(key, jsonString, reliable);
             }
             
@@ -276,9 +270,9 @@ namespace Playroom
                 onstatesReset?.Invoke();
             }
 
-            public void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
+            public void ResetPlayersStates(string[] keysToExclude = null, Action onStatesReset = null)
             {
-                onstatesReset = OnStatesReset;
+                onstatesReset = onStatesReset;
                 string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
                 _interop.ResetPlayersStatesWrapper(keysJson, InvokePlayersResetCallBack);
             }

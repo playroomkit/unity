@@ -35,8 +35,8 @@ public class PlayroomKitTests
         string playerId = "Player1";
         
         // Act
-        var player1 = PlayroomKit.GetPlayer(playerId);
-        var player2 = PlayroomKit.GetPlayer(playerId);
+        var player1 = _playroomKit.GetPlayer(playerId);
+        var player2 = _playroomKit.GetPlayer(playerId);
 
         // Assert
         Assert.AreEqual(player1, player2, "GetPlayer should return the same instance for the same playerId.");
@@ -119,7 +119,7 @@ public class PlayroomKitTests
         string newPlayerId = "Player2";
         
         // Act
-        var player = PlayroomKit.GetPlayer(newPlayerId);
+        var player = _playroomKit.GetPlayer(newPlayerId);
 
         // Assert
         Assert.IsNotNull(player, "GetPlayer should create a new Player if one does not exist.");

@@ -130,7 +130,7 @@ public class PlayroomKitLocalTests
     [Test]
     public void MyPlayer_ReturnLocalPlayer()
     {
-        var expectedPlayer = PlayroomKit.GetPlayer("mockplayerID123");
+        var expectedPlayer = _playroomKit.GetPlayer("mockplayerID123");
         var player = _playroomKit.MyPlayer();
         Assert.AreEqual(expectedPlayer, player);
     }

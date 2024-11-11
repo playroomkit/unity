@@ -25,7 +25,7 @@ namespace Playroom
                 mockResponseCallbacks.TryAdd(name, callbackOnResponse);
 
                 string stringData = Convert.ToString(data);
-                var player = GetPlayer("mockplayerID123");
+                var player = GetPlayerById("mockplayerID123");
 
                 if (mockRegisterCallbacks.TryGetValue(name, out var responseHandler))
                 {

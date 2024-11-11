@@ -232,7 +232,7 @@ namespace Playroom
         {
 #if UNITY_EDITOR
             var id = UnityBrowserBridge.Instance.ExecuteJS<string>($"MyPlayer()");
-            return GetPlayer(id);
+            return GetPlayerById(id);
 #else
             return default;
 #endif

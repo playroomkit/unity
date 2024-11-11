@@ -18,9 +18,13 @@ namespace Playroom
                 }
 
                 private Dictionary<(string playerID, string stateKey), Action> stateCallbacks = new();
-
-
                 private static Dictionary<string, object> mockPlayerStatesDictionary = new();
+
+
+                public static Dictionary<string, object> GetMockPlayerStates()
+                {
+                    return mockPlayerStatesDictionary;
+                }
 
                 public void SetStateHelper<T>(string key, T value, bool reliable = false)
                 {
@@ -100,7 +104,7 @@ namespace Playroom
 
                 public void Kick(Action onKickCallBack = null)
                 {
-                    var player = GetPlayer(_id);
+                    var player = GetPlayerById(_id);
                     Players.Remove(player.id);
                     IPlayerBase.onKickCallBack?.Invoke();
                 }
