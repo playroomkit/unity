@@ -1,49 +1,50 @@
-using System;
-using System.Globalization;
 using NUnit.Framework;
-using NSubstitute; // For mocking the IPlayerService interface
 using Playroom;
 using UnityEngine;
+// For mocking the IPlayerService interface
 
-public class PlayerLocalTests
+namespace Playroom.Tests.Editor
 {
-    private PlayroomKit _playroomKit;
-    private PlayroomKit.Player _player;
-    private PlayroomKit.Player.IPlayerBase _mockPlayerService;
-    private PlayroomKit.IInterop _interop;
-
-    private string testId = "test_player_id";
-
-    [SetUp]
-    public void SetUp()
+    public class PlayerLocalTests
     {
-        var _playroomKitService = new PlayroomKit.LocalMockPlayroomService();
-        _playroomKit = new PlayroomKit(_playroomKitService, new PlayroomKit.RPCLocal());
-        _playroomKit.InsertCoin(new InitOptions()
+        private Playroom.PlayroomKit _playroomKit;
+        private Playroom.PlayroomKit.Player _player;
+        private Playroom.PlayroomKit.Player.IPlayerBase _mockPlayerService;
+        private Playroom.PlayroomKit.IInterop _interop;
+
+        private string testId = "test_player_id";
+
+        [SetUp]
+        public void SetUp()
         {
-            maxPlayersPerRoom = 2,
-            defaultPlayerStates = new() { { "score", 0 }, },
-        }, () => { });
-        // Mock the IPlayerService
-        _mockPlayerService = new PlayroomKit.Player.LocalPlayerService(testId);
+            var _playroomKitService = new Playroom.PlayroomKit.LocalMockPlayroomService();
+            _playroomKit = new Playroom.PlayroomKit(_playroomKitService, new Playroom.PlayroomKit.RPCLocal());
+            _playroomKit.InsertCoin(new InitOptions()
+            {
+                maxPlayersPerRoom = 2,
+                defaultPlayerStates = new() { { "score", 0 }, },
+            }, () => { });
+            // Mock the IPlayerService
+            _mockPlayerService = new Playroom.PlayroomKit.Player.LocalPlayerService(testId);
 
-        // Create a new Player object with the mock service
-        _player = new PlayroomKit.Player(testId, _mockPlayerService);
-    }
+            // Create a new Player object with the mock service
+            _player = new Playroom.PlayroomKit.Player(testId, _mockPlayerService);
+        }
 
-    [Test]
-    public void WaitForState_RegisterCallback()
-    {
-        _player.WaitForState("winner", (data) =>
+        [Test]
+        public void WaitForState_RegisterCallback()
         {
-            Debug.Log("winner data: " + data);
-            Assert.IsTrue(bool.Parse(data), "Callback should be invoked");
-        });
-    }
+            _player.WaitForState("winner", (data) =>
+            {
+                Debug.Log("winner data: " + data);
+                Assert.IsTrue(bool.Parse(data), "Callback should be invoked");
+            });
+        }
 
-    [Test]
-    public void WaitForState_ShouldBeInvokedWhenSetIsSet()
-    {
-        _player.SetState("winner", true);
+        [Test]
+        public void WaitForState_ShouldBeInvokedWhenSetIsSet()
+        {
+            _player.SetState("winner", true);
+        }
     }
 }
