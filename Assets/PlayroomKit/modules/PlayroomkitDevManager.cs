@@ -18,7 +18,8 @@ namespace Playroom
         [SerializeField]
         private GameObject insertCoinCaller;
 
-        // [SerializeField] private bool toggleDebugLogs = false;
+        [Tooltip("This is used for enabling / disabling logs in the editor.")]
+        [SerializeField] private bool editorLogs = true;
 
         private static PlayroomkitDevManager Instance { get; set; }
 

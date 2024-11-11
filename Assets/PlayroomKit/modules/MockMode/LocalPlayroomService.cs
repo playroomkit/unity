@@ -22,7 +22,7 @@ namespace Playroom
             public Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
             {
                 Debug.Log("On Player Join");
-                var testPlayer = GetPlayer(PlayerId);
+                var testPlayer = GetPlayerById(PlayerId);
                 IPlayroomBase.OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
                 IPlayroomBase.__OnPlayerJoinCallbackHandler(PlayerId);
 
@@ -46,12 +46,12 @@ namespace Playroom
 
             public Player MyPlayer()
             {
-                return GetPlayer(PlayerId);
+                return GetPlayerById(PlayerId);
             }
 
             public Player Me()
             {
-                return GetPlayer(PlayerId);
+                return GetPlayerById(PlayerId);
             }
 
             public bool IsHost()

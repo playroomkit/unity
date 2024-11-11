@@ -10,7 +10,6 @@ public class GameManagerDemo : MonoBehaviour
 {
     private static readonly List<PlayroomKit.Player> players = new();
     private static readonly List<GameObject> playerGameObjects = new();
-
     private static readonly Dictionary<string, GameObject> PlayerDict = new();
 
     [SerializeField] private static bool playerJoined;
@@ -240,7 +239,7 @@ public class GameManagerDemo : MonoBehaviour
 
     private void HandleScoreUpdate(string data, string caller)
     {
-        var player = PlayroomKit.GetPlayer(caller);
+        var player = _playroomKit.GetPlayer(caller);
         Debug.Log($"Caller: {caller}, Player Name: {player?.GetProfile().name}, Data: {data}");
 
         if (PlayerDict.TryGetValue(caller, out var playerObj))

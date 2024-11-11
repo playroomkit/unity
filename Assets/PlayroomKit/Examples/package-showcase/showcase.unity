@@ -5883,8 +5883,7 @@ PrefabInstance:
       propertyPath: insertCoinCaller
       value: 
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 5593001685836374760, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -5910,7 +5909,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mockMode: 0
-  insertCoinCaller: {fileID: 0}
+  insertCoinCaller: {fileID: 893908560}
 --- !u!1 &1883683081
 GameObject:
   m_ObjectHideFlags: 0

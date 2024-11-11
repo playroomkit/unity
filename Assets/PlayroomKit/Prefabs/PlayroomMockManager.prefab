@@ -60,7 +60,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3746181030263044757}
-  - component: {fileID: 5593001685836374760}
   m_Layer: 0
   m_Name: PlayroomMockManager
   m_TagString: EditorOnly
@@ -84,17 +83,3 @@ Transform:
   - {fileID: 1488774288987972494}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5593001685836374760
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1957495583081457048}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 120dfa1b0ad7e96479cb0286e61ad19d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mockMode: 0
-  insertCoinCaller: {fileID: 0}

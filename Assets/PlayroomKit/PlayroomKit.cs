@@ -64,7 +64,29 @@ namespace Playroom
             return _playroomService.OnPlayerJoin(onPlayerJoinCallback);
         }
         
-        public static Player GetPlayer(string playerId)
+        public Player GetPlayer(string playerId)
+        {
+            if (Players.TryGetValue(playerId, out var player))
+            {
+                return player;
+            }
+            else
+            {
+                if (!IsRunningInBrowser())
+                {
+                    player = new Player(playerId, new Player.LocalPlayerService(playerId));
+                }
+                else
+                {
+                    player = new Player(playerId, new Player.PlayerService(playerId));
+                }
+
+                Players.Add(playerId, player);
+                return player;
+            }
+        }
+        
+        private static Player GetPlayerById(string playerId)
         {
             if (Players.TryGetValue(playerId, out var player))
             {
