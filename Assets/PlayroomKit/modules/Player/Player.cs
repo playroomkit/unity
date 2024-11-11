@@ -30,7 +30,7 @@ namespace Playroom
             
             public void SetState(string key, int value, bool reliable = false)
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
@@ -40,7 +40,7 @@ namespace Playroom
 
             public void SetState(string key, float value, bool reliable = false)
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
@@ -51,7 +51,7 @@ namespace Playroom
 
             public void SetState(string key, bool value, bool reliable = false)
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
@@ -61,7 +61,7 @@ namespace Playroom
 
             public void SetState(string key, string value, bool reliable = false)
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
@@ -72,7 +72,7 @@ namespace Playroom
             // Overload for complex objects, which will be serialized to JSON
             public void SetState(string key, object value, bool reliable = false)
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
@@ -90,7 +90,7 @@ namespace Playroom
             
             public Profile GetProfile()
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return default;
@@ -100,7 +100,7 @@ namespace Playroom
             
             public Action OnQuit(Action<string> callback)
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
                     return null;
@@ -111,7 +111,7 @@ namespace Playroom
             
             public void Kick(Action OnKickCallBack = null)
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 { 
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return;
@@ -122,7 +122,7 @@ namespace Playroom
             
             public void WaitForState(string StateKey, Action<string> onStateSetCallback = null)
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("Playroom not initialized yet! Please call InsertCoin.");
                 }
@@ -158,7 +158,7 @@ namespace Playroom
             
             private void OnQuitDefaultCallback()
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("Playroom not initialized yet! Please call InsertCoin.");
                 }

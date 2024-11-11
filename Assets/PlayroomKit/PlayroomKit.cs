@@ -9,19 +9,20 @@ namespace Playroom
 {
     public partial class PlayroomKit
     {
-        private IPlayroomBase _playroomService;
+        private readonly IPlayroomBase _playroomService;
+        private readonly IRPC _rpc;
+
         private static PlayroomKit _instance;
-        private IRPC _rpc;
-        public static bool isPlayRoomInitialized;
+        public static bool IsPlayRoomInitialized;
         private static readonly Dictionary<string, Player> Players = new();
-        
-        static Action startMatchmakingCallback = null;
+
+        private static Action _startMatchmakingCallback = null;
 
         public PlayroomKit()
         {
             if (IsRunningInBrowser())
             {
-                _playroomService = new PlayroomService(new PlayroomKitInterop());
+                _playroomService = new PlayroomBuildService(new PlayroomKitInterop());
                 _rpc = new RPC(this);
             }
             else
@@ -45,7 +46,7 @@ namespace Playroom
         
         public bool IsHost()
         {
-            if (!isPlayRoomInitialized)
+            if (!IsPlayRoomInitialized)
             {
                 Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                 return false;
@@ -55,7 +56,7 @@ namespace Playroom
         
         public Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
         {
-            if (!isPlayRoomInitialized)
+            if (!IsPlayRoomInitialized)
             {
                 Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
                 return null;
@@ -110,7 +111,7 @@ namespace Playroom
         
         public void SetState<T>(string key, T value, bool reliable = false)
         {
-            if (!isPlayRoomInitialized)
+            if (!IsPlayRoomInitialized)
             {
                 Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
                 return;
@@ -120,7 +121,7 @@ namespace Playroom
         
         public T GetState<T>(string key)
         {
-            if (!isPlayRoomInitialized)
+            if (!IsPlayRoomInitialized)
             {
                 Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
                 return default;
@@ -131,7 +132,7 @@ namespace Playroom
         public void RpcRegister(string name, Action<string, string> rpcRegisterCallback,
             string onResponseReturn = null)
         {
-            if (!isPlayRoomInitialized)
+            if (!IsPlayRoomInitialized)
             {
                 Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
                 return;
@@ -142,7 +143,7 @@ namespace Playroom
         
         public void RpcCall(string name, object data, Action callbackOnResponse = null)
         {
-            if (!isPlayRoomInitialized)
+            if (!IsPlayRoomInitialized)
             {
                 Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
                 return;
@@ -153,7 +154,7 @@ namespace Playroom
         
         public void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse = null)
         {
-            if (!isPlayRoomInitialized)
+            if (!IsPlayRoomInitialized)
             {
                 Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
                 return;
@@ -195,7 +196,7 @@ namespace Playroom
         
         public bool IsStreamScreen()
         {
-            if (!isPlayRoomInitialized)
+            if (!IsPlayRoomInitialized)
             {
                 Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                 return false;
@@ -237,7 +238,7 @@ namespace Playroom
         
         public Player MyPlayer()
         {
-            if (!isPlayRoomInitialized)
+            if (!IsPlayRoomInitialized)
             {
                 Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                 return null;
@@ -247,7 +248,7 @@ namespace Playroom
 
         public Player Me()
         {
-            if (!isPlayRoomInitialized)
+            if (!IsPlayRoomInitialized)
             {
                 Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                 return null;

@@ -19,7 +19,7 @@ public class PlayroomKitTests
     {
         _interop = Substitute.For<PlayroomKit.IInterop>();
         // Initialize the mock PlayroomService
-        _mockPlayroomService = new PlayroomKit.PlayroomService(_interop);
+        _mockPlayroomService = new PlayroomKit.PlayroomBuildService(_interop);
         _rpc = new PlayroomKit.RPC(_playroomKit, _interop);
         
         // Since PlayroomKit uses a private field for the service, we'll need to simulate it or test through the public API
@@ -48,7 +48,7 @@ public class PlayroomKitTests
         var interopMock = Substitute.For<PlayroomKit.IInterop>();
 
         // No need to call DoNotCallBase() because it's an interface
-        PlayroomKit.IPlayroomBase playroomService = new PlayroomKit.PlayroomService(interopMock);
+        PlayroomKit.IPlayroomBase playroomService = new PlayroomKit.PlayroomBuildService(interopMock);
 
         PlayroomKit playroomKit = new PlayroomKit(playroomService, _rpc);
 
@@ -95,7 +95,7 @@ public class PlayroomKitTests
                 onLaunchCallback?.Invoke("onLaunchCallBack"); // Invoke the callback with a test key
             });
         
-        PlayroomKit.IPlayroomBase playroomService = new PlayroomKit.PlayroomService(interopMock);
+        PlayroomKit.IPlayroomBase playroomService = new PlayroomKit.PlayroomBuildService(interopMock);
 
         PlayroomKit playroomKit = new PlayroomKit(playroomService, _rpc);
         

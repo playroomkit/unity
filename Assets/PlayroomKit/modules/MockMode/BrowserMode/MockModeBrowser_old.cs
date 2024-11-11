@@ -34,7 +34,7 @@ namespace Playroom
 
         private static void MockInsertCoinBrowser(InitOptions options, Action onLaunchCallBack)
         {
-            isPlayRoomInitialized = true;
+            IsPlayRoomInitialized = true;
 
             Debug.Log("Coin Inserted!");
 

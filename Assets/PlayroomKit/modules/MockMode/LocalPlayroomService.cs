@@ -32,7 +32,7 @@ namespace Playroom
             public void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
                 Action onDisconnectCallback = null)
             {
-                isPlayRoomInitialized = true;
+                IsPlayRoomInitialized = true;
                 Debug.Log("Coin Inserted");
                 string optionsJson = null;
                 if (options != null) optionsJson = SerializeInitOptions(options);
@@ -120,12 +120,12 @@ namespace Playroom
                 CallbackManager.RegisterCallback(onStateSetCallback, $"{stateKey}_{playerID}");
             }
 
-            public void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null)
+            public void ResetStates(string[] keysToExclude = null, Action onStatesReset = null)
             {
                 List<string> keysToRemove =
                     mockGlobalStates.Keys.Where(key => !keysToExclude.Contains(key)).ToList();
                 foreach (string key in keysToRemove) mockGlobalStates.Remove(key);
-                OnStatesReset?.Invoke();
+                onStatesReset?.Invoke();
             }
 
             public void ResetPlayersStates(string[] keysToExclude = null, Action onStatesReset = null)

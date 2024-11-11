@@ -38,7 +38,7 @@ namespace Playroom
 
             public void WaitForPlayerState(string playerID, string stateKey, Action<string> onStateSetCallback = null);
 
-            public void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null);
+            public void ResetStates(string[] keysToExclude = null, Action onStatesReset = null);
 
             public void ResetPlayersStates(string[] keysToExclude = null, Action onStatesReset = null);
 

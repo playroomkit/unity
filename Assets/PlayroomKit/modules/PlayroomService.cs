@@ -10,16 +10,16 @@ namespace Playroom
 {
     public partial class PlayroomKit
     {
-        public class PlayroomService : IPlayroomBase, IPlayroomBuildExtensions
+        public class PlayroomBuildService : IPlayroomBase, IPlayroomBuildExtensions
         {
             private readonly IInterop _interop;
 
-            public PlayroomService()
+            public PlayroomBuildService()
             {
                 _interop = new PlayroomKitInterop();
             }
 
-            public PlayroomService(IInterop interop)
+            public PlayroomBuildService(IInterop interop)
             {
                 _interop = interop;
             }
@@ -47,7 +47,7 @@ namespace Playroom
             public void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
                 Action onDisconnectCallback = null)
             {
-                isPlayRoomInitialized = true;
+                IsPlayRoomInitialized = true;
 
                 var onLaunchCallBackKey = CallbackManager.RegisterCallback(onLaunchCallBack, "onLaunchCallBack");
                 var onDisconnectCallBackKey =
@@ -257,9 +257,9 @@ namespace Playroom
             private static Action onstatesReset;
             private static Action onplayersStatesReset;
 
-            public void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null)
+            public void ResetStates(string[] keysToExclude = null, Action onStatesReset = null)
             {
-                onstatesReset = OnStatesReset;
+                onstatesReset = onStatesReset;
                 string keysJson = keysToExclude != null ? CreateJsonArray(keysToExclude).ToString() : null;
                 _interop.ResetStatesWrapper(keysJson, InvokeResetCallBack);
             }
