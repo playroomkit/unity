@@ -405,14 +405,14 @@ public class PlayroomKitTests
     {
         // Arrange
 
-        static string ConvertJoystickOptionsToJson(PlayroomKit.JoystickOptions options)
+        static string ConvertJoystickOptionsToJson(JoystickOptions options)
         {
             JSONNode joystickOptionsJson = new JSONObject();
             joystickOptionsJson["type"] = options.type;
 
             // Serialize the buttons array
             JSONArray buttonsArray = new JSONArray();
-            foreach (PlayroomKit.ButtonOptions button in options.buttons)
+            foreach (ButtonOptions button in options.buttons)
             {
                 JSONObject buttonJson = new JSONObject();
                 buttonJson["id"] = button.id;
@@ -438,7 +438,7 @@ public class PlayroomKitTests
         }
 
         // Function to convert ButtonOptions to JSON
-        static JSONNode ConvertButtonOptionsToJson(PlayroomKit.ButtonOptions button)
+        static JSONNode ConvertButtonOptionsToJson(ButtonOptions button)
         {
             JSONObject buttonJson = new JSONObject();
             buttonJson["id"] = button.id;
@@ -447,20 +447,20 @@ public class PlayroomKitTests
             return buttonJson;
         }
 
-        var joystickOptions = new PlayroomKit.JoystickOptions
+        var joystickOptions = new JoystickOptions
         {
             type = "dpad",
             buttons = new[]
             {
-                new PlayroomKit.ButtonOptions { id = "btn1", label = "Jump", icon = "jump_icon" },
-                new PlayroomKit.ButtonOptions { id = "btn2", label = "Run", icon = "run_icon" }
+                new ButtonOptions { id = "btn1", label = "Jump", icon = "jump_icon" },
+                new ButtonOptions { id = "btn2", label = "Run", icon = "run_icon" }
             },
-            zones = new PlayroomKit.ZoneOptions
+            zones = new ZoneOptions
             {
-                up = new PlayroomKit.ButtonOptions { id = "up", label = "Move Up", icon = "up_icon" },
-                down = new PlayroomKit.ButtonOptions { id = "down", label = "Move Down", icon = "down_icon" },
-                left = new PlayroomKit.ButtonOptions { id = "left", label = "Move Left", icon = "left_icon" },
-                right = new PlayroomKit.ButtonOptions { id = "right", label = "Move Right", icon = "right_icon" }
+                up = new ButtonOptions { id = "up", label = "Move Up", icon = "up_icon" },
+                down = new ButtonOptions { id = "down", label = "Move Down", icon = "down_icon" },
+                left = new ButtonOptions { id = "left", label = "Move Left", icon = "left_icon" },
+                right = new ButtonOptions { id = "right", label = "Move Right", icon = "right_icon" }
             }
         };
 
