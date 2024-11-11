@@ -3270,7 +3270,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1488774288987972495, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
       propertyPath: includeJavaScriptFiles.Array.data[0]
-      value: 
+      value: Assets\PlayroomKit\modules\MockMode\BrowserMode\PlayroomMockBrowserBridge.js
       objectReference: {fileID: 0}
     - target: {fileID: 1957495583081457048, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
       propertyPath: m_Name
@@ -3316,6 +3316,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4114432004339077601, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: insertCoinCaller
+      value: 
+      objectReference: {fileID: 893908560}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

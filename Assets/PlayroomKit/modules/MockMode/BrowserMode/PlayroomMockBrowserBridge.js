@@ -3,6 +3,9 @@
     unityInstance.SendMessage(gameObjectName, onLaunchCallBackName);
   }
 
+
+  console.log("InsertCoin called", options, onLaunchCallBackName, gameObjectName);
+  
   await Playroom.insertCoin(options, onLaunchCallBack);
 };
 

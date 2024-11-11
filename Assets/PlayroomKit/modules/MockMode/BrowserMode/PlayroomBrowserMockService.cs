@@ -1,12 +1,34 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Text;
 using UBB;
+using UnityEngine;
 
 namespace Playroom
 {
     public class PlayroomBrowserMockService : PlayroomKit.IPlayroomBase
     {
-        private UnityBrowserBridge _ubb; 
-        
+        private UnityBrowserBridge _ubb;
+      
+
+        private void CallJs(string jsFunctionName, string callbackName = null, string gameObjectName = null,
+            bool isAsync = false, params string[] args)
+        {
+            List<string> allParams = new List<string>(args);
+            if (!string.IsNullOrEmpty(callbackName)) allParams.Add($"'{callbackName}'");
+            if (!string.IsNullOrEmpty(gameObjectName)) allParams.Add($"'{gameObjectName}'");
+
+            string jsCall = $"{jsFunctionName}({string.Join(", ", allParams)})";
+            if (isAsync) jsCall = $"await {jsCall}";
+
+            _ubb.ExecuteJS(jsCall);
+        }
+
+
+
+
+
         #region Initialization Methods
 
         public void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
@@ -15,14 +37,12 @@ namespace Playroom
             // start ubb before inserting coin
             _ubb = UnityBrowserBridge.Instance;
             _ubb.StartUBB();
-            
+
             string optionsJson = null;
             if (options != null) optionsJson = Helpers.SerializeInitOptions(options);
 
-            
-            
-            // _ubb.ExecuteJS<>()
-
+            var gameObjectName = _ubb.GetGameObject("InsertCoin").name;
+            CallJs("InsertCoin", onLaunchCallBack.GetMethodInfo().Name, gameObjectName, true, optionsJson);
             PlayroomKit.IsPlayRoomInitialized = true;
         }
 
