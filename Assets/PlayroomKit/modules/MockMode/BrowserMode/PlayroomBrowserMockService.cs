@@ -11,37 +11,6 @@ namespace Playroom
     {
         private UnityBrowserBridge _ubb;
 
-        private void CallJs(string jsFunctionName, string callbackName = null, string gameObjectName = null,
-            bool isAsync = false, params string[] args)
-        {
-            List<string> allParams = new List<string>(args);
-            if (!string.IsNullOrEmpty(callbackName)) allParams.Add($"'{callbackName}'");
-            if (!string.IsNullOrEmpty(gameObjectName)) allParams.Add($"'{gameObjectName}'");
-
-            string jsCall = $"{jsFunctionName}({string.Join(", ", allParams)})";
-            if (isAsync) jsCall = $"await {jsCall}";
-
-            _ubb.ExecuteJS(jsCall);
-        }
-
-
-        private T CallJs<T>(string jsFunctionName, string callbackName = null, string gameObjectName = null,
-            bool isAsync = false, params string[] args)
-        {
-            List<string> allParams = new List<string>(args);
-            if (!string.IsNullOrEmpty(callbackName)) allParams.Add($"'{callbackName}'");
-            if (!string.IsNullOrEmpty(gameObjectName)) allParams.Add($"'{gameObjectName}'");
-
-            string jsCall = $"{jsFunctionName}({string.Join(", ", allParams)})";
-            if (isAsync) jsCall = $"await {jsCall}";
-
-            return _ubb.ExecuteJS<T>(jsCall);
-        }
-
-        public static void MockOnPlayerJoinWrapper(string playerId)
-        {
-            PlayroomKit.IPlayroomBase.OnPlayerJoinWrapperCallback(playerId);
-        }
 
         #region Initialization Methods
 
@@ -131,12 +100,13 @@ namespace Playroom
 
         public void SetState<T>(string key, T value, bool reliable = false)
         {
-            CallJs("SetState", null, null, true, key, value.ToString(), reliable.ToString().ToLower());
+            CallJs("SetState", null, null, true,
+                key, value.ToString(), reliable.ToString().ToLower());
         }
 
         public T GetState<T>(string key)
         {
-            return CallJs<T>("GetState", null, null, true, key);
+            return CallJs<T>("GetState", null, null, false, key);
         }
 
         public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
@@ -196,6 +166,59 @@ namespace Playroom
         public void UnsubscribeOnQuit()
         {
             throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Utils
+
+        private void CallJs(string jsFunctionName, string callbackName = null, string gameObjectName = null,
+            bool isAsync = false, params string[] args)
+        {
+            var allParams = new StringBuilder();
+
+            foreach (string param in args)
+            {
+                if (allParams.Length > 0) allParams.Append(", ");  
+                allParams.Append(param.StartsWith("{") && param.EndsWith("}") ? param : $"'{param}'");
+            }
+
+            if (!string.IsNullOrEmpty(callbackName)) allParams.Append($"'{callbackName}'");
+            if (!string.IsNullOrEmpty(gameObjectName)) allParams.Append($"'{gameObjectName}'");
+
+            string jsCall = $"{jsFunctionName}({allParams})";
+            if (isAsync) jsCall = $"await {jsCall}";
+
+            Debug.Log(jsCall);
+            _ubb.ExecuteJS(jsCall);
+        }
+
+
+        private T CallJs<T>(string jsFunctionName, string callbackName = null, string gameObjectName = null,
+            bool isAsync = false, params string[] args)
+        {
+            var allParams = new StringBuilder();
+
+            foreach (string param in args)
+            {
+                if (allParams.Length > 0) allParams.Append(", ");  
+                allParams.Append(param.StartsWith("{") && param.EndsWith("}") ? param : $"'{param}'");
+            }
+
+            if (!string.IsNullOrEmpty(callbackName)) allParams.Append($", '{callbackName}'");
+            if (!string.IsNullOrEmpty(gameObjectName)) allParams.Append($", '{gameObjectName}'");
+
+            string jsCall = $"{jsFunctionName}({allParams})";
+            if (isAsync) jsCall = $"await {jsCall}";
+
+            // Log and execute the JS call
+            Debug.Log(jsCall);
+            return _ubb.ExecuteJS<T>(jsCall);
+        }
+
+        public static void MockOnPlayerJoinWrapper(string playerId)
+        {
+            PlayroomKit.IPlayroomBase.OnPlayerJoinWrapperCallback(playerId);
         }
 
         #endregion
