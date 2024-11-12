@@ -12,15 +12,22 @@ public class GameManagerDemo : MonoBehaviour
     private static readonly List<GameObject> playerGameObjects = new();
     private static readonly Dictionary<string, GameObject> PlayerDict = new();
 
-    [SerializeField] private static bool playerJoined;
-    [SerializeField] private string roomCode;
-    [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private int score;
+    [SerializeField]
+    private static bool playerJoined;
+    [SerializeField]
+    private string roomCode;
+    [SerializeField]
+    private GameObject playerPrefab;
+    [SerializeField]
+    private int score;
 
     [Header("UI")]
-    [SerializeField] private TMP_Dropdown getDropDown;
-    [SerializeField] private TMP_Dropdown colorDropDown;
-    [SerializeField] private TextMeshProUGUI logsText;
+    [SerializeField]
+    private TMP_Dropdown getDropDown;
+    [SerializeField]
+    private TMP_Dropdown colorDropDown;
+    [SerializeField]
+    private TextMeshProUGUI logsText;
 
     private PlayroomKit _playroomKit = new();
 
@@ -37,7 +44,6 @@ public class GameManagerDemo : MonoBehaviour
             playerGameObjects[index].GetComponent<PlayerController>().Move();
         }
     }
-
 
     public void InsertCoin()
     {
@@ -262,7 +268,6 @@ public class GameManagerDemo : MonoBehaviour
     }
 
 
-
     public void ShootLaser()
     {
         var myPlayer = _playroomKit.MyPlayer();
@@ -286,7 +291,7 @@ public class GameManagerDemo : MonoBehaviour
         logsText.text = $"{_playroomKit.MyPlayer().GetProfile().name} is host?: {isHost}";
     }
 
-    
+
     /// <summary>
     /// First Click the WaitForState button, then set the color using the dropdown and pressing the SetState button
     /// </summary>
@@ -319,5 +324,15 @@ public class GameManagerDemo : MonoBehaviour
                 Player.GetComponent<Transform>().position = pos;
             }
         });
+    }
+
+    public void GlobalSetState()
+    {
+        _playroomKit.SetState("winner", "ChickenGamer");
+    }
+
+    public void GlobalGetState()
+    {
+        logsText.text = $"getting global (state): Winner is : {_playroomKit.GetState<string>("winner")}";
     }
 }
