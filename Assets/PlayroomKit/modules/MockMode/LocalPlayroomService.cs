@@ -71,7 +71,6 @@ namespace Playroom
                     mockGlobalStates[key] = value;
                 else
                     mockGlobalStates.Add(key, value);
-
                 CallbackManager.InvokeCallback(key, value as string);
             }
 

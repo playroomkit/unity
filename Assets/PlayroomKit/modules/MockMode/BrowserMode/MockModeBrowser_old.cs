@@ -305,14 +305,10 @@ namespace Playroom
         {
 #if UNITY_EDITOR
             string key = Guid.NewGuid().ToString();
-
             string callbackKey = $"OnDisconnect_{key}";
             GameObject callbackObject = new GameObject(callbackKey);
-
             MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
             invoker.SetCallback(callback, callbackKey);
-
-
             UnityBrowserBridge.Instance.ExecuteJS(
                 $"OnDisconnect('{callbackKey}')");
 #endif

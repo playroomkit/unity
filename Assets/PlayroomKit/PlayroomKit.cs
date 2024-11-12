@@ -101,7 +101,8 @@ namespace Playroom
             }
         }
 
-        private static Player GetPlayerById(string playerId)
+
+        public static Player GetPlayerById(string playerId)
         {
             if (Players.TryGetValue(playerId, out var player))
             {

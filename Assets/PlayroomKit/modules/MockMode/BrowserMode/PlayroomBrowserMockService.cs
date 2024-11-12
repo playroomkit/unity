@@ -24,6 +24,20 @@ namespace Playroom
             _ubb.ExecuteJS(jsCall);
         }
 
+
+        private T CallJs<T>(string jsFunctionName, string callbackName = null, string gameObjectName = null,
+            bool isAsync = false, params string[] args)
+        {
+            List<string> allParams = new List<string>(args);
+            if (!string.IsNullOrEmpty(callbackName)) allParams.Add($"'{callbackName}'");
+            if (!string.IsNullOrEmpty(gameObjectName)) allParams.Add($"'{gameObjectName}'");
+
+            string jsCall = $"{jsFunctionName}({string.Join(", ", allParams)})";
+            if (isAsync) jsCall = $"await {jsCall}";
+
+            return _ubb.ExecuteJS<T>(jsCall);
+        }
+
         public static void MockOnPlayerJoinWrapper(string playerId)
         {
             PlayroomKit.IPlayroomBase.OnPlayerJoinWrapperCallback(playerId);
@@ -48,17 +62,33 @@ namespace Playroom
 
         public Action OnPlayerJoin(Action<PlayroomKit.Player> onPlayerJoinCallback)
         {
-            throw new NotImplementedException();
+            if (!PlayroomKit.IPlayroomBase.OnPlayerJoinCallbacks.Contains(onPlayerJoinCallback))
+                PlayroomKit.IPlayroomBase.OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
+
+            CallJs("OnPlayerJoin", null, _ubb.GetGameObject("devManager").name);
+
+            void Unsub()
+            {
+                Debug.Log("Unsubscribing from OnPlayerJoin");
+            }
+
+            return Unsub;
         }
 
         public void StartMatchmaking(Action callback = null)
         {
-            throw new NotImplementedException();
+            CallJs("StartMatchmaking", null, null, true);
+            callback?.Invoke();
         }
 
         public void OnDisconnect(Action callback)
         {
-            throw new NotImplementedException();
+            string key = Guid.NewGuid().ToString();
+            string callbackKey = $"OnDisconnect_{key}";
+            GameObject callbackObject = new GameObject(callbackKey);
+            MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
+            invoker.SetCallback(callback, callbackKey);
+            CallJs("OnDisconnect", callbackKey);
         }
 
         #endregion
@@ -67,12 +97,13 @@ namespace Playroom
 
         public PlayroomKit.Player MyPlayer()
         {
-            throw new NotImplementedException();
+            string id = CallJs<string>("MyPlayer");
+            return PlayroomKit.GetPlayerById(id);
         }
 
         public PlayroomKit.Player Me()
         {
-            throw new NotImplementedException();
+            return MyPlayer();
         }
 
         #endregion
@@ -81,17 +112,17 @@ namespace Playroom
 
         public bool IsHost()
         {
-            throw new NotImplementedException();
+            return CallJs<bool>("IsHost");
         }
 
         public string GetRoomCode()
         {
-            throw new NotImplementedException();
+            return CallJs<string>("GetRoomCode");
         }
 
         public bool IsStreamScreen()
         {
-            throw new NotImplementedException();
+            return CallJs<bool>("IsStreamScreen");
         }
 
         #endregion
@@ -100,22 +131,38 @@ namespace Playroom
 
         public void SetState<T>(string key, T value, bool reliable = false)
         {
-            throw new NotImplementedException();
+            CallJs("SetState", null, null, true, key, value.ToString(), reliable.ToString().ToLower());
         }
 
         public T GetState<T>(string key)
         {
-            throw new NotImplementedException();
+            return CallJs<T>("GetState", null, null, true, key);
         }
 
         public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
         {
-            throw new NotImplementedException();
+            string callbackKey = $"WaitForState_{stateKey}";
+            GameObject callbackObject = new GameObject(callbackKey);
+
+            MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
+            invoker.SetCallback(onStateSetCallback, callbackKey);
+
+            CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
+
+            CallJs("WaitForState", null, null, true, stateKey, callbackKey);
         }
 
         public void WaitForPlayerState(string playerID, string stateKey, Action<string> onStateSetCallback = null)
         {
-            throw new NotImplementedException();
+            string callbackKey = $"WaitForPlayerState_{stateKey}";
+            GameObject callbackObject = new GameObject(callbackKey);
+
+            MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
+            invoker.SetCallback(onStateSetCallback, callbackKey);
+
+            CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
+
+            CallJs("WaitForPlayerState", null, null, true, playerID, stateKey, callbackKey);
         }
 
         public void ResetStates(string[] keysToExclude = null, Action onStatesReset = null)

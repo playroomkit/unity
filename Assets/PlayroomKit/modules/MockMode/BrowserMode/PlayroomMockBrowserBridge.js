@@ -18,7 +18,6 @@ OnPlayerJoin = function (gameObjectName) {
 // States
 SetState = function (key, value, reliable) {
   reliable = !!reliable;
-
   Playroom.setState(key, value, reliable);
 };
 
@@ -149,7 +148,6 @@ WaitForState = function (stateKey, callbackKey) {
       };
 
       const jsonData = JSON.stringify(data);
-
       unityInstance.SendMessage("CallbackManager", "InvokeCallback", jsonData);
     })
     .catch((error) => {
