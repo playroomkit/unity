@@ -7,10 +7,10 @@ using UnityEngine;
 
 namespace Playroom
 {
+#if UNITY_EDITOR
     public class PlayroomBrowserMockService : PlayroomKit.IPlayroomBase
     {
         private UnityBrowserBridge _ubb;
-
 
         #region Initialization Methods
 
@@ -137,35 +137,41 @@ namespace Playroom
 
         public void ResetStates(string[] keysToExclude = null, Action onStatesReset = null)
         {
-            throw new NotImplementedException();
+            CallJs("ResetStates", null, null, true, keysToExclude);
+            onStatesReset?.Invoke();
         }
 
         public void ResetPlayersStates(string[] keysToExclude = null, Action onStatesReset = null)
         {
-            throw new NotImplementedException();
+            CallJs("ResetPlayersStates", null, null, true, keysToExclude);
+            onStatesReset?.Invoke();
         }
 
         #endregion
 
+
+
+        #region Misc
+
+        // TODO: will implement after Player is implemented.
+        public void UnsubscribeOnQuit()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+        
         #region Joystick Mehtods
 
         public void CreateJoyStick(JoystickOptions options)
         {
-            throw new NotImplementedException();
+            Debug.LogWarning("Create Joystick is not supported in mock mode!");
         }
 
         public Dpad DpadJoystick()
         {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region Misc
-
-        public void UnsubscribeOnQuit()
-        {
-            throw new NotImplementedException();
+            Debug.LogWarning("Dpad Joystick is not supported in mock mode!");
+            return null;
         }
 
         #endregion
@@ -175,19 +181,22 @@ namespace Playroom
         private void CallJs(string jsFunctionName, string callbackName = null, string gameObjectName = null,
             bool isAsync = false, params string[] args)
         {
-            var allParams = new StringBuilder();
+            List<string> allParams = new();
 
-            foreach (string param in args)
+            foreach (var param in args)
             {
-                if (allParams.Length > 0) allParams.Append(", ");  
-                allParams.Append(param.StartsWith("{") && param.EndsWith("}") ? param : $"'{param}'");
+                if (param.StartsWith("{") && param.EndsWith("}"))
+                    allParams.Add(param);
+                else
+                    allParams.Add($"'{param}'");
             }
 
-            if (!string.IsNullOrEmpty(callbackName)) allParams.Append($"'{callbackName}'");
-            if (!string.IsNullOrEmpty(gameObjectName)) allParams.Append($"'{gameObjectName}'");
+            if (!string.IsNullOrEmpty(callbackName)) allParams.Add($"'{callbackName}'");
+            if (!string.IsNullOrEmpty(gameObjectName)) allParams.Add($"'{gameObjectName}'");
 
-            string jsCall = $"{jsFunctionName}({allParams})";
+            string jsCall = $"{jsFunctionName}({string.Join(", ", allParams)})";
             if (isAsync) jsCall = $"await {jsCall}";
+
 
             Debug.Log(jsCall);
             _ubb.ExecuteJS(jsCall);
@@ -197,22 +206,21 @@ namespace Playroom
         private T CallJs<T>(string jsFunctionName, string callbackName = null, string gameObjectName = null,
             bool isAsync = false, params string[] args)
         {
-            var allParams = new StringBuilder();
-
+            List<string> allParams = new();
             foreach (string param in args)
             {
-                if (allParams.Length > 0) allParams.Append(", ");  
-                allParams.Append(param.StartsWith("{") && param.EndsWith("}") ? param : $"'{param}'");
+                if (param.StartsWith("{") && param.EndsWith("}"))
+                    allParams.Add(param);
+                else
+                    allParams.Add($"'{param}'");
             }
 
-            if (!string.IsNullOrEmpty(callbackName)) allParams.Append($", '{callbackName}'");
-            if (!string.IsNullOrEmpty(gameObjectName)) allParams.Append($", '{gameObjectName}'");
+            if (!string.IsNullOrEmpty(callbackName)) allParams.Add($"'{callbackName}'");
+            if (!string.IsNullOrEmpty(gameObjectName)) allParams.Add($"'{gameObjectName}'");
 
-            string jsCall = $"{jsFunctionName}({allParams})";
+            string jsCall = $"{jsFunctionName}({string.Join(", ", allParams)})";
             if (isAsync) jsCall = $"await {jsCall}";
 
-            // Log and execute the JS call
-            Debug.Log(jsCall);
             return _ubb.ExecuteJS<T>(jsCall);
         }
 
@@ -223,4 +231,6 @@ namespace Playroom
 
         #endregion
     }
+
+#endif
 }

@@ -13,7 +13,7 @@ namespace Playroom
         private static PlayroomKit _instance;
         public static bool IsPlayRoomInitialized;
         private static readonly Dictionary<string, Player> Players = new();
-        
+
         public enum MockModeSelector
         {
             Local,
@@ -25,13 +25,13 @@ namespace Playroom
         // Constructor
         public PlayroomKit()
         {
-            if (IsRunningInBrowser())
-            {
+#if  !UNITY_EDITOR
+            
                 _playroomService = new PlayroomBuildService(new PlayroomKitInterop());
                 _rpc = new RPC(this);
-            }
-            else
-            {
+            
+#elif UNITY_EDITOR
+
                 if (CurrentMockMode == MockModeSelector.Local)
                 {
                     _playroomService = new LocalMockPlayroomService();
@@ -42,7 +42,7 @@ namespace Playroom
                     _playroomService = new PlayroomBrowserMockService();
                     // _rpc = new RPCLocal();
                 }
-            }
+#endif
         }
 
         public PlayroomKit(IPlayroomBase playroomService, IRPC rpc)
@@ -68,15 +68,15 @@ namespace Playroom
             return _playroomService.IsHost();
         }
 
-        public Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
+        public void OnPlayerJoin(Action<Player> onPlayerJoinCallback)
         {
             if (!IsPlayRoomInitialized)
             {
                 Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
-                return null;
+                return;
             }
 
-            return _playroomService.OnPlayerJoin(onPlayerJoinCallback);
+            _playroomService.OnPlayerJoin(onPlayerJoinCallback);
         }
 
         public Player GetPlayer(string playerId)
@@ -100,7 +100,6 @@ namespace Playroom
                 return player;
             }
         }
-
 
         public static Player GetPlayerById(string playerId)
         {

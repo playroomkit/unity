@@ -18,10 +18,8 @@ namespace Playroom.Tests.Editor
         public void SetUp()
         {
             _interop = Substitute.For<PlayroomKit.IInterop>();
-            // Initialize the mock PlayroomService
-            _mockPlayroomService = new PlayroomKit.LocalMockPlayroomService();
+            _mockPlayroomService = new LocalMockPlayroomService();
             _rpc = new PlayroomKit.RPC(_playroomKit, _interop);
-            // Since PlayroomKit uses a private field for the service, we'll need to simulate it or test through the public API
             _playroomKit = new PlayroomKit(_mockPlayroomService, _rpc);
         }
 
@@ -44,7 +42,7 @@ namespace Playroom.Tests.Editor
         public void OnPlayerJoin_PlayerShouldBeAdded()
         {
             bool playerJoined = false;
-            var playroomKit = new PlayroomKit(new PlayroomKit.LocalMockPlayroomService(), _rpc);
+            var playroomKit = new PlayroomKit(new LocalMockPlayroomService(), _rpc);
 
             playroomKit.InsertCoin(new InitOptions()
             {

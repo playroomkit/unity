@@ -17,7 +17,7 @@ namespace Playroom.Tests.Editor
         [SetUp]
         public void SetUp()
         {
-            var _playroomKitService = new Playroom.PlayroomKit.LocalMockPlayroomService();
+            var _playroomKitService = new LocalMockPlayroomService();
             _playroomKit = new Playroom.PlayroomKit(_playroomKitService, new Playroom.PlayroomKit.RPCLocal());
             _playroomKit.InsertCoin(new InitOptions()
             {
