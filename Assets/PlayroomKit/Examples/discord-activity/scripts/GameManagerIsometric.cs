@@ -12,9 +12,12 @@ public class GameManagerIsometric : MonoBehaviour
 
     private static readonly Dictionary<string, GameObject> PlayerDict = new();
 
-    [SerializeField] private static bool playerJoined;
-    [SerializeField] private string roomCode;
-    [SerializeField] private GameObject playerPrefab;
+    [SerializeField]
+    private static bool playerJoined;
+    [SerializeField]
+    private string roomCode;
+    [SerializeField]
+    private GameObject playerPrefab;
 
     private PlayroomKit _playroomKit = new PlayroomKit();
 
@@ -24,8 +27,8 @@ public class GameManagerIsometric : MonoBehaviour
         {
             maxPlayersPerRoom = 3,
             matchmaking = false,
-            gameId = "<Insert GameID (from dev.joinplayroom.com)>",
             discord = true,
+            gameId = "ii4pV1wfceCjjLvRoo3O",
             roomCode = roomCode,
         }, () => { _playroomKit.OnPlayerJoin(AddPlayer); }, () => { Debug.Log("OnDisconnect callback"); });
     }
@@ -40,8 +43,7 @@ public class GameManagerIsometric : MonoBehaviour
             playerGameObjects[index].GetComponent<IsometricPlayerController>().LookAround();
             players[index].SetState("angle", playerGameObjects[index].GetComponent<Transform>().rotation);
 
-            
-            
+
             playerGameObjects[index].GetComponent<IsometricPlayerController>().Move();
             players[index].SetState("move", playerGameObjects[index].GetComponent<Transform>().position);
 
@@ -66,6 +68,8 @@ public class GameManagerIsometric : MonoBehaviour
 
     public void AddPlayer(PlayroomKit.Player player)
     {
+        Debug.LogFormat("{0} Is host?: {1}", player.GetProfile().name,_playroomKit.IsHost());
+
         var playerObj = Instantiate(playerPrefab,
             new Vector3(Random.Range(-5, 5), 2f, Random.Range(-5, 5)), Quaternion.identity);
 
