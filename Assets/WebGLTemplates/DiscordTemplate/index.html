@@ -56,9 +56,7 @@
             var loadingBar = document.querySelector("#unity-loading-bar");
             var progressBarFull = document.querySelector("#unity-progress-bar-full");
             var warningBanner = document.querySelector("#unity-warning");
-      #if SHOW_DIAGNOSTICS
-            var diagnostics_icon = document.getElementById("diagnostics-icon");
-      #endif
+
 
             function unityShowBanner(msg, type) {
               function updateBannerVisibility() {
@@ -137,9 +135,7 @@
                   unityDiagnostics.openDiagnosticsDiv(unityInstance.GetMemoryInfo);
                 };
       #endif
-                fullscreenButton.onclick = () => {
-                  unityInstance.SetFullscreen(1);
-                };
+
               }).catch((message) => {
                 alert(message);
               });
