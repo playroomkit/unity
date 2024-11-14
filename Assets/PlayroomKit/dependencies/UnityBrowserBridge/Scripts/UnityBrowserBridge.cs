@@ -358,6 +358,52 @@ namespace UBB
             return gameObject;
         }
 
+        public void CallJs(string jsFunctionName, string callbackName = null, string gameObjectName = null,
+            bool isAsync = false, params string[] args)
+        {
+            List<string> allParams = new();
+
+            foreach (var param in args)
+            {
+                if (param.StartsWith("{") && param.EndsWith("}"))
+                    allParams.Add(param);
+                else
+                    allParams.Add($"'{param}'");
+            }
+
+            if (!string.IsNullOrEmpty(callbackName)) allParams.Add($"'{callbackName}'");
+            if (!string.IsNullOrEmpty(gameObjectName)) allParams.Add($"'{gameObjectName}'");
+
+            string jsCall = $"{jsFunctionName}({string.Join(", ", allParams)})";
+            if (isAsync) jsCall = $"await {jsCall}";
+
+
+            Debug.Log(jsCall);
+            ExecuteJS(jsCall);
+        }
+
+
+        public T CallJs<T>(string jsFunctionName, string callbackName = null, string gameObjectName = null,
+            bool isAsync = false, params string[] args)
+        {
+            List<string> allParams = new();
+            foreach (string param in args)
+            {
+                if (param.StartsWith("{") && param.EndsWith("}"))
+                    allParams.Add(param);
+                else
+                    allParams.Add($"'{param}'");
+            }
+
+            if (!string.IsNullOrEmpty(callbackName)) allParams.Add($"'{callbackName}'");
+            if (!string.IsNullOrEmpty(gameObjectName)) allParams.Add($"'{gameObjectName}'");
+
+            string jsCall = $"{jsFunctionName}({string.Join(", ", allParams)})";
+            if (isAsync) jsCall = $"await {jsCall}";
+
+            return ExecuteJS<T>(jsCall);
+        }
+        
 # endif
     }
 }

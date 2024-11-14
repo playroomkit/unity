@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using UBB;
 
 
 namespace Playroom
@@ -25,23 +26,22 @@ namespace Playroom
         // Constructor
         public PlayroomKit()
         {
-#if  !UNITY_EDITOR
-            
+#if !UNITY_EDITOR
                 _playroomService = new PlayroomBuildService(new PlayroomKitInterop());
                 _rpc = new RPC(this);
-            
+
 #elif UNITY_EDITOR
 
-                if (CurrentMockMode == MockModeSelector.Local)
-                {
-                    _playroomService = new LocalMockPlayroomService();
-                    _rpc = new RPCLocal();
-                }
-                else if (CurrentMockMode == MockModeSelector.Browser)
-                {
-                    _playroomService = new PlayroomBrowserMockService();
-                    // _rpc = new RPCLocal();
-                }
+            if (CurrentMockMode == MockModeSelector.Local)
+            {
+                _playroomService = new LocalMockPlayroomService();
+                _rpc = new RPCLocal();
+            }
+            else if (CurrentMockMode == MockModeSelector.Browser)
+            {
+                _playroomService = new PlayroomBrowserMockService();
+                // _rpc = new RPCLocal();
+            }
 #endif
         }
 
@@ -89,7 +89,15 @@ namespace Playroom
             {
                 if (!IsRunningInBrowser())
                 {
-                    player = new Player(playerId, new Player.LocalPlayerService(playerId));
+                    if (CurrentMockMode == MockModeSelector.Local)
+                    {
+                        player = new Player(playerId, new Player.LocalPlayerService(playerId));
+                    }
+                    else if (CurrentMockMode == MockModeSelector.Browser)
+                    {
+                        player = new Player(playerId,
+                            new BrowserMockPlayerService(UnityBrowserBridge.Instance, playerId));
+                    }
                 }
                 else
                 {
@@ -111,7 +119,15 @@ namespace Playroom
             {
                 if (!IsRunningInBrowser())
                 {
-                    player = new Player(playerId, new Player.LocalPlayerService(playerId));
+                    if (CurrentMockMode == MockModeSelector.Local)
+                    {
+                        player = new Player(playerId, new Player.LocalPlayerService(playerId));
+                    }
+                    else if (CurrentMockMode == MockModeSelector.Browser)
+                    {
+                        player = new Player(playerId,
+                            new BrowserMockPlayerService(UnityBrowserBridge.Instance, playerId));
+                    }
                 }
                 else
                 {

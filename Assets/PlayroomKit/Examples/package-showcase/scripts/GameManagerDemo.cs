@@ -49,6 +49,7 @@ public class GameManagerDemo : MonoBehaviour
     {
         _playroomKit.InsertCoin(new InitOptions
         {
+            skipLobby = true,
             maxPlayersPerRoom = 3,
             matchmaking = false,
             roomCode = roomCode
