@@ -36,6 +36,8 @@ namespace Playroom
             }
 
             UpdateMockMode();
+            UnityBrowserBridge.Instance.RegisterGameObject("InsertCoin", insertCoinCaller);
+            UnityBrowserBridge.Instance.RegisterGameObject("devManager", gameObject);
         }
 
         private void OnValidate()
@@ -46,8 +48,7 @@ namespace Playroom
         private void UpdateMockMode()
         {
             PlayroomKit.CurrentMockMode = mockMode;
-            UnityBrowserBridge.Instance.RegisterGameObject("InsertCoin", insertCoinCaller);
-            UnityBrowserBridge.Instance.RegisterGameObject("devManager", gameObject);
+           
         }
 
         /// <summary>
