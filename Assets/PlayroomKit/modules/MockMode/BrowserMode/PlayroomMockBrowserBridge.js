@@ -3,9 +3,13 @@
     unityInstance.SendMessage(gameObjectName, onLaunchCallBackName);
   }
 
+  console.log(
+    "InsertCoin called",
+    options,
+    onLaunchCallBackName,
+    gameObjectName
+  );
 
-  console.log("InsertCoin called", options, onLaunchCallBackName, gameObjectName);
-  
   await Playroom.insertCoin(options, onLaunchCallBack);
 };
 
@@ -177,7 +181,16 @@ WaitForPlayerState = async function (playerId, stateKey, onStateSetCallback) {
     return null;
   }
 
-  await Playroom.waitForPlayerState(playerState, stateKey, onStateSetCallback);
+  await Playroom.waitForPlayerState().then((stateVal) => {
+    // playerState, stateKey, onStateSetCallback
+    const data = {
+      key: onStateSetCallback,
+      parameter: stateVal,
+    };
+
+    const jsonData = JSON.stringify(data);
+    unityInstance.SendMessage("CallbackManager", "InvokeCallback", jsonData);
+  });
 };
 
 Kick = async function (playerID) {

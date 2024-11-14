@@ -43,14 +43,45 @@ namespace Playroom
 
         public void SetState(string key, object value, bool reliable = false)
         {
-            _ubb.CallJs("SetPlayerStateByPlayerId", null, null, false, _id, key, value.ToString(),
+            string json;
+
+            // Check if the value is a primitive type and wrap it if necessary
+            json = JsonUtility.ToJson(value is int or float or bool or string
+                ? new PrimitiveWrapper<object>(value)
+                : value);
+
+            _ubb.CallJs("SetPlayerStateByPlayerId", null, null, false, _id, key, json,
                 reliable.ToString().ToLower());
         }
 
         public T GetState<T>(string key)
         {
-            Debug.Log(key);
-            return _ubb.CallJs<T>(key);
+            string stringValue = _ubb.CallJs<string>("GetPlayerStateByPlayerId", null, null, false, _id, key);
+
+            if (string.IsNullOrEmpty(stringValue))
+            {
+                Debug.LogWarning($"State for key '{key}' is null or empty.");
+                return default;
+            }
+
+            try
+            {
+                if (typeof(T) == typeof(int) || typeof(T) == typeof(float) || typeof(T) == typeof(bool) ||
+                    typeof(T) == typeof(string))
+                {
+                    var wrapper = JsonUtility.FromJson<PrimitiveWrapper<T>>(stringValue);
+                    return wrapper.value;
+                }
+                else
+                {
+                    return JsonUtility.FromJson<T>(stringValue);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to parse JSON for key '{key}': {e.Message}");
+                return default; // Return default if parsing fails.
+            }
         }
 
         #endregion
@@ -60,7 +91,7 @@ namespace Playroom
             string json = _ubb.CallJs<string>("GetProfile", null, null, false, _id);
 
             Debug.Log(json);
-            
+
             var profileData = Helpers.ParseProfile(json);
             return profileData;
         }
@@ -80,5 +111,17 @@ namespace Playroom
         {
             _ubb.CallJs("WaitForPlayerState", null, null, true, _id, stateKey);
         }
+
+
+        #region UTILS
+
+        [System.Serializable]
+        private class PrimitiveWrapper<T>
+        {
+            public T value;
+            public PrimitiveWrapper(T value) => this.value = value;
+        }
+
+        #endregion
     }
 }

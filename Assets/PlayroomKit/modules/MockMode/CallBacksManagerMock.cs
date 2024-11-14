@@ -73,8 +73,6 @@ namespace Playroom
 
         public void InvokeCallback(string jsonData)
         {
-
-
             var jsonNode = JSON.Parse(jsonData);
 
             string key = jsonNode["key"];

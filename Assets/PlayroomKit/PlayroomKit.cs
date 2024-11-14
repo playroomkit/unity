@@ -255,6 +255,7 @@ namespace Playroom
         public void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
         {
             _playroomService.ResetPlayersStates(keysToExclude, OnStatesReset);
+            
         }
 
         // Joystick
