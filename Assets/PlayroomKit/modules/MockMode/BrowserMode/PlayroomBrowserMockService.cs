@@ -119,37 +119,34 @@ namespace Playroom
 
             CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
 
-            _ubb.CallJs("WaitForState", null, null, true, stateKey, callbackKey);
+            _ubb.CallJs("WaitForState", callbackKey, null, true, stateKey);
         }
 
         public void WaitForPlayerState(string playerID, string stateKey, Action<string> onStateSetCallback = null)
         {
             string callbackKey = $"WaitForPlayerState_{stateKey}";
             GameObject callbackObject = new GameObject(callbackKey);
-
             MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
-            invoker.SetCallback(onStateSetCallback, callbackKey);
 
+            invoker.SetCallback(onStateSetCallback, callbackKey);
             CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
 
-            _ubb.CallJs("WaitForPlayerState", null, null, true, playerID, stateKey, callbackKey);
+            _ubb.CallJs("WaitForPlayerState", callbackKey, null, false, playerID, stateKey);
         }
 
         public void ResetStates(string[] keysToExclude = null, Action onStatesReset = null)
         {
-            _ubb.CallJs("ResetStates", null, null, true, keysToExclude);
+            _ubb.CallJs("ResetStates", null, null, true, keysToExclude ?? Array.Empty<string>());
             onStatesReset?.Invoke();
         }
 
         public void ResetPlayersStates(string[] keysToExclude = null, Action onStatesReset = null)
         {
-            _ubb.CallJs("ResetPlayersStates", null, null, true, keysToExclude);
+            _ubb.CallJs("ResetPlayersStates", null, null, true, keysToExclude ?? Array.Empty<string>());
             onStatesReset?.Invoke();
         }
 
         #endregion
-
-
 
         #region Misc
 
@@ -160,7 +157,7 @@ namespace Playroom
         }
 
         #endregion
-        
+
         #region Joystick Mehtods
 
         public void CreateJoyStick(JoystickOptions options)
@@ -177,12 +174,50 @@ namespace Playroom
         #endregion
 
         #region Utils
+
         public static void MockOnPlayerJoinWrapper(string playerId)
         {
             PlayroomKit.IPlayroomBase.OnPlayerJoinWrapperCallback(playerId);
         }
 
         #endregion
+    }
+
+
+    public class RPCBrowser : PlayroomKit.IRPC
+    {
+        private UnityBrowserBridge _ubb;
+
+        public RPCBrowser()
+        {
+        }
+
+        public void RpcRegister(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null)
+        {
+            if (_ubb)
+                _ubb = UnityBrowserBridge.Instance;
+
+            string callbackKey = $"RpcEvent_{name}";
+            GameObject callbackObject = new GameObject(callbackKey);
+
+            MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
+            invoker.SetCallback(rpcRegisterCallback, callbackKey);
+
+
+            CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
+            _ubb.CallJs("RpcRegister", callbackKey, null, false, name, onResponseReturn);
+            
+        }
+
+        public void RpcCall(string name, object data, PlayroomKit.RpcMode mode, Action callbackOnResponse = null)
+        {
+            _ubb.CallJs("RpcCall", null, null, false, name, data.ToString(), mode.ToString());
+        }
+
+        public void RpcCall(string name, object data, Action callbackOnResponse = null)
+        {
+            RpcCall(name, data, PlayroomKit.RpcMode.ALL, callbackOnResponse);
+        }
     }
 
 #endif

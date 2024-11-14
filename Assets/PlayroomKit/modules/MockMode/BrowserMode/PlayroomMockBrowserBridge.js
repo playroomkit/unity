@@ -181,8 +181,7 @@ WaitForPlayerState = async function (playerId, stateKey, onStateSetCallback) {
     return null;
   }
 
-  await Playroom.waitForPlayerState().then((stateVal) => {
-    // playerState, stateKey, onStateSetCallback
+  Playroom.waitForPlayerState(playerState, stateKey).then((stateVal) => {
     const data = {
       key: onStateSetCallback,
       parameter: stateVal,

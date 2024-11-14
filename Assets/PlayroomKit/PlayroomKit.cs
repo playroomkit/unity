@@ -40,7 +40,7 @@ namespace Playroom
             else if (CurrentMockMode == MockModeSelector.Browser)
             {
                 _playroomService = new PlayroomBrowserMockService();
-                // _rpc = new RPCLocal();
+                _rpc = new RPCBrowser();
             }
 #endif
         }

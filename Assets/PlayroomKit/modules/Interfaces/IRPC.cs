@@ -16,6 +16,7 @@ namespace Playroom
             OTHERS,
             HOST
         }
+
         public interface IRPC
         {
 

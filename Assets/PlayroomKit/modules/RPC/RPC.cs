@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using AOT;
 using SimpleJSON;
 using UnityEngine;
 
@@ -27,7 +24,6 @@ namespace Playroom
                 _interop = interop;
             }
             
-            
             public void RpcRegister(string name, Action<string, string> rpcRegisterCallback,
                 string onResponseReturn = null)
             {
@@ -36,7 +32,6 @@ namespace Playroom
                     _interop.RpcRegisterWrapper(name, IRPC.InvokeRpcRegisterCallBack, onResponseReturn);
                 
             }
-            
 
             public void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse = null)
             {
@@ -77,8 +72,6 @@ namespace Playroom
             {
                 RpcCall(name, data, RpcMode.ALL, callbackOnResponse);
             }
-            
         }
-
     }
 }

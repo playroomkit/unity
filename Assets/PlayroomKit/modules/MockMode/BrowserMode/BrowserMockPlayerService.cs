@@ -115,7 +115,7 @@ namespace Playroom
 
         #region UTILS
 
-        [System.Serializable]
+        [Serializable]
         private class PrimitiveWrapper<T>
         {
             public T value;
