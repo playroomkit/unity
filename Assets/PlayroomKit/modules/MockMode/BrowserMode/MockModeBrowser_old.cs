@@ -72,13 +72,13 @@ namespace Playroom
 // #endif
 //         }
 //         
-//         private static void MockOnPlayerQuitLocal(Action<string> onPlayerQuitCallback)
-//         {
-//             Debug.Log("On Player Quit");
-//             var testPlayer = GetPlayer(PlayerId);
-//             testPlayer.OnQuitCallbacks.Add(onPlayerQuitCallback);
-//             __OnQuitInternalHandler(PlayerId);
-//         }
+         // private static void MockOnPlayerQuitLocal(Action<string> onPlayerQuitCallback)
+         // {
+         //     Debug.Log("On Player Quit");
+         //     var testPlayer = GetPlayer(PlayerId);
+         //     testPlayer.OnQuitCallbacks.Add(onPlayerQuitCallback);
+         //     __OnQuitInternalHandler(PlayerId);
+         // }
 
         /// <summary>
         /// This function is used by GetPlayerID in PlayroomKitDevManager, GetPlayer is only invoked

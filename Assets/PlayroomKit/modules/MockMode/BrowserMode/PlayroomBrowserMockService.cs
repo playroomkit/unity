@@ -25,7 +25,7 @@ namespace Playroom
             if (options != null) optionsJson = Helpers.SerializeInitOptions(options);
 
             var gameObjectName = _ubb.GetGameObject("InsertCoin").name;
-            CallJs("InsertCoin", onLaunchCallBack.GetMethodInfo().Name, gameObjectName, true, optionsJson);
+            _ubb.CallJs("InsertCoin", onLaunchCallBack.GetMethodInfo().Name, gameObjectName, true, optionsJson);
             PlayroomKit.IsPlayRoomInitialized = true;
         }
 
@@ -34,7 +34,7 @@ namespace Playroom
             if (!PlayroomKit.IPlayroomBase.OnPlayerJoinCallbacks.Contains(onPlayerJoinCallback))
                 PlayroomKit.IPlayroomBase.OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
 
-            CallJs("OnPlayerJoin", null, _ubb.GetGameObject("devManager").name);
+            _ubb.CallJs("OnPlayerJoin", null, _ubb.GetGameObject("devManager").name);
 
             void Unsub()
             {
@@ -46,7 +46,7 @@ namespace Playroom
 
         public void StartMatchmaking(Action callback = null)
         {
-            CallJs("StartMatchmaking", null, null, true);
+            _ubb.CallJs("StartMatchmaking", null, null, true);
             callback?.Invoke();
         }
 
@@ -57,7 +57,7 @@ namespace Playroom
             GameObject callbackObject = new GameObject(callbackKey);
             MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
             invoker.SetCallback(callback, callbackKey);
-            CallJs("OnDisconnect", callbackKey);
+            _ubb.CallJs("OnDisconnect", callbackKey);
         }
 
         #endregion
@@ -66,7 +66,7 @@ namespace Playroom
 
         public PlayroomKit.Player MyPlayer()
         {
-            string id = CallJs<string>("MyPlayer");
+            string id = _ubb.CallJs<string>("MyPlayer");
             return PlayroomKit.GetPlayerById(id);
         }
 
@@ -81,17 +81,17 @@ namespace Playroom
 
         public bool IsHost()
         {
-            return CallJs<bool>("IsHost");
+            return _ubb.CallJs<bool>("IsHost");
         }
 
         public string GetRoomCode()
         {
-            return CallJs<string>("GetRoomCode");
+            return _ubb.CallJs<string>("GetRoomCode");
         }
 
         public bool IsStreamScreen()
         {
-            return CallJs<bool>("IsStreamScreen");
+            return _ubb.CallJs<bool>("IsStreamScreen");
         }
 
         #endregion
@@ -100,13 +100,13 @@ namespace Playroom
 
         public void SetState<T>(string key, T value, bool reliable = false)
         {
-            CallJs("SetState", null, null, true,
+            _ubb.CallJs("SetState", null, null, true,
                 key, value.ToString(), reliable.ToString().ToLower());
         }
 
         public T GetState<T>(string key)
         {
-            return CallJs<T>("GetState", null, null, false, key);
+            return _ubb.CallJs<T>("GetState", null, null, false, key);
         }
 
         public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
@@ -119,7 +119,7 @@ namespace Playroom
 
             CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
 
-            CallJs("WaitForState", null, null, true, stateKey, callbackKey);
+            _ubb.CallJs("WaitForState", null, null, true, stateKey, callbackKey);
         }
 
         public void WaitForPlayerState(string playerID, string stateKey, Action<string> onStateSetCallback = null)
@@ -132,18 +132,18 @@ namespace Playroom
 
             CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
 
-            CallJs("WaitForPlayerState", null, null, true, playerID, stateKey, callbackKey);
+            _ubb.CallJs("WaitForPlayerState", null, null, true, playerID, stateKey, callbackKey);
         }
 
         public void ResetStates(string[] keysToExclude = null, Action onStatesReset = null)
         {
-            CallJs("ResetStates", null, null, true, keysToExclude);
+            _ubb.CallJs("ResetStates", null, null, true, keysToExclude);
             onStatesReset?.Invoke();
         }
 
         public void ResetPlayersStates(string[] keysToExclude = null, Action onStatesReset = null)
         {
-            CallJs("ResetPlayersStates", null, null, true, keysToExclude);
+            _ubb.CallJs("ResetPlayersStates", null, null, true, keysToExclude);
             onStatesReset?.Invoke();
         }
 
@@ -177,53 +177,6 @@ namespace Playroom
         #endregion
 
         #region Utils
-
-        private void CallJs(string jsFunctionName, string callbackName = null, string gameObjectName = null,
-            bool isAsync = false, params string[] args)
-        {
-            List<string> allParams = new();
-
-            foreach (var param in args)
-            {
-                if (param.StartsWith("{") && param.EndsWith("}"))
-                    allParams.Add(param);
-                else
-                    allParams.Add($"'{param}'");
-            }
-
-            if (!string.IsNullOrEmpty(callbackName)) allParams.Add($"'{callbackName}'");
-            if (!string.IsNullOrEmpty(gameObjectName)) allParams.Add($"'{gameObjectName}'");
-
-            string jsCall = $"{jsFunctionName}({string.Join(", ", allParams)})";
-            if (isAsync) jsCall = $"await {jsCall}";
-
-
-            Debug.Log(jsCall);
-            _ubb.ExecuteJS(jsCall);
-        }
-
-
-        private T CallJs<T>(string jsFunctionName, string callbackName = null, string gameObjectName = null,
-            bool isAsync = false, params string[] args)
-        {
-            List<string> allParams = new();
-            foreach (string param in args)
-            {
-                if (param.StartsWith("{") && param.EndsWith("}"))
-                    allParams.Add(param);
-                else
-                    allParams.Add($"'{param}'");
-            }
-
-            if (!string.IsNullOrEmpty(callbackName)) allParams.Add($"'{callbackName}'");
-            if (!string.IsNullOrEmpty(gameObjectName)) allParams.Add($"'{gameObjectName}'");
-
-            string jsCall = $"{jsFunctionName}({string.Join(", ", allParams)})";
-            if (isAsync) jsCall = $"await {jsCall}";
-
-            return _ubb.ExecuteJS<T>(jsCall);
-        }
-
         public static void MockOnPlayerJoinWrapper(string playerId)
         {
             PlayroomKit.IPlayroomBase.OnPlayerJoinWrapperCallback(playerId);

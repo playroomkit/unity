@@ -15,7 +15,6 @@ namespace Playroom
     {
         public partial class Player
         {
-            
             //DI
             public string id;
             IPlayerBase _playerService;
