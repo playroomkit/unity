@@ -304,7 +304,7 @@ public class GameManagerDemo : MonoBehaviour
             {
                 Debug.Log($"data from WaitForPlayer state, color: {data}");
 
-                logsText.text += "\nData from WaitForPlayer state, color: {data}";
+                logsText.text += $"\nData from WaitForPlayer state, color: {data}";
             });
     }
 
