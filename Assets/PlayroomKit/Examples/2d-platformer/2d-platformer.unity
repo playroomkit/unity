@@ -307,6 +307,18 @@ PrefabInstance:
       propertyPath: insertCoinCaller
       value: 
       objectReference: {fileID: 330732768}
+    - target: {fileID: 8899696337967424923, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: webDriverDirectory
+      value: Assets\
+      objectReference: {fileID: 0}
+    - target: {fileID: 8987662522597341863, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: mockMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8987662522597341863, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: insertCoinCaller
+      value: 
+      objectReference: {fileID: 330732768}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

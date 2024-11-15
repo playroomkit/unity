@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using UBB;
 using UnityEngine;
+using ParrelSync;
 
 namespace Playroom
 {
 #if UNITY_EDITOR
-    public class PlayroomBrowserMockService : PlayroomKit.IPlayroomBase
+    public class BrowserMockService : PlayroomKit.IPlayroomBase
     {
         private UnityBrowserBridge _ubb;
 
@@ -19,10 +18,18 @@ namespace Playroom
         {
             // start ubb before inserting coin
             _ubb = UnityBrowserBridge.Instance;
+            if (ClonesManager.IsClone())
+            {
+                _ubb.httpServerPort += 10;
+            }
             _ubb.StartUBB();
 
             string optionsJson = null;
-            if (options != null) optionsJson = Helpers.SerializeInitOptions(options);
+            if (options != null)
+            {
+                options.roomCode = "TEST_ROOM";
+                optionsJson = Helpers.SerializeInitOptions(options);
+            }
 
             var gameObjectName = _ubb.GetGameObject("InsertCoin").name;
             _ubb.CallJs("InsertCoin", onLaunchCallBack.GetMethodInfo().Name, gameObjectName, true, optionsJson);
@@ -183,32 +190,6 @@ namespace Playroom
         #endregion
     }
 
-
-    public class RPCBrowser : PlayroomKit.IRPC
-    {
-        public void RpcRegister(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null)
-        {
-            string callbackKey = $"RpcEvent_{name}";
-            GameObject callbackObject = new GameObject(callbackKey);
-            Debug.Log(callbackKey);
-
-            MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
-            invoker.SetCallback(rpcRegisterCallback, callbackKey);
-            CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
-
-            UnityBrowserBridge.Instance.CallJs("RpcRegister", null, null, false, name, callbackKey, onResponseReturn);
-        }
-
-        public void RpcCall(string name, object data, PlayroomKit.RpcMode mode, Action callbackOnResponse = null)
-        {
-            UnityBrowserBridge.Instance.CallJs("RpcCall", null, null, false, name, data.ToString(), mode.ToString());
-        }
-
-        public void RpcCall(string name, object data, Action callbackOnResponse = null)
-        {
-            RpcCall(name, data, PlayroomKit.RpcMode.ALL, callbackOnResponse);
-        }
-    }
 
 #endif
 }

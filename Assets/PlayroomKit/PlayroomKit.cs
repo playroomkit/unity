@@ -39,8 +39,8 @@ namespace Playroom
             }
             else if (CurrentMockMode == MockModeSelector.Browser)
             {
-                _playroomService = new PlayroomBrowserMockService();
-                _rpc = new RPCBrowser();
+                _playroomService = new BrowserMockService();
+                _rpc = new BrowserMockRPC();
             }
 #endif
         }

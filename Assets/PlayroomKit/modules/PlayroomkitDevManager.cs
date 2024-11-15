@@ -57,7 +57,7 @@ namespace Playroom
         /// <param name="playerId"></param>
         private void GetPlayerID(string playerId)
         {
-            PlayroomBrowserMockService.MockOnPlayerJoinWrapper(playerId);
+            BrowserMockService.MockOnPlayerJoinWrapper(playerId);
         }
 #endif
     }
