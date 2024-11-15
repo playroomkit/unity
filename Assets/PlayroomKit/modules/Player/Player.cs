@@ -20,13 +20,14 @@ namespace Playroom
             IPlayerBase _playerService;
 
             private static int totalObjects = 0;
+
             public Player(string playerID, IPlayerBase playerService)
             {
                 this.id = playerID;
                 this._playerService = playerService;
                 totalObjects++;
             }
-            
+
             public void SetState(string key, int value, bool reliable = false)
             {
                 if (!IsPlayRoomInitialized)
@@ -34,6 +35,7 @@ namespace Playroom
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
                 }
+
                 _playerService.SetState(key, value, reliable);
             }
 
@@ -44,9 +46,10 @@ namespace Playroom
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
                 }
+
                 _playerService.SetState(key, value, reliable);
             }
-            
+
 
             public void SetState(string key, bool value, bool reliable = false)
             {
@@ -55,6 +58,7 @@ namespace Playroom
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
                 }
+
                 _playerService.SetState(key, value, reliable);
             }
 
@@ -65,6 +69,7 @@ namespace Playroom
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
                 }
+
                 _playerService.SetState(key, value, reliable);
             }
 
@@ -76,17 +81,18 @@ namespace Playroom
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
                 }
+
                 _playerService.SetState(key, value, reliable);
             }
 
-            
+
             public T GetState<T>(string key)
             {
                 Type type = typeof(T);
                 var value = _playerService.GetState<T>(key);
                 return value;
             }
-            
+
             public Profile GetProfile()
             {
                 if (!IsPlayRoomInitialized)
@@ -94,9 +100,10 @@ namespace Playroom
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return default;
                 }
+
                 return _playerService.GetProfile();
             }
-            
+
             public Action OnQuit(Action<string> callback)
             {
                 if (!IsPlayRoomInitialized)
@@ -107,18 +114,18 @@ namespace Playroom
 
                 return _playerService.OnQuit(callback);
             }
-            
+
             public void Kick(Action OnKickCallBack = null)
             {
                 if (!IsPlayRoomInitialized)
-                { 
+                {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return;
                 }
-                
+
                 _playerService.Kick(OnKickCallBack);
             }
-            
+
             public void WaitForState(string StateKey, Action<string> onStateSetCallback = null)
             {
                 if (!IsPlayRoomInitialized)
@@ -128,17 +135,18 @@ namespace Playroom
 
                 _playerService.WaitForState(StateKey, onStateSetCallback);
             }
-            
+
             //DI END
-            
-            
-            
+
+
             [Serializable]
             public class Profile
             {
-                [NonSerialized] public UnityEngine.Color color;
+                [NonSerialized]
+                public UnityEngine.Color color;
 
-                [FormerlySerializedAs("jsonColor")] public PlayerProfileColor playerProfileColor;
+                [FormerlySerializedAs("jsonColor")]
+                public PlayerProfileColor playerProfileColor;
                 public string name;
                 public string photo;
 
@@ -152,9 +160,8 @@ namespace Playroom
                     public int hex;
                 }
             }
-            
 
-            
+
             private void OnQuitDefaultCallback()
             {
                 if (!IsPlayRoomInitialized)
@@ -164,7 +171,6 @@ namespace Playroom
 
                 Players.Remove(id);
             }
-            
         }
     }
 }

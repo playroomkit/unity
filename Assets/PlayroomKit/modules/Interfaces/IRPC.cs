@@ -19,7 +19,6 @@ namespace Playroom
 
         public interface IRPC
         {
-
             protected static List<string> rpcCalledEvents = new();
 
             protected static Dictionary<string, List<Action>> OnResponseCallbacks =
@@ -147,12 +146,12 @@ namespace Playroom
 
                 List<string> updatedRpcCalledEvents = new();
                 // This state is required to update the called rpc events list, (Temp fix see RpcCall for more) 
-                
+
                 //Fix this later
                 PlayroomKit _playroomKit = new PlayroomKit();
                 string nameJson = _playroomKit.GetState<string>("rpcCalledEventName");
                 //
-                
+
                 Debug.Log($"rpcCalledEventName {nameJson}: {dataJson}");
 
                 JSONArray jsonArray = JSON.Parse(nameJson).AsArray;

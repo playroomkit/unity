@@ -119,7 +119,7 @@ namespace Playroom
 
             CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
 
-            _ubb.CallJs("WaitForState", callbackKey, null, true, stateKey);
+            _ubb.CallJs("WaitForState", null, null, true, stateKey, callbackKey);
         }
 
         public void WaitForPlayerState(string playerID, string stateKey, Action<string> onStateSetCallback = null)
@@ -196,7 +196,7 @@ namespace Playroom
             invoker.SetCallback(rpcRegisterCallback, callbackKey);
             CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
 
-            UnityBrowserBridge.Instance.CallJs("RpcRegister", null, null, false, name,  callbackKey,onResponseReturn);
+            UnityBrowserBridge.Instance.CallJs("RpcRegister", null, null, false, name, callbackKey, onResponseReturn);
         }
 
         public void RpcCall(string name, object data, PlayroomKit.RpcMode mode, Action callbackOnResponse = null)

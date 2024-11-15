@@ -109,7 +109,15 @@ namespace Playroom
 
         public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
         {
-            _ubb.CallJs("WaitForPlayerState", null, null, true, _id, stateKey);
+            string callbackKey = $"WaitForState_{stateKey}";
+            GameObject callbackObject = new GameObject(callbackKey);
+            Debug.Log(callbackKey);
+
+            MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
+            invoker.SetCallback(onStateSetCallback, callbackKey);
+            CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
+            
+            _ubb.CallJs("WaitForPlayerState", null, null, true, _id, stateKey, callbackKey);
         }
 
 
