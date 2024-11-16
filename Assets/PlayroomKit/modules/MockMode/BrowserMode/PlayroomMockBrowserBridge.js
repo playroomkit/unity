@@ -3,13 +3,6 @@
     unityInstance.SendMessage(gameObjectName, onLaunchCallBackName);
   }
 
-  console.log(
-    "InsertCoin called",
-    options,
-    onLaunchCallBackName,
-    gameObjectName
-  );
-
   await Playroom.insertCoin(options, onLaunchCallBack);
 };
 
@@ -253,7 +246,6 @@ ResetStates = async function (keysToExclude) {
 };
 
 RpcRegister = function (name, callbackKey) {
-  console.log(name);
 
   Playroom.RPC.register(name, (data, caller) => {
     const jsonData = {
