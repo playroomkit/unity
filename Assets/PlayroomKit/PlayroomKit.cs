@@ -95,8 +95,10 @@ namespace Playroom
                     }
                     else if (CurrentMockMode == MockModeSelector.Browser)
                     {
+#if UNITY_EDITOR
                         player = new Player(playerId,
                             new BrowserMockPlayerService(UnityBrowserBridge.Instance, playerId));
+#endif
                     }
                 }
                 else
@@ -115,28 +117,26 @@ namespace Playroom
             {
                 return player;
             }
-            else
-            {
-                if (!IsRunningInBrowser())
-                {
-                    if (CurrentMockMode == MockModeSelector.Local)
-                    {
-                        player = new Player(playerId, new Player.LocalPlayerService(playerId));
-                    }
-                    else if (CurrentMockMode == MockModeSelector.Browser)
-                    {
-                        player = new Player(playerId,
-                            new BrowserMockPlayerService(UnityBrowserBridge.Instance, playerId));
-                    }
-                }
-                else
-                {
-                    player = new Player(playerId, new Player.PlayerService(playerId));
-                }
 
-                Players.Add(playerId, player);
-                return player;
+#if UNITY_WEBGL
+            player = new Player(playerId, new Player.PlayerService(playerId));
+
+            Players.Add(playerId, player);
+            return player;
+#elif UNITY_EDITOR
+            if (CurrentMockMode == MockModeSelector.Local)
+            {
+                player = new Player(playerId, new Player.LocalPlayerService(playerId));
             }
+            else if (CurrentMockMode == MockModeSelector.Browser)
+            {
+                player = new Player(playerId,
+                    new BrowserMockPlayerService(UnityBrowserBridge.Instance, playerId));
+            }
+
+            Players.Add(playerId, player);
+            return player;
+#endif
         }
 
         public void SetState<T>(string key, T value, bool reliable = false)
@@ -255,7 +255,6 @@ namespace Playroom
         public void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null)
         {
             _playroomService.ResetPlayersStates(keysToExclude, OnStatesReset);
-            
         }
 
         // Joystick

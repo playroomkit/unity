@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace Playroom
 {
+#if UNITY_EDITOR
+
     public class BrowserMockPlayerService : PlayroomKit.Player.IPlayerBase
     {
         private readonly UnityBrowserBridge _ubb;
@@ -116,7 +118,7 @@ namespace Playroom
             MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
             invoker.SetCallback(onStateSetCallback, callbackKey);
             CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
-            
+
             _ubb.CallJs("WaitForPlayerState", null, null, true, _id, stateKey, callbackKey);
         }
 
@@ -132,4 +134,5 @@ namespace Playroom
 
         #endregion
     }
+#endif
 }

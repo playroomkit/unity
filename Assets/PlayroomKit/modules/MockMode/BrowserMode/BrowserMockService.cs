@@ -2,7 +2,10 @@
 using System.Reflection;
 using UBB;
 using UnityEngine;
+
+#if UNITY_EDITOR
 using ParrelSync;
+#endif
 
 namespace Playroom
 {
@@ -22,6 +25,7 @@ namespace Playroom
             {
                 _ubb.httpServerPort += 10;
             }
+
             _ubb.StartUBB();
 
             string optionsJson = null;
@@ -189,7 +193,5 @@ namespace Playroom
 
         #endregion
     }
-
-
 #endif
 }
