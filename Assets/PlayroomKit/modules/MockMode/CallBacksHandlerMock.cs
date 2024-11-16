@@ -7,6 +7,11 @@ namespace Playroom
 {
     public class CallBacksHandlerMock : MonoBehaviour
     {
+        private readonly Dictionary<string, (GameObject gameObject, string methodName)> callbacks = new();
+
+        [SerializeField]
+        private PlayroomkitDevManager manager;
+
         private static CallBacksHandlerMock _instance;
 
         public static CallBacksHandlerMock Instance
@@ -30,25 +35,20 @@ namespace Playroom
 
         private void Start()
         {
-            var manager = FindObjectOfType<PlayroomkitDevManager>();
             gameObject.transform.SetParent(manager.gameObject.transform);
         }
 
-        private Dictionary<string, (GameObject gameObject, string methodName)> callbacks = new();
 
         public void RegisterCallbackObject(string key, GameObject gameObject, string methodName)
         {
             if (!callbacks.ContainsKey(key))
             {
-
                 callbacks.TryAdd(key, (gameObject, methodName));
             }
         }
 
         public void HandleRPC(string jsonData)
         {
-
-
             var jsonNode = JSON.Parse(jsonData);
 
             string key = jsonNode["key"];
@@ -73,8 +73,6 @@ namespace Playroom
 
         public void InvokeCallback(string jsonData)
         {
-
-
             var jsonNode = JSON.Parse(jsonData);
 
             string key = jsonNode["key"];

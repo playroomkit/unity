@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
         }, () =>
         {
             _playroomKit.OnPlayerJoin(AddPlayer);
-            _playroomKit.RpcRegister("score", (data, caller) => print($"{data} by {PlayroomKit.GetPlayer(caller).GetProfile().name}"));
+            _playroomKit.RpcRegister("score", (data, caller) => print($"{data} by {_playroomKit.GetPlayer(caller).GetProfile().name}"));
         }, () => { Debug.Log("OnDisconnect callback"); });
     }
     

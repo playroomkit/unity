@@ -82,3 +82,5 @@ Assets/Plugins
 Assets/PlayroomKit/node_modules.meta
 /.idea
 Assets/chromedriver*
+Assets/msedgedriver.exe
+Assets/msedgedriver.exe.meta

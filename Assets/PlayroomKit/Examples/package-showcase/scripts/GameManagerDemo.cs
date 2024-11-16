@@ -10,18 +10,24 @@ public class GameManagerDemo : MonoBehaviour
 {
     private static readonly List<PlayroomKit.Player> players = new();
     private static readonly List<GameObject> playerGameObjects = new();
-
     private static readonly Dictionary<string, GameObject> PlayerDict = new();
 
-    [SerializeField] private static bool playerJoined;
-    [SerializeField] private string roomCode;
-    [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private int score;
+    [SerializeField]
+    private static bool playerJoined;
+    [SerializeField]
+    private string roomCode;
+    [SerializeField]
+    private GameObject playerPrefab;
+    [SerializeField]
+    private int score;
 
     [Header("UI")]
-    [SerializeField] private TMP_Dropdown getDropDown;
-    [SerializeField] private TMP_Dropdown colorDropDown;
-    [SerializeField] private TextMeshProUGUI logsText;
+    [SerializeField]
+    private TMP_Dropdown getDropDown;
+    [SerializeField]
+    private TMP_Dropdown colorDropDown;
+    [SerializeField]
+    private TextMeshProUGUI logsText;
 
     private PlayroomKit _playroomKit = new();
 
@@ -39,11 +45,11 @@ public class GameManagerDemo : MonoBehaviour
         }
     }
 
-
     public void InsertCoin()
     {
         _playroomKit.InsertCoin(new InitOptions
         {
+            skipLobby = true,
             maxPlayersPerRoom = 3,
             matchmaking = false,
             roomCode = roomCode
@@ -240,7 +246,7 @@ public class GameManagerDemo : MonoBehaviour
 
     private void HandleScoreUpdate(string data, string caller)
     {
-        var player = PlayroomKit.GetPlayer(caller);
+        var player = _playroomKit.GetPlayer(caller);
         Debug.Log($"Caller: {caller}, Player Name: {player?.GetProfile().name}, Data: {data}");
 
         if (PlayerDict.TryGetValue(caller, out var playerObj))
@@ -286,7 +292,7 @@ public class GameManagerDemo : MonoBehaviour
         logsText.text = $"{_playroomKit.MyPlayer().GetProfile().name} is host?: {isHost}";
     }
 
-    
+
     /// <summary>
     /// First Click the WaitForState button, then set the color using the dropdown and pressing the SetState button
     /// </summary>
@@ -298,7 +304,7 @@ public class GameManagerDemo : MonoBehaviour
             {
                 Debug.Log($"data from WaitForPlayer state, color: {data}");
 
-                logsText.text += "\nData from WaitForPlayer state, color: {data}";
+                logsText.text += $"\nData from WaitForPlayer state, color: {data}";
             });
     }
 
@@ -319,5 +325,15 @@ public class GameManagerDemo : MonoBehaviour
                 Player.GetComponent<Transform>().position = pos;
             }
         });
+    }
+
+    public void GlobalSetState()
+    {
+        _playroomKit.SetState("winner", "ChickenGamer");
+    }
+
+    public void GlobalGetState()
+    {
+        logsText.text = $"getting global (state): Winner is : {_playroomKit.GetState<string>("winner")}";
     }
 }

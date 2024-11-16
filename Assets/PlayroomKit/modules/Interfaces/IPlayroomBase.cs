@@ -38,9 +38,9 @@ namespace Playroom
 
             public void WaitForPlayerState(string playerID, string stateKey, Action<string> onStateSetCallback = null);
 
-            public void ResetStates(string[] keysToExclude = null, Action OnStatesReset = null);
+            public void ResetStates(string[] keysToExclude = null, Action onStatesReset = null);
 
-            public void ResetPlayersStates(string[] keysToExclude = null, Action OnStatesReset = null);
+            public void ResetPlayersStates(string[] keysToExclude = null, Action onStatesReset = null);
 
             public void CreateJoyStick(JoystickOptions options);
 
@@ -56,7 +56,7 @@ namespace Playroom
 
             protected static void OnPlayerJoinWrapperCallback(string id)
             {
-                var player = GetPlayer(id);
+                var player = GetPlayerById(id);
                 foreach (var callback in IPlayroomBase.OnPlayerJoinCallbacks)
                 {
                     callback?.Invoke(player);

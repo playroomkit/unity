@@ -30,13 +30,12 @@ namespace Playroom
 
 
         public void ExecuteCallback(string result)
-        {            
+        {
             StartCoroutine(ExecuteCallbackCoroutine(result));
         }
 
         public void ExecuteCallback(string[] result)
         {
-       
             StartCoroutine(ExecuteCallbackCoroutine(result));
         }
 
@@ -48,7 +47,7 @@ namespace Playroom
         private IEnumerator ExecuteCallbackCoroutine(string result)
         {
             yield return new WaitForEndOfFrame();
-           
+
             CallbackManager.InvokeCallback(gameObject.name, result);
             Destroy(gameObject);
         }

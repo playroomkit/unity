@@ -73,7 +73,7 @@ public class GameManager2d : MonoBehaviour
     /// </summary>
     void HandleScoreUpdate(string data, string caller)
     {
-        var player = PlayroomKit.GetPlayer(caller);
+        var player = _playroomKit.GetPlayer(caller);
         Debug.Log($"Caller: {caller}, Player Name: {player?.GetProfile().name}, Data: {data}");
 
         if (PlayerDict.TryGetValue(caller, out GameObject playerObj))

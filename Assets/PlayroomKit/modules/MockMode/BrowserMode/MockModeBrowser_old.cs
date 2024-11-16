@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Random = System.Random;
 
+
 namespace Playroom
 {
     /// <summary>
@@ -34,12 +35,12 @@ namespace Playroom
 
         private static void MockInsertCoinBrowser(InitOptions options, Action onLaunchCallBack)
         {
-            isPlayRoomInitialized = true;
+            IsPlayRoomInitialized = true;
 
             Debug.Log("Coin Inserted!");
 
             string optionsJson = null;
-            if (options != null) optionsJson = SerializeInitOptions(options);
+            if (options != null) optionsJson = Helpers.SerializeInitOptions(options);
 
 #if UNITY_EDITOR
             var gameObjectName = GetGameObject("InsertCoin").name;
@@ -71,13 +72,13 @@ namespace Playroom
 // #endif
 //         }
 //         
-//         private static void MockOnPlayerQuitLocal(Action<string> onPlayerQuitCallback)
-//         {
-//             Debug.Log("On Player Quit");
-//             var testPlayer = GetPlayer(PlayerId);
-//             testPlayer.OnQuitCallbacks.Add(onPlayerQuitCallback);
-//             __OnQuitInternalHandler(PlayerId);
-//         }
+         // private static void MockOnPlayerQuitLocal(Action<string> onPlayerQuitCallback)
+         // {
+         //     Debug.Log("On Player Quit");
+         //     var testPlayer = GetPlayer(PlayerId);
+         //     testPlayer.OnQuitCallbacks.Add(onPlayerQuitCallback);
+         //     __OnQuitInternalHandler(PlayerId);
+         // }
 
         /// <summary>
         /// This function is used by GetPlayerID in PlayroomKitDevManager, GetPlayer is only invoked
@@ -232,7 +233,7 @@ namespace Playroom
         {
 #if UNITY_EDITOR
             var id = UnityBrowserBridge.Instance.ExecuteJS<string>($"MyPlayer()");
-            return GetPlayer(id);
+            return GetPlayerById(id);
 #else
             return default;
 #endif
@@ -260,7 +261,7 @@ namespace Playroom
         {
 #if UNITY_EDITOR
             string json = UnityBrowserBridge.Instance.ExecuteJS<string>($"GetProfile('{playerID}')");
-            var profileData = ParseProfile(json);
+            var profileData = Helpers.ParseProfile(json);
             return profileData;
 #else
             return default;
@@ -304,14 +305,10 @@ namespace Playroom
         {
 #if UNITY_EDITOR
             string key = Guid.NewGuid().ToString();
-
             string callbackKey = $"OnDisconnect_{key}";
             GameObject callbackObject = new GameObject(callbackKey);
-
             MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
             invoker.SetCallback(callback, callbackKey);
-
-
             UnityBrowserBridge.Instance.ExecuteJS(
                 $"OnDisconnect('{callbackKey}')");
 #endif

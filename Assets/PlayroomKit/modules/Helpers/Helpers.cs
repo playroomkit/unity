@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SimpleJSON;
 using UnityEngine;
@@ -8,9 +7,9 @@ namespace Playroom
     /// <summary>
     /// This file contains functions, mostly used for serialization / deserialization 
     /// </summary>
-    public partial class PlayroomKit
+    public class Helpers
     {
-        private static string SerializeInitOptions(InitOptions options)
+        public static string SerializeInitOptions(InitOptions options)
         {
             if (options == null) return null;
 
@@ -109,7 +108,7 @@ namespace Playroom
             }
         }
 
-        private static JSONArray CreateJsonArray(string[] array)
+        public static JSONArray CreateJsonArray(string[] array)
         {
             JSONArray jsonArray = new JSONArray();
 
@@ -120,40 +119,8 @@ namespace Playroom
 
             return jsonArray;
         }
-        
-        public class JoystickOptions
-        {
-            public string type = "angular"; // default = angular, can be dpad
 
-            public ButtonOptions[] buttons;
-            public ZoneOptions zones = null;
-        }
-
-        [Serializable]
-        public class ButtonOptions
-        {
-            public string id = null;
-            public string label = "";
-            public string icon = null;
-        }
-
-        public class ZoneOptions
-        {
-            public ButtonOptions up = null;
-            public ButtonOptions down = null;
-            public ButtonOptions left = null;
-            public ButtonOptions right = null;
-        }
-
-
-        [Serializable]
-        public class Dpad
-        {
-            public string x;
-            public string y;
-        }
-
-        private static string ConvertJoystickOptionsToJson(JoystickOptions options)
+        public static string ConvertJoystickOptionsToJson(JoystickOptions options)
         {
             JSONNode joystickOptionsJson = new JSONObject();
             joystickOptionsJson["type"] = options.type;
@@ -195,11 +162,11 @@ namespace Playroom
             return buttonJson;
         }
 
-        private static Player.Profile ParseProfile(string json)
+        public static PlayroomKit.Player.Profile ParseProfile(string json)
         {
             var jsonNode = JSON.Parse(json);
-            var profileData = new Player.Profile();
-            profileData.playerProfileColor = new Player.Profile.PlayerProfileColor
+            var profileData = new PlayroomKit.Player.Profile();
+            profileData.playerProfileColor = new PlayroomKit.Player.Profile.PlayerProfileColor
             {
                 r = jsonNode["color"]["r"].AsInt,
                 g = jsonNode["color"]["g"].AsInt,
@@ -240,7 +207,5 @@ namespace Playroom
 
             return dictionary;
         }
-        
-        
     }
 }

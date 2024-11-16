@@ -15,92 +15,98 @@ namespace Playroom
     {
         public partial class Player
         {
-            
             //DI
             public string id;
             IPlayerBase _playerService;
 
             private static int totalObjects = 0;
+
             public Player(string playerID, IPlayerBase playerService)
             {
                 this.id = playerID;
                 this._playerService = playerService;
                 totalObjects++;
             }
-            
+
             public void SetState(string key, int value, bool reliable = false)
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
                 }
+
                 _playerService.SetState(key, value, reliable);
             }
 
             public void SetState(string key, float value, bool reliable = false)
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
                 }
+
                 _playerService.SetState(key, value, reliable);
             }
-            
+
 
             public void SetState(string key, bool value, bool reliable = false)
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
                 }
+
                 _playerService.SetState(key, value, reliable);
             }
 
             public void SetState(string key, string value, bool reliable = false)
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
                 }
+
                 _playerService.SetState(key, value, reliable);
             }
 
             // Overload for complex objects, which will be serialized to JSON
             public void SetState(string key, object value, bool reliable = false)
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("PlayroomKit is not loaded! Please make sure to call InsertCoin first.");
                     return;
                 }
+
                 _playerService.SetState(key, value, reliable);
             }
 
-            
+
             public T GetState<T>(string key)
             {
                 Type type = typeof(T);
                 var value = _playerService.GetState<T>(key);
                 return value;
             }
-            
+
             public Profile GetProfile()
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return default;
                 }
+
                 return _playerService.GetProfile();
             }
-            
+
             public Action OnQuit(Action<string> callback)
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("PlayroomKit is not loaded!. Please make sure to call InsertCoin first.");
                     return null;
@@ -108,38 +114,39 @@ namespace Playroom
 
                 return _playerService.OnQuit(callback);
             }
-            
+
             public void Kick(Action OnKickCallBack = null)
             {
-                if (!isPlayRoomInitialized)
-                { 
+                if (!IsPlayRoomInitialized)
+                {
                     Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
                     return;
                 }
-                
+
                 _playerService.Kick(OnKickCallBack);
             }
-            
+
             public void WaitForState(string StateKey, Action<string> onStateSetCallback = null)
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("Playroom not initialized yet! Please call InsertCoin.");
                 }
 
                 _playerService.WaitForState(StateKey, onStateSetCallback);
             }
-            
+
             //DI END
-            
-            
-            
+
+
             [Serializable]
             public class Profile
             {
-                [NonSerialized] public UnityEngine.Color color;
+                [NonSerialized]
+                public UnityEngine.Color color;
 
-                [FormerlySerializedAs("jsonColor")] public PlayerProfileColor playerProfileColor;
+                [FormerlySerializedAs("jsonColor")]
+                public PlayerProfileColor playerProfileColor;
                 public string name;
                 public string photo;
 
@@ -153,19 +160,17 @@ namespace Playroom
                     public int hex;
                 }
             }
-            
 
-            
+
             private void OnQuitDefaultCallback()
             {
-                if (!isPlayRoomInitialized)
+                if (!IsPlayRoomInitialized)
                 {
                     Debug.LogError("Playroom not initialized yet! Please call InsertCoin.");
                 }
 
                 Players.Remove(id);
             }
-            
         }
     }
 }
