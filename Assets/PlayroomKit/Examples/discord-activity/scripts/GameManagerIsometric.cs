@@ -19,7 +19,7 @@ public class GameManagerIsometric : MonoBehaviour
     [SerializeField]
     private GameObject playerPrefab;
 
-    private PlayroomKit _playroomKit = new PlayroomKit();
+    private PlayroomKit _playroomKit = new();
 
     private void Start()
     {
@@ -49,6 +49,7 @@ public class GameManagerIsometric : MonoBehaviour
 
 
             for (var i = 0; i < players.Count; i++)
+            {
                 if (players[i] != null)
                 {
                     var pos = players[i].GetState<Vector3>("move");
@@ -62,13 +63,14 @@ public class GameManagerIsometric : MonoBehaviour
                         playerGameObjects[i].GetComponent<Renderer>().material.color = color;
                     }
                 }
+            }
         }
     }
 
 
-    public void AddPlayer(PlayroomKit.Player player)
+    private void AddPlayer(PlayroomKit.Player player)
     {
-        Debug.LogFormat("{0} Is host?: {1}", player.GetProfile().name,_playroomKit.IsHost());
+        Debug.LogFormat("{0} Is host?: {1}", player.GetProfile().name, _playroomKit.IsHost());
 
         var playerObj = Instantiate(playerPrefab,
             new Vector3(Random.Range(-5, 5), 2f, Random.Range(-5, 5)), Quaternion.identity);

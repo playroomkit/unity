@@ -14,13 +14,12 @@ namespace Playroom
         [SerializeField]
         private PlayroomKit.MockModeSelector mockMode = PlayroomKit.CurrentMockMode;
 
-
         [Tooltip(
             "InsertCoin() must be called in order to connect PlayroomKit server.\n\nChoose the gameObject (with the script) which calls InsertCoin.\n\nRead More in the docs")]
         [SerializeField]
         private GameObject insertCoinCaller;
-
         private static PlayroomkitDevManager Instance { get; set; }
+
 
 #if UNITY_EDITOR
         private void Awake()

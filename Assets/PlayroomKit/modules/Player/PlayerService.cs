@@ -23,6 +23,7 @@ namespace Playroom
                     _interop = new PlayroomKitInterop();
                 }
 
+                // For testing
                 public PlayerService(string id, IInterop interop)
                 {
                     _id = id;

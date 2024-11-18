@@ -34,7 +34,6 @@ namespace Playroom
                     else
                         mockPlayerStatesDictionary.Add(key, value);
 
-                    Debug.Log(value);
                     CallbackManager.InvokeCallback($"{key}_{_id}", value.ToString());
                 }
 

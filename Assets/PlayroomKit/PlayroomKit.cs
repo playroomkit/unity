@@ -43,8 +43,10 @@ namespace Playroom
                 _rpc = new BrowserMockRPC();
             }
 #endif
+            Debug.Log(CurrentMockMode.ToString());
         }
 
+        // for tests
         public PlayroomKit(IPlayroomBase playroomService, IRPC rpc)
         {
             _playroomService = playroomService;
@@ -87,25 +89,19 @@ namespace Playroom
             }
             else
             {
-                if (!IsRunningInBrowser())
-                {
-                    if (CurrentMockMode == MockModeSelector.Local)
-                    {
-                        player = new Player(playerId, new Player.LocalPlayerService(playerId));
-                    }
-                    else if (CurrentMockMode == MockModeSelector.Browser)
-                    {
 #if UNITY_EDITOR
-                        player = new Player(playerId,
-                            new BrowserMockPlayerService(UnityBrowserBridge.Instance, playerId));
-#endif
-                    }
-                }
-                else
+                if (CurrentMockMode == MockModeSelector.Local)
                 {
-                    player = new Player(playerId, new Player.PlayerService(playerId));
+                    player = new Player(playerId, new Player.LocalPlayerService(playerId));
                 }
-
+                else if (CurrentMockMode == MockModeSelector.Browser)
+                {
+                    player = new Player(playerId,
+                        new BrowserMockPlayerService(UnityBrowserBridge.Instance, playerId));
+                }
+#else
+                player = new Player(playerId, new Player.PlayerService(playerId));
+#endif
                 Players.Add(playerId, player);
                 return player;
             }
@@ -113,30 +109,36 @@ namespace Playroom
 
         public static Player GetPlayerById(string playerId)
         {
+            if (!IsPlayRoomInitialized)
+            {
+                Debug.LogError(IsRunningInBrowser()
+                    ? "PlayroomKit is not loaded!. Please make sure to call InsertCoin first."
+                    : "[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+                return default;
+            }
+
             if (Players.TryGetValue(playerId, out var player))
             {
                 return player;
             }
-
-#if UNITY_WEBGL
-            player = new Player(playerId, new Player.PlayerService(playerId));
-
-            Players.Add(playerId, player);
-            return player;
-#elif UNITY_EDITOR
-            if (CurrentMockMode == MockModeSelector.Local)
+            else
             {
-                player = new Player(playerId, new Player.LocalPlayerService(playerId));
-            }
-            else if (CurrentMockMode == MockModeSelector.Browser)
-            {
-                player = new Player(playerId,
-                    new BrowserMockPlayerService(UnityBrowserBridge.Instance, playerId));
-            }
-
-            Players.Add(playerId, player);
-            return player;
+#if UNITY_EDITOR
+                if (CurrentMockMode == MockModeSelector.Local)
+                {
+                    player = new Player(playerId, new Player.LocalPlayerService(playerId));
+                }
+                else if (CurrentMockMode == MockModeSelector.Browser)
+                {
+                    player = new Player(playerId,
+                        new BrowserMockPlayerService(UnityBrowserBridge.Instance, playerId));
+                }
+#else
+                player = new Player(playerId, new Player.PlayerService(playerId));
 #endif
+                Players.Add(playerId, player);
+                return player;
+            }
         }
 
         public void SetState<T>(string key, T value, bool reliable = false)

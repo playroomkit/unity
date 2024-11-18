@@ -26,7 +26,7 @@ namespace Playroom
 
             return Unsubscribe;
         }
-
+        
         public void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
             Action onDisconnectCallback = null)
         {
