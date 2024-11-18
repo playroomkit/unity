@@ -19,7 +19,7 @@ public class GameManagerIsometric : MonoBehaviour
     [SerializeField]
     private GameObject playerPrefab;
 
-    private PlayroomKit _playroomKit = new();
+    private readonly PlayroomKit _playroomKit = new();
 
     private void Start()
     {
@@ -30,23 +30,38 @@ public class GameManagerIsometric : MonoBehaviour
             discord = true,
             gameId = "ii4pV1wfceCjjLvRoo3O",
             roomCode = roomCode,
-        }, () => { _playroomKit.OnPlayerJoin(AddPlayer); }, () => { Debug.Log("OnDisconnect callback"); });
+        }, () =>
+        {
+            _playroomKit.OnPlayerJoin(AddPlayer);
+
+            // _playroomKit.RpcRegister("one", ((data, player) => { Debug.LogWarning("One Event Called"); }));
+            // _playroomKit.RpcRegister("two", ((data, player) => { Debug.LogWarning("two Event Called"); }));
+            // _playroomKit.RpcRegister("one", ((data, player) => { Debug.LogWarning("One Event Called With a diff callback"); }));
+            
+            
+        }, () => { Debug.Log("OnDisconnect callback"); });
     }
+
 
     private void Update()
     {
         if (playerJoined)
         {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                
+                _playroomKit.RpcCall("one", "1", PlayroomKit.RpcMode.ALL, () => { Debug.LogWarning("One Event Called"); });
+                _playroomKit.RpcCall("two", "2", PlayroomKit.RpcMode.ALL, () => { Debug.LogWarning("Two Event Called"); });
+            }
+
             var myPlayer = _playroomKit.MyPlayer();
             var index = players.IndexOf(myPlayer);
 
             playerGameObjects[index].GetComponent<IsometricPlayerController>().LookAround();
             players[index].SetState("angle", playerGameObjects[index].GetComponent<Transform>().rotation);
 
-
             playerGameObjects[index].GetComponent<IsometricPlayerController>().Move();
             players[index].SetState("move", playerGameObjects[index].GetComponent<Transform>().position);
-
 
             for (var i = 0; i < players.Count; i++)
             {

@@ -43,7 +43,6 @@ namespace Playroom
                 _rpc = new BrowserMockRPC();
             }
 #endif
-            Debug.Log(CurrentMockMode.ToString());
         }
 
         // for tests
@@ -163,6 +162,12 @@ namespace Playroom
             return _playroomService.GetState<T>(key);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="rpcRegisterCallback">A callback which takes 2 string params, 1 </param>
+        /// <param name="onResponseReturn"></param>
         public void RpcRegister(string name, Action<string, string> rpcRegisterCallback,
             string onResponseReturn = null)
         {

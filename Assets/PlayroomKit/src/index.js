@@ -885,7 +885,7 @@ mergeInto(LibraryManager.library, {
       }
 
       function onResponseCallback(responseData) {
-        console.log("Response received: ", responseData);
+        // console.log("Response received: ", responseData);
         {{{ makeDynCall('v', 'callbackOnResponse') }}}()
       }
 

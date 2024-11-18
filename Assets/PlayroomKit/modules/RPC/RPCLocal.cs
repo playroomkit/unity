@@ -8,21 +8,31 @@ namespace Playroom
     {
         public class RPCLocal : IRPC
         {
-            private static Dictionary<string, (Action<string, string> callback, string response)> mockRegisterCallbacks =
-                new();
-            
+            private static Dictionary<string, (Action<string, string> callback, string response)>
+                mockRegisterCallbacks =
+                    new();
+
             private static Dictionary<string, Action> mockResponseCallbacks = new();
-            
+
             private readonly IInterop _interop;
-            
-            public void RpcRegister(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null)
+
+            public void RpcRegister(string name, Action<string, string> rpcRegisterCallback,
+                string onResponseReturn = null)
             {
                 mockRegisterCallbacks.TryAdd(name, (rpcRegisterCallback, onResponseReturn));
             }
 
             public void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse = null)
             {
-                mockResponseCallbacks.TryAdd(name, callbackOnResponse);
+                if (mockRegisterCallbacks.ContainsKey(name))
+                {
+                    mockResponseCallbacks.TryAdd(name, callbackOnResponse);
+                }
+                else
+                {
+                    Debug.Log(" ");
+                }
+
 
                 string stringData = Convert.ToString(data);
                 var player = GetPlayerById("mockplayerID123");

@@ -26,7 +26,7 @@ namespace Playroom
 
             return Unsubscribe;
         }
-        
+
         public void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
             Action onDisconnectCallback = null)
         {
@@ -69,6 +69,7 @@ namespace Playroom
                 mockGlobalStates[key] = value;
             else
                 mockGlobalStates.Add(key, value);
+            
             CallbackManager.InvokeCallback(key, value as string);
         }
 
@@ -78,7 +79,6 @@ namespace Playroom
             {
                 try
                 {
-                    // Attempt to convert the string to the expected type T
                     return (T)Convert.ChangeType(typedValue, typeof(T));
                 }
                 catch (InvalidCastException)
@@ -133,7 +133,8 @@ namespace Playroom
             }
 
             List<string> keysToRemove =
-                PlayroomKit.Player.LocalPlayerService.GetMockPlayerStates().Keys.Where(key => !keysToExclude.Contains(key))
+                PlayroomKit.Player.LocalPlayerService.GetMockPlayerStates().Keys
+                    .Where(key => !keysToExclude.Contains(key))
                     .ToList();
 
             foreach (string key in keysToRemove)
