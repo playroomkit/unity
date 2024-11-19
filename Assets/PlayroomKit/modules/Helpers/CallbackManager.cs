@@ -8,7 +8,7 @@ namespace Playroom
     public static class CallbackManager
     {
         private static Dictionary<string, Delegate> callbacks = new();
-
+        
         public static string RegisterCallback(Delegate callback, string key = null)
         {
             if (string.IsNullOrEmpty(key))
@@ -28,7 +28,6 @@ namespace Playroom
 
         public static void InvokeCallback(string key, params string[] args)
         {
-           
             if (callbacks.TryGetValue(key, out Delegate callback))
             {
                 if (callback is Action action && args.Length == 0) action?.Invoke();
@@ -41,7 +40,8 @@ namespace Playroom
             }
             else
             {
-                Debug.LogWarning($"Callback with key {key} not found!, maybe register the callback or call the correct playroom function?");
+                Debug.LogWarning(
+                    $"Callback with key {key} not found!, maybe register the callback or call the correct playroom function?");
             }
         }
 

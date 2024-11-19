@@ -8,14 +8,17 @@ using Random = UnityEngine.Random;
 public class GameManagerIsometric : MonoBehaviour
 {
     private static readonly List<PlayroomKit.Player> players = new();
+
     private static readonly List<GameObject> playerGameObjects = new();
 
     private static readonly Dictionary<string, GameObject> PlayerDict = new();
 
     [SerializeField]
     private static bool playerJoined;
+
     [SerializeField]
     private string roomCode;
+
     [SerializeField]
     private GameObject playerPrefab;
 
@@ -34,14 +37,12 @@ public class GameManagerIsometric : MonoBehaviour
         {
             _playroomKit.OnPlayerJoin(AddPlayer);
 
-            // _playroomKit.RpcRegister("one", ((data, player) => { Debug.LogWarning("One Event Called"); }));
-            // _playroomKit.RpcRegister("two", ((data, player) => { Debug.LogWarning("two Event Called"); }));
-            // _playroomKit.RpcRegister("one", ((data, player) => { Debug.LogWarning("One Event Called With a diff callback"); }));
-            
-            
+            _playroomKit.RpcRegister("one", ((data, player) => { Debug.LogWarning("One Event Called"); }));
+            _playroomKit.RpcRegister("two", ((data, player) => { Debug.LogWarning("two Event Called"); }));
+            _playroomKit.RpcRegister("one",
+                ((data, player) => { Debug.LogWarning("One Event Called With a diff callback"); }));
         }, () => { Debug.Log("OnDisconnect callback"); });
     }
-
 
     private void Update()
     {
@@ -49,9 +50,9 @@ public class GameManagerIsometric : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                
-                _playroomKit.RpcCall("one", "1", PlayroomKit.RpcMode.ALL, () => { Debug.LogWarning("One Event Called"); });
-                _playroomKit.RpcCall("two", "2", PlayroomKit.RpcMode.ALL, () => { Debug.LogWarning("Two Event Called"); });
+                Debug.Log("Space Down");
+                _playroomKit.RpcCall("one", "69420", PlayroomKit.RpcMode.ALL);
+                // _playroomKit.RpcCall("two", "2", PlayroomKit.RpcMode.ALL);
             }
 
             var myPlayer = _playroomKit.MyPlayer();
@@ -82,7 +83,6 @@ public class GameManagerIsometric : MonoBehaviour
         }
     }
 
-
     private void AddPlayer(PlayroomKit.Player player)
     {
         Debug.LogFormat("{0} Is host?: {1}", player.GetProfile().name, _playroomKit.IsHost());
@@ -91,19 +91,15 @@ public class GameManagerIsometric : MonoBehaviour
             new Vector3(Random.Range(-5, 5), 2f, Random.Range(-5, 5)), Quaternion.identity);
 
         player.SetState("color", player.GetProfile().color);
-
         PlayerDict.Add(player.id, playerObj);
         players.Add(player);
         playerGameObjects.Add(playerObj);
 
-
         for (var i = 0; i < players.Count; i++) Debug.Log($"player at index {i} is {players[i].GetProfile().name}");
-
 
         playerJoined = true;
         player.OnQuit(RemovePlayer);
     }
-
 
     [MonoPInvokeCallback(typeof(Action<string>))]
     private static void RemovePlayer(string playerID)
