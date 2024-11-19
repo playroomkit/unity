@@ -8,7 +8,7 @@ namespace Playroom
     public class BrowserMockPlayerService : PlayroomKit.Player.IPlayerBase
     {
         private readonly UnityBrowserBridge _ubb;
-        private string _id;
+        private readonly string _id;
 
         public BrowserMockPlayerService(UnityBrowserBridge ubb, string id)
         {
@@ -99,7 +99,7 @@ namespace Playroom
 
         public Action OnQuit(Action<string> callback)
         {
-            Debug.LogWarning("OnQuit not supported yet in Browser Mode");
+
             return default;
         }
 
