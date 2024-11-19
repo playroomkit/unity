@@ -42,10 +42,10 @@ namespace Playroom
 
             public void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse = null)
             {
-                Debug.Log("RPC Call: " + name);
                 if (CallbackManager.CheckCallback(name))
                 {
                     string jsonData = ConvertToJson(data);
+
                     if (OnResponseCallbacks.ContainsKey(name))
                     {
                         OnResponseCallbacks[name].Add(callbackOnResponse);
@@ -53,26 +53,26 @@ namespace Playroom
                     else
                     {
                         OnResponseCallbacks.Add(name, new List<Action> { callbackOnResponse });
-                        if (!rpcCalledEvents.Contains(name))
+                        if (!RpcCalledEvents.Contains(name))
                         {
-                            rpcCalledEvents.Add(name);
+                            RpcCalledEvents.Add(name);
                         }
                     }
 
-                JSONArray jsonArray = new JSONArray();
-                foreach (string item in RpcCalledEvents)
-                {
-                    jsonArray.Add(item);
-                }
+                    JSONArray jsonArray = new JSONArray();
+                    foreach (string item in RpcCalledEvents)
+                    {
+                        jsonArray.Add(item);
+                    }
 
                     string jsonString = jsonArray.ToString();
-                    /*
-                    This is requrired to sync the rpc events between all players, without this players won't know which event has been called.
-                    this is a temporary fix, RPC's need to be handled within JS for better control.
-                    */
 
+/*
+                    This is required to sync the rpc events between all players, without this players won't know which event has been called.
+                    Update: This fix works fine for now, but there might be a better way.
+                    this is a temporary fix, RPCs need to be handled within JSLIB for better control.
+*/
                     _playroomKit.SetState("rpcCalledEventName", jsonString, reliable: true);
-
                     _interop.RpcCallWrapper(name, jsonData, mode, InvokeOnResponseCallback);
                 }
                 else
