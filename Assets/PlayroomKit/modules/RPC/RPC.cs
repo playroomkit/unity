@@ -45,17 +45,17 @@ namespace Playroom
                 Debug.Log("RPC Call: " + name);
                 if (CallbackManager.CheckCallback(name))
                 {
-                    string jsonData = IRPC.ConvertToJson(data);
-                    if (IRPC.OnResponseCallbacks.ContainsKey(name))
+                    string jsonData = ConvertToJson(data);
+                    if (OnResponseCallbacks.ContainsKey(name))
                     {
-                        IRPC.OnResponseCallbacks[name].Add(callbackOnResponse);
+                        OnResponseCallbacks[name].Add(callbackOnResponse);
                     }
                     else
                     {
-                        IRPC.OnResponseCallbacks.Add(name, new List<Action> { callbackOnResponse });
-                        if (!IRPC.rpcCalledEvents.Contains(name))
+                        OnResponseCallbacks.Add(name, new List<Action> { callbackOnResponse });
+                        if (!rpcCalledEvents.Contains(name))
                         {
-                            IRPC.rpcCalledEvents.Add(name);
+                            rpcCalledEvents.Add(name);
                         }
                     }
 
@@ -73,7 +73,7 @@ namespace Playroom
 
                     _playroomKit.SetState("rpcCalledEventName", jsonString, reliable: true);
 
-                    _interop.RpcCallWrapper(name, jsonData, mode, IRPC.InvokeOnResponseCallback);
+                    _interop.RpcCallWrapper(name, jsonData, mode, InvokeOnResponseCallback);
                 }
                 else
                 {
