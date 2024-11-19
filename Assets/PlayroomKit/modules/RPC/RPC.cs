@@ -35,7 +35,9 @@ namespace Playroom
 
             public void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse = null)
             {
-                    Debug.Log("RPC Call: " + name);
+                Debug.Log("RPC Call: " + name);
+                if (CallbackManager.CheckCallback(name))
+                {
                     string jsonData = IRPC.ConvertToJson(data);
                     if (IRPC.OnResponseCallbacks.ContainsKey(name))
                     {
@@ -61,10 +63,15 @@ namespace Playroom
                     This is requrired to sync the rpc events between all players, without this players won't know which event has been called.
                     this is a temporary fix, RPC's need to be handled within JS for better control.
                     */
-                    
+
                     _playroomKit.SetState("rpcCalledEventName", jsonString, reliable: true);
 
                     _interop.RpcCallWrapper(name, jsonData, mode, IRPC.InvokeOnResponseCallback);
+                }
+                else
+                {
+                    Debug.LogError("RPC is not registered!, register RPC first.");
+                }
             }
 
             // Default Mode
