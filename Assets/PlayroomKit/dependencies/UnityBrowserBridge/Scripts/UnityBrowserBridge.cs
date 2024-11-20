@@ -363,10 +363,10 @@ namespace UBB
         {
             List<string> allParams = new();
 
-            Debug.LogWarning(args);
-
             foreach (var param in args)
             {
+                if (param == null) continue;
+                
                 if (param.StartsWith("{") && param.EndsWith("}"))
                     allParams.Add(param);
                 else
@@ -379,8 +379,6 @@ namespace UBB
             string jsCall = $"{jsFunctionName}({string.Join(", ", allParams)})";
             if (isAsync) jsCall = $"await {jsCall}";
 
-
-            Debug.Log(jsCall);
             ExecuteJS(jsCall);
         }
 
