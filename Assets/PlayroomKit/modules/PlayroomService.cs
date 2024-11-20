@@ -322,12 +322,10 @@ namespace Playroom
                 _interop.UnsubscribeOnPlayerJoinWrapper(callbackID);
             }
 
-            // GETTERS
             private string GetStateString(string key)
             {
                 return _interop.GetStateStringWrapper(key);
             }
-
 
             private int GetStateInt(string key)
             {
