@@ -100,11 +100,7 @@ namespace Playroom
                     Debug.Log($"OnQuit is not implemented for local");
                     return null;
                 }
-
-                public void InvokePlayerOnQuitCallback(string id)
-                {
-                    throw new NotImplementedException();
-                }
+                
 
                 public void Kick(Action onKickCallBack = null)
                 {

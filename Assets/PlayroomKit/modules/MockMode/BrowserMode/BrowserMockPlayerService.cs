@@ -115,11 +115,6 @@ namespace Playroom
             return default;
         }
 
-        public void InvokePlayerOnQuitCallback(string id)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Kick(Action onKickCallBack = null)
         {
             _ubb.CallJs("Kick", null, null, true, _id);
