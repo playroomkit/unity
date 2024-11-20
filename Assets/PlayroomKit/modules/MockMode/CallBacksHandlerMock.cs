@@ -70,6 +70,7 @@ namespace Playroom
             }
         }
 
+        // Called from Browser JS
         public void InvokeCallback(string jsonData)
         {
             var jsonNode = JSON.Parse(jsonData);
