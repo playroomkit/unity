@@ -32,7 +32,7 @@ public class GameManagerIsometric : MonoBehaviour
             matchmaking = false,
             discord = true,
             gameId = "ii4pV1wfceCjjLvRoo3O",
-            roomCode = roomCode,
+            roomCode = "roomCode",
         }, () =>
         {
             _playroomKit.OnPlayerJoin(AddPlayer);
@@ -68,8 +68,9 @@ public class GameManagerIsometric : MonoBehaviour
 
             for (var i = 0; i < players.Count; i++)
             {
-                if (players[i] != null)
+                if (players[i] != null && PlayerDict.TryGetValue(players[i].id, out GameObject playerObj))
                 {
+                    Debug.Log("Getting state of: " + players[i].id);
                     var pos = players[i].GetState<Vector3>("move");
                     var rotate = players[i].GetState<Quaternion>("angle");
                     var color = players[i].GetState<Color>("color");
@@ -110,6 +111,7 @@ public class GameManagerIsometric : MonoBehaviour
         Debug.Log("Here?");
         if (PlayerDict.TryGetValue(playerID, out var player))
         {
+            Debug.Log("Deleting player" + playerID);
             PlayerDict.Remove(playerID);
             playerGameObjects.Remove(player);
             Destroy(player);

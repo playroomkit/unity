@@ -17,6 +17,7 @@ namespace Playroom
                 public T GetState<T>(string key);
                 public Profile GetProfile();
                 public Action OnQuit(Action<string> callback);
+                public void InvokePlayerOnQuitCallback(string id);
                 public void Kick(Action onKickCallBack = null);
 
                 public void WaitForState(string stateKey, Action<string> onStateSetCallback = null);

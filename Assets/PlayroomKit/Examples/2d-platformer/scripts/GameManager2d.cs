@@ -114,8 +114,9 @@ public class GameManager2d : MonoBehaviour
 
             for (var i = 0; i < players.Count; i++)
             {
-                if (players[i] != null)
+                if (players[i] != null && PlayerDict.TryGetValue(players[i].id, out GameObject playerObj))
                 {
+                    Debug.Log("Getting state of: " + players[i].id);
                     var pos = players[i].GetState<Vector3>("pos");
                     
                     Debug.Log(pos);

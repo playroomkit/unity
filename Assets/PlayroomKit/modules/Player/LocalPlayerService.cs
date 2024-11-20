@@ -101,6 +101,11 @@ namespace Playroom
                     return null;
                 }
 
+                public void InvokePlayerOnQuitCallback(string id)
+                {
+                    throw new NotImplementedException();
+                }
+
                 public void Kick(Action onKickCallBack = null)
                 {
                     var player = GetPlayerById(_id);

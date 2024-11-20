@@ -211,9 +211,10 @@ namespace Playroom
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void __OnQuitInternalHandler(string playerId)
             {
+                Debug.Log("OnQuitInternalHandler from playeroom service called");
                 if (Players.TryGetValue(playerId, out Player player))
                 {
-                    throw new NotImplementedException(); //implement OnQuitWrapperCallback;
+                    player.InvokePlayerOnQuitCallback();
                 }
                 else
                 {

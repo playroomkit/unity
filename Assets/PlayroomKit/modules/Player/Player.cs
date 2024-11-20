@@ -136,6 +136,12 @@ namespace Playroom
                 _playerService.WaitForState(StateKey, onStateSetCallback);
             }
 
+            
+            public void InvokePlayerOnQuitCallback()
+            {
+                _playerService.InvokePlayerOnQuitCallback(id);
+            }
+
             //DI END
 
 
