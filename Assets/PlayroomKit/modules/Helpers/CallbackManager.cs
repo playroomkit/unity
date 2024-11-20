@@ -44,12 +44,6 @@ namespace Playroom
                     $"Callback with key {key} not found!, maybe register the callback or call the correct playroom function?");
             }
         }
-        
-        public static bool CheckCallback(string key)
-        {
-            return callbacks.TryGetValue(key, out Delegate callback);
-        }
-        
 
         private static string GenerateKey()
         {
