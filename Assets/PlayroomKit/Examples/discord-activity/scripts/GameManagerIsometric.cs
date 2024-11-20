@@ -70,7 +70,6 @@ public class GameManagerIsometric : MonoBehaviour
             {
                 if (players[i] != null && PlayerDict.TryGetValue(players[i].id, out GameObject playerObj))
                 {
-                    Debug.Log("Getting state of: " + players[i].id);
                     var pos = players[i].GetState<Vector3>("move");
                     var rotate = players[i].GetState<Quaternion>("angle");
                     var color = players[i].GetState<Color>("color");
