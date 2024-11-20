@@ -175,7 +175,6 @@ namespace Playroom
                 [MonoPInvokeCallback(typeof(Action))]
                 public void OnQuitWrapperCallback(string id)
                 {
-                    Debug.Log($"OnQuitWrapperCallback: {id}");
                     if (OnQuitCallbacks != null)
                         foreach (var callback in OnQuitCallbacks)
                             callback?.Invoke(id);

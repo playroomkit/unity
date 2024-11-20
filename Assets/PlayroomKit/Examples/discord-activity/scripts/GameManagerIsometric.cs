@@ -102,14 +102,11 @@ public class GameManagerIsometric : MonoBehaviour
         playerJoined = true;
         player.OnQuit(RemovePlayer);
     }
-
-    // FIX:
+    
     private static void RemovePlayer(string playerID)
     {
-        Debug.Log("Here?");
         if (PlayerDict.TryGetValue(playerID, out var player))
         {
-            Debug.Log("Deleting player" + playerID);
             PlayerDict.Remove(playerID);
             playerGameObjects.Remove(player);
             Destroy(player);
