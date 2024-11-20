@@ -210,7 +210,7 @@ Kick = async function (playerID) {
   await playerState.kick();
 };
 
-OnQuit = function (playerID) {
+OnQuit = function (playerID, callbackKey) {
   if (!window.Playroom) {
     console.error(
       "Playroom library is not loaded. Please make sure to call InsertCoin first."
@@ -234,6 +234,7 @@ OnQuit = function (playerID) {
 
   playerState.onQuit((state) => {
     console.log(`${state.id} quit!`);
+    unityInstance.SendMessage("CallbackManager", "InvokeCallback", callbackKey, state.id);
   });
 };
 
