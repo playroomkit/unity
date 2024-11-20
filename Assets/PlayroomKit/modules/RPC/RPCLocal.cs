@@ -30,9 +30,8 @@ namespace Playroom
                 }
                 else
                 {
-                    Debug.Log(" ");
+                    Debug.LogWarning("Already registered callback for this event");
                 }
-
 
                 string stringData = Convert.ToString(data);
                 var player = GetPlayerById("mockplayerID123");
