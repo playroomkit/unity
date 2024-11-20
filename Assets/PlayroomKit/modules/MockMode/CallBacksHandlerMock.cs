@@ -61,7 +61,6 @@ namespace Playroom
                 Debug.LogWarning(
                     $"key: {key}, gameObjectName: {callbackInfo.gameObject.name}, callbackName: {callbackInfo.methodName}");
 
-
                 callbackInfo.gameObject.SendMessage(callbackInfo.methodName, new string[] { returnData, callerId },
                     SendMessageOptions.DontRequireReceiver);
             }
@@ -77,7 +76,6 @@ namespace Playroom
 
             string key = jsonNode["key"];
             string parameter = jsonNode["parameter"];
-
 
             if (callbacks.TryGetValue(key, out var callbackInfo))
             {

@@ -101,9 +101,10 @@ public class GameManagerIsometric : MonoBehaviour
         player.OnQuit(RemovePlayer);
     }
 
-    [MonoPInvokeCallback(typeof(Action<string>))]
+    // [MonoPInvokeCallback(typeof(Action<string>))]
     private static void RemovePlayer(string playerID)
     {
+        Debug.Log("Here?");
         if (PlayerDict.TryGetValue(playerID, out var player))
         {
             PlayerDict.Remove(playerID);
