@@ -38,11 +38,11 @@ public class GameManagerIsometric : MonoBehaviour
             _playroomKit.OnPlayerJoin(AddPlayer);
 
             _playroomKit.RpcRegister("one", ((data, player) => { Debug.LogWarning("One Event Called"); }));
-            
+
             _playroomKit.RpcRegister("two", ((data, player) => { Debug.LogWarning("two Event Called"); }));
-            
-            _playroomKit.RpcRegister("one", ((data, player) => { Debug.LogWarning("One Event Called With a diff callback"); }));
-            
+
+            _playroomKit.RpcRegister("one",
+                ((data, player) => { Debug.LogWarning("One Event Called With a diff callback"); }));
         }, () => { Debug.Log("OnDisconnect callback"); });
     }
 
@@ -102,7 +102,7 @@ public class GameManagerIsometric : MonoBehaviour
         playerJoined = true;
         player.OnQuit(RemovePlayer);
     }
-    
+
     private static void RemovePlayer(string playerID)
     {
         if (PlayerDict.TryGetValue(playerID, out var player))
@@ -110,6 +110,10 @@ public class GameManagerIsometric : MonoBehaviour
             PlayerDict.Remove(playerID);
             playerGameObjects.Remove(player);
             Destroy(player);
+
+            foreach (var (key, value) in PlayerDict) Debug.Log($"player {key} is still in the room");
+            
+            Debug.Log(playerID + " has left the room!");
         }
         else
         {

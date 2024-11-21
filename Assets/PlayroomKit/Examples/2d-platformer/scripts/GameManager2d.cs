@@ -177,7 +177,6 @@ public class GameManager2d : MonoBehaviour
     /// <summary>
     /// Remove player from the game, called when the player leaves / closes the game.
     /// </summary>
-    [MonoPInvokeCallback(typeof(Action<string>))]
     private static void RemovePlayer(string playerID)
     {
         if (PlayerDict.TryGetValue(playerID, out GameObject player))
