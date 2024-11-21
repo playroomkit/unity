@@ -3,11 +3,11 @@ using UnityEngine;
 public static class DebugLogger
 {
 #if UNITY_EDITOR || DEBUG
-    [SerializeField] private static UnityEngine.UI.Toggle logToggle;
+    public static bool enableLogs = true; // Toggle to enable/disable logs
 
     public static void Log(string message)
     {
-        if (logToggle.isOn)
+        if (enableLogs)
         {
             Debug.Log(message);
         }
@@ -15,7 +15,7 @@ public static class DebugLogger
 
     public static void LogWarning(string message)
     {
-        if (logToggle.isOn)
+        if (enableLogs)
         {
             Debug.LogWarning(message);
         }
@@ -23,7 +23,7 @@ public static class DebugLogger
 
     public static void LogError(string message)
     {
-        if (logToggle.isOn)
+        if (enableLogs)
         {
             Debug.LogError(message);
         }

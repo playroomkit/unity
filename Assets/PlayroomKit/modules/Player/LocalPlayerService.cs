@@ -28,7 +28,7 @@ namespace Playroom
 
                 public void SetStateHelper<T>(string key, T value, bool reliable = false)
                 {
-                    Debug.Log($"MockPlayerService setState: {key} => {value}");
+                    DebugLogger.Log($"MockPlayerService setState: {key} => {value}");
                     if (mockPlayerStatesDictionary.ContainsKey(key))
                         mockPlayerStatesDictionary[key] = value;
                     else
@@ -115,7 +115,7 @@ namespace Playroom
 
                     string key = $"{stateKey}_{_id}";
                     CallbackManager.RegisterCallback(onStateSetCallback, key);
-                    Debug.Log($"Callback registered, the key is: {key}");
+                    DebugLogger.Log($"Callback registered, the key is: {key}");
                 }
             }
         }

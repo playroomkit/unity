@@ -80,7 +80,7 @@ namespace Playroom
 
             if (callbacks.TryGetValue(key, out var callbackInfo))
             {
-                Debug.LogWarning(
+                DebugLogger.LogWarning(
                     $"key: {key}, gameObjectName: {callbackInfo.gameObject.name}, callbackName: {callbackInfo.methodName}");
 
                 callbackInfo.gameObject.SendMessage(callbackInfo.methodName, parameter,

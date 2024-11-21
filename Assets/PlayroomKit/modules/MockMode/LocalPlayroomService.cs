@@ -14,7 +14,7 @@ namespace Playroom
 
         public Action OnPlayerJoin(Action<PlayroomKit.Player> onPlayerJoinCallback)
         {
-            Debug.Log("On Player Join");
+            DebugLogger.Log("On Player Join");
             var testPlayer = PlayroomKit.GetPlayerById(PlayerId);
             PlayroomKit.IPlayroomBase.OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
             PlayroomKit.IPlayroomBase.__OnPlayerJoinCallbackHandler(PlayerId);
@@ -31,7 +31,7 @@ namespace Playroom
             Action onDisconnectCallback = null)
         {
             PlayroomKit.IsPlayRoomInitialized = true;
-            Debug.Log("Coin Inserted");
+            DebugLogger.Log("Coin Inserted");
             string optionsJson = null;
             if (options != null) optionsJson = Helpers.SerializeInitOptions(options);
             onLaunchCallBack?.Invoke();

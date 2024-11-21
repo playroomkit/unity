@@ -91,7 +91,7 @@ namespace Playroom
         {
             string json = _ubb.CallJs<string>("GetProfile", null, null, false, _id);
 
-            Debug.Log(json);
+            DebugLogger.Log("Profile Json: " + json);
 
             var profileData = Helpers.ParseProfile(json);
             return profileData;

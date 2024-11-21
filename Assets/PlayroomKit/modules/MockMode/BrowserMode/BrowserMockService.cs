@@ -49,7 +49,7 @@ namespace Playroom
 
             void Unsub()
             {
-                Debug.Log("Unsubscribing from OnPlayerJoin");
+                DebugLogger.Log("Unsubscribing from OnPlayerJoin");
             }
 
             return Unsub;
