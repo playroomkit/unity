@@ -238,20 +238,16 @@ public class GameManagerDemo : MonoBehaviour
 
     public void RegisterRpcShoot()
     {
-        _playroomKit.RpcRegister("ShootLaser", HandleScoreUpdate, "You shot a bullet!");
-        _playroomKit.RpcRegister("ShootLaser", (aS, aS1) =>
-        {
-            Debug.Log("Shoot RPC called again");
-        });
-        
+        _playroomKit.RpcRegister("ShootLaser", HandleScoreUpdate);
+        _playroomKit.RpcRegister("ShootLaser", (aS, aS1) => { Debug.LogWarning("Shoot RPC called again"); });
+
         Debug.Log("Shoot function registered");
         logsText.text = "ShootLaser RPC registered";
     }
 
     private void HandleScoreUpdate(string data, string caller)
     {
-        var player = _playroomKit.GetPlayer(caller);
-        Debug.Log($"Caller: {caller}, Player Name: {player?.GetProfile().name}, Data: {data}");
+        Debug.LogWarning("Handle Score Called");
 
         if (PlayerDict.TryGetValue(caller, out var playerObj))
         {
@@ -278,6 +274,7 @@ public class GameManagerDemo : MonoBehaviour
         var myPlayer = _playroomKit.MyPlayer();
         var index = players.IndexOf(myPlayer);
         score = playerGameObjects[index].GetComponent<Laser>().ShootLaser(score);
+        
         _playroomKit.RpcCall("ShootLaser", score, PlayroomKit.RpcMode.ALL,
             () => { logsText.text = "ShootLaser RPC Called"; });
     }

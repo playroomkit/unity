@@ -37,6 +37,7 @@ namespace Playroom
                 {
                     var callback = callbacks[i];
                     Debug.Log("Looping in InvokeRPCRegisterCallback");
+                    
                     callback?.Invoke(data, sender);
                 }
             }
