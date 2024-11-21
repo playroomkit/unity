@@ -97,10 +97,9 @@ namespace Playroom
 
                 public Action OnQuit(Action<string> callback)
                 {
-                    Debug.Log($"OnQuit is not implemented for local");
+                    Debug.Log($"OnQuit is not supported in Local Mock Mode.");
                     return null;
                 }
-                
 
                 public void Kick(Action onKickCallBack = null)
                 {
