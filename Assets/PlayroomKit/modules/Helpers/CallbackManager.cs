@@ -8,7 +8,7 @@ namespace Playroom
     public static class CallbackManager
     {
         private static Dictionary<string, Delegate> callbacks = new();
-        
+
         public static string RegisterCallback(Delegate callback, string key = null)
         {
             if (string.IsNullOrEmpty(key))
@@ -38,18 +38,13 @@ namespace Playroom
                     Debug.LogError(
                         $"Callback with key {key} is of unsupported type or incorrect number of arguments: {args[0]}!");
             }
-            else
-            {
-                Debug.LogWarning(
-                    $"Callback with key {key} not found!, maybe register the callback or call the correct playroom function?");
-            }
         }
-        
+
         public static bool CheckCallback(string key)
         {
             return callbacks.TryGetValue(key, out Delegate callback);
         }
-        
+
 
         private static string GenerateKey()
         {
