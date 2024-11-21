@@ -42,8 +42,6 @@ namespace Playroom
 
             public void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse = null)
             {
-                if (CallbackManager.CheckCallback(name))
-                {
                     string jsonData = ConvertToJson(data);
 
                     if (OnResponseCallbacks.ContainsKey(name))
@@ -74,11 +72,7 @@ namespace Playroom
 */
                     _playroomKit.SetState("rpcCalledEventName", jsonString, reliable: true);
                     _interop.RpcCallWrapper(name, jsonData, mode, InvokeOnResponseCallback);
-                }
-                else
-                {
-                    Debug.LogError("RPC is not registered!, register RPC first.");
-                }
+                
             }
 
             public void RpcCall(string name, object data, Action callbackOnResponse = null)
