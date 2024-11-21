@@ -239,6 +239,11 @@ public class GameManagerDemo : MonoBehaviour
     public void RegisterRpcShoot()
     {
         _playroomKit.RpcRegister("ShootLaser", HandleScoreUpdate, "You shot a bullet!");
+        _playroomKit.RpcRegister("ShootLaser", (aS, aS1) =>
+        {
+            Debug.Log("Shoot RPC called again");
+        });
+        
         Debug.Log("Shoot function registered");
         logsText.text = "ShootLaser RPC registered";
     }

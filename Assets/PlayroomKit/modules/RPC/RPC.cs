@@ -36,49 +36,42 @@ namespace Playroom
             public void RpcRegister(string name, Action<string, string> rpcRegisterCallback,
                 string onResponseReturn = null)
             {
-                CallbackManager.RegisterCallback(rpcRegisterCallback, name);
+                CallbackManager.RegisterRpcCallback(rpcRegisterCallback, name);
                 _interop.RpcRegisterWrapper(name, InvokeRpcRegisterCallBack, onResponseReturn);
             }
 
             public void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse = null)
             {
-                if (CallbackManager.CheckCallback(name))
+                string jsonData = ConvertToJson(data);
+
+                if (OnResponseCallbacks.ContainsKey(name))
                 {
-                    string jsonData = ConvertToJson(data);
-
-                    if (OnResponseCallbacks.ContainsKey(name))
+                    OnResponseCallbacks[name].Add(callbackOnResponse);
+                }
+                else
+                {
+                    OnResponseCallbacks.Add(name, new List<Action> { callbackOnResponse });
+                    if (!RpcCalledEvents.Contains(name))
                     {
-                        OnResponseCallbacks[name].Add(callbackOnResponse);
+                        RpcCalledEvents.Add(name);
                     }
-                    else
-                    {
-                        OnResponseCallbacks.Add(name, new List<Action> { callbackOnResponse });
-                        if (!RpcCalledEvents.Contains(name))
-                        {
-                            RpcCalledEvents.Add(name);
-                        }
-                    }
+                }
 
-                    JSONArray jsonArray = new JSONArray();
-                    foreach (string item in RpcCalledEvents)
-                    {
-                        jsonArray.Add(item);
-                    }
+                JSONArray jsonArray = new JSONArray();
+                foreach (string item in RpcCalledEvents)
+                {
+                    jsonArray.Add(item);
+                }
 
-                    string jsonString = jsonArray.ToString();
+                string jsonString = jsonArray.ToString();
 
 /*
                     This is required to sync the rpc events between all players, without this players won't know which event has been called.
                     Update: This fix works fine for now, but there might be a better way.
                     this is a temporary fix, RPCs need to be handled within JSLIB for better control.
 */
-                    _playroomKit.SetState("rpcCalledEventName", jsonString, reliable: true);
-                    _interop.RpcCallWrapper(name, jsonData, mode, InvokeOnResponseCallback);
-                }
-                else
-                {
-                    Debug.LogError("RPC is not registered!, register RPC first.");
-                }
+                _playroomKit.SetState("rpcCalledEventName", jsonString, reliable: true);
+                _interop.RpcCallWrapper(name, jsonData, mode, InvokeOnResponseCallback);
             }
 
             public void RpcCall(string name, object data, Action callbackOnResponse = null)
@@ -136,7 +129,6 @@ namespace Playroom
                     Debug.LogError(ex.Message);
                 }
 
-
                 List<string> updatedRpcCalledEvents = new();
                 // This state is required to update the called rpc events list, (Temp fix see RpcCall for more) 
                 string nameJson = _playroomKit.GetState<string>("rpcCalledEventName");
@@ -150,12 +142,18 @@ namespace Playroom
                     updatedRpcCalledEvents.Add(item);
                 }
 
-                foreach (string name in updatedRpcCalledEvents)
+                Debug.Log(updatedRpcCalledEvents.Count);
+
+                for (var i = 0; i < updatedRpcCalledEvents.Count; i++)
                 {
-                    CallbackManager.InvokeCallback(name, dataJson, senderJson);
+                    string name = updatedRpcCalledEvents[i];
+
+                    Debug.Log("i " + i + " name " + name);
+                    
+                    CallbackManager.InvokeRpcRegisterCallBack(name, dataJson, senderJson);
                 }
             }
-    
+
             #endregion
 
             #region Helpers
