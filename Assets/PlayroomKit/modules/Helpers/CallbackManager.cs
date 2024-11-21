@@ -8,7 +8,46 @@ namespace Playroom
     public static class CallbackManager
     {
         private static Dictionary<string, Delegate> callbacks = new();
-        
+
+        private static Dictionary<string, List<Action<string, string>>> RpcCallBacks = new();
+
+        public static string RegisterRpcCallback(Action<string, string> callback, string key = null)
+        {
+            if (string.IsNullOrEmpty(key))
+                key = GenerateKey();
+
+            if (RpcCallBacks.ContainsKey(key))
+            {
+                RpcCallBacks[key].Add(callback);
+            }
+            else
+            {
+                RpcCallBacks.Add(key, new List<Action<string, string>> { callback });
+            }
+
+            Debug.Log($"{key} and number of callbacks {RpcCallBacks[key].Count}");
+            return key;
+        }
+
+        public static void InvokeRpcRegisterCallBack(string name, string data, string sender)
+        {
+            if (RpcCallBacks.TryGetValue(name, out List<Action<string, string>> callbacks))
+            {
+                for (var i = 0; i < callbacks.Count; i++)
+                {
+                    var callback = callbacks[i];
+                    Debug.Log("Looping in InvokeRPCRegisterCallback");
+                    callback?.Invoke(data, sender);
+                }
+            }
+            else
+            {
+                Debug.LogWarning(
+                    $"Callback with key {name} not found!, maybe register the callback or call the correct playroom function?");
+            }
+        }
+
+
         public static string RegisterCallback(Delegate callback, string key = null)
         {
             if (string.IsNullOrEmpty(key))
@@ -44,12 +83,12 @@ namespace Playroom
                     $"Callback with key {key} not found!, maybe register the callback or call the correct playroom function?");
             }
         }
-        
+
         public static bool CheckCallback(string key)
         {
             return callbacks.TryGetValue(key, out Delegate callback);
         }
-        
+
 
         private static string GenerateKey()
         {

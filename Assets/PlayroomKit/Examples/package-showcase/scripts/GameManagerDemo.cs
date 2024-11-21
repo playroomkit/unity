@@ -93,7 +93,6 @@ public class GameManagerDemo : MonoBehaviour
     }
 
 
-    [MonoPInvokeCallback(typeof(Action<string>))]
     private void RemovePlayer(string playerID)
     {
         if (PlayerDict.TryGetValue(playerID, out var player))
