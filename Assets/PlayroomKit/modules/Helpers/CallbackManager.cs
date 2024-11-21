@@ -40,12 +40,6 @@ namespace Playroom
             }
         }
 
-        public static bool CheckCallback(string key)
-        {
-            return callbacks.TryGetValue(key, out Delegate callback);
-        }
-
-
         private static string GenerateKey()
         {
             return Guid.NewGuid().ToString();
