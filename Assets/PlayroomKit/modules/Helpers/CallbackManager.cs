@@ -25,7 +25,6 @@ namespace Playroom
                 RpcCallBacks.Add(key, new List<Action<string, string>> { callback });
             }
 
-            Debug.Log($"{key} and number of callbacks {RpcCallBacks[key].Count}");
             return key;
         }
 
@@ -36,8 +35,6 @@ namespace Playroom
                 for (var i = 0; i < callbacks.Count; i++)
                 {
                     var callback = callbacks[i];
-                    Debug.Log("Looping in InvokeRPCRegisterCallback");
-                    
                     callback?.Invoke(data, sender);
                 }
             }

@@ -147,9 +147,6 @@ namespace Playroom
                 for (var i = 0; i < updatedRpcCalledEvents.Count; i++)
                 {
                     string name = updatedRpcCalledEvents[i];
-
-                    Debug.Log("i " + i + " name " + name);
-                    
                     CallbackManager.InvokeRpcRegisterCallBack(name, dataJson, senderJson);
                 }
             }
