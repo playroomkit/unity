@@ -57,6 +57,12 @@ namespace Playroom
         {
             BrowserMockService.MockOnPlayerJoinWrapper(playerId);
         }
+        
+        
+        private void OnQuitPlayer(string playerId)
+        {
+            PlayroomKit.IPlayroomBase.__OnQuitInternalHandler(playerId);
+        }
 #endif
     }
 }

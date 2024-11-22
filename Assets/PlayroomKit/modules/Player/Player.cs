@@ -139,17 +139,21 @@ namespace Playroom
             
             public void InvokePlayerOnQuitCallback()
             {
-                // Attempt the cast and throw an exception if it fails
-                if ((_playerService is PlayerService playerService))
+                if (_playerService is PlayerService playerService)
                 {
                     playerService.InvokePlayerOnQuitCallback(id);
                 }
+                #if UNITY_EDITOR || DEBUG
+                else if (_playerService is BrowserMockPlayerService playerService2)
+                {
+                    playerService2.InvokePlayerOnQuitCallback(id);
+                }
+                #endif
                 else
                 {
-                    Debug.LogWarning("InvokePlayerOnQuitCallback is only supported o build");
+                    Debug.LogWarning("InvokePlayerOnQuitCallback is only supported on build");
                 }
-
-                // Invoke the method on the casted object
+                
                 
             }
 

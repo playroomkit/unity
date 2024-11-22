@@ -13,7 +13,7 @@ namespace Playroom
 
         private static PlayroomKit _instance;
         public static bool IsPlayRoomInitialized;
-        private static readonly Dictionary<string, Player> Players = new();
+        internal static readonly Dictionary<string, Player> Players = new();
 
         public enum MockModeSelector
         {
