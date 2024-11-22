@@ -133,17 +133,13 @@ namespace Playroom
                 // This state is required to update the called rpc events list, (Temp fix see RpcCall for more) 
                 string nameJson = _playroomKit.GetState<string>("rpcCalledEventName");
 
-                Debug.Log($"rpcCalledEventName {nameJson}: {dataJson}");
-
                 JSONArray jsonArray = JSON.Parse(nameJson).AsArray;
                 foreach (JSONNode node in jsonArray)
                 {
                     string item = node.Value;
                     updatedRpcCalledEvents.Add(item);
                 }
-
-                Debug.Log(updatedRpcCalledEvents.Count);
-
+                
                 for (var i = 0; i < updatedRpcCalledEvents.Count; i++)
                 {
                     string name = updatedRpcCalledEvents[i];
