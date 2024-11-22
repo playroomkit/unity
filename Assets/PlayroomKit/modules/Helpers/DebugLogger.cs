@@ -2,8 +2,9 @@ using UnityEngine;
 
 public static class DebugLogger
 {
-#if UNITY_EDITOR || DEBUG
     public static bool enableLogs = true; // Toggle to enable/disable logs
+#if UNITY_EDITOR || DEBUG
+    
 
     public static void Log(string message)
     {

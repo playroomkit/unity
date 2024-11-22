@@ -142,10 +142,13 @@ namespace Playroom
                 if (_playerService is PlayerService playerService)
                 {
                     playerService.InvokePlayerOnQuitCallback(id);
-                }else if (_playerService is BrowserMockPlayerService playerService2)
+                }
+                #if UNITY_EDITOR || DEBUG
+                else if (_playerService is BrowserMockPlayerService playerService2)
                 {
                     playerService2.InvokePlayerOnQuitCallback(id);
                 }
+                #endif
                 else
                 {
                     Debug.LogWarning("InvokePlayerOnQuitCallback is only supported on build");
