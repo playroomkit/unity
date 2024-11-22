@@ -64,7 +64,7 @@ namespace Playroom
                 }
 
                 _interop.InsertCoinWrapper(
-                    optionsJson, InvokeInsertCoin, __OnQuitInternalHandler, onDisconnectCallbackHandler,
+                    optionsJson, InvokeInsertCoin, IPlayroomBase.__OnQuitInternalHandler, onDisconnectCallbackHandler,
                     InvokeOnErrorInsertCoin, onLaunchCallBackKey, onDisconnectCallBackKey);
             }
 
@@ -206,19 +206,6 @@ namespace Playroom
 #if UNITY_WEBGL && !UNITY_EDITOR
                 WebGLInput.captureAllKeyboardInput = true;
 #endif
-            }
-
-            [MonoPInvokeCallback(typeof(Action<string>))]
-            private static void __OnQuitInternalHandler(string playerId)
-            {
-                if (Players.TryGetValue(playerId, out Player player))
-                {
-                    player.InvokePlayerOnQuitCallback();
-                }
-                else
-                {
-                    Debug.LogError("[__OnQuitInternalHandler] Couldn't find player with id " + playerId);
-                }
             }
 
             public void OnDisconnect(Action callback)

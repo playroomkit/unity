@@ -36,6 +36,8 @@ namespace Playroom
             }
 
             var gameObjectName = _ubb.GetGameObject("InsertCoin").name;
+            var devManagerName = _ubb.GetGameObject("devManager").name;
+            Debug.Log("DevManagerName:" + gameObjectName);
             _ubb.CallJs("InsertCoin", onLaunchCallBack.GetMethodInfo().Name, gameObjectName, true, optionsJson);
             PlayroomKit.IsPlayRoomInitialized = true;
         }
@@ -190,7 +192,7 @@ namespace Playroom
         {
             PlayroomKit.IPlayroomBase.OnPlayerJoinWrapperCallback(playerId);
         }
-
+        
         #endregion
     }
 #endif

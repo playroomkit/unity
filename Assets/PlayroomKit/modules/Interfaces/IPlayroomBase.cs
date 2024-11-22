@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using AOT;
 using Playroom;
+using UnityEngine;
 
 namespace Playroom
 {
@@ -68,6 +69,20 @@ namespace Playroom
             protected static void InvokeCallback(string stateKey, string stateVal)
             {
                 CallbackManager.InvokeCallback(stateKey, stateVal);
+            }
+            
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            internal static void __OnQuitInternalHandler(string playerId)
+            {
+                Debug.Log("OnQuitInternalHandler");
+                if (Players.TryGetValue(playerId, out Player player))
+                {
+                    player.InvokePlayerOnQuitCallback();
+                }
+                else
+                {
+                    Debug.LogError("[__OnQuitInternalHandler] Couldn't find player with id " + playerId);
+                }
             }
         }
     }

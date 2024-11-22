@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UBB;
 using UnityEngine;
 
@@ -97,23 +98,23 @@ namespace Playroom
             return profileData;
         }
 
-        public Action OnQuit(Action<string> callback)
-        {
-            string callbackKey = $"OnQuit_{_id}";
-
-            GameObject callbackObject = new GameObject(callbackKey);
-            Debug.Log(callbackKey);
-
-            MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
-            invoker.SetCallback(callback, callbackKey);
-
-            CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
-
-            // TODO: actually call on quit
-            _ubb.CallJs("OnQuit", null, null, false, callbackKey, _id);
-
-            return default;
-        }
+        // public Action OnQuit(Action<string> callback)
+        // {
+        //     string callbackKey = $"OnQuit_{_id}";
+        //
+        //     GameObject callbackObject = new GameObject(callbackKey);
+        //     Debug.Log(callbackKey);
+        //
+        //     MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
+        //     invoker.SetCallback(callback, callbackKey);
+        //
+        //     CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
+        //
+        //     // TODO: actually call on quit
+        //     _ubb.CallJs("OnQuit", null, null, false, callbackKey, _id);
+        //
+        //     return default;
+        // }
 
         public void Kick(Action onKickCallBack = null)
         {
@@ -131,6 +132,33 @@ namespace Playroom
             CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
 
             _ubb.CallJs("WaitForPlayerState", null, null, true, _id, stateKey, callbackKey);
+        }
+        
+        private List<Action<string>> OnQuitCallbacks = new();
+
+        public Action OnQuit(Action<string> callback)
+        {
+            OnQuitCallbacks.Add(callback);
+
+            void Unsubscribe()
+            {
+                OnQuitCallbacks.Remove(callback);
+            }
+
+            return Unsubscribe;
+        }
+        
+        public void OnQuitWrapperCallback(string id)
+        {
+            Debug.Log($"OnQuitWrapperCallback: {id}");
+            if (OnQuitCallbacks != null)
+                foreach (var callback in OnQuitCallbacks)
+                    callback?.Invoke(id);
+        }
+        
+        internal void InvokePlayerOnQuitCallback(string id)
+        {
+            OnQuitWrapperCallback(id);
         }
 
         #region UTILS
