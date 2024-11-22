@@ -74,7 +74,6 @@ namespace Playroom
             [MonoPInvokeCallback(typeof(Action<string>))]
             internal static void __OnQuitInternalHandler(string playerId)
             {
-                Debug.Log("OnQuitInternalHandler");
                 if (Players.TryGetValue(playerId, out Player player))
                 {
                     player.InvokePlayerOnQuitCallback();

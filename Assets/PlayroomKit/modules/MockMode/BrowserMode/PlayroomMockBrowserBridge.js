@@ -7,7 +7,6 @@
 };
 
 OnPlayerJoin = function (gameObjectName) {
-  console.log("OnPlayerJoin JS")
   Playroom.onPlayerJoin((player) => {
     unityInstance.SendMessage(gameObjectName, "GetPlayerID", player.id);
     player.onQuit((state) => {

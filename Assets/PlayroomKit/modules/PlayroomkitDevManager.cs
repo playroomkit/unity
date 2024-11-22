@@ -61,7 +61,6 @@ namespace Playroom
         
         private void OnQuitPlayer(string playerId)
         {
-            Debug.Log("Quitting Player Dev Manager");
             PlayroomKit.IPlayroomBase.__OnQuitInternalHandler(playerId);
         }
 #endif
