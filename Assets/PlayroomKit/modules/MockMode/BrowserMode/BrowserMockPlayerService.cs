@@ -98,24 +98,6 @@ namespace Playroom
             return profileData;
         }
 
-        // public Action OnQuit(Action<string> callback)
-        // {
-        //     string callbackKey = $"OnQuit_{_id}";
-        //
-        //     GameObject callbackObject = new GameObject(callbackKey);
-        //     Debug.Log(callbackKey);
-        //
-        //     MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
-        //     invoker.SetCallback(callback, callbackKey);
-        //
-        //     CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
-        //
-        //     // TODO: actually call on quit
-        //     _ubb.CallJs("OnQuit", null, null, false, callbackKey, _id);
-        //
-        //     return default;
-        // }
-
         public void Kick(Action onKickCallBack = null)
         {
             _ubb.CallJs("Kick", null, null, true, _id);
