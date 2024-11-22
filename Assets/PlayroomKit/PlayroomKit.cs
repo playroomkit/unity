@@ -29,18 +29,26 @@ namespace Playroom
 #if !UNITY_EDITOR
                 _playroomService = new PlayroomBuildService(new PlayroomKitInterop());
                 _rpc = new RPC(this);
-
 #elif UNITY_EDITOR
 
-            if (CurrentMockMode == MockModeSelector.Local)
+
+            switch (CurrentMockMode)
             {
-                _playroomService = new LocalMockPlayroomService();
-                _rpc = new RPCLocal();
-            }
-            else if (CurrentMockMode == MockModeSelector.Browser)
-            {
-                _playroomService = new BrowserMockService();
-                _rpc = new BrowserMockRPC();
+                case MockModeSelector.Local:
+                    Debug.Log("Starting playroom in Local Mock Mode");
+                    _playroomService = new LocalMockPlayroomService();
+                    _rpc = new RPCLocal();
+                    break;
+                
+                case MockModeSelector.Browser:
+                    Debug.Log("Starting playroom in Browser Mock Mode");
+                    _playroomService = new BrowserMockService();
+                    _rpc = new BrowserMockRPC();
+                    break;
+                default:
+                    _playroomService = new LocalMockPlayroomService();
+                    _rpc = new RPCLocal();
+                    break;
             }
 #endif
         }
@@ -89,14 +97,15 @@ namespace Playroom
             else
             {
 #if UNITY_EDITOR
-                if (CurrentMockMode == MockModeSelector.Local)
+                switch (CurrentMockMode)
                 {
-                    player = new Player(playerId, new Player.LocalPlayerService(playerId));
-                }
-                else if (CurrentMockMode == MockModeSelector.Browser)
-                {
-                    player = new Player(playerId,
-                        new BrowserMockPlayerService(UnityBrowserBridge.Instance, playerId));
+                    case MockModeSelector.Local:
+                        player = new Player(playerId, new Player.LocalPlayerService(playerId));
+                        break;
+                    case MockModeSelector.Browser:
+                        player = new Player(playerId,
+                            new BrowserMockPlayerService(UnityBrowserBridge.Instance, playerId));
+                        break;
                 }
 #else
                 player = new Player(playerId, new Player.PlayerService(playerId));
@@ -301,7 +310,5 @@ namespace Playroom
         {
             _playroomService.UnsubscribeOnQuit();
         }
-
-        // DI END
     }
 }

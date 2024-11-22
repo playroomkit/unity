@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using System.Runtime.InteropServices;
 using AOT;
@@ -139,6 +140,11 @@ namespace Playroom
                     return Unsubscribe;
                 }
 
+                internal void InvokePlayerOnQuitCallback(string id)
+                {
+                    OnQuitWrapperCallback(id);
+                }
+
 
                 public void Kick(Action onKickCallBack = null)
                 {
@@ -167,14 +173,14 @@ namespace Playroom
                 }
 
                 [MonoPInvokeCallback(typeof(Action))]
-                private void OnQuitWrapperCallback(string id)
+                public void OnQuitWrapperCallback(string id)
                 {
                     if (OnQuitCallbacks != null)
                         foreach (var callback in OnQuitCallbacks)
                             callback?.Invoke(id);
                 }
 
-                void InvokeOnQuitWrapperCallback(string id)
+                public void InvokeOnQuitWrapperCallback(string id)
                 {
                     OnQuitWrapperCallback(id);
                 }
@@ -186,6 +192,8 @@ namespace Playroom
                         stateValue == 0 ? false :
                         throw new InvalidOperationException($"GetStateBool: {key} is not a bool");
                 }
+                
+                
             }
         }
     }

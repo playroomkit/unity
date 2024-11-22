@@ -213,7 +213,7 @@ namespace Playroom
             {
                 if (Players.TryGetValue(playerId, out Player player))
                 {
-                    throw new NotImplementedException(); //implement OnQuitWrapperCallback;
+                    player.InvokePlayerOnQuitCallback();
                 }
                 else
                 {

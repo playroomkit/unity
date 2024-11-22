@@ -32,17 +32,17 @@ public class GameManagerIsometric : MonoBehaviour
             matchmaking = false,
             discord = true,
             gameId = "ii4pV1wfceCjjLvRoo3O",
-            roomCode = roomCode,
+            roomCode = "roomCode",
         }, () =>
         {
             _playroomKit.OnPlayerJoin(AddPlayer);
 
             _playroomKit.RpcRegister("one", ((data, player) => { Debug.LogWarning("One Event Called"); }));
-            
+
             _playroomKit.RpcRegister("two", ((data, player) => { Debug.LogWarning("two Event Called"); }));
-            
-            _playroomKit.RpcRegister("one", ((data, player) => { Debug.LogWarning("One Event Called With a diff callback"); }));
-            
+
+            _playroomKit.RpcRegister("one",
+                ((data, player) => { Debug.LogWarning("One Event Called With a diff callback"); }));
         }, () => { Debug.Log("OnDisconnect callback"); });
     }
 
@@ -68,7 +68,7 @@ public class GameManagerIsometric : MonoBehaviour
 
             for (var i = 0; i < players.Count; i++)
             {
-                if (players[i] != null)
+                if (players[i] != null && PlayerDict.TryGetValue(players[i].id, out GameObject playerObj))
                 {
                     var pos = players[i].GetState<Vector3>("move");
                     var rotate = players[i].GetState<Quaternion>("angle");
@@ -104,12 +104,15 @@ public class GameManagerIsometric : MonoBehaviour
 
     private static void RemovePlayer(string playerID)
     {
-        Debug.Log("Here?");
         if (PlayerDict.TryGetValue(playerID, out var player))
         {
             PlayerDict.Remove(playerID);
             playerGameObjects.Remove(player);
             Destroy(player);
+
+            foreach (var (key, value) in PlayerDict) Debug.Log($"player {key} is still in the room");
+            
+            Debug.Log(playerID + " has left the room!");
         }
         else
         {

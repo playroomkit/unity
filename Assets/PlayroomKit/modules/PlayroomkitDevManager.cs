@@ -47,7 +47,6 @@ namespace Playroom
         private void UpdateMockMode()
         {
             PlayroomKit.CurrentMockMode = mockMode;
-           
         }
 
         /// <summary>

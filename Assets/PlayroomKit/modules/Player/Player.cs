@@ -136,6 +136,23 @@ namespace Playroom
                 _playerService.WaitForState(StateKey, onStateSetCallback);
             }
 
+            
+            public void InvokePlayerOnQuitCallback()
+            {
+                // Attempt the cast and throw an exception if it fails
+                if ((_playerService is PlayerService playerService))
+                {
+                    playerService.InvokePlayerOnQuitCallback(id);
+                }
+                else
+                {
+                    Debug.LogWarning("InvokePlayerOnQuitCallback is only supported o build");
+                }
+
+                // Invoke the method on the casted object
+                
+            }
+
             //DI END
 
 
