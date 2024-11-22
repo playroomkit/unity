@@ -18,6 +18,8 @@ namespace Playroom
             "InsertCoin() must be called in order to connect PlayroomKit server.\n\nChoose the gameObject (with the script) which calls InsertCoin.\n\nRead More in the docs")]
         [SerializeField]
         private GameObject insertCoinCaller;
+        
+        [SerializeField] private bool enableLogs = false;
         private static PlayroomkitDevManager Instance { get; set; }
 
 
@@ -37,6 +39,8 @@ namespace Playroom
             UpdateMockMode();
             UnityBrowserBridge.Instance.RegisterGameObject("InsertCoin", insertCoinCaller);
             UnityBrowserBridge.Instance.RegisterGameObject("devManager", gameObject);
+            
+            DebugLogger.enableLogs = enableLogs;
         }
 
         private void OnValidate()

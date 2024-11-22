@@ -89,3 +89,11 @@
     
     color: aqua;
 }
+
+.toggle {
+    height: 25px;
+    font-size: 14px;
+    -unity-text-align: middle-center;
+    margin-left: 32px;
+    margin-bottom: 32px;
+}
