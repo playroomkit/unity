@@ -36,16 +36,18 @@ namespace Playroom
                 Destroy(gameObject);
             }
 
+            DebugLogger.enableLogs = enableLogs;
+
             UpdateMockMode();
             UnityBrowserBridge.Instance.RegisterGameObject("InsertCoin", insertCoinCaller);
             UnityBrowserBridge.Instance.RegisterGameObject("devManager", gameObject);
-            
-            DebugLogger.enableLogs = enableLogs;
         }
 
         private void OnValidate()
         {
+            DebugLogger.enableLogs = enableLogs;
             UpdateMockMode();
+            DebugLogger.Log("Setting Current Mode to: " + PlayroomKit.CurrentMockMode);
         }
 
         private void UpdateMockMode()
