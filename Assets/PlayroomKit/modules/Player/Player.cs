@@ -136,28 +136,25 @@ namespace Playroom
                 _playerService.WaitForState(StateKey, onStateSetCallback);
             }
 
-            
+
             public void InvokePlayerOnQuitCallback()
             {
+#if UNITY_WEBGL
                 if (_playerService is PlayerService playerService)
                 {
                     playerService.InvokePlayerOnQuitCallback(id);
                 }
-                #if UNITY_EDITOR || DEBUG
+#elif UNITY_EDITOR
                 else if (_playerService is BrowserMockPlayerService playerService2)
                 {
                     playerService2.InvokePlayerOnQuitCallback(id);
                 }
-                #endif
+#endif
                 else
                 {
                     Debug.LogWarning("InvokePlayerOnQuitCallback is only supported on build");
                 }
-                
-                
             }
-
-            //DI END
 
 
             [Serializable]

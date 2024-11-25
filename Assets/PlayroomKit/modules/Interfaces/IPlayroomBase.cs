@@ -58,7 +58,7 @@ namespace Playroom
             protected static void OnPlayerJoinWrapperCallback(string id)
             {
                 var player = GetPlayerById(id);
-                foreach (var callback in IPlayroomBase.OnPlayerJoinCallbacks)
+                foreach (var callback in OnPlayerJoinCallbacks)
                 {
                     callback?.Invoke(player);
                 }
