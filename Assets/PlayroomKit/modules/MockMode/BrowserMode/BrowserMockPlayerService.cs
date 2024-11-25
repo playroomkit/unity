@@ -130,14 +130,14 @@ namespace Playroom
             return Unsubscribe;
         }
         
-        public void OnQuitWrapperCallback(string id)
+        private void OnQuitWrapperCallback(string id)
         {
             if (OnQuitCallbacks != null)
                 foreach (var callback in OnQuitCallbacks)
                     callback?.Invoke(id);
         }
         
-        internal void InvokePlayerOnQuitCallback(string id)
+        public void InvokePlayerOnQuitCallback(string id)
         {
             OnQuitWrapperCallback(id);
         }

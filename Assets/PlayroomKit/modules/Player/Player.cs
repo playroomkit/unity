@@ -139,22 +139,7 @@ namespace Playroom
             
             public void InvokePlayerOnQuitCallback()
             {
-                if (_playerService is PlayerService playerService)
-                {
-                    playerService.InvokePlayerOnQuitCallback(id);
-                }
-                #if UNITY_EDITOR || DEBUG
-                else if (_playerService is BrowserMockPlayerService playerService2)
-                {
-                    playerService2.InvokePlayerOnQuitCallback(id);
-                }
-                #endif
-                else
-                {
-                    Debug.LogWarning("InvokePlayerOnQuitCallback is only supported on build");
-                }
-                
-                
+                _playerService.InvokePlayerOnQuitCallback(id);
             }
 
             //DI END

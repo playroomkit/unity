@@ -140,7 +140,7 @@ namespace Playroom
                     return Unsubscribe;
                 }
 
-                internal void InvokePlayerOnQuitCallback(string id)
+                public void InvokePlayerOnQuitCallback(string id)
                 {
                     OnQuitWrapperCallback(id);
                 }

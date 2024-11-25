@@ -22,6 +22,8 @@ namespace Playroom
                 public void WaitForState(string stateKey, Action<string> onStateSetCallback = null);
 
                 protected static Action onKickCallBack = null;
+
+                public void InvokePlayerOnQuitCallback(string id);
             }
         }
     }
