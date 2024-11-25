@@ -117,6 +117,11 @@ namespace Playroom
                     CallbackManager.RegisterCallback(onStateSetCallback, key);
                     DebugLogger.Log($"Callback registered, the key is: {key}");
                 }
+
+                public void InvokePlayerOnQuitCallback(string id)
+                {
+                    Debug.LogWarning("InvokePlayerOnQuitCallback is only supported on build");
+                }
             }
         }
     }
