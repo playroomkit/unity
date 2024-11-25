@@ -9,6 +9,43 @@ namespace Playroom
     {
         private static Dictionary<string, Delegate> callbacks = new();
 
+        private static Dictionary<string, List<Action<string, string>>> RpcCallBacks = new();
+
+        public static string RegisterRpcCallback(Action<string, string> callback, string key = null)
+        {
+            if (string.IsNullOrEmpty(key))
+                key = GenerateKey();
+
+            if (RpcCallBacks.ContainsKey(key))
+            {
+                RpcCallBacks[key].Add(callback);
+            }
+            else
+            {
+                RpcCallBacks.Add(key, new List<Action<string, string>> { callback });
+            }
+
+            return key;
+        }
+
+        public static void InvokeRpcRegisterCallBack(string name, string data, string sender)
+        {
+            if (RpcCallBacks.TryGetValue(name, out List<Action<string, string>> callbacks))
+            {
+                for (var i = 0; i < callbacks.Count; i++)
+                {
+                    var callback = callbacks[i];
+                    callback?.Invoke(data, sender);
+                }
+            }
+            else
+            {
+                Debug.LogWarning(
+                    $"Callback with key {name} not found!, maybe register the callback or call the correct playroom function?");
+            }
+        }
+
+
         public static string RegisterCallback(Delegate callback, string key = null)
         {
             if (string.IsNullOrEmpty(key))
@@ -28,7 +65,6 @@ namespace Playroom
 
         public static void InvokeCallback(string key, params string[] args)
         {
-           
             if (callbacks.TryGetValue(key, out Delegate callback))
             {
                 if (callback is Action action && args.Length == 0) action?.Invoke();
@@ -41,9 +77,16 @@ namespace Playroom
             }
             else
             {
-                Debug.LogWarning($"Callback with key {key} not found!, maybe register the callback or call the correct playroom function?");
+                Debug.LogWarning(
+                    $"Callback with key {key} not found!, maybe register the callback or call the correct playroom function?");
             }
         }
+
+        public static bool CheckCallback(string key)
+        {
+            return callbacks.TryGetValue(key, out Delegate callback);
+        }
+
 
         private static string GenerateKey()
         {

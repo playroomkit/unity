@@ -13,18 +13,23 @@ public class GameManager : MonoBehaviour
     /// <summary>
     ///     List of players and their gameObjects.
     /// </summary>
-    [SerializeField] private List<PlayroomKit.Player> players = new();
+    [SerializeField]
+    private List<PlayroomKit.Player> players = new();
 
     private static readonly List<GameObject> playerGameObjects = new();
     private static readonly Dictionary<string, GameObject> PlayerDict = new();
 
-    [SerializeField] private GameObject playerPrefab;
+    [SerializeField]
+    private GameObject playerPrefab;
 
-    [SerializeField] private TextMeshProUGUI playerIDText;
-    [SerializeField] private TextMeshProUGUI score;
+    [SerializeField]
+    private TextMeshProUGUI playerIDText;
+    [SerializeField]
+    private TextMeshProUGUI score;
 
 
-    [SerializeField] private string playerID;
+    [SerializeField]
+    private string playerID;
 
     private PlayroomKit _playroomKit = new PlayroomKit();
 
@@ -37,12 +42,12 @@ public class GameManager : MonoBehaviour
         }, () =>
         {
             _playroomKit.OnPlayerJoin(AddPlayer);
-            _playroomKit.RpcRegister("score", (data, caller) => print($"{data} by {_playroomKit.GetPlayer(caller).GetProfile().name}"));
+            _playroomKit.RpcRegister("score",
+                (data, caller) => print($"{data} by {_playroomKit.GetPlayer(caller).GetProfile().name}"));
         }, () => { Debug.Log("OnDisconnect callback"); });
     }
-    
-    
-    
+
+
     /// <summary>
     ///     Update the player position and sync.
     /// </summary>

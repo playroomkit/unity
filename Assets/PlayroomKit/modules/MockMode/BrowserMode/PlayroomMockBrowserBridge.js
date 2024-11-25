@@ -9,6 +9,9 @@
 OnPlayerJoin = function (gameObjectName) {
   Playroom.onPlayerJoin((player) => {
     unityInstance.SendMessage(gameObjectName, "GetPlayerID", player.id);
+    player.onQuit((state) => {
+      unityInstance.SendMessage(gameObjectName, "OnQuitPlayer", player.id);
+    })
   });
 };
 
@@ -208,33 +211,6 @@ Kick = async function (playerID) {
   }
 
   await playerState.kick();
-};
-
-OnQuit = function (playerID) {
-  if (!window.Playroom) {
-    console.error(
-      "Playroom library is not loaded. Please make sure to call InsertCoin first."
-    );
-    reject("Playroom library not loaded");
-    return;
-  }
-
-  const players = window._multiplayer.getPlayers();
-
-  if (typeof players !== "object" || players === null) {
-    console.error('The "players" variable is not an object:', players);
-    return null;
-  }
-  const playerState = players[playerID];
-
-  if (!playerState) {
-    console.error("Player with ID", playerID, "not found.");
-    return null;
-  }
-
-  playerState.onQuit((state) => {
-    console.log(`${state.id} quit!`);
-  });
 };
 
 ResetPlayersStates = async function (keysToExclude) {

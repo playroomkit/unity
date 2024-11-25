@@ -14,7 +14,7 @@ namespace Playroom
 
         public Action OnPlayerJoin(Action<PlayroomKit.Player> onPlayerJoinCallback)
         {
-            Debug.Log("On Player Join");
+            DebugLogger.Log("On Player Join");
             var testPlayer = PlayroomKit.GetPlayerById(PlayerId);
             PlayroomKit.IPlayroomBase.OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
             PlayroomKit.IPlayroomBase.__OnPlayerJoinCallbackHandler(PlayerId);
@@ -26,12 +26,12 @@ namespace Playroom
 
             return Unsubscribe;
         }
-        
+
         public void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
             Action onDisconnectCallback = null)
         {
             PlayroomKit.IsPlayRoomInitialized = true;
-            Debug.Log("Coin Inserted");
+            DebugLogger.Log("Coin Inserted");
             string optionsJson = null;
             if (options != null) optionsJson = Helpers.SerializeInitOptions(options);
             onLaunchCallBack?.Invoke();
@@ -69,6 +69,7 @@ namespace Playroom
                 mockGlobalStates[key] = value;
             else
                 mockGlobalStates.Add(key, value);
+            
             CallbackManager.InvokeCallback(key, value as string);
         }
 
@@ -78,7 +79,6 @@ namespace Playroom
             {
                 try
                 {
-                    // Attempt to convert the string to the expected type T
                     return (T)Convert.ChangeType(typedValue, typeof(T));
                 }
                 catch (InvalidCastException)
@@ -133,7 +133,8 @@ namespace Playroom
             }
 
             List<string> keysToRemove =
-                PlayroomKit.Player.LocalPlayerService.GetMockPlayerStates().Keys.Where(key => !keysToExclude.Contains(key))
+                PlayroomKit.Player.LocalPlayerService.GetMockPlayerStates().Keys
+                    .Where(key => !keysToExclude.Contains(key))
                     .ToList();
 
             foreach (string key in keysToRemove)

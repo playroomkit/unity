@@ -16,7 +16,7 @@ namespace Playroom
             MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
             invoker.SetCallback(rpcRegisterCallback, callbackKey);
             CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
-
+            
             UnityBrowserBridge.Instance.CallJs("RpcRegister", null, null, false, name, callbackKey, onResponseReturn);
         }
 

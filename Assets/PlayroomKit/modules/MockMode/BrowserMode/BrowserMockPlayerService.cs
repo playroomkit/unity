@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using UBB;
 using UnityEngine;
 
 namespace Playroom
 {
 #if UNITY_EDITOR
-
     public class BrowserMockPlayerService : PlayroomKit.Player.IPlayerBase
     {
         private readonly UnityBrowserBridge _ubb;
-        private string _id;
+        private readonly string _id;
 
         public BrowserMockPlayerService(UnityBrowserBridge ubb, string id)
         {
@@ -92,16 +92,10 @@ namespace Playroom
         {
             string json = _ubb.CallJs<string>("GetProfile", null, null, false, _id);
 
-            Debug.Log(json);
+            DebugLogger.Log("Profile Json: " + json);
 
             var profileData = Helpers.ParseProfile(json);
             return profileData;
-        }
-
-        public Action OnQuit(Action<string> callback)
-        {
-            Debug.LogWarning("OnQuit not supported yet in Browser Mode");
-            return default;
         }
 
         public void Kick(Action onKickCallBack = null)
@@ -121,7 +115,32 @@ namespace Playroom
 
             _ubb.CallJs("WaitForPlayerState", null, null, true, _id, stateKey, callbackKey);
         }
+        
+        private List<Action<string>> OnQuitCallbacks = new();
 
+        public Action OnQuit(Action<string> callback)
+        {
+            OnQuitCallbacks.Add(callback);
+
+            void Unsubscribe()
+            {
+                OnQuitCallbacks.Remove(callback);
+            }
+
+            return Unsubscribe;
+        }
+        
+        public void OnQuitWrapperCallback(string id)
+        {
+            if (OnQuitCallbacks != null)
+                foreach (var callback in OnQuitCallbacks)
+                    callback?.Invoke(id);
+        }
+        
+        internal void InvokePlayerOnQuitCallback(string id)
+        {
+            OnQuitWrapperCallback(id);
+        }
 
         #region UTILS
 
