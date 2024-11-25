@@ -154,11 +154,12 @@ namespace Playroom
 
 
                 private static Action<string> onSetState;
+
                 public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
                 {
                     onSetState = onStateSetCallback;
                 }
-                
+
                 [MonoPInvokeCallback(typeof(Action<string>))]
                 private static void InvokeKickCallBack(string data)
                 {
@@ -179,11 +180,6 @@ namespace Playroom
                             callback?.Invoke(id);
                 }
 
-                public void InvokeOnQuitWrapperCallback(string id)
-                {
-                    OnQuitWrapperCallback(id);
-                }
-
                 private bool GetPlayerStateBoolById(string key)
                 {
                     var stateValue = _interop.GetPlayerStateIntWrapper(_id, key);
@@ -191,8 +187,6 @@ namespace Playroom
                         stateValue == 0 ? false :
                         throw new InvalidOperationException($"GetStateBool: {key} is not a bool");
                 }
-                
-                
             }
         }
     }

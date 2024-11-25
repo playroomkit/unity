@@ -2,8 +2,11 @@
     <img src="https://docs.joinplayroom.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Funity-blog.16612f8c.png&w=3840&q=75" width="100%" style="border-radius: 12px">
     <h1 style="margin-top:8px">PlayroomKit SDK for Unity</h1>
    <p>The easiest multiplayer infrastructure for the web</p>
+   <a href="https://github.com/playroomkit/unity/releases/latest"><img src="https://img.shields.io/github/v/release/playroomkit/unity?label=Download latest (stable)&style=for-the-badge&color=green" /></a>
+   <br />
+   <a href="https://github.com/playroomkit/unity/releases"><img src="https://img.shields.io/github/v/release/playroomkit/unity?include_prereleases&label=Download latest (beta)&style=for-the-badge" /></a>
+   <br />
    <a href="https://docs.joinplayroom.com/usage/unity"><img src="https://img.shields.io/static/v1?label=Docs&message=API Ref&color=000&style=for-the-badge" /></a>
-   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" /></a>
    <a href="https://discord.gg/HGkSRAD8"><img src="https://img.shields.io/static/v1?label=Discord&message=Join&color=7289da&style=for-the-badge" /></a>
 </div>
 

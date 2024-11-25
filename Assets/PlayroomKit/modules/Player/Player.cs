@@ -136,13 +136,11 @@ namespace Playroom
                 _playerService.WaitForState(StateKey, onStateSetCallback);
             }
 
-            
+
             public void InvokePlayerOnQuitCallback()
             {
                 _playerService.InvokePlayerOnQuitCallback(id);
             }
-
-            //DI END
 
 
             [Serializable]
@@ -150,8 +148,7 @@ namespace Playroom
             {
                 [NonSerialized]
                 public UnityEngine.Color color;
-
-                [FormerlySerializedAs("jsonColor")]
+                
                 public PlayerProfileColor playerProfileColor;
                 public string name;
                 public string photo;

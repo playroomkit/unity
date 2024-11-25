@@ -41,10 +41,12 @@ namespace Playroom
             VisualElement insertCoinContainer = InsertCoinContainerCreator();
             Button launchPlayerButton = LaunchPlayerButtonCreator();
             VisualElement docsLink = DocumentationLinkCreator();
+            VisualElement enableLogsToggle = EnableLogsToggleCreator();
 
             // Add elements to root
             root.Add(mockModeContainer);
             root.Add(insertCoinContainer);
+            root.Add(enableLogsToggle);
             root.Add(launchPlayerButton);
             root.Add(docsLink);
 
@@ -170,6 +172,52 @@ namespace Playroom
 
             return docLink;
         }
+        
+        private VisualElement EnableLogsToggleCreator()
+        {
+            // Create a horizontal container
+            VisualElement enableLogsContainer = new VisualElement();
+            enableLogsContainer.style.flexDirection = FlexDirection.Row; // Arrange items horizontally
+
+            // Create the label for Enable Logs
+            var enableLogsLabel = new Label("Enable Logs");
+            enableLogsLabel.AddToClassList("label"); // Add consistent styling
+
+            // Create the tooltip button
+            var debugToggleToolTip = new Button(() => { })
+            {
+                text = "?",
+                tooltip = "Enable or disable logging for debugging purposes."
+            };
+            debugToggleToolTip.AddToClassList("tooltip-button");
+
+            // Create the toggle
+            var enableLogsToggle = new Toggle();
+            enableLogsToggle.AddToClassList("toggle"); // Apply consistent styling to the toggle
+
+            // Manually bind the property if BindProperty isn't supported
+            var enableLogsProperty = serializedObject.FindProperty("enableLogs");
+
+            // Set the initial value
+            enableLogsToggle.value = enableLogsProperty.boolValue;
+
+            // Register value changed callback
+            enableLogsToggle.RegisterValueChangedCallback(evt =>
+            {
+                enableLogsProperty.boolValue = evt.newValue;
+                serializedObject.ApplyModifiedProperties();
+            });
+
+            // Add the elements to the container in the desired order
+            enableLogsContainer.Add(enableLogsLabel);    // Add label first
+            enableLogsContainer.Add(debugToggleToolTip); // Add tooltip button next
+            enableLogsContainer.Add(enableLogsToggle);   // Add toggle last
+
+            return enableLogsContainer;
+        }
+
+
+
     }
 }
 #endif

@@ -54,7 +54,7 @@ public class GameManagerIsometric : MonoBehaviour
             {
                 Debug.Log("Space Down");
                 _playroomKit.RpcCall("one", "69420", PlayroomKit.RpcMode.ALL);
-                _playroomKit.RpcCall("two", "2", PlayroomKit.RpcMode.ALL);
+                // _playroomKit.RpcCall("two", "2", PlayroomKit.RpcMode.ALL);
             }
 
             var myPlayer = _playroomKit.MyPlayer();
@@ -77,7 +77,6 @@ public class GameManagerIsometric : MonoBehaviour
                     if (playerGameObjects[i] != null)
                     {
                         playerGameObjects[i].GetComponent<Transform>().SetPositionAndRotation(pos, rotate);
-
                         playerGameObjects[i].GetComponent<Renderer>().material.color = color;
                     }
                 }
