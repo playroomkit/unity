@@ -31,17 +31,14 @@ namespace Playroom
                 _rpc = new RPC(this);
 #elif UNITY_EDITOR
 
-
             switch (CurrentMockMode)
             {
                 case MockModeSelector.Local:
-                    Debug.Log("Starting playroom in Local Mock Mode");
                     _playroomService = new LocalMockPlayroomService();
                     _rpc = new RPCLocal();
                     break;
                 
                 case MockModeSelector.Browser:
-                    Debug.Log("Starting playroom in Browser Mock Mode");
                     _playroomService = new BrowserMockService();
                     _rpc = new BrowserMockRPC();
                     break;
