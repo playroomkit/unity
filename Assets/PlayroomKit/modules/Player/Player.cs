@@ -162,8 +162,7 @@ namespace Playroom
             {
                 [NonSerialized]
                 public UnityEngine.Color color;
-
-                [FormerlySerializedAs("jsonColor")]
+                
                 public PlayerProfileColor playerProfileColor;
                 public string name;
                 public string photo;
