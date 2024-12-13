@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UBB;
 using UnityEngine;
+using SimpleJSON;
 
 namespace Playroom
 {
@@ -58,9 +59,9 @@ namespace Playroom
 
         public T GetState<T>(string key)
         {
-            string stringValue = _ubb.CallJs<string>("GetPlayerStateByPlayerId", null, null, false, _id, key);
+            string rawValue = _ubb.CallJs<string>("GetPlayerStateByPlayerId", null, null, false, _id, key);
 
-            if (string.IsNullOrEmpty(stringValue))
+            if (string.IsNullOrEmpty(rawValue))
             {
                 Debug.LogWarning($"State for key '{key}' is null or empty.");
                 return default;
@@ -68,21 +69,31 @@ namespace Playroom
 
             try
             {
-                if (typeof(T) == typeof(int) || typeof(T) == typeof(float) || typeof(T) == typeof(bool) ||
-                    typeof(T) == typeof(string))
+                var jsonNode = JSON.Parse(rawValue);
+                
+                if (typeof(T) == typeof(string))
                 {
-                    var wrapper = JsonUtility.FromJson<PrimitiveWrapper<T>>(stringValue);
-                    return wrapper.value;
+                    return (T)(object)jsonNode.Value;
                 }
-                else
+                if (typeof(T) == typeof(int))
                 {
-                    return JsonUtility.FromJson<T>(stringValue);
+                    return (T)(object)jsonNode.AsInt;
                 }
+                if (typeof(T) == typeof(float))
+                {
+                    return (T)(object)jsonNode.AsFloat;
+                }
+                if (typeof(T) == typeof(bool))
+                {
+                    return (T)(object)jsonNode.AsBool;
+                }
+
+                return JsonUtility.FromJson<T>(rawValue);
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to parse JSON for key '{key}': {e.Message}");
-                return default; // Return default if parsing fails.
+                Debug.LogError($"Failed to parse state for key '{key}': {e.Message}\nReceived value: {rawValue}");
+                return default;
             }
         }
 
