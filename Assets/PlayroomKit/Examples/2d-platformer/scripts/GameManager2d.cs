@@ -11,16 +11,19 @@ using TMPro;
 
 public class GameManager2d : MonoBehaviour
 {
-
-    [SerializeField] private GameObject playerPrefab;
+    [SerializeField]
+    private GameObject playerPrefab;
 
     /// <summary>
     /// player scores and UI to display score of the game.
     /// </summary>
     [Header("Score and UI")]
-    [SerializeField] private int score = 0;
-    [SerializeField] private TextMeshProUGUI scoreTextPlayer1;
-    [SerializeField] private TextMeshProUGUI scoreTextPlayer2;
+    [SerializeField]
+    private int score = 0;
+    [SerializeField]
+    private TextMeshProUGUI scoreTextPlayer1;
+    [SerializeField]
+    private TextMeshProUGUI scoreTextPlayer2;
 
     private TextMeshProUGUI selectedScoreText;
 
@@ -49,10 +52,10 @@ public class GameManager2d : MonoBehaviour
         _playroomKit.InsertCoin(new InitOptions()
         {
             maxPlayersPerRoom = 2,
-            defaultPlayerStates = new() {
-                        {"score", 0},
-                    },
-
+            defaultPlayerStates = new()
+            {
+                { "score", 0 },
+            },
         }, () =>
         {
             _playroomKit.OnPlayerJoin(AddPlayer);
@@ -92,7 +95,6 @@ public class GameManager2d : MonoBehaviour
         {
             Debug.LogError($"No GameObject found for caller: {caller}");
         }
-
     }
 
     /// <summary>
@@ -110,25 +112,36 @@ public class GameManager2d : MonoBehaviour
 
             players[index].SetState("pos", playerGameObjects[index].transform.position);
 
+            players[index].SetState("a", "HELLO WORLD");
+            players[index].SetState("d", 11);
+            players[index].SetState("b", 9.81f);
+            players[index].SetState("c", false);
+
             ShootBullet(index);
 
             for (var i = 0; i < players.Count; i++)
             {
                 if (players[i] != null && PlayerDict.TryGetValue(players[i].id, out GameObject playerObj))
                 {
-                    Debug.Log("Getting state of: " + players[i].id);
+                    // Debug.Log("Getting state of: " + players[i].id);
                     var pos = players[i].GetState<Vector3>("pos");
-                    
-                    Debug.Log(pos);
-                    
+
+                    string a = players[i].GetState<string>("a");
+                    float b = players[i].GetState<float>("b");
+                    bool c = players[i].GetState<bool>("c");
+                    int d = players[i].GetState<int>("d");
+
+                    Debug.Log($"Player {i} state: a: {a}, b: {b}, c: {c}, d: {d}");
+                    Debug.Log($"a type: {a.GetType()}, b type: {b.GetType()}, c type: {c.GetType()}, d type: {d.GetType()}");
+
+
                     var color = players[i].GetState<Color>("color");
                     if (playerGameObjects != null)
                     {
                         playerGameObjects[i].GetComponent<Transform>().position = pos;
-                        
+
                         playerGameObjects[i].GetComponent<SpriteRenderer>().color = color;
                     }
-
                 }
             }
         }
@@ -144,12 +157,11 @@ public class GameManager2d : MonoBehaviour
         {
             Vector3 playerPosition = playerGameObjects[playerIndex].transform.position;
 
-            score = playerGameObjects[playerIndex].GetComponent<PlayerController2d>().ShootBullet(playerPosition, 50f, score);
+            score = playerGameObjects[playerIndex].GetComponent<PlayerController2d>()
+                .ShootBullet(playerPosition, 50f, score);
 
-            _playroomKit.RpcCall("ShootBullet", score, PlayroomKit.RpcMode.ALL,  () =>
-            {
-                Debug.Log("Shooting bullet");
-            });
+            _playroomKit.RpcCall("ShootBullet", score, PlayroomKit.RpcMode.ALL,
+                () => { Debug.Log("Shooting bullet"); });
         }
     }
 
