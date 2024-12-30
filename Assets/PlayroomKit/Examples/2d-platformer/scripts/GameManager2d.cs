@@ -194,6 +194,7 @@ public class GameManager2d : MonoBehaviour
         if (PlayerDict.TryGetValue(playerID, out GameObject player))
         {
             PlayerDict.Remove(playerID);
+            players.Remove(players.Find(p => p.id == playerID));
             playerGameObjects.Remove(player);
             Destroy(player);
         }

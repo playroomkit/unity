@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using AOT;
+using ParrelSync;
 using Playroom;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -22,7 +23,24 @@ public class GameManagerIsometric : MonoBehaviour
     [SerializeField]
     private GameObject playerPrefab;
 
-    private readonly PlayroomKit _playroomKit = new();
+    private PlayroomKit _playroomKit;
+
+    private void Awake()
+    {
+        _playroomKit = new PlayroomKit();
+
+#if  UNITY_EDITOR
+        if (ClonesManager.IsClone())
+        {
+            string hi = ClonesManager.GetArgument();
+            Debug.LogWarning($"{hi} from clone");
+        }
+        else
+        {
+            Debug.LogWarning("OG Project");
+        }
+#endif
+    }
 
     private void Start()
     {
@@ -111,7 +129,7 @@ public class GameManagerIsometric : MonoBehaviour
             Destroy(player);
 
             foreach (var (key, value) in PlayerDict) Debug.Log($"player {key} is still in the room");
-            
+
             Debug.Log(playerID + " has left the room!");
         }
         else

@@ -77,7 +77,7 @@ namespace Playroom
             }
             else
             {
-                Debug.LogWarning(
+                DebugLogger.Log(
                     $"Callback with key {key} not found!, maybe register the callback or call the correct playroom function?");
             }
         }

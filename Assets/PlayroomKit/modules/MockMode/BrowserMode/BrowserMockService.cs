@@ -33,7 +33,7 @@ namespace Playroom
             {
                 options.roomCode = "TEST_ROOM";
                 optionsJson = Helpers.SerializeInitOptions(options);
-            }
+            }   
 
             var gameObjectName = _ubb.GetGameObject("InsertCoin").name;
             var devManagerName = _ubb.GetGameObject("devManager").name;

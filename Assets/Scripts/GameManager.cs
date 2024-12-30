@@ -41,6 +41,7 @@ public class GameManager : MonoBehaviour
             maxPlayersPerRoom = 15,
         }, () =>
         {
+            _playroomKit.SetState("hi", "Test");
             _playroomKit.OnPlayerJoin(AddPlayer);
             _playroomKit.RpcRegister("score",
                 (data, caller) => print($"{data} by {_playroomKit.GetPlayer(caller).GetProfile().name}"));
@@ -53,23 +54,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        if (Input.GetKey(KeyCode.K))
-        {
-            // PlayroomKit.SetState("score", 500);
-            _playroomKit.RpcCall("score", 500);
-            Debug.Log(_playroomKit.GetRoomCode());
-        }
 
-        if (Input.GetKey(KeyCode.L))
-        {
-            var s = _playroomKit.GetState<int>("score");
-
-            _playroomKit.RpcCall("score", "lol");
-            score.text = $"Score: {s}";
-        }
-
-
-        Reset();
 /*
         if (!playerJoined) return;
 
@@ -102,21 +87,6 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private void Reset()
-    {
-        if (Input.GetKeyDown(KeyCode.R) && _playroomKit.IsHost())
-        {
-            _playroomKit.ResetStates(new[] { "pos" }, () =>
-            {
-                var defscore = _playroomKit.GetState<int>("score");
-                score.text = defscore.ToString();
-
-                Debug.Log("Resetting Player states from Unity, Invoking from JS!");
-            });
-        }
-    }
-
-
     /// <summary>
     ///     Adds the "player" to the game scene.
     /// </summary>
@@ -129,11 +99,7 @@ public class GameManager : MonoBehaviour
         var spawnPos = new Vector3(Random.Range(-4, 4), Random.Range(1, 5), 0);
         var playerObj = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
 
-        // Debug.Log($"<color=#ADD8E6>Player ID: {player.id}</color>");
-        //
-        // Debug.Log($"<color=#ADD8E6>Player Name: {player.GetProfile().color}</color>");
-        // Debug.Log(
-        //     $"<color={player.GetProfile().playerProfileColor.hexString}>Player ID: {player.GetProfile().name}</color>");
+        Debug.LogWarning("Getting a state: " + _playroomKit.GetState<string>("hi"));
 
         PlayerDict.Add(player.id, playerObj);
         players.Add(player);
