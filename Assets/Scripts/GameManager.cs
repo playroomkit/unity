@@ -8,122 +8,38 @@ using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
-    private static bool playerJoined;
-
-    /// <summary>
-    ///     List of players and their gameObjects.
-    /// </summary>
-    [SerializeField]
-    private List<PlayroomKit.Player> players = new();
-
-    private static readonly List<GameObject> playerGameObjects = new();
-    private static readonly Dictionary<string, GameObject> PlayerDict = new();
-
-    [SerializeField]
-    private GameObject playerPrefab;
-
-    [SerializeField]
-    private TextMeshProUGUI playerIDText;
-    [SerializeField]
-    private TextMeshProUGUI score;
-
-
-    [SerializeField]
-    private string playerID;
-
-    private PlayroomKit _playroomKit = new PlayroomKit();
+    private PlayroomKit kit;
 
     void Start()
     {
-        // countdownText.gameObject.SetActive(false);
-        _playroomKit.InsertCoin(new InitOptions
+        kit = new();
+        kit.InsertCoin(new InitOptions()
         {
-            maxPlayersPerRoom = 15,
+            gameId = "[my game id]",
+            maxPlayersPerRoom = 8,
+            discord = true
         }, () =>
         {
-            _playroomKit.SetState("hi", "Test");
-            _playroomKit.OnPlayerJoin(AddPlayer);
-            _playroomKit.RpcRegister("score",
-                (data, caller) => print($"{data} by {_playroomKit.GetPlayer(caller).GetProfile().name}"));
-        }, () => { Debug.Log("OnDisconnect callback"); });
+            kit.RpcRegister("A", A);
+            kit.RpcRegister("B", B);
+        });
     }
 
-
-    /// <summary>
-    ///     Update the player position and sync.
-    /// </summary>
     private void Update()
     {
-
-/*
-        if (!playerJoined) return;
-
-        var player = PlayroomKit.Me();
-        var index = players.IndexOf(player);
-
-        // Move and sync the local player's position
-        playerGameObjects[index].GetComponent<Player>().Move();
-        player.SetState("pos", playerGameObjects[index].transform.position);
-
-
-        // Update other players' positions
-        for (var i = 0; i < players.Count; i++)
-        {
-            // if (players[i] == myPlayer) continue;
-
-            if (players[i] != null)
-            {
-                var posX = PlayroomKit.MyPlayer().GetState<Vector3>("pos");
-                // var posY = PlayroomKit.GetPlayer(players[i]).GetState<float>("posY");
-
-                if (playerGameObjects != null)
-                {
-                    // Vector3 pos = new(posX, posY, 0);
-                    playerGameObjects[i].GetComponent<Transform>().position = posX;
-                }
-            }
-        }
-        */
+        if (Input.GetMouseButtonDown(0))
+            kit.RpcCall("A", "", PlayroomKit.RpcMode.ALL);
+        else if (Input.GetMouseButtonDown(1))
+            kit.RpcCall("B", "", PlayroomKit.RpcMode.ALL);
     }
 
-
-    /// <summary>
-    ///     Adds the "player" to the game scene.
-    /// </summary>
-    public void AddPlayer(PlayroomKit.Player player)
+    private void A(string data, string senderID)
     {
-        playerIDText.text += $"{player.id} joined the game!";
-
-        playerID = player.id;
-
-        var spawnPos = new Vector3(Random.Range(-4, 4), Random.Range(1, 5), 0);
-        var playerObj = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
-
-        Debug.LogWarning("Getting a state: " + _playroomKit.GetState<string>("hi"));
-
-        PlayerDict.Add(player.id, playerObj);
-        players.Add(player);
-        playerGameObjects.Add(playerObj);
-
-        playerJoined = true;
-        player.OnQuit(RemovePlayer);
+        Debug.Log("A");
     }
 
-    /// <summary>
-    ///     Remove player from the game, called when the player leaves / closes the game.
-    /// </summary>
-    [MonoPInvokeCallback(typeof(Action<string>))]
-    private static void RemovePlayer(string playerID)
+    private void B(string data, string senderID)
     {
-        if (PlayerDict.TryGetValue(playerID, out var player))
-        {
-            PlayerDict.Remove(playerID);
-            playerGameObjects.Remove(player);
-            Destroy(player);
-        }
-        else
-        {
-            Debug.LogWarning("Player is not in dictionary");
-        }
+        Debug.Log("B");
     }
 }

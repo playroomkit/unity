@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using AOT;
-using ParrelSync;
 using Playroom;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -29,21 +28,11 @@ public class GameManagerIsometric : MonoBehaviour
     {
         _playroomKit = new PlayroomKit();
 
-#if  UNITY_EDITOR
-        if (ClonesManager.IsClone())
-        {
-            string hi = ClonesManager.GetArgument();
-            Debug.LogWarning($"{hi} from clone");
-        }
-        else
-        {
-            Debug.LogWarning("OG Project");
-        }
-#endif
     }
 
     private void Start()
     {
+
         _playroomKit.InsertCoin(new InitOptions
         {
             maxPlayersPerRoom = 3,
