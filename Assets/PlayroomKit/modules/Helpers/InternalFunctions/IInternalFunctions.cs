@@ -19,6 +19,8 @@ namespace Playroom
             void UnsubscribeOnPlayerJoinWrapper(string id);
 
             bool IsHostWrapper();
+            
+            void TransferHostWrapper(string playerId);
 
             bool IsStreamScreenWrapper();
 
@@ -62,7 +64,7 @@ namespace Playroom
 
             void StartMatchmakingWrapper(Action callback);
             
-            void RpcRegisterWrapper(string name, Action<string, string> rpcRegisterCallback,
+            void RpcRegisterWrapper(string name, Action<string> rpcRegisterCallback,
                 string onResponseReturn = null);
             
             void RpcCallWrapper(string name, string data, RpcMode mode,
@@ -92,6 +94,7 @@ namespace Playroom
 
             string GetProfileWrapper(string playerID);
             //
+           
         }
     }
 }

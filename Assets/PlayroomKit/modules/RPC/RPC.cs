@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using AOT;
 using SimpleJSON;
 using UnityEngine;
@@ -37,7 +38,12 @@ namespace Playroom
                 string onResponseReturn = null)
             {
                 CallbackManager.RegisterRpcCallback(rpcRegisterCallback, name);
-                _interop.RpcRegisterWrapper(name, InvokeRpcRegisterCallBack, onResponseReturn);
+                
+                if (!CallbackManager.IsEventRegistered(name))
+                {
+                    _interop.RpcRegisterWrapper(name, RpcRegisterCallBackHandler, onResponseReturn);
+                    CallbackManager.MarkEventAsRegistered(name);
+                }
             }
 
             public void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse = null)
@@ -57,20 +63,6 @@ namespace Playroom
                     }
                 }
 
-                JSONArray jsonArray = new JSONArray();
-                foreach (string item in RpcCalledEvents)
-                {
-                    jsonArray.Add(item);
-                }
-
-                string jsonString = jsonArray.ToString();
-
-/*
-                    This is required to sync the rpc events between all players, without this players won't know which event has been called.
-                    Update: This fix works fine for now, but there might be a better way.
-                    this is a temporary fix, RPCs need to be handled within JSLIB for better control.
-*/
-                _playroomKit.SetState("rpcCalledEventName", jsonString, reliable: true);
                 _interop.RpcCallWrapper(name, jsonData, mode, InvokeOnResponseCallback);
             }
 
@@ -84,7 +76,7 @@ namespace Playroom
             [MonoPInvokeCallback(typeof(Action))]
             protected static void InvokeOnResponseCallback()
             {
-                var namesToRemove = new List<string>();
+                List<string> namesToRemove = new List<string>();
 
                 foreach (string name in RpcCalledEvents)
                 {
@@ -113,37 +105,22 @@ namespace Playroom
                 }
             }
 
-            [MonoPInvokeCallback(typeof(Action<string, string>))]
-            protected static void InvokeRpcRegisterCallBack(string dataJson, string senderJson)
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            protected static void RpcRegisterCallBackHandler(string combinedData)
             {
                 try
                 {
-                    if (!Players.ContainsKey(senderJson))
-                    {
-                        var player = new Player(senderJson, new Player.PlayerService(senderJson));
-                        Players.Add(senderJson, player);
-                    }
+                    JSONNode jsonNode = JSON.Parse(combinedData);
+
+                    string eventName = jsonNode["eventName"];
+                    string stringData = jsonNode["data"];
+                    string senderID = jsonNode["senderId"];
+
+                    CallbackManager.InvokeRpcRegisterCallBack(eventName, stringData, senderID);
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError(ex.Message);
-                }
-
-                List<string> updatedRpcCalledEvents = new();
-                // This state is required to update the called rpc events list, (Temp fix see RpcCall for more) 
-                string nameJson = _playroomKit.GetState<string>("rpcCalledEventName");
-
-                JSONArray jsonArray = JSON.Parse(nameJson).AsArray;
-                foreach (JSONNode node in jsonArray)
-                {
-                    string item = node.Value;
-                    updatedRpcCalledEvents.Add(item);
-                }
-                
-                for (var i = 0; i < updatedRpcCalledEvents.Count; i++)
-                {
-                    string name = updatedRpcCalledEvents[i];
-                    CallbackManager.InvokeRpcRegisterCallBack(name, dataJson, senderJson);
+                    Debug.LogError("Error: " + ex.Message);
                 }
             }
 

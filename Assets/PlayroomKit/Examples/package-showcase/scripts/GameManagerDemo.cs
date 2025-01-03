@@ -31,6 +31,14 @@ public class GameManagerDemo : MonoBehaviour
 
     private PlayroomKit _playroomKit = new();
 
+
+    [Serializable]
+    private class TempData
+    {
+        public Vector3 pos;
+        public string message;
+    }
+
     // Update is called once per frame
     private void Update()
     {
@@ -149,6 +157,18 @@ public class GameManagerDemo : MonoBehaviour
         if (playerJoined)
         {
             var myPlayer = _playroomKit.MyPlayer();
+
+            var data = new TempData()
+            {
+                message = "Sending Pos",
+                pos = new Vector3(6f, 1f, 4f)
+            };
+
+            Debug.LogWarning($"Setting data : {data}");
+
+            string d = JsonUtility.ToJson(data);
+            myPlayer.SetState("data", d);
+
             myPlayer.SetState("color", color);
             logsText.text = $"setting color to {color}";
         }
@@ -170,6 +190,8 @@ public class GameManagerDemo : MonoBehaviour
             for (var i = 0; i < players.Count; i++)
                 if (players[i] != null)
                 {
+                    Debug.LogWarning($"Getting data ${players[i].GetState<string>("data")}");
+
                     var color = players[i].GetState<Color>("color");
 
                     if (playerGameObjects[i] != null)
@@ -238,7 +260,8 @@ public class GameManagerDemo : MonoBehaviour
 
     public void RegisterRpcShoot()
     {
-        _playroomKit.RpcRegister("ShootLaser", HandleScoreUpdate);
+        _playroomKit.RpcRegister("hostCall", hostCall);
+        _playroomKit.RpcRegister("clientCall", clientCall);
 
         Debug.Log("Shoot function registered");
         logsText.text = "ShootLaser RPC registered";
@@ -265,6 +288,19 @@ public class GameManagerDemo : MonoBehaviour
         {
             Debug.LogError($"No GameObject found for caller: {caller}");
         }
+
+        _playroomKit.RpcCall("ChainCall", "", PlayroomKit.RpcMode.ALL);
+    }
+
+    private void hostCall(string data, string senderID)
+    {
+        Debug.LogWarning("HOST CALL");
+        _playroomKit.RpcCall("clientCall", "", PlayroomKit.RpcMode.ALL);
+    }
+
+    private void clientCall(string data, string senderID)
+    {
+        Debug.LogWarning("CLIENT CALL");
     }
 
 
@@ -273,12 +309,15 @@ public class GameManagerDemo : MonoBehaviour
         var myPlayer = _playroomKit.MyPlayer();
         var index = players.IndexOf(myPlayer);
         score = playerGameObjects[index].GetComponent<Laser>().ShootLaser(score);
-        
-        _playroomKit.RpcCall("ShootLaser", score, PlayroomKit.RpcMode.ALL,
-            () =>
-            {
-                Debug.Log("ShootLaser RPC Called");
-                logsText.text = "ShootLaser RPC Called"; });
+
+        // _playroomKit.RpcCall("ShootLaser", score, PlayroomKit.RpcMode.ALL,
+        //     () =>
+        //     {
+        //         Debug.Log("ShootLaser RPC Called");
+        //         logsText.text = "ShootLaser RPC Called";
+        //     });
+
+        _playroomKit.RpcCall("hostCall", "", PlayroomKit.RpcMode.HOST);
     }
 
     public void GetRoomCode()

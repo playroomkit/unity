@@ -8,10 +8,11 @@ namespace Playroom
     public static class CallbackManager
     {
         private static Dictionary<string, Delegate> callbacks = new();
+        private static readonly HashSet<string> RegisteredEvents = new();
 
         private static Dictionary<string, List<Action<string, string>>> RpcCallBacks = new();
 
-        public static string RegisterRpcCallback(Action<string, string> callback, string key = null)
+        public static void RegisterRpcCallback(Action<string, string> callback, string key = null)
         {
             if (string.IsNullOrEmpty(key))
                 key = GenerateKey();
@@ -24,8 +25,6 @@ namespace Playroom
             {
                 RpcCallBacks.Add(key, new List<Action<string, string>> { callback });
             }
-
-            return key;
         }
 
         public static void InvokeRpcRegisterCallBack(string name, string data, string sender)
@@ -34,7 +33,7 @@ namespace Playroom
             {
                 for (var i = 0; i < callbacks.Count; i++)
                 {
-                    var callback = callbacks[i];
+                    Action<string, string> callback = callbacks[i];
                     callback?.Invoke(data, sender);
                 }
             }
@@ -45,6 +44,15 @@ namespace Playroom
             }
         }
 
+        public static bool IsEventRegistered(string eventName)
+        {
+            return RegisteredEvents.Contains(eventName);
+        }
+
+        public static void MarkEventAsRegistered(string eventName)
+        {
+            RegisteredEvents.Add(eventName);
+        }
 
         public static string RegisterCallback(Delegate callback, string key = null)
         {
@@ -77,7 +85,7 @@ namespace Playroom
             }
             else
             {
-                Debug.LogWarning(
+                DebugLogger.Log(
                     $"Callback with key {key} not found!, maybe register the callback or call the correct playroom function?");
             }
         }

@@ -52,6 +52,11 @@ namespace Playroom
             return true;
         }
 
+        public void TransferHost(string playerId)
+        {
+            Debug.Log("Host transfer doesn't work in local mock mode");
+        }
+
         public string GetRoomCode()
         {
             return "mock123";

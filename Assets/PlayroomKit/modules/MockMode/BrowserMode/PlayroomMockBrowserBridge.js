@@ -94,6 +94,14 @@ IsHost = function () {
   return Playroom.isHost();
 };
 
+TransferHost = async function (playerId) {
+  try {
+    await transferHost(playerId);
+  } catch (error) {
+    console.error("Error transferring host:", error);
+  }
+};
+
 IsStreamScreen = function () {
   return Playroom.isStreamScreen();
 };

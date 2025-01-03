@@ -22,6 +22,8 @@ namespace Playroom
             public Player Me();
 
             public bool IsHost();
+            
+            public void TransferHost(string playerId);
 
             public string GetRoomCode();
 

@@ -73,6 +73,16 @@ namespace Playroom
 
             return _playroomService.IsHost();
         }
+        
+        public void TransferHost(string playerId)
+        {
+            if (!IsPlayRoomInitialized)
+            {
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+            }
+            
+            _playroomService.TransferHost(playerId);
+        }
 
         public void OnPlayerJoin(Action<Player> onPlayerJoinCallback)
         {

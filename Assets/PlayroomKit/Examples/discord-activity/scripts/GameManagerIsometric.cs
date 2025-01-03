@@ -22,10 +22,17 @@ public class GameManagerIsometric : MonoBehaviour
     [SerializeField]
     private GameObject playerPrefab;
 
-    private readonly PlayroomKit _playroomKit = new();
+    private PlayroomKit _playroomKit;
+
+    private void Awake()
+    {
+        _playroomKit = new PlayroomKit();
+
+    }
 
     private void Start()
     {
+
         _playroomKit.InsertCoin(new InitOptions
         {
             maxPlayersPerRoom = 3,
@@ -111,7 +118,7 @@ public class GameManagerIsometric : MonoBehaviour
             Destroy(player);
 
             foreach (var (key, value) in PlayerDict) Debug.Log($"player {key} is still in the room");
-            
+
             Debug.Log(playerID + " has left the room!");
         }
         else

@@ -72,6 +72,30 @@ mergeInto(LibraryManager.library, {
     return Playroom.isHost();
   },
 
+
+    /**
+   * @description Transfers the host to another player if they are in the room
+   * @param {string} playerId 
+   */
+    TransferHostInternal: function (playerId) {
+      if (!window.Playroom) {
+        console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+        return;
+      }
+
+      try {
+        Playroom.transferHost(playerId)
+          .then(() => {
+            console.log("Host privileges successfully transferred.");
+          })
+          .catch((error) => {
+            console.error("Failed to transfer host privileges: ", error);
+          });
+      } catch (error) {
+        console.error("Error transferring host: ", error);
+      }
+    },
+
   /**
    * @description Checks whether the local game is running in stream mode.
    * @returns {boolean} True if the local game is running in stream mode, otherwise false.
@@ -843,17 +867,19 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
+    var n = UTF8ToString(name)
     onResponseReturn = UTF8ToString(onResponseReturn);
 
     function registerCallback(data, sender) {
-      var dataJson = JSON.stringify(data);
+      var combinedData = {
+        data: data,
+        senderId: sender.id,
+        eventName : n
+      };
 
-      var id = sender.id;
-      var bufferSize = lengthBytesUTF8(id) + 1;
-      var buffer = _malloc(bufferSize);
-      stringToUTF8(id, buffer, bufferSize);
+      var dataJson = JSON.stringify(combinedData);
 
-      {{{ makeDynCall('vii', 'callback') }}}(stringToNewUTF8(dataJson), buffer)
+      {{{ makeDynCall('vi', 'callback') }}}(stringToNewUTF8(dataJson));
 
       return onResponseReturn;
     }
@@ -875,9 +901,6 @@ mergeInto(LibraryManager.library, {
         try {
           data = JSON.parse(UTF8ToString(dataJson));
         } catch (parseError) {
-          console.warn(
-            "Failed to parse dataJson as JSON. Treating it as a regular string."
-          );
           data = UTF8ToString(dataJson);
         }
       } else {
