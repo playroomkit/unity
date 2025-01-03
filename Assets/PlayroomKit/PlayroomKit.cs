@@ -74,7 +74,7 @@ namespace Playroom
             return _playroomService.IsHost();
         }
         
-        public void TransferHost(string playerId)
+        private void TransferHost(string playerId)
         {
             if (!IsPlayRoomInitialized)
             {
