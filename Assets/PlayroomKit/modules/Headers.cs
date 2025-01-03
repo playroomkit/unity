@@ -23,6 +23,9 @@ namespace Playroom
 
         [DllImport("__Internal")]
         private static extern bool IsHostInternal();
+        
+        [DllImport("__Internal")]
+        private static extern bool TransferHostInternal(string playerId);
 
         [DllImport("__Internal")]
         private static extern bool IsStreamScreenInternal();

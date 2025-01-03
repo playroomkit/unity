@@ -1,48 +1,48 @@
-using System;
-using System.Collections.Generic;
-using AOT;
 using Playroom;
-using TMPro;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
-    private PlayroomKit kit;
+    private PlayroomKit _kit;
 
-    void Start()
+    private void Start()
     {
-        kit = new();
-        kit.InsertCoin(new InitOptions()
+        _kit = new();
+        
+        _kit.InsertCoin(new InitOptions()
         {
             gameId = "[my game id]",
             maxPlayersPerRoom = 8,
             discord = true
         }, () =>
         {
-            PlayroomKit.RPC.RpcRegister2("A", A);
-            PlayroomKit.RPC.RpcRegister2("B", B);
+            _kit.RpcRegister("A", A);
+            _kit.RpcRegister("B", B);
         });
     }
 
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
-            kit.RpcCall("A", 1, PlayroomKit.RpcMode.ALL);
-
+            _kit.RpcCall("A", 1, PlayroomKit.RpcMode.HOST);
+        
         if (Input.GetMouseButtonDown(1))
-            kit.RpcCall("B", 2, PlayroomKit.RpcMode.ALL);
-        
-        
+            Debug.LogWarning(_kit.IsHost());
     }
 
-    private void A(string data)
+    private void A(string data, string sender)
     {
-        Debug.Log($"[Unity] A data: {data}");
+        Debug.Log($"[Unity] A called only on HOST {data} and {sender}");
+        
+        _kit.TransferHost(sender);
+
+        _kit.RpcCall("B", 2, PlayroomKit.RpcMode.OTHERS);
     }
 
-    private void B(string data)
+    private void B(string data, string sender)
     {
-        Debug.Log($"[Unity] B data: {data}");
+        Debug.Log($"[Unity] B called on ALL data: {data} and {sender}");
+        
+        
     }
 }

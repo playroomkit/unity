@@ -84,6 +84,11 @@ namespace Playroom
                 return _interop.IsHostWrapper();
             }
 
+            public void TransferHost(string playerId)
+            {
+                _interop.TransferHostWrapper(playerId);
+            }
+
 
             public string GetRoomCode()
             {

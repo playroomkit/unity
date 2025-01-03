@@ -97,6 +97,11 @@ namespace Playroom
             return _ubb.CallJs<bool>("IsHost");
         }
 
+        public void TransferHost(string playerId)
+        {
+            _ubb.CallJs("TransferHost", null, null, true, playerId);    
+        }
+
         public string GetRoomCode()
         {
             return _ubb.CallJs<string>("GetRoomCode");

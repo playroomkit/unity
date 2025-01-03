@@ -152,10 +152,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc3a2b9cdc24aab40906ce4bcdee9943, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 5691958192272525149, guid: 1983f481b86c250409a264643733c292, type: 3}
-  playerIDText: {fileID: 3918495209311863502}
-  score: {fileID: 2030615215}
-  playerID: 
 --- !u!4 &1054460207
 Transform:
   m_ObjectHideFlags: 0
@@ -286,6 +282,10 @@ PrefabInstance:
     - target: {fileID: 8899696337967424923, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
       propertyPath: webDriverDirectory
       value: Assets\
+      objectReference: {fileID: 0}
+    - target: {fileID: 8987662522597341863, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: mockMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8987662522597341863, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
       propertyPath: insertCoinCaller

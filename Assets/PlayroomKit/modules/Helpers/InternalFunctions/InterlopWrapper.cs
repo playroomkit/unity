@@ -37,6 +37,11 @@ namespace Playroom
                 return IsHostInternal();
             }
 
+            public void TransferHostWrapper(string playerId)
+            {
+                TransferHostInternal(playerId);
+            }
+
             public bool IsStreamScreenWrapper()
             {
                 return IsStreamScreenInternal();

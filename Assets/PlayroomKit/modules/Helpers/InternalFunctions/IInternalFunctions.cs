@@ -19,6 +19,8 @@ namespace Playroom
             void UnsubscribeOnPlayerJoinWrapper(string id);
 
             bool IsHostWrapper();
+            
+            void TransferHostWrapper(string playerId);
 
             bool IsStreamScreenWrapper();
 
@@ -92,6 +94,7 @@ namespace Playroom
 
             string GetProfileWrapper(string playerID);
             //
+           
         }
     }
 }
