@@ -147,7 +147,7 @@ namespace Playroom
 #endif
 
 #if UNITY_EDITOR
-                else if (_playerService is BrowserMockPlayerService playerService2)
+                if (_playerService is BrowserMockPlayerService playerService2)
                 {
                     playerService2.InvokePlayerOnQuitCallback(id);
                 }

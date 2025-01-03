@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         _kit = new();
-        
+
         _kit.InsertCoin(new InitOptions()
         {
             gameId = "[my game id]",
@@ -16,8 +16,21 @@ public class GameManager : MonoBehaviour
             discord = true
         }, () =>
         {
+            // same event multiple RPCs
             _kit.RpcRegister("A", A);
-            _kit.RpcRegister("B", B);
+            _kit.RpcRegister("A", A2);
+
+            // RPC Call From Another RPC
+            _kit.RpcRegister("host", (data, sender) =>
+            {
+                    Debug.Log("Host RPC CALLED");
+                    _kit.RpcCall("client", 1, PlayroomKit.RpcMode.ALL);
+            }
+            );
+            _kit.RpcRegister("client", (data, sender) =>
+            {
+                Debug.Log("client rpc called");
+            });
         });
     }
 
@@ -25,24 +38,18 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
             _kit.RpcCall("A", 1, PlayroomKit.RpcMode.HOST);
-        
+
         if (Input.GetMouseButtonDown(1))
-            Debug.LogWarning(_kit.IsHost());
+            _kit.RpcCall("host", 1, PlayroomKit.RpcMode.HOST);
     }
 
     private void A(string data, string sender)
     {
-        Debug.Log($"[Unity] A called only on HOST {data} and {sender}");
-        
-        _kit.TransferHost(sender);
-
-        _kit.RpcCall("B", 2, PlayroomKit.RpcMode.OTHERS);
+        Debug.Log($"[Unity] A called");
     }
 
-    private void B(string data, string sender)
+    private void A2(string data, string sender)
     {
-        Debug.Log($"[Unity] B called on ALL data: {data} and {sender}");
-        
-        
+        Debug.LogWarning("[Unity] A2 data: " + data.ToString());
     }
 }

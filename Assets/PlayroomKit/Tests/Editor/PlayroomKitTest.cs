@@ -282,7 +282,7 @@ public class PlayroomKitTests
         }
 
         _playroomKit.RpcRegister("Shoot", HandleShoot, "You shot!");
-        _interop.Received(1).RpcRegisterWrapper("Shoot", Arg.Any<Action<string, string>>(), "You shot!");
+        _interop.Received(1).RpcRegisterWrapper("Shoot", Arg.Any<Action<string>>(), "You shot!");
     }
 
     [Test]

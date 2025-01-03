@@ -142,7 +142,7 @@ namespace Playroom
                 StartMatchmakingInternal(callback);
             }
 
-            public void RpcRegisterWrapper(string name, Action<string, string> rpcRegisterCallback,
+            public void RpcRegisterWrapper(string name, Action<string> rpcRegisterCallback,
                 string onResponseReturn = null)
             {
                 RpcRegisterInternal(name, rpcRegisterCallback, onResponseReturn);
@@ -160,7 +160,7 @@ namespace Playroom
                 string onResponseReturn = null);
 
             [DllImport("__Internal")]
-            public static extern void RpcRegisterInternal(string name, Action<string> rpcRegisterCallback,
+            private static extern void RpcRegisterInternal(string name, Action<string> rpcRegisterCallback,
                 string onResponseReturn = null);
 
             [DllImport("__Internal")]

@@ -37,9 +37,13 @@ namespace Playroom
             public void RpcRegister(string name, Action<string, string> rpcRegisterCallback,
                 string onResponseReturn = null)
             {
-                Debug.Log(rpcRegisterCallback.GetMethodInfo().Name);
-                CallbackManager.RegisterCallback(rpcRegisterCallback, name);
-                PlayroomKitInterop.RpcRegisterInternal(name, RpcRegisterCallBackHandler, onResponseReturn);
+                CallbackManager.RegisterRpcCallback(rpcRegisterCallback, name);
+                
+                if (!CallbackManager.IsEventRegistered(name))
+                {
+                    _interop.RpcRegisterWrapper(name, RpcRegisterCallBackHandler, onResponseReturn);
+                    CallbackManager.MarkEventAsRegistered(name);
+                }
             }
 
             public void RpcCall(string name, object data, RpcMode mode, Action callbackOnResponse = null)
@@ -112,7 +116,7 @@ namespace Playroom
                     string stringData = jsonNode["data"];
                     string senderID = jsonNode["senderId"];
 
-                    CallbackManager.InvokeCallback(eventName, stringData, senderID);
+                    CallbackManager.InvokeRpcRegisterCallBack(eventName, stringData, senderID);
                 }
                 catch (Exception ex)
                 {

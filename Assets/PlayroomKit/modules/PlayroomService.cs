@@ -5,7 +5,6 @@ using SimpleJSON;
 using System;
 using System.Collections.Generic;
 
-
 namespace Playroom
 {
     public partial class PlayroomKit
@@ -89,12 +88,10 @@ namespace Playroom
                 _interop.TransferHostWrapper(playerId);
             }
 
-
             public string GetRoomCode()
             {
                 return _interop.GetRoomCodeWrapper();
             }
-
 
             public void StartMatchmaking(Action callback = null)
             {

@@ -64,7 +64,7 @@ namespace Playroom
 
             void StartMatchmakingWrapper(Action callback);
             
-            void RpcRegisterWrapper(string name, Action<string, string> rpcRegisterCallback,
+            void RpcRegisterWrapper(string name, Action<string> rpcRegisterCallback,
                 string onResponseReturn = null);
             
             void RpcCallWrapper(string name, string data, RpcMode mode,
