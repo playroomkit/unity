@@ -843,17 +843,25 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
+
+    var n = UTF8ToString(name)
+    console.log(n)
+
     onResponseReturn = UTF8ToString(onResponseReturn);
+    this.rpcEvents.push(name)
 
     function registerCallback(data, sender) {
-      var dataJson = JSON.stringify(data);
+      var combinedData = {
+        data: data,
+        senderId: sender.id,
+        // eventName : n
+      };
 
-      var id = sender.id;
-      var bufferSize = lengthBytesUTF8(id) + 1;
-      var buffer = _malloc(bufferSize);
-      stringToUTF8(id, buffer, bufferSize);
+      var dataJson = JSON.stringify(combinedData);
 
-      {{{ makeDynCall('vii', 'callback') }}}(stringToNewUTF8(dataJson), buffer)
+      console.log(`[JS] dataJson: ${dataJson}`);
+
+      {{{ makeDynCall('vi', 'callback') }}}(stringToNewUTF8(dataJson));
 
       return onResponseReturn;
     }

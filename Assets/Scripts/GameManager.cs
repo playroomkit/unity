@@ -20,26 +20,29 @@ public class GameManager : MonoBehaviour
             discord = true
         }, () =>
         {
-            kit.RpcRegister("A", A);
-            kit.RpcRegister("B", B);
+            PlayroomKit.RPC.RpcRegister2("A", A);
+            PlayroomKit.RPC.RpcRegister2("B", B);
         });
     }
 
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
-            kit.RpcCall("A", "", PlayroomKit.RpcMode.ALL);
-        else if (Input.GetMouseButtonDown(1))
-            kit.RpcCall("B", "", PlayroomKit.RpcMode.ALL);
+            kit.RpcCall("A", 1, PlayroomKit.RpcMode.ALL);
+
+        if (Input.GetMouseButtonDown(1))
+            kit.RpcCall("B", 2, PlayroomKit.RpcMode.ALL);
+        
+        
     }
 
-    private void A(string data, string senderID)
+    private void A(string data)
     {
-        Debug.Log("A");
+        Debug.Log($"[Unity] A data: {data}");
     }
 
-    private void B(string data, string senderID)
+    private void B(string data)
     {
-        Debug.Log("B");
+        Debug.Log($"[Unity] B data: {data}");
     }
 }

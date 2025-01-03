@@ -137,7 +137,8 @@ namespace Playroom
                 StartMatchmakingInternal(callback);
             }
 
-            public void RpcRegisterWrapper(string name, Action<string, string> rpcRegisterCallback, string onResponseReturn = null)
+            public void RpcRegisterWrapper(string name, Action<string, string> rpcRegisterCallback,
+                string onResponseReturn = null)
             {
                 RpcRegisterInternal(name, rpcRegisterCallback, onResponseReturn);
             }
@@ -146,20 +147,24 @@ namespace Playroom
             {
                 RpcCallInternal(name, data, mode, callbackOnResponse);
             }
-            
-            
+
+
             //Internal Functions
             [DllImport("__Internal")]
             private static extern void RpcRegisterInternal(string name, Action<string, string> rpcRegisterCallback,
                 string onResponseReturn = null);
-            
+
+            [DllImport("__Internal")]
+            public static extern void RpcRegisterInternal(string name, Action<string> rpcRegisterCallback,
+                string onResponseReturn = null);
+
             [DllImport("__Internal")]
             private extern static void RpcCallInternal(string name, string data, RpcMode mode,
                 Action callbackOnResponse);
-            
+
             //
-            
-            
+
+
             //Player 
             // Wrapper for KickInternal
             public void KickPlayerWrapper(string playerID, Action onKickCallback = null)
@@ -168,7 +173,8 @@ namespace Playroom
             }
 
             // Wrapper for WaitForPlayerStateInternal
-            public void WaitForPlayerStateWrapper(string playerID, string stateKey, Action<string> onStateSetCallback = null)
+            public void WaitForPlayerStateWrapper(string playerID, string stateKey,
+                Action<string> onStateSetCallback = null)
             {
                 WaitForPlayerStateInternal(playerID, stateKey, onStateSetCallback);
             }
@@ -192,7 +198,8 @@ namespace Playroom
             }
 
             // Wrapper for SetPlayerStateDictionary
-            public void SetPlayerStateDictionaryWrapper(string playerID, string key, string jsonValues, bool reliable = false)
+            public void SetPlayerStateDictionaryWrapper(string playerID, string key, string jsonValues,
+                bool reliable = false)
             {
                 SetPlayerStateDictionary(playerID, key, jsonValues, reliable);
             }
@@ -238,22 +245,28 @@ namespace Playroom
             private static extern void KickInternal(string playerID, Action onKickCallback = null);
 
             [DllImport("__Internal")]
-            private static extern void WaitForPlayerStateInternal(string playerID, string stateKey, Action<string> onStateSetCallback = null);
+            private static extern void WaitForPlayerStateInternal(string playerID, string stateKey,
+                Action<string> onStateSetCallback = null);
 
             [DllImport("__Internal")]
-            private static extern void SetPlayerStateByPlayerId(string playerID, string key, int value, bool reliable = false);
+            private static extern void SetPlayerStateByPlayerId(string playerID, string key, int value,
+                bool reliable = false);
 
             [DllImport("__Internal")]
-            private static extern void SetPlayerStateFloatByPlayerId(string playerID, string key, string value, bool reliable = false);
+            private static extern void SetPlayerStateFloatByPlayerId(string playerID, string key, string value,
+                bool reliable = false);
 
             [DllImport("__Internal")]
-            private static extern void SetPlayerStateByPlayerId(string playerID, string key, bool value, bool reliable = false);
+            private static extern void SetPlayerStateByPlayerId(string playerID, string key, bool value,
+                bool reliable = false);
 
             [DllImport("__Internal")]
-            private static extern void SetPlayerStateDictionary(string playerID, string key, string jsonValues, bool reliable = false);
+            private static extern void SetPlayerStateDictionary(string playerID, string key, string jsonValues,
+                bool reliable = false);
 
             [DllImport("__Internal")]
-            private static extern void SetPlayerStateStringById(string playerID, string key, string value, bool reliable = false);
+            private static extern void SetPlayerStateStringById(string playerID, string key, string value,
+                bool reliable = false);
 
             [DllImport("__Internal")]
             private static extern int GetPlayerStateIntById(string playerID, string key);
@@ -269,7 +282,6 @@ namespace Playroom
 
             [DllImport("__Internal")]
             private static extern string GetProfileByPlayerId(string playerID);
-            
         }
     }
 }
