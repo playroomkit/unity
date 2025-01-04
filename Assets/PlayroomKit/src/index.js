@@ -381,7 +381,7 @@ mergeInto(LibraryManager.library, {
    * @returns {string | null} return the hexColor for the player's profile color, or null if the player is not found.
    */
   GetProfileByPlayerId: function (playerId) {
-    const players = window._multiplayer.getPlayers();
+    const players = Playroom.Multiplayer().getPlayers()
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
@@ -419,7 +419,7 @@ mergeInto(LibraryManager.library, {
    * @param {number | boolean} value - The value to associate with the key in the player's state.
    */
   SetPlayerStateByPlayerId: function (playerId, key, value, reliable) {
-    const players = window._multiplayer.getPlayers();
+    const players = Playroom.Multiplayer().getPlayers()
 
     reliable = !!reliable;
 
@@ -445,7 +445,7 @@ mergeInto(LibraryManager.library, {
   },
 
   SetPlayerStateFloatByPlayerId: function (playerId, key, value, reliable) {
-    const players = window._multiplayer.getPlayers();
+    const players = Playroom.Multiplayer().getPlayers()
 
     reliable = !!reliable;
 
@@ -481,7 +481,7 @@ mergeInto(LibraryManager.library, {
    * @param {string} value - The string value to associate with the key in the player's state.
    */
   SetPlayerStateStringById: function (playerId, key, value, reliable) {
-    const players = window._multiplayer.getPlayers();
+    const players = Playroom.Multiplayer().getPlayers()
 
     reliable = !!reliable;
 
@@ -513,7 +513,7 @@ mergeInto(LibraryManager.library, {
    * @param {string} jsonValues - The JSON representation of the dictionary value to associate with the key in the player's state.
    */
   SetPlayerStateDictionary: function (playerId, key, jsonValues, reliable) {
-    const players = window._multiplayer.getPlayers();
+    const players = Playroom.Multiplayer().getPlayers()
 
     reliable = !!reliable;
     if (typeof players !== "object" || players === null) {
@@ -549,7 +549,7 @@ mergeInto(LibraryManager.library, {
    * @returns {number | null} The integer value associated with the key in the player's state, or null if the player is not found or the key is not found in the player's state.
    */
   GetPlayerStateIntById: function (playerId, key) {
-    const players = window._multiplayer.getPlayers();
+    const players = Playroom.Multiplayer().getPlayers()
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
@@ -581,7 +581,7 @@ mergeInto(LibraryManager.library, {
    * @returns {number | null} The floating-point value associated with the key in the player's state, or null if the player is not found or the key is not found in the player's state.
    */
   GetPlayerStateFloatById: function (playerId, key) {
-    const players = window._multiplayer.getPlayers();
+    const players = Playroom.Multiplayer().getPlayers()
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
@@ -613,7 +613,7 @@ mergeInto(LibraryManager.library, {
    * @returns {string | null} The string value associated with the key in the player's state, or null if the player is not found or the key is not found in the player's state.
    */
   GetPlayerStateStringById: function (playerId, key) {
-    const players = window._multiplayer.getPlayers();
+    const players = Playroom.Multiplayer().getPlayers()
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
@@ -657,7 +657,7 @@ mergeInto(LibraryManager.library, {
    * @returns {string | null} The JSON representation of the dictionary value associated with the key in the player's state, or null if the player is not found or the key is not found in the player's state.
    */
   GetPlayerStateDictionary: function (playerId, key) {
-    const players = window._multiplayer.getPlayers();
+    const players = Playroom.Multiplayer().getPlayers()
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
@@ -766,7 +766,7 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    const players = window._multiplayer.getPlayers();
+    const players = Playroom.Multiplayer().getPlayers()
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
@@ -798,7 +798,7 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    const players = window._multiplayer.getPlayers();
+    const players = Playroom.Multiplayer().getPlayers()
 
     if (typeof players !== "object" || players === null) {
       console.error('The "players" variable is not an object:', players);
