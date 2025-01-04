@@ -26,7 +26,7 @@ GetState = function (key) {
 };
 
 SetPlayerStateByPlayerId = function (playerId, key, value, reliable) {
-  const players = window._multiplayer.getPlayers();
+  const players = Playroom.Multiplayer().getPlayers();
 
   reliable = !!reliable;
 
@@ -50,7 +50,7 @@ SetPlayerStateByPlayerId = function (playerId, key, value, reliable) {
 };
 
 GetPlayerStateByPlayerId = function (playerId, key) {
-  const players = window._multiplayer.getPlayers();
+  const players = Playroom.Multiplayer().getPlayers();
 
   if (typeof players !== "object" || players === null) {
     console.error('The "players" variable is not an object:', players);
@@ -107,7 +107,7 @@ IsStreamScreen = function () {
 };
 
 GetProfile = function (playerId) {
-  const players = window._multiplayer.getPlayers();
+  const players = Playroom.Multiplayer().getPlayers();
 
   if (typeof players !== "object" || players === null) {
     console.error('The "players" variable is not an object:', players);
@@ -172,7 +172,7 @@ WaitForPlayerState = async function (playerId, stateKey, onStateSetCallback) {
     return;
   }
 
-  const players = window._multiplayer.getPlayers();
+  const players = Playroom.Multiplayer().getPlayers();
 
   if (typeof players !== "object" || players === null) {
     console.error('The "players" variable is not an object:', players);
@@ -205,7 +205,7 @@ Kick = async function (playerID) {
     return;
   }
 
-  const players = window._multiplayer.getPlayers();
+  const players = Playroom.Multiplayer().getPlayers();
 
   if (typeof players !== "object" || players === null) {
     console.error('The "players" variable is not an object:', players);
