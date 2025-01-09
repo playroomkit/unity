@@ -29,11 +29,15 @@ namespace Playroom
             _ubb.StartUBB();
 
             string optionsJson = null;
-            if (options != null)
+            if (string.IsNullOrEmpty(options.roomCode))
             {
                 options.roomCode = "TEST_ROOM";
                 optionsJson = Helpers.SerializeInitOptions(options);
-            }   
+            }
+            else
+            {
+                optionsJson = Helpers.SerializeInitOptions(options);
+            }
 
             var gameObjectName = _ubb.GetGameObject("InsertCoin").name;
             var devManagerName = _ubb.GetGameObject("devManager").name;
