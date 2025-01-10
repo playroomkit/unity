@@ -746,7 +746,7 @@ mergeInto(LibraryManager.library, {
 
         var key = _ConvertString(stateKey);
         
-        {{{ makeDynCall('vi', 'onStateSetCallback') }}}(stringToNewUTF8(stateVal))
+        {{{ makeDynCall('vii', 'onStateSetCallback') }}}(key, stringToNewUTF8(stateVal))
       })
       .catch((error) => {
         console.error("Error Waiting for state:", error);

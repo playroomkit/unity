@@ -36,11 +36,12 @@ public class GameManager2d : MonoBehaviour
     private static readonly List<GameObject> playerGameObjects = new();
     private static Dictionary<string, GameObject> PlayerDict = new();
 
-    private PlayroomKit _playroomKit = new();
+    private PlayroomKit _playroomKit; 
 
 
     void Awake()
     {
+        _playroomKit = new();
         Initialize();
     }
 
@@ -69,6 +70,11 @@ public class GameManager2d : MonoBehaviour
     void Start()
     {
         _playroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
+        
+        _playroomKit.WaitForState("test", (s) =>
+        {
+            Debug.LogWarning($"After waiting for test: {s}");
+        });
     }
 
     /// <summary>
@@ -106,16 +112,13 @@ public class GameManager2d : MonoBehaviour
         {
             var myPlayer = _playroomKit.MyPlayer();
             var index = players.IndexOf(myPlayer);
+            
+            if (Input.GetKeyDown(KeyCode.L)) _playroomKit.SetState("test", "yes");
 
             playerGameObjects[index].GetComponent<PlayerController2d>().Move();
             playerGameObjects[index].GetComponent<PlayerController2d>().Jump();
 
             players[index].SetState("pos", playerGameObjects[index].transform.position);
-
-            players[index].SetState("a", "HELLO WORLD");
-            players[index].SetState("d", 11);
-            players[index].SetState("b", 9.81f);
-            players[index].SetState("c", false);
 
             ShootBullet(index);
 
@@ -125,14 +128,6 @@ public class GameManager2d : MonoBehaviour
                 {
                     // Debug.Log("Getting state of: " + players[i].id);
                     var pos = players[i].GetState<Vector3>("pos");
-
-                    string a = players[i].GetState<string>("a");
-                    float b = players[i].GetState<float>("b");
-                    bool c = players[i].GetState<bool>("c");
-                    int d = players[i].GetState<int>("d");
-
-                    Debug.Log($"Player {i} state: a: {a}, b: {b}, c: {c}, d: {d}");
-                    Debug.Log($"a type: {a.GetType()}, b type: {b.GetType()}, c type: {c.GetType()}, d type: {d.GetType()}");
 
 
                     var color = players[i].GetState<Color>("color");
