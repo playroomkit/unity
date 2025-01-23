@@ -11,7 +11,7 @@ OnPlayerJoin = function (gameObjectName) {
     unityInstance.SendMessage(gameObjectName, "GetPlayerID", player.id);
     player.onQuit((state) => {
       unityInstance.SendMessage(gameObjectName, "OnQuitPlayer", player.id);
-    })
+    });
   });
 };
 
@@ -229,8 +229,8 @@ ResetStates = async function (keysToExclude) {
   await Playroom.resetStates(keysToExclude);
 };
 
+//#region RPC
 RpcRegister = function (name, callbackKey) {
-
   Playroom.RPC.register(name, (data, caller) => {
     const jsonData = {
       key: callbackKey,
@@ -262,3 +262,14 @@ RpcCall = function (name, data, rpcMode) {
 
   Playroom.RPC.call(name, data, mode);
 };
+//#endregion
+
+//#region Persistence
+SetPersistentData = async function(key, value) {
+  await Playroom.setPersistentData(key, value)
+}
+
+GetPersistentData = async function(key, value) {
+  return await Playroom.getPersistentData(key, value)
+}
+//#endregion

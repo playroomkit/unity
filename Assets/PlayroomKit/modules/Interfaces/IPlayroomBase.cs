@@ -22,7 +22,7 @@ namespace Playroom
             public Player Me();
 
             public bool IsHost();
-            
+
             public void TransferHost(string playerId);
 
             public string GetRoomCode();
@@ -32,10 +32,14 @@ namespace Playroom
             public void SetState<T>(string key, T value, bool reliable = false);
 
             public T GetState<T>(string key);
+            
+            public void SetPersistentData<T>(string key, T value);
+            public T GetPersistentData<T>(string key);
 
             public void OnDisconnect(Action callback);
 
             public bool IsStreamScreen();
+            
 
             public void WaitForState(string stateKey, Action<string> onStateSetCallback = null);
 
@@ -51,6 +55,9 @@ namespace Playroom
 
             public void UnsubscribeOnQuit();
 
+
+            #region Callbacks Wrappers
+
             [MonoPInvokeCallback(typeof(Action<string>))]
             protected static void __OnPlayerJoinCallbackHandler(string id)
             {
@@ -65,14 +72,14 @@ namespace Playroom
                     callback?.Invoke(player);
                 }
             }
-            
-            
+
+
             [MonoPInvokeCallback(typeof(Action<string, string>))]
             protected static void InvokeCallback(string stateKey, string stateVal)
             {
                 CallbackManager.InvokeCallback(stateKey, stateVal);
             }
-            
+
             [MonoPInvokeCallback(typeof(Action<string>))]
             internal static void __OnQuitInternalHandler(string playerId)
             {
@@ -85,6 +92,8 @@ namespace Playroom
                     Debug.LogError("[__OnQuitInternalHandler] Couldn't find player with id " + playerId);
                 }
             }
+
+            #endregion
         }
     }
 }

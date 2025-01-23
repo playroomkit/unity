@@ -99,6 +99,16 @@ namespace Playroom
             }
         }
 
+        public void SetPersistentData<T>(string key, T value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T GetPersistentData<T>(string key)
+        {
+            throw new NotImplementedException();
+        }
+
         public void OnDisconnect(Action callback)
         {
             callback?.Invoke();

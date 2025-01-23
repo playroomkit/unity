@@ -192,6 +192,15 @@ namespace Playroom
                 }
             }
 
+            public void SetPersistentData<T>(string key, T value)
+            {
+                throw new NotImplementedException();
+            }
+
+            public T GetPersistentData<T>(string key)
+            {
+                throw new NotImplementedException();
+            }
 
             [MonoPInvokeCallback(typeof(Action))]
             private static void InvokeStartMatchmakingCallback()

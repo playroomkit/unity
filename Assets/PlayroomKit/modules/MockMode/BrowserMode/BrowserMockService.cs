@@ -62,7 +62,7 @@ namespace Playroom
             _ubb.CallJs("StartMatchmaking", null, null, true);
             callback?.Invoke();
         }
-
+        
         public void OnDisconnect(Action callback)
         {
             string key = Guid.NewGuid().ToString();
@@ -125,6 +125,16 @@ namespace Playroom
         public T GetState<T>(string key)
         {
             return _ubb.CallJs<T>("GetState", null, null, false, key);
+        }
+
+        public void SetPersistentData<T>(string key, T value)
+        {
+            _ubb.CallJs<T>("GetState", null, null, false, key);
+        }
+        
+        public T GetPersistentData<T>(string key)
+        {
+            throw new NotImplementedException();
         }
 
         public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
