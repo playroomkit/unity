@@ -37,7 +37,7 @@ namespace Playroom
                     _playroomService = new LocalMockPlayroomService();
                     _rpc = new RPCLocal();
                     break;
-                
+
                 case MockModeSelector.Browser:
                     _playroomService = new BrowserMockService();
                     _rpc = new BrowserMockRPC();
@@ -73,14 +73,14 @@ namespace Playroom
 
             return _playroomService.IsHost();
         }
-        
+
         private void TransferHost(string playerId)
         {
             if (!IsPlayRoomInitialized)
             {
                 Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
             }
-            
+
             _playroomService.TransferHost(playerId);
         }
 
@@ -312,6 +312,31 @@ namespace Playroom
 
             return _playroomService.Me();
         }
+
+        #region Persistence
+
+        public void SetPersistentData<T>(string key, T value)
+        {
+            if (!IsPlayRoomInitialized)
+            {
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+            }
+
+            _playroomService.SetPersistentData(key, value);
+        }
+
+        public T GetPersistentData<T>(string key)
+        {
+            if (!IsPlayRoomInitialized)
+            {
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+            }
+
+            return _playroomService.GetPersistentData<T>(key);
+        }
+
+        #endregion
+
 
         private void UnsubscribeOnQuit()
         {

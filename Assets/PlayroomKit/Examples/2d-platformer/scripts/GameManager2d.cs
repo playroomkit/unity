@@ -52,6 +52,7 @@ public class GameManager2d : MonoBehaviour
     {
         _playroomKit.InsertCoin(new InitOptions()
         {
+            persistentMode = true,
             maxPlayersPerRoom = 2,
             defaultPlayerStates = new()
             {
@@ -75,6 +76,8 @@ public class GameManager2d : MonoBehaviour
         {
             Debug.LogWarning($"After waiting for test: {s}");
         });
+        
+        _playroomKit.SetPersistentData("some", );
     }
 
     /// <summary>

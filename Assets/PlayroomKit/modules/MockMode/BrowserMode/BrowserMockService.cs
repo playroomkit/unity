@@ -129,12 +129,14 @@ namespace Playroom
 
         public void SetPersistentData<T>(string key, T value)
         {
-            _ubb.CallJs<T>("GetState", null, null, false, key);
+            // TODO: use JSON for value. 
+            
+            _ubb.CallJs<T>("SetPersistentData", null, null, true, key, value.ToString());
         }
         
         public T GetPersistentData<T>(string key)
         {
-            throw new NotImplementedException();
+            return _ubb.CallJs<T>("GetPersistentData", null, null, true, key);
         }
 
         public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
