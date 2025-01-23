@@ -14,6 +14,9 @@ public class GameManager2d : MonoBehaviour
     [SerializeField]
     private GameObject playerPrefab;
 
+    [SerializeField]
+    private string roomCode;
+
     /// <summary>
     /// player scores and UI to display score of the game.
     /// </summary>
@@ -36,7 +39,7 @@ public class GameManager2d : MonoBehaviour
     private static readonly List<GameObject> playerGameObjects = new();
     private static Dictionary<string, GameObject> PlayerDict = new();
 
-    private PlayroomKit _playroomKit; 
+    private PlayroomKit _playroomKit;
 
 
     void Awake()
@@ -53,6 +56,7 @@ public class GameManager2d : MonoBehaviour
         _playroomKit.InsertCoin(new InitOptions()
         {
             persistentMode = true,
+            roomCode = roomCode,
             maxPlayersPerRoom = 2,
             defaultPlayerStates = new()
             {
@@ -71,13 +75,10 @@ public class GameManager2d : MonoBehaviour
     void Start()
     {
         _playroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
-        
-        _playroomKit.WaitForState("test", (s) =>
-        {
-            Debug.LogWarning($"After waiting for test: {s}");
-        });
-        
-        _playroomKit.SetPersistentData("some", );
+
+        _playroomKit.WaitForState("test", (s) => { Debug.LogWarning($"After waiting for test: {s}"); });
+
+        _playroomKit.SetPersistentData("a", "Hello");
     }
 
     /// <summary>
@@ -115,11 +116,17 @@ public class GameManager2d : MonoBehaviour
         {
             var myPlayer = _playroomKit.MyPlayer();
             var index = players.IndexOf(myPlayer);
-            
+
             if (Input.GetKeyDown(KeyCode.L)) _playroomKit.SetState("test", "yes");
 
             playerGameObjects[index].GetComponent<PlayerController2d>().Move();
             playerGameObjects[index].GetComponent<PlayerController2d>().Jump();
+
+            if (Input.GetKeyDown(KeyCode.M))
+            {
+               var a = _playroomKit.GetPersistentData<string>("a");
+               Debug.Log(a);
+            }
 
             players[index].SetState("pos", playerGameObjects[index].transform.position);
 
