@@ -34,7 +34,7 @@ namespace Playroom
             public T GetState<T>(string key);
             
             public void SetPersistentData<T>(string key, T value);
-            public T GetPersistentData<T>(string key);
+            public string GetPersistentData<T>(string key);
 
             public void OnDisconnect(Action callback);
 

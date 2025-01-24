@@ -104,7 +104,7 @@ namespace Playroom
             throw new NotImplementedException();
         }
 
-        public T GetPersistentData<T>(string key)
+        public string GetPersistentData<T>(string key)
         {
             throw new NotImplementedException();
         }

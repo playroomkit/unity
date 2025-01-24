@@ -72,29 +72,28 @@ mergeInto(LibraryManager.library, {
     return Playroom.isHost();
   },
 
-
-    /**
+  /**
    * @description Transfers the host to another player if they are in the room
    * @param {string} playerId 
    */
-    TransferHostInternal: function (playerId) {
-      if (!window.Playroom) {
-        console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
-        return;
-      }
+  TransferHostInternal: function (playerId) {
+    if (!window.Playroom) {
+      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      return;
+    }
 
-      try {
-        Playroom.transferHost(playerId)
-          .then(() => {
-            console.log("Host privileges successfully transferred.");
-          })
-          .catch((error) => {
-            console.error("Failed to transfer host privileges: ", error);
-          });
-      } catch (error) {
-        console.error("Error transferring host: ", error);
-      }
-    },
+    try {
+      Playroom.transferHost(playerId)
+        .then(() => {
+          console.log("Host privileges successfully transferred.");
+        })
+        .catch((error) => {
+          console.error("Failed to transfer host privileges: ", error);
+        });
+    } catch (error) {
+      console.error("Error transferring host: ", error);
+    }
+  },
 
   /**
    * @description Checks whether the local game is running in stream mode.
@@ -935,6 +934,36 @@ mergeInto(LibraryManager.library, {
         console.error(`JS: Error starting match making ${error}`);
       });
   },
+
+  SetPersistentDataInternal: function (key, value) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+    // Value > JSON (within unity)
+    // here utf8tostring (value) and then call
+
+    console.log(UTF8ToString(key))
+
+    Playroom.setPersistentData(UTF8ToString(key), value)
+  },
+  
+  GetPersistentDataInternal: function (key) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    let value = Playroom.getPersistentData(UTF8ToString(key))
+    
+    // before returning, convert string to:
+    return value
+  },
+
 
   // UTILS
   /**

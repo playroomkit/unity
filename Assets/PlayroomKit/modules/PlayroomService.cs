@@ -194,12 +194,14 @@ namespace Playroom
 
             public void SetPersistentData<T>(string key, T value)
             {
-                throw new NotImplementedException();
+                // convert value to json string
+
+                _interop.SetPersistentDataWrapper(key, value.ToString());
             }
 
-            public T GetPersistentData<T>(string key)
+            public string GetPersistentData<T>(string key)
             {
-                throw new NotImplementedException();
+                return _interop.GetPersistentDataWrapper(key);
             }
 
             [MonoPInvokeCallback(typeof(Action))]
@@ -270,7 +272,7 @@ namespace Playroom
             public void ResetPlayersStates(string[] keysToExclude = null, Action onStatesReset = null)
             {
                 onstatesReset = onStatesReset;
-                string keysJson = keysToExclude != null ?  Helpers.CreateJsonArray(keysToExclude).ToString() : null;
+                string keysJson = keysToExclude != null ? Helpers.CreateJsonArray(keysToExclude).ToString() : null;
                 _interop.ResetPlayersStatesWrapper(keysJson, InvokePlayersResetCallBack);
             }
 

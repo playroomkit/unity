@@ -78,7 +78,7 @@ public class GameManager2d : MonoBehaviour
 
         _playroomKit.WaitForState("test", (s) => { Debug.LogWarning($"After waiting for test: {s}"); });
 
-        _playroomKit.SetPersistentData("a", "Hello");
+        _playroomKit.SetPersistentData("msg", "Hello");
     }
 
     /// <summary>
@@ -124,8 +124,8 @@ public class GameManager2d : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.M))
             {
-               var a = _playroomKit.GetPersistentData<string>("a");
-               Debug.Log(a);
+               var msg = _playroomKit.GetPersistentData<string>("msg");
+               Debug.Log(msg);
             }
 
             players[index].SetState("pos", playerGameObjects[index].transform.position);

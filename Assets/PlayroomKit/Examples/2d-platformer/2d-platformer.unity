@@ -221,6 +221,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 2934851299200569815, guid: c14e0b3aef64ed84ebfdf32c2def9cac, type: 3}
+  roomCode: 123
   score: 0
   scoreTextPlayer1: {fileID: 1808725817}
   scoreTextPlayer2: {fileID: 2072156197}

@@ -29,15 +29,22 @@ namespace Playroom
             _ubb.StartUBB();
 
             string optionsJson = null;
-            if (options != null)
+            if (string.IsNullOrEmpty(options.roomCode))
             {
                 options.roomCode = "TEST_ROOM";
                 optionsJson = Helpers.SerializeInitOptions(options);
-            }   
+            }
+            else
+            {
+                optionsJson = Helpers.SerializeInitOptions(options);
+            }
 
             var gameObjectName = _ubb.GetGameObject("InsertCoin").name;
             var devManagerName = _ubb.GetGameObject("devManager").name;
             Debug.Log("DevManagerName:" + gameObjectName);
+                
+            Debug.Log(optionsJson);
+            
             _ubb.CallJs("InsertCoin", onLaunchCallBack.GetMethodInfo().Name, gameObjectName, true, optionsJson);
             PlayroomKit.IsPlayRoomInitialized = true;
         }
@@ -62,7 +69,7 @@ namespace Playroom
             _ubb.CallJs("StartMatchmaking", null, null, true);
             callback?.Invoke();
         }
-        
+
         public void OnDisconnect(Action callback)
         {
             string key = Guid.NewGuid().ToString();
@@ -99,7 +106,7 @@ namespace Playroom
 
         public void TransferHost(string playerId)
         {
-            _ubb.CallJs("TransferHost", null, null, true, playerId);    
+            _ubb.CallJs("TransferHost", null, null, true, playerId);
         }
 
         public string GetRoomCode()
@@ -130,13 +137,13 @@ namespace Playroom
         public void SetPersistentData<T>(string key, T value)
         {
             // TODO: use JSON for value. 
-            
+
             _ubb.CallJs<T>("SetPersistentData", null, null, true, key, value.ToString());
         }
-        
-        public T GetPersistentData<T>(string key)
+
+        public string GetPersistentData<T>(string key)
         {
-            return _ubb.CallJs<T>("GetPersistentData", null, null, true, key);
+            return _ubb.CallJs<string>("GetPersistentData", null, null, true, key);
         }
 
         public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
@@ -209,7 +216,7 @@ namespace Playroom
         {
             PlayroomKit.IPlayroomBase.OnPlayerJoinWrapperCallback(playerId);
         }
-        
+
         #endregion
     }
 #endif

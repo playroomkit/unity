@@ -325,7 +325,7 @@ namespace Playroom
             _playroomService.SetPersistentData(key, value);
         }
 
-        public T GetPersistentData<T>(string key)
+        public string GetPersistentData<T>(string key)
         {
             if (!IsPlayRoomInitialized)
             {

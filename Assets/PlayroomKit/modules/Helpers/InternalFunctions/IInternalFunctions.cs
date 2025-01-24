@@ -94,7 +94,10 @@ namespace Playroom
 
             string GetProfileWrapper(string playerID);
             //
-           
+
+            void SetPersistentDataWrapper(string key, string value);
+
+            string GetPersistentDataWrapper(string key);
         }
     }
 }

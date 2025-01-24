@@ -23,7 +23,7 @@ namespace Playroom
 
         [DllImport("__Internal")]
         private static extern bool IsHostInternal();
-        
+
         [DllImport("__Internal")]
         private static extern bool TransferHostInternal(string playerId);
 
@@ -70,7 +70,8 @@ namespace Playroom
         private static extern void WaitForStateInternal(string stateKey, Action<string, string> onStateSetCallback);
 
         [DllImport("__Internal")]
-        private static extern void WaitForPlayerStateInternal(string playerID, string StateKey, Action onStateSetCallback);
+        private static extern void WaitForPlayerStateInternal(string playerID, string StateKey,
+            Action onStateSetCallback);
 
         [DllImport("__Internal")]
         private static extern void ResetStatesInternal(string keysToExclude = null, Action OnStatesReset = null);
@@ -89,5 +90,15 @@ namespace Playroom
 
         [DllImport("__Internal")]
         private static extern void StartMatchmakingInternal(Action callback);
+
+        #region Persistence
+
+        [DllImport("__Internal")]
+        private static extern void SetPersistentDataInternal(string key, string value);
+
+        [DllImport("__Internal")]
+        private static extern string GetPersistentDataInternal(string key);
+
+        #endregion
     }
 }
