@@ -942,11 +942,8 @@ mergeInto(LibraryManager.library, {
       );
       return;
     }
-    // Value > JSON (within unity)
-    // here utf8tostring (value) and then call
 
     console.log(UTF8ToString(key))
-
     Playroom.setPersistentData(UTF8ToString(key), value)
   },
   
@@ -959,8 +956,8 @@ mergeInto(LibraryManager.library, {
     }
 
     let value = Playroom.getPersistentData(UTF8ToString(key))
-    
-    // before returning, convert string to:
+
+    console.log(`[JS] ${value}`)
     return value
   },
 

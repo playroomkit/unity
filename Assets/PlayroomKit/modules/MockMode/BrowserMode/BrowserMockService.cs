@@ -134,14 +134,12 @@ namespace Playroom
             return _ubb.CallJs<T>("GetState", null, null, false, key);
         }
 
-        public void SetPersistentData<T>(string key, T value)
+        public void SetPersistentData(string key, string value)
         {
-            // TODO: use JSON for value. 
-
-            _ubb.CallJs<T>("SetPersistentData", null, null, true, key, value.ToString());
+            _ubb.CallJs("SetPersistentData", null, null, true, key, value);
         }
 
-        public string GetPersistentData<T>(string key)
+        public string GetPersistentData(string key)
         {
             return _ubb.CallJs<string>("GetPersistentData", null, null, true, key);
         }

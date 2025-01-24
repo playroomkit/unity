@@ -80,6 +80,9 @@ namespace Playroom
 
                 node["defaultPlayerStates"] = defaultPlayerStatesObject;
             }
+            
+            
+            DebugLogger.LogWarning(node.ToString());
 
             return node.ToString();
         }

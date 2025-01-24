@@ -55,8 +55,8 @@ public class GameManager2d : MonoBehaviour
     {
         _playroomKit.InsertCoin(new InitOptions()
         {
+            // roomCode = roomCode,
             persistentMode = true,
-            roomCode = roomCode,
             maxPlayersPerRoom = 2,
             defaultPlayerStates = new()
             {
@@ -124,7 +124,7 @@ public class GameManager2d : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.M))
             {
-               var msg = _playroomKit.GetPersistentData<string>("msg");
+               string msg = _playroomKit.GetPersistentData("msg");
                Debug.Log(msg);
             }
 

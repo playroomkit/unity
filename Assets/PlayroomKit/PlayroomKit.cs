@@ -315,7 +315,7 @@ namespace Playroom
 
         #region Persistence
 
-        public void SetPersistentData<T>(string key, T value)
+        public void SetPersistentData(string key, string value)
         {
             if (!IsPlayRoomInitialized)
             {
@@ -325,14 +325,14 @@ namespace Playroom
             _playroomService.SetPersistentData(key, value);
         }
 
-        public string GetPersistentData<T>(string key)
+        public string GetPersistentData(string key)
         {
             if (!IsPlayRoomInitialized)
             {
                 Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
             }
 
-            return _playroomService.GetPersistentData<T>(key);
+            return _playroomService.GetPersistentData(key);
         }
 
         #endregion

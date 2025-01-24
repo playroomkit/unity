@@ -192,14 +192,13 @@ namespace Playroom
                 }
             }
 
-            public void SetPersistentData<T>(string key, T value)
+            public void SetPersistentData(string key, string value)
             {
                 // convert value to json string
-
                 _interop.SetPersistentDataWrapper(key, value.ToString());
             }
 
-            public string GetPersistentData<T>(string key)
+            public string GetPersistentData(string key)
             {
                 return _interop.GetPersistentDataWrapper(key);
             }
