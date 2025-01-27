@@ -152,6 +152,8 @@ namespace Playroom
                 zonesJson["right"] = ConvertButtonOptionsToJson(options.zones.right);
                 joystickOptionsJson["zones"] = zonesJson;
             }
+            
+            joystickOptionsJson["keyboard"] = options.keyboard;
 
             return joystickOptionsJson.ToString();
         }
