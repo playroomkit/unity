@@ -96,6 +96,7 @@ namespace Playroom
             //
 
             void SetPersistentDataWrapper(string key, string value);
+            void InsertPersistentDataWrapper(string key, string value);
 
             string GetPersistentDataWrapper(string key);
         }

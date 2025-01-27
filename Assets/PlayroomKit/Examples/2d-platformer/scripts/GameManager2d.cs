@@ -45,7 +45,6 @@ public class GameManager2d : MonoBehaviour
     void Awake()
     {
         _playroomKit = new();
-        Initialize();
     }
 
     /// <summary>
@@ -74,11 +73,12 @@ public class GameManager2d : MonoBehaviour
     /// </summary>
     void Start()
     {
+        Initialize();
+        
         _playroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
-
         _playroomKit.WaitForState("test", (s) => { Debug.LogWarning($"After waiting for test: {s}"); });
-
-        _playroomKit.SetPersistentData("msg", "Hello");
+        _playroomKit.InsertPersistentData("a", "Hello");
+        _playroomKit.InsertPersistentData("a", "World!");
     }
 
     /// <summary>
@@ -124,8 +124,8 @@ public class GameManager2d : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.M))
             {
-               string msg = _playroomKit.GetPersistentData("msg");
-               Debug.Log(msg);
+                string msg = _playroomKit.GetPersistentData("a");
+                Debug.Log(msg);
             }
 
             players[index].SetState("pos", playerGameObjects[index].transform.position);

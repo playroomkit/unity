@@ -104,6 +104,11 @@ namespace Playroom
             DebugLogger.LogWarning("[MockMode] Persistent storage is currently not supported in local mode!");
         }
 
+        public void InsertPersistentData(string key, string value)
+        {
+            DebugLogger.LogWarning("[MockMode] Persistent storage is currently not supported in local mode!");
+        }
+
         public string GetPersistentData(string key)
         {
             DebugLogger.LogWarning("[MockMode] Persistent storage is currently not supported in local mode!");

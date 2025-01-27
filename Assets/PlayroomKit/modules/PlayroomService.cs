@@ -195,7 +195,12 @@ namespace Playroom
             public void SetPersistentData(string key, string value)
             {
                 // convert value to json string
-                _interop.SetPersistentDataWrapper(key, value.ToString());
+                _interop.SetPersistentDataWrapper(key, value);
+            }
+
+            public void InsertPersistentData(string key, string value)
+            {
+                _interop.InsertPersistentDataWrapper(key, value);
             }
 
             public string GetPersistentData(string key)

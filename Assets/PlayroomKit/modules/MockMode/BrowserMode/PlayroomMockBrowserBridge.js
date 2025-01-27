@@ -265,11 +265,16 @@ RpcCall = function (name, data, rpcMode) {
 //#endregion
 
 //#region Persistence
-SetPersistentData = async function(key, value) {
-  await Playroom.setPersistentData(key, value)
-}
+SetPersistentData = async function (key, value) {
+  await Playroom.setPersistentData(key, value);
+};
 
-GetPersistentData = async function(key, value) {
-  return await Playroom.getPersistentData(key, value)
-}
+InsertPersistentData = async function (key, value) {
+  await Playroom.insertPersistentData(key, value);
+};
+
+GetPersistentData = async function (key, value) {
+  const data = await Playroom.getPersistentData(key, value);
+  return JSON.stringify(data);
+};
 //#endregion

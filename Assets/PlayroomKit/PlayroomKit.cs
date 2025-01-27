@@ -325,6 +325,16 @@ namespace Playroom
             _playroomService.SetPersistentData(key, value);
         }
 
+        public void InsertPersistentData(string key, string value)
+        {
+            if (!IsPlayRoomInitialized)
+            {
+                Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
+            }
+
+            _playroomService.InsertPersistentData(key, value);
+        }
+
         public string GetPersistentData(string key)
         {
             if (!IsPlayRoomInitialized)

@@ -97,6 +97,9 @@ namespace Playroom
         private static extern void SetPersistentDataInternal(string key, string value);
 
         [DllImport("__Internal")]
+        private static extern void InsertPersistentDataInternal(string key, string value);
+
+        [DllImport("__Internal")]
         private static extern string GetPersistentDataInternal(string key);
 
         #endregion

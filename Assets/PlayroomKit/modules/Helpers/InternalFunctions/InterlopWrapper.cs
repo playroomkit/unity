@@ -250,6 +250,11 @@ namespace Playroom
                 SetPersistentDataInternal(key, value);
             }
 
+            public void InsertPersistentDataWrapper(string key, string value)
+            {
+                InsertPersistentDataInternal(key, value);
+            }
+
             public string GetPersistentDataWrapper(string key)
             {
                 return GetPersistentDataInternal(key);

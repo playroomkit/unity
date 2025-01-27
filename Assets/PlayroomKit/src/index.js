@@ -935,6 +935,7 @@ mergeInto(LibraryManager.library, {
       });
   },
 
+  //#region Persistence
   SetPersistentDataInternal: function (key, value) {
     if (!window.Playroom) {
       console.error(
@@ -945,6 +946,18 @@ mergeInto(LibraryManager.library, {
 
     console.log(UTF8ToString(key))
     Playroom.setPersistentData(UTF8ToString(key), value)
+  },
+ 
+  InsertPersistentDataInternal: function (key, value) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    console.log(UTF8ToString(key))
+    Playroom.insertPersistentData(UTF8ToString(key), value)
   },
   
   GetPersistentDataInternal: function (key) {
@@ -960,6 +973,7 @@ mergeInto(LibraryManager.library, {
     console.log(`[JS] ${value}`)
     return value
   },
+  //#endregion
 
 
   // UTILS

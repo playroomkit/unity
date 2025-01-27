@@ -139,6 +139,11 @@ namespace Playroom
             _ubb.CallJs("SetPersistentData", null, null, true, key, value);
         }
 
+        public void InsertPersistentData(string key, string value)
+        {
+            _ubb.CallJs("InsertPersistentData", null, null, true, key, value);
+        }
+
         public string GetPersistentData(string key)
         {
             return _ubb.CallJs<string>("GetPersistentData", null, null, true, key);
