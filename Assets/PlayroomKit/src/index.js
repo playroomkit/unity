@@ -943,9 +943,14 @@ mergeInto(LibraryManager.library, {
       );
       return;
     }
+    
+    console.log(UTF8ToString(key), UTF8ToString(value))
 
-    console.log(UTF8ToString(key))
-    Playroom.setPersistentData(UTF8ToString(key), value)
+    Playroom.setPersistentData(key, value).then(() => {
+      console.log("Data has been set successfully.");
+    }).catch((error) => {
+      console.error("Failed to set data:", error);
+    });
   },
  
   InsertPersistentDataInternal: function (key, value) {
@@ -956,8 +961,13 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    console.log(UTF8ToString(key))
-    Playroom.insertPersistentData(UTF8ToString(key), value)
+    console.log(UTF8ToString(key), UTF8ToString(value))
+    
+    Playroom.insertPersistentData(UTF8ToString(key), value).then(() => {
+      console.log("Data has been set successfully.");
+    }).catch((error) => {
+      console.error("Failed to set data:", error);
+    });
   },
   
   GetPersistentDataInternal: function (key) {
@@ -968,10 +978,15 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    let value = Playroom.getPersistentData(UTF8ToString(key))
-
-    console.log(`[JS] ${value}`)
-    return value
+    return Playroom.getPersistentData(UTF8ToString(key))
+        .then((data) => {
+            return data;
+        })
+        .catch((error) => {
+            console.error("Failed to retrieve data:", error);
+            return null;  
+        });
+  
   },
   //#endregion
 

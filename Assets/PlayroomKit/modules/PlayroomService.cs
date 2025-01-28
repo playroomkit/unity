@@ -194,7 +194,6 @@ namespace Playroom
 
             public void SetPersistentData(string key, string value)
             {
-                // convert value to json string
                 _interop.SetPersistentDataWrapper(key, value);
             }
 
@@ -203,9 +202,10 @@ namespace Playroom
                 _interop.InsertPersistentDataWrapper(key, value);
             }
 
-            public string GetPersistentData(string key)
+            public void GetPersistentData(string key, Action<string> onGetPersistentDataCallback)
             {
-                return _interop.GetPersistentDataWrapper(key);
+                CallbackManager.RegisterCallback(onGetPersistentDataCallback, key);
+                _interop.GetPersistentDataWrapper(key, IPlayroomBase.InvokeCallback);
             }
 
             [MonoPInvokeCallback(typeof(Action))]
@@ -218,7 +218,6 @@ namespace Playroom
             private static void InvokeInsertCoin(string key)
             {
                 CallbackManager.InvokeCallback(key);
-
 
 #if UNITY_WEBGL && !UNITY_EDITOR
                 WebGLInput.captureAllKeyboardInput = true;

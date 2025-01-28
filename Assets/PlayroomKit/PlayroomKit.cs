@@ -335,18 +335,17 @@ namespace Playroom
             _playroomService.InsertPersistentData(key, value);
         }
 
-        public string GetPersistentData(string key)
+        public void GetPersistentData(string key, Action<string> onGetPersistentDataCallback)
         {
             if (!IsPlayRoomInitialized)
             {
                 Debug.LogError("[Mock Mode] Playroom not initialized yet! Please call InsertCoin.");
             }
 
-            return _playroomService.GetPersistentData(key);
+            _playroomService.GetPersistentData(key, onGetPersistentDataCallback);
         }
 
         #endregion
-
 
         private void UnsubscribeOnQuit()
         {

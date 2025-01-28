@@ -32,15 +32,14 @@ namespace Playroom
             public void SetState<T>(string key, T value, bool reliable = false);
 
             public T GetState<T>(string key);
-            
+
             public void SetPersistentData(string key, string value);
             public void InsertPersistentData(string key, string value);
-            public string GetPersistentData(string key);
+            public void GetPersistentData(string key, Action<string> getPersistentDataCallback);
 
             public void OnDisconnect(Action callback);
 
             public bool IsStreamScreen();
-            
 
             public void WaitForState(string stateKey, Action<string> onStateSetCallback = null);
 

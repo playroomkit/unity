@@ -29,7 +29,7 @@ namespace Playroom
             _ubb.StartUBB();
 
             string optionsJson = null;
-            if (string.IsNullOrEmpty(options.roomCode))
+            if (string.IsNullOrEmpty(options.roomCode) && !options.persistentMode)
             {
                 options.roomCode = "TEST_ROOM";
                 optionsJson = Helpers.SerializeInitOptions(options);
@@ -42,9 +42,9 @@ namespace Playroom
             var gameObjectName = _ubb.GetGameObject("InsertCoin").name;
             var devManagerName = _ubb.GetGameObject("devManager").name;
             Debug.Log("DevManagerName:" + gameObjectName);
-                
+
             Debug.Log(optionsJson);
-            
+
             _ubb.CallJs("InsertCoin", onLaunchCallBack.GetMethodInfo().Name, gameObjectName, true, optionsJson);
             PlayroomKit.IsPlayRoomInitialized = true;
         }
@@ -144,9 +144,17 @@ namespace Playroom
             _ubb.CallJs("InsertPersistentData", null, null, true, key, value);
         }
 
-        public string GetPersistentData(string key)
+        public void GetPersistentData(string key, Action<string> onGetPersistentDataCallback)
         {
-            return _ubb.CallJs<string>("GetPersistentData", null, null, true, key);
+            string callbackKey = $"GetPersistentData_{key}";
+            GameObject callbackObject = new GameObject(callbackKey);
+
+            MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
+            invoker.SetCallback(onGetPersistentDataCallback, callbackKey);
+
+            CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
+            
+            _ubb.CallJs<string>("GetPersistentData", null, null, false, key, callbackKey);
         }
 
         public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)

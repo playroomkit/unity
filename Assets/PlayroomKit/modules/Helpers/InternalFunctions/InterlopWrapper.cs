@@ -255,9 +255,9 @@ namespace Playroom
                 InsertPersistentDataInternal(key, value);
             }
 
-            public string GetPersistentDataWrapper(string key)
+            public string GetPersistentDataWrapper(string key, Action<string, string> onGetPersistentDataCallback)
             {
-                return GetPersistentDataInternal(key);
+                return GetPersistentDataInternal(key, onGetPersistentDataCallback);
             }
 
             // Internal static DllImport declarations

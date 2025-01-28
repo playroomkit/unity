@@ -19,7 +19,7 @@ namespace Playroom
             void UnsubscribeOnPlayerJoinWrapper(string id);
 
             bool IsHostWrapper();
-            
+
             void TransferHostWrapper(string playerId);
 
             bool IsStreamScreenWrapper();
@@ -63,14 +63,14 @@ namespace Playroom
             string DpadJoystickWrapper();
 
             void StartMatchmakingWrapper(Action callback);
-            
+
             void RpcRegisterWrapper(string name, Action<string> rpcRegisterCallback,
                 string onResponseReturn = null);
-            
+
             void RpcCallWrapper(string name, string data, RpcMode mode,
                 Action callbackOnResponse);
-            
-            
+
+
             //Player Functions
             void KickPlayerWrapper(string playerID, Action onKickCallback = null);
 
@@ -98,7 +98,7 @@ namespace Playroom
             void SetPersistentDataWrapper(string key, string value);
             void InsertPersistentDataWrapper(string key, string value);
 
-            string GetPersistentDataWrapper(string key);
+            string GetPersistentDataWrapper(string key, Action<string, string> onGetPersistentDataCallback);
         }
     }
 }

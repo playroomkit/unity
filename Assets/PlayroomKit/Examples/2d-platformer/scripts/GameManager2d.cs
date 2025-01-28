@@ -74,11 +74,9 @@ public class GameManager2d : MonoBehaviour
     void Start()
     {
         Initialize();
-        
+
         _playroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
         _playroomKit.WaitForState("test", (s) => { Debug.LogWarning($"After waiting for test: {s}"); });
-        _playroomKit.InsertPersistentData("a", "Hello");
-        _playroomKit.InsertPersistentData("a", "World!");
     }
 
     /// <summary>
@@ -122,10 +120,15 @@ public class GameManager2d : MonoBehaviour
             playerGameObjects[index].GetComponent<PlayerController2d>().Move();
             playerGameObjects[index].GetComponent<PlayerController2d>().Jump();
 
+
+            if (Input.GetKeyDown(KeyCode.N))
+            {
+                _playroomKit.SetPersistentData("TEST", "Setting Test Data");
+            }
+
             if (Input.GetKeyDown(KeyCode.M))
             {
-                string msg = _playroomKit.GetPersistentData("a");
-                Debug.Log(msg);
+                _playroomKit.GetPersistentData("TEST", data => Debug.Log($"Persistence data: {data}"));
             }
 
             players[index].SetState("pos", playerGameObjects[index].transform.position);
@@ -144,7 +147,6 @@ public class GameManager2d : MonoBehaviour
                     if (playerGameObjects != null)
                     {
                         playerGameObjects[i].GetComponent<Transform>().position = pos;
-
                         playerGameObjects[i].GetComponent<SpriteRenderer>().color = color;
                     }
                 }
