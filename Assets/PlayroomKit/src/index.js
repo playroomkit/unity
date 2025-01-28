@@ -934,9 +934,9 @@ mergeInto(LibraryManager.library, {
         console.error(`JS: Error starting match making ${error}`);
       });
   },
-
-  //#region Persistence
-  SetPersistentDataInternal: function (key, value) {
+  
+   //#region Persistence
+   SetPersistentDataInternal: function (key, value) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
@@ -944,9 +944,7 @@ mergeInto(LibraryManager.library, {
       return;
     }
     
-    console.log(UTF8ToString(key), UTF8ToString(value))
-
-    Playroom.setPersistentData(key, value).then(() => {
+    Playroom.setPersistentData(UTF8ToString(key), UTF8ToString(value)).then(() => {
       console.log("Data has been set successfully.");
     }).catch((error) => {
       console.error("Failed to set data:", error);
@@ -970,7 +968,7 @@ mergeInto(LibraryManager.library, {
     });
   },
   
-  GetPersistentDataInternal: function (key) {
+  GetPersistentDataInternal: function (key, onGetPersistentDataCallback) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
@@ -978,18 +976,16 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    return Playroom.getPersistentData(UTF8ToString(key))
-        .then((data) => {
-            return data;
-        })
-        .catch((error) => {
-            console.error("Failed to retrieve data:", error);
-            return null;  
-        });
+    var dataKey = UTF8ToString(key);
+
+    Playroom.getPersistentData(dataKey).then(data => {
+      data = JSON.stringify(data);
+      var key = _ConvertString(dataKey);
+      {{{ makeDynCall('vii', 'onGetPersistentDataCallback') }}}(key, stringToNewUTF8(data))
+    })
   
   },
   //#endregion
-
 
   // UTILS
   /**
