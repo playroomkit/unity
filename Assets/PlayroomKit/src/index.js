@@ -958,10 +958,8 @@ mergeInto(LibraryManager.library, {
       );
       return;
     }
-
-    console.log(UTF8ToString(key), UTF8ToString(value))
     
-    Playroom.insertPersistentData(UTF8ToString(key), value).then(() => {
+    Playroom.insertPersistentData(UTF8ToString(key), UTF8ToString(value)).then(() => {
       console.log("Data has been set successfully.");
     }).catch((error) => {
       console.error("Failed to set data:", error);
@@ -979,6 +977,10 @@ mergeInto(LibraryManager.library, {
     var dataKey = UTF8ToString(key);
 
     Playroom.getPersistentData(dataKey).then(data => {
+      if (data === undefined) {
+        return null;
+      }
+
       data = JSON.stringify(data);
       var key = _ConvertString(dataKey);
       {{{ makeDynCall('vii', 'onGetPersistentDataCallback') }}}(key, stringToNewUTF8(data))

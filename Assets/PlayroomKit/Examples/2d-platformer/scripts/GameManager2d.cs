@@ -123,7 +123,10 @@ public class GameManager2d : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.N))
             {
-                _playroomKit.SetPersistentData("TEST", "Setting Test Data");
+                // _playroomKit.SetPersistentData("TEST", "Setting Test Data");
+                _playroomKit.InsertPersistentData("TEST", "one");
+                _playroomKit.InsertPersistentData("TEST", "two");
+                _playroomKit.InsertPersistentData("TEST", "3");
             }
 
             if (Input.GetKeyDown(KeyCode.M))
