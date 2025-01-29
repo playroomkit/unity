@@ -273,18 +273,7 @@ InsertPersistentData = async function (key, value) {
   await Playroom.insertPersistentData(key, value);
 };
 
-GetPersistentData = function (key, callbackKey) {
-  const data = Playroom.getPersistentData(key)
-    .then((stateVal) => {
-      const data = {
-        key: callbackKey,
-        parameter: stateVal,
-      };
-
-      const jsonData = JSON.stringify(data);
-      unityInstance.SendMessage("CallbackManager", "InvokeCallback", jsonData);
-    })
-    .catch((error) => {
-      console.error("Error Waiting for state:", error);
-    });
+GetPersistentData = async function (key) {
+  const data = await  Playroom.getPersistentData(key);
+  return JSON.stringify(data)
 };

@@ -146,15 +146,8 @@ namespace Playroom
 
         public void GetPersistentData(string key, Action<string> onGetPersistentDataCallback)
         {
-            string callbackKey = $"GetPersistentData_{key}";
-            GameObject callbackObject = new GameObject(callbackKey);
-
-            MockCallbackInvoker invoker = callbackObject.AddComponent<MockCallbackInvoker>();
-            invoker.SetCallback(onGetPersistentDataCallback, callbackKey);
-
-            CallBacksHandlerMock.Instance.RegisterCallbackObject(callbackKey, callbackObject, "ExecuteCallback");
-            
-            _ubb.CallJs<string>("GetPersistentData", null, null, false, key, callbackKey);
+           string dataJson = _ubb.CallJs<string>("GetPersistentData", null, null, true, key);
+           onGetPersistentDataCallback?.Invoke(dataJson);
         }
 
         public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
