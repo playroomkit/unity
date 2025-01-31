@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using AOT;
 using Playroom;
 using UnityEngine;
-using UnityEngine.UI;
 using Random = UnityEngine.Random;
 using Debug = UnityEngine.Debug;
 using TMPro;
@@ -13,6 +11,9 @@ public class GameManager2d : MonoBehaviour
 {
     [SerializeField]
     private GameObject playerPrefab;
+
+    [SerializeField]
+    private string roomCode;
 
     /// <summary>
     /// player scores and UI to display score of the game.
@@ -36,13 +37,14 @@ public class GameManager2d : MonoBehaviour
     private static readonly List<GameObject> playerGameObjects = new();
     private static Dictionary<string, GameObject> PlayerDict = new();
 
-    private PlayroomKit _playroomKit; 
+    private PlayroomKit _playroomKit;
+    [SerializeField]
+    private string newData;
 
 
     void Awake()
     {
         _playroomKit = new();
-        Initialize();
     }
 
     /// <summary>
@@ -52,6 +54,8 @@ public class GameManager2d : MonoBehaviour
     {
         _playroomKit.InsertCoin(new InitOptions()
         {
+            // roomCode = roomCode,
+            persistentMode = true,
             maxPlayersPerRoom = 2,
             defaultPlayerStates = new()
             {
@@ -69,12 +73,10 @@ public class GameManager2d : MonoBehaviour
     /// </summary>
     void Start()
     {
+        Initialize();
+
         _playroomKit.RpcRegister("ShootBullet", HandleScoreUpdate, "You shot a bullet!");
-        
-        _playroomKit.WaitForState("test", (s) =>
-        {
-            Debug.LogWarning($"After waiting for test: {s}");
-        });
+        _playroomKit.WaitForState("test", (s) => { Debug.LogWarning($"After waiting for test: {s}"); });
     }
 
     /// <summary>
@@ -112,14 +114,28 @@ public class GameManager2d : MonoBehaviour
         {
             var myPlayer = _playroomKit.MyPlayer();
             var index = players.IndexOf(myPlayer);
-            
+
             if (Input.GetKeyDown(KeyCode.L)) _playroomKit.SetState("test", "yes");
 
             playerGameObjects[index].GetComponent<PlayerController2d>().Move();
             playerGameObjects[index].GetComponent<PlayerController2d>().Jump();
 
-            players[index].SetState("pos", playerGameObjects[index].transform.position);
 
+            if (Input.GetKeyDown(KeyCode.N))
+            {
+                _playroomKit.SetPersistentData("TEST", new Vector3(1, 6, 4));
+            }
+
+            if (Input.GetKeyDown(KeyCode.M))
+            {
+                _playroomKit.GetPersistentData("TEST", data =>
+                {
+                    Debug.Log($"Persistence data: {data}");
+                });
+            }
+
+
+            players[index].SetState("pos", playerGameObjects[index].transform.position);
             ShootBullet(index);
 
             for (var i = 0; i < players.Count; i++)
@@ -134,7 +150,6 @@ public class GameManager2d : MonoBehaviour
                     if (playerGameObjects != null)
                     {
                         playerGameObjects[i].GetComponent<Transform>().position = pos;
-
                         playerGameObjects[i].GetComponent<SpriteRenderer>().color = color;
                     }
                 }
@@ -199,3 +214,4 @@ public class GameManager2d : MonoBehaviour
         }
     }
 }
+

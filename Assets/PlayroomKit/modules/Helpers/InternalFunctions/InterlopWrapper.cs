@@ -245,6 +245,21 @@ namespace Playroom
                 return GetProfileByPlayerId(playerID);
             }
 
+            public void SetPersistentDataWrapper(string key, string value)
+            {
+                SetPersistentDataInternal(key, value);
+            }
+
+            public void InsertPersistentDataWrapper(string key, string value)
+            {
+                InsertPersistentDataInternal(key, value);
+            }
+
+            public string GetPersistentDataWrapper(string key, Action<string, string> onGetPersistentDataCallback)
+            {
+                return GetPersistentDataInternal(key, onGetPersistentDataCallback);
+            }
+
             // Internal static DllImport declarations
             [DllImport("__Internal")]
             private static extern void KickInternal(string playerID, Action onKickCallback = null);

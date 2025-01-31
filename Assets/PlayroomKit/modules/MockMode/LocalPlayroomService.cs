@@ -74,7 +74,7 @@ namespace Playroom
                 mockGlobalStates[key] = value;
             else
                 mockGlobalStates.Add(key, value);
-            
+
             CallbackManager.InvokeCallback(key, value as string);
         }
 
@@ -97,6 +97,21 @@ namespace Playroom
                 Debug.LogWarning($"No {key} in States");
                 return default;
             }
+        }
+
+        public void SetPersistentData(string key, object value)
+        {
+            DebugLogger.LogWarning("[MockMode] Persistent storage is currently not supported in local mode!");
+        }
+
+        public void InsertPersistentData(string key, object value)
+        {
+            DebugLogger.LogWarning("[MockMode] Persistent storage is currently not supported in local mode!");
+        }
+
+        public void GetPersistentData(string key, Action<string> callback)
+        {
+            DebugLogger.LogWarning("[MockMode] Persistent storage is currently not supported in local mode!");
         }
 
         public void OnDisconnect(Action callback)

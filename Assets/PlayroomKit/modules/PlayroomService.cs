@@ -173,7 +173,6 @@ namespace Playroom
                 _interop.SetStateStringWrapper(key, jsonString, reliable);
             }
 
-
             public T GetState<T>(string key)
             {
                 Type type = typeof(T);
@@ -192,6 +191,23 @@ namespace Playroom
                 }
             }
 
+            public void SetPersistentData(string key, object value)
+            {
+                string jsonString = Helpers.SerializeObject(value);
+                _interop.SetPersistentDataWrapper(key, jsonString);
+            }
+
+            public void InsertPersistentData(string key, object value)
+            {
+                string jsonString = Helpers.SerializeObject(value);
+                _interop.InsertPersistentDataWrapper(key, jsonString);
+            }
+
+            public void GetPersistentData(string key, Action<string> onGetPersistentDataCallback)
+            {
+                CallbackManager.RegisterCallback(onGetPersistentDataCallback, key);
+                _interop.GetPersistentDataWrapper(key, IPlayroomBase.InvokeCallback);
+            }
 
             [MonoPInvokeCallback(typeof(Action))]
             private static void InvokeStartMatchmakingCallback()
@@ -203,7 +219,6 @@ namespace Playroom
             private static void InvokeInsertCoin(string key)
             {
                 CallbackManager.InvokeCallback(key);
-
 
 #if UNITY_WEBGL && !UNITY_EDITOR
                 WebGLInput.captureAllKeyboardInput = true;
@@ -226,7 +241,6 @@ namespace Playroom
                 CallbackManager.RegisterCallback(onStateSetCallback, stateKey);
                 _interop.WaitForStateWrapper(stateKey, IPlayroomBase.InvokeCallback);
             }
-
 
             Action<string> WaitForPlayerCallback = null;
 
@@ -261,7 +275,7 @@ namespace Playroom
             public void ResetPlayersStates(string[] keysToExclude = null, Action onStatesReset = null)
             {
                 onstatesReset = onStatesReset;
-                string keysJson = keysToExclude != null ?  Helpers.CreateJsonArray(keysToExclude).ToString() : null;
+                string keysJson = keysToExclude != null ? Helpers.CreateJsonArray(keysToExclude).ToString() : null;
                 _interop.ResetPlayersStatesWrapper(keysJson, InvokePlayersResetCallBack);
             }
 
@@ -289,7 +303,6 @@ namespace Playroom
                 onplayersStatesReset?.Invoke();
             }
 
-
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void onDisconnectCallbackHandler(string key)
             {
@@ -305,7 +318,6 @@ namespace Playroom
                 Debug.LogException(new Exception(error));
             }
 
-
             private void UnsubscribeOnPlayerJoin(string callbackID)
             {
                 _interop.UnsubscribeOnPlayerJoinWrapper(callbackID);
@@ -320,7 +332,6 @@ namespace Playroom
             {
                 return _interop.GetStateIntWrapper(key);
             }
-
 
             private float GetStateFloat(string key)
             {

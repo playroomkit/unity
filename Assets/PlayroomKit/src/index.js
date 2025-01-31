@@ -72,29 +72,28 @@ mergeInto(LibraryManager.library, {
     return Playroom.isHost();
   },
 
-
-    /**
+  /**
    * @description Transfers the host to another player if they are in the room
    * @param {string} playerId 
    */
-    TransferHostInternal: function (playerId) {
-      if (!window.Playroom) {
-        console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
-        return;
-      }
+  TransferHostInternal: function (playerId) {
+    if (!window.Playroom) {
+      console.error("Playroom library is not loaded. Please make sure to call InsertCoin first.");
+      return;
+    }
 
-      try {
-        Playroom.transferHost(playerId)
-          .then(() => {
-            console.log("Host privileges successfully transferred.");
-          })
-          .catch((error) => {
-            console.error("Failed to transfer host privileges: ", error);
-          });
-      } catch (error) {
-        console.error("Error transferring host: ", error);
-      }
-    },
+    try {
+      Playroom.transferHost(playerId)
+        .then(() => {
+          console.log("Host privileges successfully transferred.");
+        })
+        .catch((error) => {
+          console.error("Failed to transfer host privileges: ", error);
+        });
+    } catch (error) {
+      console.error("Error transferring host: ", error);
+    }
+  },
 
   /**
    * @description Checks whether the local game is running in stream mode.
@@ -935,6 +934,62 @@ mergeInto(LibraryManager.library, {
         console.error(`JS: Error starting match making ${error}`);
       });
   },
+  
+   //#region Persistence
+   SetPersistentDataInternal: function (key, value) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+    
+    Playroom.setPersistentData(UTF8ToString(key), UTF8ToString(value)).then(() => {
+      console.log("Data has been set successfully.");
+    }).catch((error) => {
+      console.error("Failed to set data:", error);
+    });
+  },
+ 
+  InsertPersistentDataInternal: function (key, value) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+    
+    Playroom.insertPersistentData(UTF8ToString(key), UTF8ToString(value)).then(() => {
+      console.log("Data has been set successfully.");
+    }).catch((error) => {
+      console.error("Failed to set data:", error);
+    });
+  },
+  
+  GetPersistentDataInternal: function (key, onGetPersistentDataCallback) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    var dataKey = UTF8ToString(key);
+
+    Playroom.getPersistentData(dataKey).then(data => {
+      if (data === undefined) {
+        return null;
+      }
+
+      data = JSON.stringify(data);
+      var key = _ConvertString(dataKey);
+      {{{ makeDynCall('vii', 'onGetPersistentDataCallback') }}}(key, stringToNewUTF8(data))
+    }).catch((error) => {
+      console.error("Error getting persistent data:", error);
+    });
+  
+  },
+  //#endregion
 
   // UTILS
   /**

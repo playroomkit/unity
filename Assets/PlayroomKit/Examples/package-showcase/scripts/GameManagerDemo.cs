@@ -31,7 +31,6 @@ public class GameManagerDemo : MonoBehaviour
 
     private PlayroomKit _playroomKit = new();
 
-
     [Serializable]
     private class TempData
     {

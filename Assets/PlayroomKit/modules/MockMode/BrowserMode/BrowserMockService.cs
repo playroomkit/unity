@@ -5,6 +5,7 @@ using UnityEngine;
 
 #if UNITY_EDITOR
 using ParrelSync;
+using SimpleJSON;
 #endif
 
 namespace Playroom
@@ -29,15 +30,22 @@ namespace Playroom
             _ubb.StartUBB();
 
             string optionsJson = null;
-            if (options != null)
+            if (string.IsNullOrEmpty(options.roomCode) && !options.persistentMode)
             {
                 options.roomCode = "TEST_ROOM";
                 optionsJson = Helpers.SerializeInitOptions(options);
-            }   
+            }
+            else
+            {
+                optionsJson = Helpers.SerializeInitOptions(options);
+            }
 
             var gameObjectName = _ubb.GetGameObject("InsertCoin").name;
             var devManagerName = _ubb.GetGameObject("devManager").name;
             Debug.Log("DevManagerName:" + gameObjectName);
+
+            Debug.Log(optionsJson);
+
             _ubb.CallJs("InsertCoin", onLaunchCallBack.GetMethodInfo().Name, gameObjectName, true, optionsJson);
             PlayroomKit.IsPlayRoomInitialized = true;
         }
@@ -99,7 +107,7 @@ namespace Playroom
 
         public void TransferHost(string playerId)
         {
-            _ubb.CallJs("TransferHost", null, null, true, playerId);    
+            _ubb.CallJs("TransferHost", null, null, true, playerId);
         }
 
         public string GetRoomCode()
@@ -125,6 +133,24 @@ namespace Playroom
         public T GetState<T>(string key)
         {
             return _ubb.CallJs<T>("GetState", null, null, false, key);
+        }
+
+        public void SetPersistentData(string key, object value)
+        {
+            string jsonString = JsonUtility.ToJson(value);
+            _ubb.CallJs("SetPersistentData", null, null, true, key, jsonString);
+        }
+
+        public void InsertPersistentData(string key, object value)
+        {
+            string jsonString = JsonUtility.ToJson(value);
+            _ubb.CallJs("InsertPersistentData", null, null, true, key, jsonString);
+        }
+
+        public void GetPersistentData(string key, Action<string> onGetPersistentDataCallback)
+        {
+            string dataJson = _ubb.CallJs<string>("GetPersistentData", null, null, true, key);
+            onGetPersistentDataCallback?.Invoke(dataJson);
         }
 
         public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
@@ -197,7 +223,7 @@ namespace Playroom
         {
             PlayroomKit.IPlayroomBase.OnPlayerJoinWrapperCallback(playerId);
         }
-        
+
         #endregion
     }
 #endif

@@ -59,7 +59,6 @@ namespace Playroom
                     _interop.SetPlayerStateStringWrapper(_id, key, jsonString, reliable);
                 }
 
-
                 public T GetState<T>(string key)
                 {
                     Type type = typeof(T);
