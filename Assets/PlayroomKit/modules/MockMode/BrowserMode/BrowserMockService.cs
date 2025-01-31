@@ -5,6 +5,7 @@ using UnityEngine;
 
 #if UNITY_EDITOR
 using ParrelSync;
+using SimpleJSON;
 #endif
 
 namespace Playroom
@@ -134,20 +135,22 @@ namespace Playroom
             return _ubb.CallJs<T>("GetState", null, null, false, key);
         }
 
-        public void SetPersistentData(string key, string value)
+        public void SetPersistentData(string key, object value)
         {
-            _ubb.CallJs("SetPersistentData", null, null, true, key, value);
+            string jsonString = JsonUtility.ToJson(value);
+            _ubb.CallJs("SetPersistentData", null, null, true, key, jsonString);
         }
 
-        public void InsertPersistentData(string key, string value)
+        public void InsertPersistentData(string key, object value)
         {
-            _ubb.CallJs("InsertPersistentData", null, null, true, key, value);
+            string jsonString = JsonUtility.ToJson(value);
+            _ubb.CallJs("InsertPersistentData", null, null, true, key, jsonString);
         }
 
         public void GetPersistentData(string key, Action<string> onGetPersistentDataCallback)
         {
-           string dataJson = _ubb.CallJs<string>("GetPersistentData", null, null, true, key);
-           onGetPersistentDataCallback?.Invoke(dataJson);
+            string dataJson = _ubb.CallJs<string>("GetPersistentData", null, null, true, key);
+            onGetPersistentDataCallback?.Invoke(dataJson);
         }
 
         public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)

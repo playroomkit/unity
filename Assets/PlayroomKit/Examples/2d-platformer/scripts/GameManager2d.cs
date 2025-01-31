@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using AOT;
 using Playroom;
 using UnityEngine;
-using UnityEngine.UI;
 using Random = UnityEngine.Random;
 using Debug = UnityEngine.Debug;
 using TMPro;
@@ -40,6 +38,8 @@ public class GameManager2d : MonoBehaviour
     private static Dictionary<string, GameObject> PlayerDict = new();
 
     private PlayroomKit _playroomKit;
+    [SerializeField]
+    private string newData;
 
 
     void Awake()
@@ -123,19 +123,19 @@ public class GameManager2d : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.N))
             {
-                // _playroomKit.SetPersistentData("TEST", "Setting Test Data");
-                _playroomKit.InsertPersistentData("TEST", "one");
-                _playroomKit.InsertPersistentData("TEST", "two");
-                _playroomKit.InsertPersistentData("TEST", "3");
+                _playroomKit.SetPersistentData("TEST", new Vector3(1, 6, 4));
             }
 
             if (Input.GetKeyDown(KeyCode.M))
             {
-                _playroomKit.GetPersistentData("TEST", data => Debug.Log($"Persistence data: {data}"));
+                _playroomKit.GetPersistentData("TEST", data =>
+                {
+                    Debug.Log($"Persistence data: {data}");
+                });
             }
 
-            players[index].SetState("pos", playerGameObjects[index].transform.position);
 
+            players[index].SetState("pos", playerGameObjects[index].transform.position);
             ShootBullet(index);
 
             for (var i = 0; i < players.Count; i++)
@@ -214,3 +214,4 @@ public class GameManager2d : MonoBehaviour
         }
     }
 }
+

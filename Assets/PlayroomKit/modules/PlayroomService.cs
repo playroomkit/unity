@@ -173,7 +173,6 @@ namespace Playroom
                 _interop.SetStateStringWrapper(key, jsonString, reliable);
             }
 
-
             public T GetState<T>(string key)
             {
                 Type type = typeof(T);
@@ -192,14 +191,16 @@ namespace Playroom
                 }
             }
 
-            public void SetPersistentData(string key, string value)
+            public void SetPersistentData(string key, object value)
             {
-                _interop.SetPersistentDataWrapper(key, value);
+                string jsonString = Helpers.SerializeObject(value);
+                _interop.SetPersistentDataWrapper(key, jsonString);
             }
 
-            public void InsertPersistentData(string key, string value)
+            public void InsertPersistentData(string key, object value)
             {
-                _interop.InsertPersistentDataWrapper(key, value);
+                string jsonString = Helpers.SerializeObject(value);
+                _interop.InsertPersistentDataWrapper(key, jsonString);
             }
 
             public void GetPersistentData(string key, Action<string> onGetPersistentDataCallback)
@@ -240,7 +241,6 @@ namespace Playroom
                 CallbackManager.RegisterCallback(onStateSetCallback, stateKey);
                 _interop.WaitForStateWrapper(stateKey, IPlayroomBase.InvokeCallback);
             }
-
 
             Action<string> WaitForPlayerCallback = null;
 
@@ -303,7 +303,6 @@ namespace Playroom
                 onplayersStatesReset?.Invoke();
             }
 
-
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void onDisconnectCallbackHandler(string key)
             {
@@ -319,7 +318,6 @@ namespace Playroom
                 Debug.LogException(new Exception(error));
             }
 
-
             private void UnsubscribeOnPlayerJoin(string callbackID)
             {
                 _interop.UnsubscribeOnPlayerJoinWrapper(callbackID);
@@ -334,7 +332,6 @@ namespace Playroom
             {
                 return _interop.GetStateIntWrapper(key);
             }
-
 
             private float GetStateFloat(string key)
             {

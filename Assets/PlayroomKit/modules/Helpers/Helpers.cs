@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using SimpleJSON;
 using UnityEngine;
@@ -80,8 +81,8 @@ namespace Playroom
 
                 node["defaultPlayerStates"] = defaultPlayerStatesObject;
             }
-            
-            
+
+
             DebugLogger.LogWarning(node.ToString());
 
             return node.ToString();
@@ -152,7 +153,7 @@ namespace Playroom
                 zonesJson["right"] = ConvertButtonOptionsToJson(options.zones.right);
                 joystickOptionsJson["zones"] = zonesJson;
             }
-            
+
             joystickOptionsJson["keyboard"] = options.keyboard;
 
             return joystickOptionsJson.ToString();
@@ -188,7 +189,7 @@ namespace Playroom
 
             return profileData;
         }
-        
+
         private static Dictionary<string, T> ParseJsonToDictionary<T>(string jsonString)
         {
             var dictionary = new Dictionary<string, T>();
@@ -212,6 +213,38 @@ namespace Playroom
             }
 
             return dictionary;
+        }
+
+        public static string SerializeObject(object value)
+        {
+            if (value == null) return JSONNull.CreateOrGet();
+
+            switch (value)
+            {
+                case int i: return new JSONNumber(i);
+                case float f: return new JSONNumber(f);
+                case bool b: return new JSONBool(b);
+                case string s: return value.ToString();
+                case IDictionary dictionary:
+                    var jsonDict = new JSONObject();
+                    foreach (DictionaryEntry entry in dictionary)
+                    {
+                        jsonDict[entry.Key.ToString()] = ConvertValueToJSON(entry.Value);
+                    }
+
+                    return jsonDict;
+                case IEnumerable list:
+                    var jsonArray = new JSONArray();
+                    foreach (var item in list)
+                    {
+                        jsonArray.Add(ConvertValueToJSON(item));
+                    }
+
+                    return jsonArray;
+                default:
+                    Debug.LogError($"{value.GetType()} requires manual serialization!");
+                    return default;
+            }
         }
     }
 }

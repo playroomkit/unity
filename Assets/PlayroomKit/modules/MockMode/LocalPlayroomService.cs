@@ -99,12 +99,12 @@ namespace Playroom
             }
         }
 
-        public void SetPersistentData(string key, string value)
+        public void SetPersistentData(string key, object value)
         {
             DebugLogger.LogWarning("[MockMode] Persistent storage is currently not supported in local mode!");
         }
 
-        public void InsertPersistentData(string key, string value)
+        public void InsertPersistentData(string key, object value)
         {
             DebugLogger.LogWarning("[MockMode] Persistent storage is currently not supported in local mode!");
         }

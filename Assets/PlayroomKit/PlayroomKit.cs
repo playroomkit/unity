@@ -315,7 +315,7 @@ namespace Playroom
 
         #region Persistence
 
-        public void SetPersistentData(string key, string value)
+        public void SetPersistentData(string key, object value)
         {
             if (!IsPlayRoomInitialized)
             {
@@ -325,7 +325,7 @@ namespace Playroom
             _playroomService.SetPersistentData(key, value);
         }
 
-        public void InsertPersistentData(string key, string value)
+        public void InsertPersistentData(string key, object value)
         {
             if (!IsPlayRoomInitialized)
             {

@@ -984,7 +984,9 @@ mergeInto(LibraryManager.library, {
       data = JSON.stringify(data);
       var key = _ConvertString(dataKey);
       {{{ makeDynCall('vii', 'onGetPersistentDataCallback') }}}(key, stringToNewUTF8(data))
-    })
+    }).catch((error) => {
+      console.error("Error getting persistent data:", error);
+    });
   
   },
   //#endregion
