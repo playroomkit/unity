@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UBB;
 using UnityEngine;
@@ -135,23 +136,6 @@ namespace Playroom
             return _ubb.CallJs<T>("GetState", null, null, false, key);
         }
 
-        public void SetPersistentData(string key, object value)
-        {
-            string jsonString = JsonUtility.ToJson(value);
-            _ubb.CallJs("SetPersistentData", null, null, true, key, jsonString);
-        }
-
-        public void InsertPersistentData(string key, object value)
-        {
-            string jsonString = JsonUtility.ToJson(value);
-            _ubb.CallJs("InsertPersistentData", null, null, true, key, jsonString);
-        }
-
-        public void GetPersistentData(string key, Action<string> onGetPersistentDataCallback)
-        {
-            string dataJson = _ubb.CallJs<string>("GetPersistentData", null, null, true, key);
-            onGetPersistentDataCallback?.Invoke(dataJson);
-        }
 
         public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
         {
@@ -192,9 +176,60 @@ namespace Playroom
 
         #endregion
 
+        #region Persistent API
+
+        public void SetPersistentData(string key, object value)
+        {
+            string jsonString = JsonUtility.ToJson(value);
+            _ubb.CallJs("SetPersistentData", null, null, true, key, jsonString);
+        }
+
+        public void InsertPersistentData(string key, object value)
+        {
+            string jsonString = JsonUtility.ToJson(value);
+            _ubb.CallJs("InsertPersistentData", null, null, true, key, jsonString);
+        }
+
+        public void GetPersistentData(string key, Action<string> onGetPersistentDataCallback)
+        {
+            string dataJson = _ubb.CallJs<string>("GetPersistentData", null, null, true, key);
+            onGetPersistentDataCallback?.Invoke(dataJson);
+        }
+
+        #endregion
+
+        #region Turn Based
+
+        public string GetChallengeId()
+        {
+            return _ubb.CallJs<string>("GetChallengeId");
+        }
+
+        public void SaveMyTurnData(object data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<object> GetMyTurnData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetAllTurns(Action<string> callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ClearTurns(Action callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+
         #region Misc
 
-        // TODO: will implement after Player is implemented.
         public void UnsubscribeOnQuit()
         {
             throw new NotImplementedException();
