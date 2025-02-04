@@ -99,6 +99,8 @@ namespace Playroom
                 _interop.StartMatchmakingWrapper(InvokeStartMatchmakingCallback);
             }
 
+            #region State
+
             public void SetState<T>(string key, T value, bool reliable = false)
             {
                 if (value is string)
@@ -191,23 +193,8 @@ namespace Playroom
                 }
             }
 
-            public void SetPersistentData(string key, object value)
-            {
-                string jsonString = Helpers.SerializeObject(value);
-                _interop.SetPersistentDataWrapper(key, jsonString);
-            }
+            #endregion
 
-            public void InsertPersistentData(string key, object value)
-            {
-                string jsonString = Helpers.SerializeObject(value);
-                _interop.InsertPersistentDataWrapper(key, jsonString);
-            }
-
-            public void GetPersistentData(string key, Action<string> onGetPersistentDataCallback)
-            {
-                CallbackManager.RegisterCallback(onGetPersistentDataCallback, key);
-                _interop.GetPersistentDataWrapper(key, IPlayroomBase.InvokeCallback);
-            }
 
             [MonoPInvokeCallback(typeof(Action))]
             private static void InvokeStartMatchmakingCallback()
@@ -345,6 +332,57 @@ namespace Playroom
                     stateValue == 0 ? false :
                     throw new InvalidOperationException($"GetStateBool: {key} is not a bool");
             }
+
+            #region Persistent API
+
+            public void SetPersistentData(string key, object value)
+            {
+                string jsonString = Helpers.SerializeObject(value);
+                _interop.SetPersistentDataWrapper(key, jsonString);
+            }
+
+            public void InsertPersistentData(string key, object value)
+            {
+                string jsonString = Helpers.SerializeObject(value);
+                _interop.InsertPersistentDataWrapper(key, jsonString);
+            }
+
+            public void GetPersistentData(string key, Action<string> onGetPersistentDataCallback)
+            {
+                CallbackManager.RegisterCallback(onGetPersistentDataCallback, key);
+                _interop.GetPersistentDataWrapper(key, IPlayroomBase.InvokeCallback);
+            }
+
+            #endregion
+
+            #region TurnBased API
+
+            public string GetChallengeId()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SaveMyTurnData(object data)
+            {
+                throw new NotImplementedException();
+            }
+
+            public List<object> GetMyTurnData()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void GetAllTurns(Action<string> callback)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void ClearTurns(Action callback)
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
         }
     }
 }
