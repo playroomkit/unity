@@ -274,6 +274,31 @@ InsertPersistentData = async function (key, value) {
 };
 
 GetPersistentData = async function (key) {
-  const data = await  Playroom.getPersistentData(key);
-  return JSON.stringify(data)
+  const data = await Playroom.getPersistentData(key);
+  return JSON.stringify(data);
 };
+//#endregion
+
+//#region TurnBased
+GetChallengeId = function () {
+  return Playroom.getChallengeId();
+};
+
+SaveMyTurnData = async function (data) {
+  await Playroom.saveMyTurnData(data);
+};
+
+GetAllTurns = async function () {
+  const data = await Playroom.getAllTurns();
+  return JSON.stringify(data);
+};
+
+GetMyTurnData = async function () {
+  const data = await Playroom.getMyTurnData();
+  return JSON.stringify(data);
+};
+
+ClearTurns = async function () {
+  await Playroom.clearTurns();
+};  
+//#endregion

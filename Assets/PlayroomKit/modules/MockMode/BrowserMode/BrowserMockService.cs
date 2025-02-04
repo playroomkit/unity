@@ -212,17 +212,19 @@ namespace Playroom
 
         public string GetMyTurnData()
         {
-            throw new NotImplementedException();
+            return _ubb.CallJs<string>("GetMyTurnData", null, null, true);
         }
 
         public void GetAllTurns(Action<string> callback)
         {
-            throw new NotImplementedException();
+            string data = _ubb.CallJs<string>("GetAllTurns", null, null, true);
+            callback.Invoke(data);
         }
 
         public void ClearTurns(Action callback)
         {
-            throw new NotImplementedException();
+            _ubb.CallJs("ClearTurns", null, null, true);
+            callback.Invoke();
         }
 
         #endregion
