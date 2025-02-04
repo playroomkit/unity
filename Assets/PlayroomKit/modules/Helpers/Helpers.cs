@@ -8,7 +8,7 @@ namespace Playroom
     /// <summary>
     /// This file contains functions, mostly used for serialization / deserialization 
     /// </summary>
-    public class Helpers
+    public static class Helpers
     {
         public static string SerializeInitOptions(InitOptions options)
         {
@@ -35,7 +35,6 @@ namespace Playroom
             node["skipLobby"] = options.skipLobby;
             node["reconnectGracePeriod"] = options.reconnectGracePeriod;
 
-            // Serialize matchmaking field
             if (options.matchmaking is bool booleanMatchmaking)
             {
                 node["matchmaking"] = booleanMatchmaking;
@@ -45,6 +44,17 @@ namespace Playroom
                 JSONNode matchmakingNode = new JSONObject();
                 matchmakingNode["waitBeforeCreatingNewRoom"] = matchmakingOptions.waitBeforeCreatingNewRoom;
                 node["matchmaking"] = matchmakingNode;
+            }
+
+            if (options.turnBased is bool booleanTurnBased)
+            {
+                node["turnBased"] = booleanTurnBased;
+            }
+            else if (options.turnBased is TurnBasedOptions turnBasedOptions)
+            {
+                JSONNode turnBasedNode = new JSONObject();
+                turnBasedNode["challengeId"] = turnBasedOptions.challengeId;
+                node["matchmaking"] = turnBasedNode;
             }
 
             if (options.maxPlayersPerRoom.HasValue)
@@ -59,7 +69,6 @@ namespace Playroom
 
             node["discord"] = options.discord;
             node["persistentMode"] = options.persistentMode;
-            node["turnBased"] = options.turnBased;
 
             if (options.defaultStates != null)
             {

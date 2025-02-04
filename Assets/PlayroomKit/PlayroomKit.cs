@@ -312,27 +312,32 @@ namespace Playroom
 
         public string GetChallengeId()
         {
-            throw new NotImplementedException();
+            CheckPlayRoomInitialized();
+            return _playroomService.GetChallengeId();
         }
 
         public void SaveMyTurnData(object data)
         {
-            throw new NotImplementedException();
+            CheckPlayRoomInitialized();
+            _playroomService.SaveMyTurnData(data);
         }
 
         public List<object> GetMyTurnData()
         {
-            throw new NotImplementedException();
+            CheckPlayRoomInitialized();
+            return _playroomService.GetMyTurnData();
         }
 
         public void GetAllTurns(Action<string> callback)
         {
-            throw new NotImplementedException();
+            CheckPlayRoomInitialized();
+            _playroomService.GetAllTurns(callback);
         }
 
         public void ClearTurns(Action callback)
         {
-            throw new NotImplementedException();
+            CheckPlayRoomInitialized();
+            _playroomService.ClearTurns(callback);
         }
 
         #endregion
