@@ -14,10 +14,8 @@ public class GameManager : MonoBehaviour
     {
         _kit.InsertCoin(new InitOptions()
         {
-            turnBased = new TurnBasedOptions()
-            {
-                challengeId = "123"
-            },
+            turnBased = true,
+            persistentMode = true,
             maxPlayersPerRoom = 2,
         }, OnLaunchCallBack);
     }
@@ -47,8 +45,10 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.M))
         {
-            string data = _kit.GetMyTurnData();
-            Debug.Log($"Getting my turn data: {data}");
+            _kit.GetMyTurnData((data) =>
+            {
+                Debug.Log($"Getting my turn data: {data}");
+            });
         }
 
         if (Input.GetKeyDown(KeyCode.A))

@@ -285,16 +285,25 @@ GetChallengeId = function () {
 };
 
 SaveMyTurnData = async function (data) {
+
+  console.warn(`saving data ${data}`)
+
   await Playroom.saveMyTurnData(data);
 };
 
 GetAllTurns = async function () {
   const data = await Playroom.getAllTurns();
+
+  console.warn(`Getting All Turns ${data}`)
+
   return JSON.stringify(data);
 };
 
 GetMyTurnData = async function () {
   const data = await Playroom.getMyTurnData();
+
+  console.warn(`Getting My Turn Data ${data}`)
+ 
   return JSON.stringify(data);
 };
 

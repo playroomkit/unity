@@ -72,13 +72,11 @@ namespace Playroom
             _playroomService.InsertCoin(options, onLaunchCallBack, onDisconnectCallback);
         }
 
-
         public void OnPlayerJoin(Action<Player> onPlayerJoinCallback)
         {
             CheckPlayRoomInitialized();
             _playroomService.OnPlayerJoin(onPlayerJoinCallback);
         }
-
 
         public bool IsHost()
         {
@@ -322,10 +320,10 @@ namespace Playroom
             _playroomService.SaveMyTurnData(data);
         }
 
-        public string GetMyTurnData()
+        public void GetMyTurnData(Action<string> callback)
         {
             CheckPlayRoomInitialized();
-            return _playroomService.GetMyTurnData();
+            _playroomService.GetMyTurnData(callback);
         }
 
         public void GetAllTurns(Action<string> callback)

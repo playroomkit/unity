@@ -4,6 +4,7 @@ using AOT;
 using SimpleJSON;
 using System;
 using System.Collections.Generic;
+using OpenQA.Selenium.DevTools.V96.Browser;
 
 namespace Playroom
 {
@@ -20,6 +21,7 @@ namespace Playroom
             {
                 _interop = new PlayroomKitInterop();
             }
+
             public PlayroomBuildService(IInterop interop)
             {
                 _interop = interop;
@@ -44,6 +46,19 @@ namespace Playroom
 #if UNITY_WEBGL && !UNITY_EDITOR
                             WebGLInput.captureAllKeyboardInput = false;
 #endif
+                }
+
+                // UNTESTED:
+                if (options.turnBased is true)
+                {
+                    options.persistentMode = true;
+                }
+                else if (options.turnBased is TurnBasedOptions turnBasedOptions)
+                { 
+                    if (string.IsNullOrEmpty(turnBasedOptions.challengeId))
+                    {
+                        options.persistentMode = true;
+                    }
                 }
 
                 _interop.InsertCoinWrapper(
@@ -83,14 +98,14 @@ namespace Playroom
             }
 
             #endregion
-            
+
             #region Unsubscribers
 
             public void UnsubscribeOnQuit()
             {
                 _interop.UnsubscribeOnQuitWrapper();
             }
-            
+
             private void UnsubscribeOnPlayerJoin(string callbackID)
             {
                 _interop.UnsubscribeOnPlayerJoinWrapper(callbackID);
@@ -269,22 +284,20 @@ namespace Playroom
                 WaitForPlayerCallback = onStateSetCallback;
                 _interop.WaitForPlayerStateWrapper(playerID, stateKey, OnStateSetCallback);
             }
-            
+
             public void ResetStates(string[] keysToExclude = null, Action onStatesReset = null)
             {
                 _onStatesResetCallback = onStatesReset;
                 string keysJson = keysToExclude != null ? Helpers.CreateJsonArray(keysToExclude).ToString() : null;
                 _interop.ResetStatesWrapper(keysJson, InvokeResetCallBack);
             }
-            
+
             public void ResetPlayersStates(string[] keysToExclude = null, Action onStatesReset = null)
             {
                 _onStatesResetCallback = onStatesReset;
                 string keysJson = keysToExclude != null ? Helpers.CreateJsonArray(keysToExclude).ToString() : null;
                 _interop.ResetPlayersStatesWrapper(keysJson, InvokePlayersResetCallBack);
             }
-
-
 
             #endregion
 
@@ -339,7 +352,7 @@ namespace Playroom
                 throw new NotImplementedException();
             }
 
-            public string GetMyTurnData()
+            public void GetMyTurnData(Action<string> callback)
             {
                 throw new NotImplementedException();
             }
@@ -404,10 +417,8 @@ namespace Playroom
                 _onError?.Invoke(error);
                 Debug.LogException(new Exception(error));
             }
-            
 
             #endregion
-
         }
     }
 }

@@ -35,7 +35,6 @@ namespace Playroom
 
                 node["avatars"] = avatarsArray;
             }
-
             
             if (options.matchmaking is bool booleanMatchmaking)
             {

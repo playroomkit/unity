@@ -207,12 +207,24 @@ namespace Playroom
 
         public void SaveMyTurnData(object data)
         {
-            _ubb.CallJs("SaveMyTurnData", null, null, true, JsonUtility.ToJson(data));
+            string jsonData;
+
+            if (data is int || data is string || data is float)
+            {
+                jsonData = JSONNode.Parse(data.ToString()).ToString();
+            }
+            else
+            {
+                jsonData = JsonUtility.ToJson(data);
+            }
+
+            _ubb.CallJs("SaveMyTurnData", null, null, true, jsonData);
         }
 
-        public string GetMyTurnData()
+        public void GetMyTurnData(Action<string> callback)
         {
-            return _ubb.CallJs<string>("GetMyTurnData", null, null, true);
+            string data = _ubb.CallJs<string>("GetMyTurnData", null, null, true);
+            callback.Invoke(data);
         }
 
         public void GetAllTurns(Action<string> callback)
