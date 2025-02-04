@@ -59,6 +59,7 @@ namespace Playroom
 
             node["discord"] = options.discord;
             node["persistentMode"] = options.persistentMode;
+            node["turnBased"] = options.turnBased;
 
             if (options.defaultStates != null)
             {

@@ -18,11 +18,12 @@ namespace Playroom
         [CanBeNull]
         public string gameId;
         public bool discord = false;
-        
         public bool persistentMode = false;
+        public bool turnBased = false;
 
         public Dictionary<string, object> defaultStates = null;
         public Dictionary<string, object> defaultPlayerStates = null;
+        
 
         private object matchmakingField;
 
