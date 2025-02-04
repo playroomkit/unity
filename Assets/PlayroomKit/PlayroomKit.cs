@@ -307,5 +307,34 @@ namespace Playroom
         }
 
         #endregion
+
+        #region Turn Based
+
+        public string GetChallengeId()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SaveMyTurnData(object data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<object> GetMyTurnData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetAllTurns(Action<string> callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ClearTurns(Action callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }
