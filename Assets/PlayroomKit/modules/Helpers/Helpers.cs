@@ -19,6 +19,11 @@ namespace Playroom
             node["streamMode"] = options.streamMode;
             node["allowGamepads"] = options.allowGamepads;
             node["baseUrl"] = options.baseUrl;
+            node["roomCode"] = options.roomCode;
+            node["skipLobby"] = options.skipLobby;
+            node["reconnectGracePeriod"] = options.reconnectGracePeriod;
+            node["discord"] = options.discord;
+            node["persistentMode"] = options.persistentMode;
 
             if (options.avatars != null)
             {
@@ -31,10 +36,7 @@ namespace Playroom
                 node["avatars"] = avatarsArray;
             }
 
-            node["roomCode"] = options.roomCode;
-            node["skipLobby"] = options.skipLobby;
-            node["reconnectGracePeriod"] = options.reconnectGracePeriod;
-
+            
             if (options.matchmaking is bool booleanMatchmaking)
             {
                 node["matchmaking"] = booleanMatchmaking;
@@ -54,7 +56,7 @@ namespace Playroom
             {
                 JSONNode turnBasedNode = new JSONObject();
                 turnBasedNode["challengeId"] = turnBasedOptions.challengeId;
-                node["matchmaking"] = turnBasedNode;
+                node["turnBased"] = turnBasedNode;
             }
 
             if (options.maxPlayersPerRoom.HasValue)
@@ -66,9 +68,6 @@ namespace Playroom
             {
                 node["gameId"] = options.gameId;
             }
-
-            node["discord"] = options.discord;
-            node["persistentMode"] = options.persistentMode;
 
             if (options.defaultStates != null)
             {

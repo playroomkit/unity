@@ -1,4 +1,3 @@
-using System;
 using Playroom;
 using UnityEngine;
 
@@ -8,14 +7,17 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        _kit = new();
+        _kit = new PlayroomKit();
     }
 
     private void Start()
     {
         _kit.InsertCoin(new InitOptions()
         {
-            turnBased = true,
+            turnBased = new TurnBasedOptions()
+            {
+                challengeId = "123"
+            },
             maxPlayersPerRoom = 2,
         }, OnLaunchCallBack);
     }
@@ -23,8 +25,6 @@ public class GameManager : MonoBehaviour
     private void OnLaunchCallBack()
     {
         _kit.OnPlayerJoin(CreatePlayer);
-        
-        // _kit.get
     }
 
     private void CreatePlayer(PlayroomKit.Player player)
@@ -34,5 +34,9 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKey(KeyCode.C))
+        {
+            Debug.Log($"Challenge Id: {_kit.GetChallengeId()}");
+        }
     }
 }

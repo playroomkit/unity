@@ -322,7 +322,7 @@ namespace Playroom
             _playroomService.SaveMyTurnData(data);
         }
 
-        public List<object> GetMyTurnData()
+        public string GetMyTurnData()
         {
             CheckPlayRoomInitialized();
             return _playroomService.GetMyTurnData();

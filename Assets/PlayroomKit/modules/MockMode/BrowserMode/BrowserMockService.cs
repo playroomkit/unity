@@ -207,10 +207,10 @@ namespace Playroom
 
         public void SaveMyTurnData(object data)
         {
-            throw new NotImplementedException();
+            _ubb.CallJs("SaveMyTurnData", null, null, true, JsonUtility.ToJson(data));
         }
 
-        public List<object> GetMyTurnData()
+        public string GetMyTurnData()
         {
             throw new NotImplementedException();
         }

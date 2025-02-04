@@ -185,29 +185,29 @@ namespace Playroom
 
         public string GetChallengeId()
         {
-            DebugLogger.LogWarning("[MockMode] Persistent storage is currently not supported in local mode!");
+            DebugLogger.LogWarning("[MockMode] Turn based API is currently not supported in local mode!");
             return default;
         }
 
         public void SaveMyTurnData(object data)
         {
-            DebugLogger.LogWarning("[MockMode] Persistent storage is currently not supported in local mode!");
+            DebugLogger.LogWarning("[MockMode] Turn based API is currently not supported in local mode!");
         }
 
-        public List<object> GetMyTurnData()
+        public string GetMyTurnData()
         {
-            DebugLogger.LogWarning("[MockMode] Persistent storage is currently not supported in local mode!");
+            DebugLogger.LogWarning("[MockMode] Turn based API is currently not supported in local mode!");
             return default;
         }
 
         public void GetAllTurns(Action<string> callback)
         {
-            DebugLogger.LogWarning("[MockMode] Persistent storage is currently not supported in local mode!");
+            DebugLogger.LogWarning("[MockMode] Turn based API is currently not supported in local mode!");
         }
 
         public void ClearTurns(Action callback)
         {
-            DebugLogger.LogWarning("[MockMode] Persistent storage is currently not supported in local mode!");
+            DebugLogger.LogWarning("[MockMode] Turn based API is currently not supported in local mode!");
         }
 
         #endregion

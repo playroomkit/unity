@@ -20,12 +20,10 @@ namespace Playroom
             {
                 _interop = new PlayroomKitInterop();
             }
-
             public PlayroomBuildService(IInterop interop)
             {
                 _interop = interop;
             }
-
 
             #region Init Methods
 
@@ -341,7 +339,7 @@ namespace Playroom
                 throw new NotImplementedException();
             }
 
-            public List<object> GetMyTurnData()
+            public string GetMyTurnData()
             {
                 throw new NotImplementedException();
             }

@@ -60,7 +60,7 @@ namespace Playroom
             
             public void SaveMyTurnData(object data);
             
-            public List<object> GetMyTurnData();
+            public string GetMyTurnData();
             
             public void GetAllTurns(Action<string> callback);
             
