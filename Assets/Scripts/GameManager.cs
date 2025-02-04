@@ -34,9 +34,31 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.C))
+        if (Input.GetKeyDown(KeyCode.C))
         {
             Debug.Log($"Challenge Id: {_kit.GetChallengeId()}");
+        }
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            Debug.Log($"Saving my turn data...");
+            _kit.SaveMyTurnData(_kit.Me().id);
+        }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            string data = _kit.GetMyTurnData();
+            Debug.Log($"Getting my turn data: {data}");
+        }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            _kit.GetAllTurns((allData) => { Debug.Log($"Getting all turns data: {allData}"); });
+        }
+
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            _kit.ClearTurns(() => { Debug.Log("Cleared all turns data!"); });
         }
     }
 }
