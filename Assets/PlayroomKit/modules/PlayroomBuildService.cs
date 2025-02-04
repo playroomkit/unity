@@ -12,6 +12,9 @@ namespace Playroom
         public class PlayroomBuildService : IPlayroomBase, IPlayroomBuildExtensions
         {
             private readonly IInterop _interop;
+            private static Action<string> _onError;
+            private static Action _onStatesResetCallback;
+            private static Action _onPlayersStatesResetCallback;
 
             public PlayroomBuildService()
             {
@@ -24,24 +27,7 @@ namespace Playroom
             }
 
 
-            public Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
-            {
-                if (!IPlayroomBase.OnPlayerJoinCallbacks.Contains(onPlayerJoinCallback))
-                {
-                    IPlayroomBase.OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
-                }
-
-                var CallbackID = _interop.OnPlayerJoinWrapper(IPlayroomBase.__OnPlayerJoinCallbackHandler);
-
-                void Unsubscribe()
-                {
-                    IPlayroomBase.OnPlayerJoinCallbacks.Remove(onPlayerJoinCallback);
-                    UnsubscribeOnPlayerJoin(CallbackID);
-                }
-
-                return Unsubscribe;
-            }
-
+            #region Init Methods
 
             public void InsertCoin(InitOptions options = null, Action onLaunchCallBack = null,
                 Action onDisconnectCallback = null)
@@ -63,9 +49,58 @@ namespace Playroom
                 }
 
                 _interop.InsertCoinWrapper(
-                    optionsJson, InvokeInsertCoin, IPlayroomBase.__OnQuitInternalHandler, onDisconnectCallbackHandler,
+                    optionsJson, InvokeInsertCoin, IPlayroomBase.__OnQuitInternalHandler, OnDisconnectCallbackHandler,
                     InvokeOnErrorInsertCoin, onLaunchCallBackKey, onDisconnectCallBackKey);
             }
+
+            public Action OnPlayerJoin(Action<Player> onPlayerJoinCallback)
+            {
+                if (!IPlayroomBase.OnPlayerJoinCallbacks.Contains(onPlayerJoinCallback))
+                {
+                    IPlayroomBase.OnPlayerJoinCallbacks.Add(onPlayerJoinCallback);
+                }
+
+                var CallbackID = _interop.OnPlayerJoinWrapper(IPlayroomBase.__OnPlayerJoinCallbackHandler);
+
+                void Unsubscribe()
+                {
+                    IPlayroomBase.OnPlayerJoinCallbacks.Remove(onPlayerJoinCallback);
+                    UnsubscribeOnPlayerJoin(CallbackID);
+                }
+
+                return Unsubscribe;
+            }
+
+
+            public void StartMatchmaking(Action callback = null)
+            {
+                CallbackManager.RegisterCallback(callback, "matchMakingStarted");
+                _interop.StartMatchmakingWrapper(InvokeStartMatchmakingCallback);
+            }
+
+            public void OnDisconnect(Action callback)
+            {
+                CallbackManager.RegisterCallback(callback);
+                _interop.OnDisconnectWrapper(OnDisconnectCallbackHandler);
+            }
+
+            #endregion
+            
+            #region Unsubscribers
+
+            public void UnsubscribeOnQuit()
+            {
+                _interop.UnsubscribeOnQuitWrapper();
+            }
+            
+            private void UnsubscribeOnPlayerJoin(string callbackID)
+            {
+                _interop.UnsubscribeOnPlayerJoinWrapper(callbackID);
+            }
+
+            #endregion
+
+            #region Local Player
 
             public Player MyPlayer()
             {
@@ -77,6 +112,10 @@ namespace Playroom
             {
                 return MyPlayer();
             }
+
+            #endregion
+
+            #region Room
 
             public bool IsHost()
             {
@@ -93,11 +132,12 @@ namespace Playroom
                 return _interop.GetRoomCodeWrapper();
             }
 
-            public void StartMatchmaking(Action callback = null)
+            public bool IsStreamScreen()
             {
-                CallbackManager.RegisterCallback(callback, "matchMakingStarted");
-                _interop.StartMatchmakingWrapper(InvokeStartMatchmakingCallback);
+                return _interop.IsStreamScreenWrapper();
             }
+
+            #endregion
 
             #region State
 
@@ -175,140 +215,6 @@ namespace Playroom
                 _interop.SetStateStringWrapper(key, jsonString, reliable);
             }
 
-            public T GetState<T>(string key)
-            {
-                Type type = typeof(T);
-                if (type == typeof(int)) return (T)(object)GetStateInt(key);
-                else if (type == typeof(float)) return (T)(object)GetStateFloat(key);
-                else if (type == typeof(bool)) return (T)(object)GetStateBool(key);
-                else if (type == typeof(string)) return (T)(object)GetStateString(key);
-                else if (type == typeof(Vector2)) return JsonUtility.FromJson<T>(GetStateString(key));
-                else if (type == typeof(Vector3)) return JsonUtility.FromJson<T>(GetStateString(key));
-                else if (type == typeof(Vector4)) return JsonUtility.FromJson<T>(GetStateString(key));
-                else if (type == typeof(Quaternion)) return JsonUtility.FromJson<T>(GetStateString(key));
-                else
-                {
-                    Debug.LogError($"GetState<{type}> is not supported.");
-                    return default;
-                }
-            }
-
-            #endregion
-
-
-            [MonoPInvokeCallback(typeof(Action))]
-            private static void InvokeStartMatchmakingCallback()
-            {
-                CallbackManager.InvokeCallback("matchMakingStarted");
-            }
-
-            [MonoPInvokeCallback(typeof(Action<string>))]
-            private static void InvokeInsertCoin(string key)
-            {
-                CallbackManager.InvokeCallback(key);
-
-#if UNITY_WEBGL && !UNITY_EDITOR
-                WebGLInput.captureAllKeyboardInput = true;
-#endif
-            }
-
-            public void OnDisconnect(Action callback)
-            {
-                CallbackManager.RegisterCallback(callback);
-                _interop.OnDisconnectWrapper(onDisconnectCallbackHandler);
-            }
-
-            public bool IsStreamScreen()
-            {
-                return _interop.IsStreamScreenWrapper();
-            }
-
-            public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
-            {
-                CallbackManager.RegisterCallback(onStateSetCallback, stateKey);
-                _interop.WaitForStateWrapper(stateKey, IPlayroomBase.InvokeCallback);
-            }
-
-            Action<string> WaitForPlayerCallback = null;
-
-            public void WaitForPlayerState(string playerID, string stateKey, Action<string> onStateSetCallback = null)
-            {
-                WaitForPlayerCallback = onStateSetCallback;
-                _interop.WaitForPlayerStateWrapper(playerID, stateKey, OnStateSetCallback);
-            }
-
-            [MonoPInvokeCallback(typeof(Action<string>))]
-            void OnStateSetCallback(string data)
-            {
-                WaitForPlayerCallback?.Invoke(data);
-            }
-
-            private static Action onstatesReset;
-            private static Action onplayersStatesReset;
-
-            public void ResetStates(string[] keysToExclude = null, Action onStatesReset = null)
-            {
-                onstatesReset = onStatesReset;
-                string keysJson = keysToExclude != null ? Helpers.CreateJsonArray(keysToExclude).ToString() : null;
-                _interop.ResetStatesWrapper(keysJson, InvokeResetCallBack);
-            }
-
-            [MonoPInvokeCallback(typeof(Action))]
-            private static void InvokeResetCallBack()
-            {
-                onstatesReset?.Invoke();
-            }
-
-            public void ResetPlayersStates(string[] keysToExclude = null, Action onStatesReset = null)
-            {
-                onstatesReset = onStatesReset;
-                string keysJson = keysToExclude != null ? Helpers.CreateJsonArray(keysToExclude).ToString() : null;
-                _interop.ResetPlayersStatesWrapper(keysJson, InvokePlayersResetCallBack);
-            }
-
-            public void CreateJoyStick(JoystickOptions options)
-            {
-                string jsonStr = Helpers.ConvertJoystickOptionsToJson(options);
-                _interop.CreateJoystickWrapper(jsonStr);
-            }
-
-            public Dpad DpadJoystick()
-            {
-                var jsonString = DpadJoystickInternal();
-                Dpad myDpad = JsonUtility.FromJson<Dpad>(jsonString);
-                return myDpad;
-            }
-
-            public void UnsubscribeOnQuit()
-            {
-                _interop.UnsubscribeOnQuitWrapper();
-            }
-
-            [MonoPInvokeCallback(typeof(Action))]
-            private static void InvokePlayersResetCallBack()
-            {
-                onplayersStatesReset?.Invoke();
-            }
-
-            [MonoPInvokeCallback(typeof(Action<string>))]
-            private static void onDisconnectCallbackHandler(string key)
-            {
-                CallbackManager.InvokeCallback(key);
-            }
-
-            private static Action<string> onError;
-
-            [MonoPInvokeCallback(typeof(Action<string>))]
-            private static void InvokeOnErrorInsertCoin(string error)
-            {
-                onError?.Invoke(error);
-                Debug.LogException(new Exception(error));
-            }
-
-            private void UnsubscribeOnPlayerJoin(string callbackID)
-            {
-                _interop.UnsubscribeOnPlayerJoinWrapper(callbackID);
-            }
 
             private string GetStateString(string key)
             {
@@ -332,6 +238,74 @@ namespace Playroom
                     stateValue == 0 ? false :
                     throw new InvalidOperationException($"GetStateBool: {key} is not a bool");
             }
+
+            public T GetState<T>(string key)
+            {
+                Type type = typeof(T);
+                if (type == typeof(int)) return (T)(object)GetStateInt(key);
+                else if (type == typeof(float)) return (T)(object)GetStateFloat(key);
+                else if (type == typeof(bool)) return (T)(object)GetStateBool(key);
+                else if (type == typeof(string)) return (T)(object)GetStateString(key);
+                else if (type == typeof(Vector2)) return JsonUtility.FromJson<T>(GetStateString(key));
+                else if (type == typeof(Vector3)) return JsonUtility.FromJson<T>(GetStateString(key));
+                else if (type == typeof(Vector4)) return JsonUtility.FromJson<T>(GetStateString(key));
+                else if (type == typeof(Quaternion)) return JsonUtility.FromJson<T>(GetStateString(key));
+                else
+                {
+                    Debug.LogError($"GetState<{type}> is not supported.");
+                    return default;
+                }
+            }
+
+
+            public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
+            {
+                CallbackManager.RegisterCallback(onStateSetCallback, stateKey);
+                _interop.WaitForStateWrapper(stateKey, IPlayroomBase.InvokeCallback);
+            }
+
+            Action<string> WaitForPlayerCallback = null;
+
+            public void WaitForPlayerState(string playerID, string stateKey, Action<string> onStateSetCallback = null)
+            {
+                WaitForPlayerCallback = onStateSetCallback;
+                _interop.WaitForPlayerStateWrapper(playerID, stateKey, OnStateSetCallback);
+            }
+            
+            public void ResetStates(string[] keysToExclude = null, Action onStatesReset = null)
+            {
+                _onStatesResetCallback = onStatesReset;
+                string keysJson = keysToExclude != null ? Helpers.CreateJsonArray(keysToExclude).ToString() : null;
+                _interop.ResetStatesWrapper(keysJson, InvokeResetCallBack);
+            }
+            
+            public void ResetPlayersStates(string[] keysToExclude = null, Action onStatesReset = null)
+            {
+                _onStatesResetCallback = onStatesReset;
+                string keysJson = keysToExclude != null ? Helpers.CreateJsonArray(keysToExclude).ToString() : null;
+                _interop.ResetPlayersStatesWrapper(keysJson, InvokePlayersResetCallBack);
+            }
+
+
+
+            #endregion
+
+            #region Joystick
+
+            public void CreateJoyStick(JoystickOptions options)
+            {
+                string jsonStr = Helpers.ConvertJoystickOptionsToJson(options);
+                _interop.CreateJoystickWrapper(jsonStr);
+            }
+
+            public Dpad DpadJoystick()
+            {
+                var jsonString = DpadJoystickInternal();
+                Dpad myDpad = JsonUtility.FromJson<Dpad>(jsonString);
+                return myDpad;
+            }
+
+            #endregion
 
             #region Persistent API
 
@@ -383,6 +357,59 @@ namespace Playroom
             }
 
             #endregion
+
+            #region Callbacks
+
+            [MonoPInvokeCallback(typeof(Action))]
+            private static void InvokeStartMatchmakingCallback()
+            {
+                CallbackManager.InvokeCallback("matchMakingStarted");
+            }
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            private static void InvokeInsertCoin(string key)
+            {
+                CallbackManager.InvokeCallback(key);
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+                WebGLInput.captureAllKeyboardInput = true;
+#endif
+            }
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            void OnStateSetCallback(string data)
+            {
+                WaitForPlayerCallback?.Invoke(data);
+            }
+
+            [MonoPInvokeCallback(typeof(Action))]
+            private static void InvokeResetCallBack()
+            {
+                _onStatesResetCallback?.Invoke();
+            }
+
+            [MonoPInvokeCallback(typeof(Action))]
+            private static void InvokePlayersResetCallBack()
+            {
+                _onPlayersStatesResetCallback?.Invoke();
+            }
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            private static void OnDisconnectCallbackHandler(string key)
+            {
+                CallbackManager.InvokeCallback(key);
+            }
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            private static void InvokeOnErrorInsertCoin(string error)
+            {
+                _onError?.Invoke(error);
+                Debug.LogException(new Exception(error));
+            }
+            
+
+            #endregion
+
         }
     }
 }
