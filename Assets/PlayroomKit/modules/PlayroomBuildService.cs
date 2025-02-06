@@ -48,14 +48,13 @@ namespace Playroom
 #endif
                 }
 
-                // UNTESTED:
                 if (options.turnBased is true)
                 {
                     options.persistentMode = true;
                 }
                 else if (options.turnBased is TurnBasedOptions turnBasedOptions)
-                { 
-                    if (string.IsNullOrEmpty(turnBasedOptions.challengeId))
+                {
+                    if (!string.IsNullOrEmpty(turnBasedOptions.challengeId))
                     {
                         options.persistentMode = true;
                     }
@@ -344,26 +343,40 @@ namespace Playroom
 
             public string GetChallengeId()
             {
-                throw new NotImplementedException();
+                CheckPlayRoomInitialized();
+                return _interop.GetChallengeIdWrapper();
             }
 
             public void SaveMyTurnData(object data)
             {
-                throw new NotImplementedException();
+                CheckPlayRoomInitialized();
+
+                string jsonData;
+
+                if (data is int || data is string || data is float)
+                    jsonData = JSONNode.Parse(data.ToString()).ToString();
+                else
+                    jsonData = JsonUtility.ToJson(data);
+                
+                
+                _interop.SaveMyTurnDataWrapper(jsonData);
             }
 
             public void GetMyTurnData(Action<string> callback)
             {
+                CheckPlayRoomInitialized();
                 throw new NotImplementedException();
             }
 
             public void GetAllTurns(Action<string> callback)
             {
+                CheckPlayRoomInitialized();
                 throw new NotImplementedException();
             }
 
             public void ClearTurns(Action callback)
             {
+                CheckPlayRoomInitialized();
                 throw new NotImplementedException();
             }
 

@@ -991,7 +991,59 @@ mergeInto(LibraryManager.library, {
   },
   //#endregion
 
-  // UTILS
+  //#region Turn based
+  GetChallengeIdInternal: function () {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    const challengeId =  Playroom.getChallengeId();
+    return _ConvertString(challengeId);
+  },
+
+  SaveMyTurnDataInternal: function() {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    
+  },
+
+  GetAllTurnsInternal: function () {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+  },
+
+  GetMyTurnDataInternal: function () {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+  },
+
+  ClearTurnsInternal: function() {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }    
+  },
+  //#endregion
+
+  //#region Utils
   /**
    * Converts a given string into a UTF-8 encoded string and stores it in memory.
    *
@@ -1004,4 +1056,5 @@ mergeInto(LibraryManager.library, {
     stringToUTF8(str, buffer, bufferSize);
     return buffer;
   },
+  //#endregion
 });
