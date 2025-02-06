@@ -31,7 +31,24 @@ namespace Playroom
             _ubb.StartUBB();
 
             string optionsJson = null;
-            if (string.IsNullOrEmpty(options.roomCode) && !options.persistentMode)
+
+            if (options.turnBased is bool turnBased)
+            {
+                if (turnBased)
+                {
+                    options.persistentMode = true;
+                    optionsJson = Helpers.SerializeInitOptions(options);
+                }
+            }
+            else if (options.turnBased is TurnBasedOptions turnBasedOptions)
+            {
+                if (!string.IsNullOrEmpty(turnBasedOptions.challengeId))
+                {
+                    options.persistentMode = true;
+                    optionsJson = Helpers.SerializeInitOptions(options);
+                }
+            }
+            else if (string.IsNullOrEmpty(options.roomCode) && !options.persistentMode)
             {
                 options.roomCode = "TEST_ROOM";
                 optionsJson = Helpers.SerializeInitOptions(options);

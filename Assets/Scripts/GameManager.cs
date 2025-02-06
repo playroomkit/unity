@@ -15,7 +15,6 @@ public class GameManager : MonoBehaviour
         _kit.InsertCoin(new InitOptions()
         {
             turnBased = true,
-            persistentMode = true,
             maxPlayersPerRoom = 2,
         }, OnLaunchCallBack);
     }
