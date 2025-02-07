@@ -332,7 +332,7 @@ namespace Playroom
             _playroomService.GetAllTurns(callback);
         }
 
-        public void ClearTurns(Action callback)
+        public void ClearTurns(Action callback = null)
         {
             CheckPlayRoomInitialized();
             _playroomService.ClearTurns(callback);

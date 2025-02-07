@@ -1004,7 +1004,7 @@ mergeInto(LibraryManager.library, {
     return _ConvertString(challengeId);
   },
 
-  SaveMyTurnDataInternal: function() {
+  SaveMyTurnDataInternal: function(data) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
@@ -1012,34 +1012,62 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-    
+    Playroom.saveMyTurnData(UTF8ToString(data)).then(() => {
+    }).catch((error) => {
+      console.error("[JS]: Failed to save turn data:", error);
+    });
   },
 
-  GetAllTurnsInternal: function () {
+  GetAllTurnsInternal: function (callback) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
       );
       return;
     }
+
+    Playroom.getAllTurns().then((data) => {
+      dataJson = JSON.stringify(data);
+      {{{ makeDynCall('vi', 'callback') }}}(stringToNewUTF8(dataJson));
+
+    }).catch((error) => {
+      console.error("[JS]: Failed to get turns:", error);
+    });
   },
 
-  GetMyTurnDataInternal: function () {
+  GetMyTurnDataInternal: function (callback) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
       );
       return;
     }
+
+    Playroom.getMyTurnData().then((data) => {
+      if (data == undefined) {
+        return;
+      }
+
+      dataJson = JSON.stringify(data);
+      {{{ makeDynCall('vi', 'callback') }}}(stringToNewUTF8(dataJson));
+    }).catch((error) => {
+      console.error("[JS]: Failed to get my turn data:", error);
+    });
   },
 
-  ClearTurnsInternal: function() {
+  ClearTurnsInternal: function(callback) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
       );
       return;
     }    
+
+    Playroom.clearTurns().then(() => {
+      {{{ makeDynCall('v', 'callback') }}};
+    }).catch((error) => {
+      console.error("[JS]: Failed to clear all turns:", error);
+    });
   },
   //#endregion
 

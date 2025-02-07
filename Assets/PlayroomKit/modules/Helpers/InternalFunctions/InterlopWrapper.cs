@@ -279,9 +279,9 @@ namespace Playroom
                 GetMyTurnDataInternal(callback);
             }
 
-            public void ClearTurnsWrapper()
+            public void ClearTurnsWrapper(Action callback = null)
             {
-                ClearTurnsInternal();
+                ClearTurnsInternal(callback);
             }
 
             #endregion

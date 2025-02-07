@@ -159,7 +159,7 @@ namespace Playroom
         private static extern string GetMyTurnDataInternal(Action<string> callback);
 
         [DllImport("__Internal")]
-        private static extern void ClearTurnsInternal();
+        private static extern void ClearTurnsInternal(Action callback = null);
 
         #endregion
     }

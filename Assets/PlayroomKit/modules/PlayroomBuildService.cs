@@ -227,7 +227,6 @@ namespace Playroom
                 _interop.SetStateStringWrapper(key, jsonString, reliable);
             }
 
-
             private string GetStateString(string key)
             {
                 return _interop.GetStateStringWrapper(key);
@@ -357,27 +356,49 @@ namespace Playroom
                     jsonData = JSONNode.Parse(data.ToString()).ToString();
                 else
                     jsonData = JsonUtility.ToJson(data);
-                
-                
+
                 _interop.SaveMyTurnDataWrapper(jsonData);
+            }
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            private static void TurnBasedMyDataCallback(string data)
+            {
+                CallbackManager.InvokeCallback("GetMyData", data);
             }
 
             public void GetMyTurnData(Action<string> callback)
             {
                 CheckPlayRoomInitialized();
-                throw new NotImplementedException();
+                CallbackManager.RegisterCallback(callback, "GetMyData");
+                _interop.GetMyTurnDataWrapper(TurnBasedMyDataCallback);
+            }
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            private static void turnBasedCallbackHandler(string data)
+            {
+                CallbackManager.InvokeCallback("GetAllTurns", data);
             }
 
             public void GetAllTurns(Action<string> callback)
             {
                 CheckPlayRoomInitialized();
-                throw new NotImplementedException();
+                CallbackManager.RegisterCallback(callback, "GetAllTurns");
+                _interop.GetAllTurnsWrapper(turnBasedCallbackHandler);
             }
 
-            public void ClearTurns(Action callback)
+            public void ClearTurns(Action callback = null)
             {
                 CheckPlayRoomInitialized();
-                throw new NotImplementedException();
+                CallbackManager.RegisterCallback(callback, "clearTurns");
+                _interop.ClearTurnsWrapper(ClearTurnsCallback);
+                
+                callback?.Invoke();
+            }
+
+            [MonoPInvokeCallback(typeof(Action))]
+            private static void ClearTurnsCallback()
+            {
+                CallbackManager.InvokeCallback("clearTurns");
             }
 
             #endregion

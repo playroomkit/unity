@@ -65,7 +65,7 @@ namespace Playroom
 
             public void GetAllTurns(Action<string> callback);
 
-            public void ClearTurns(Action callback);
+            public void ClearTurns(Action callback = null);
 
             #endregion
 

@@ -110,7 +110,7 @@ namespace Playroom
 
             void GetMyTurnDataWrapper(Action<string> callback);
 
-            void ClearTurnsWrapper();
+            void ClearTurnsWrapper(Action callback = null);
 
             #endregion
         }

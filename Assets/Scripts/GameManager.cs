@@ -44,10 +44,7 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.M))
         {
-            _kit.GetMyTurnData((data) =>
-            {
-                Debug.Log($"Getting my turn data: {data}");
-            });
+            _kit.GetMyTurnData((data) => { Debug.Log($"Getting my turn data: {data}"); });
         }
 
         if (Input.GetKeyDown(KeyCode.A))
@@ -57,7 +54,10 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.L))
         {
-            _kit.ClearTurns(() => { Debug.Log("Cleared all turns data!"); });
+            _kit.ClearTurns(() =>
+            {
+                Debug.Log("Cleared all turns data!");
+            });
         }
     }
 }
