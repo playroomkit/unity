@@ -7,8 +7,6 @@ namespace Playroom
     {
         public class PlayroomKitInterop : IInterop
         {
-            // Wrap the static DllImport calls in instance methods
-
             public void InsertCoinWrapper(string options,
                 Action<string> onLaunchCallback,
                 Action<string> onQuitCallback,
@@ -167,8 +165,6 @@ namespace Playroom
             private extern static void RpcCallInternal(string name, string data, RpcMode mode,
                 Action callbackOnResponse);
 
-            //
-
 
             //Player 
             // Wrapper for KickInternal
@@ -255,53 +251,40 @@ namespace Playroom
                 InsertPersistentDataInternal(key, value);
             }
 
-            public string GetPersistentDataWrapper(string key, Action<string, string> onGetPersistentDataCallback)
+            public void GetPersistentDataWrapper(string key, Action<string, string> onGetPersistentDataCallback)
             {
-                return GetPersistentDataInternal(key, onGetPersistentDataCallback);
+                GetPersistentDataInternal(key, onGetPersistentDataCallback);
             }
 
-            // Internal static DllImport declarations
-            [DllImport("__Internal")]
-            private static extern void KickInternal(string playerID, Action onKickCallback = null);
 
-            [DllImport("__Internal")]
-            private static extern void WaitForPlayerStateInternal(string playerID, string stateKey,
-                Action<string> onStateSetCallback = null);
+            #region Turn based
 
-            [DllImport("__Internal")]
-            private static extern void SetPlayerStateByPlayerId(string playerID, string key, int value,
-                bool reliable = false);
+            public string GetChallengeIdWrapper()
+            {
+                return GetChallengeIdInternal();
+            }
 
-            [DllImport("__Internal")]
-            private static extern void SetPlayerStateFloatByPlayerId(string playerID, string key, string value,
-                bool reliable = false);
+            public void SaveMyTurnDataWrapper(string data)
+            {
+                SaveMyTurnDataInternal(data);
+            }
 
-            [DllImport("__Internal")]
-            private static extern void SetPlayerStateByPlayerId(string playerID, string key, bool value,
-                bool reliable = false);
+            public void GetAllTurnsWrapper(Action<string> callback)
+            {
+                GetAllTurnsInternal(callback);
+            }
 
-            [DllImport("__Internal")]
-            private static extern void SetPlayerStateDictionary(string playerID, string key, string jsonValues,
-                bool reliable = false);
+            public void GetMyTurnDataWrapper(Action<string> callback)
+            {
+                GetMyTurnDataInternal(callback);
+            }
 
-            [DllImport("__Internal")]
-            private static extern void SetPlayerStateStringById(string playerID, string key, string value,
-                bool reliable = false);
+            public void ClearTurnsWrapper(Action callback = null)
+            {
+                ClearTurnsInternal(callback);
+            }
 
-            [DllImport("__Internal")]
-            private static extern int GetPlayerStateIntById(string playerID, string key);
-
-            [DllImport("__Internal")]
-            private static extern float GetPlayerStateFloatById(string playerID, string key);
-
-            [DllImport("__Internal")]
-            private static extern string GetPlayerStateStringById(string playerID, string key);
-
-            [DllImport("__Internal")]
-            private static extern string GetPlayerStateDictionary(string playerID, string key);
-
-            [DllImport("__Internal")]
-            private static extern string GetProfileByPlayerId(string playerID);
+            #endregion
         }
     }
 }

@@ -55,6 +55,20 @@ namespace Playroom
 
             public void UnsubscribeOnQuit();
 
+            #region TurnBased
+
+            public string GetChallengeId();
+
+            public void SaveMyTurnData(object data);
+
+            public void GetMyTurnData(Action<string> callback);
+
+            public void GetAllTurns(Action<string> callback);
+
+            public void ClearTurns(Action callback = null);
+
+            #endregion
+
 
             #region Callbacks Wrappers
 

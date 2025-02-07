@@ -991,7 +991,87 @@ mergeInto(LibraryManager.library, {
   },
   //#endregion
 
-  // UTILS
+  //#region Turn based
+  GetChallengeIdInternal: function () {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    const challengeId =  Playroom.getChallengeId();
+    return _ConvertString(challengeId);
+  },
+
+  SaveMyTurnDataInternal: function(data) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    Playroom.saveMyTurnData(UTF8ToString(data)).then(() => {
+    }).catch((error) => {
+      console.error("[JS]: Failed to save turn data:", error);
+    });
+  },
+
+  GetAllTurnsInternal: function (callback) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    Playroom.getAllTurns().then((data) => {
+      dataJson = JSON.stringify(data);
+      {{{ makeDynCall('vi', 'callback') }}}(stringToNewUTF8(dataJson));
+
+    }).catch((error) => {
+      console.error("[JS]: Failed to get turns:", error);
+    });
+  },
+
+  GetMyTurnDataInternal: function (callback) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    Playroom.getMyTurnData().then((data) => {
+      if (data == undefined) {
+        return;
+      }
+
+      dataJson = JSON.stringify(data);
+      {{{ makeDynCall('vi', 'callback') }}}(stringToNewUTF8(dataJson));
+    }).catch((error) => {
+      console.error("[JS]: Failed to get my turn data:", error);
+    });
+  },
+
+  ClearTurnsInternal: function(callback) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }    
+
+    Playroom.clearTurns().then(() => {
+      {{{ makeDynCall('v', 'callback') }}};
+    }).catch((error) => {
+      console.error("[JS]: Failed to clear all turns:", error);
+    });
+  },
+  //#endregion
+
+  //#region Utils
   /**
    * Converts a given string into a UTF-8 encoded string and stores it in memory.
    *
@@ -1004,4 +1084,5 @@ mergeInto(LibraryManager.library, {
     stringToUTF8(str, buffer, bufferSize);
     return buffer;
   },
+  //#endregion
 });
