@@ -391,8 +391,6 @@ namespace Playroom
                 CheckPlayRoomInitialized();
                 CallbackManager.RegisterCallback(callback, "clearTurns");
                 _interop.ClearTurnsWrapper(ClearTurnsCallback);
-                
-                callback?.Invoke();
             }
 
             [MonoPInvokeCallback(typeof(Action))]
