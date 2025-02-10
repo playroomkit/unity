@@ -20,6 +20,7 @@ public class CommandManager : MonoBehaviour
             {
                 InformationColor = new Color(0,0.5f,1),
                 TraceColour = new Color(0.5f,0.5f,0.5f),
+                DebugColor = new Color(0.5f,0.5f,0.5f),
             }
         });
         _prk = new PlayroomKit();
