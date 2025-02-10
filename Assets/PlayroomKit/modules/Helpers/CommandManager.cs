@@ -171,13 +171,13 @@ public class CommandManager : MonoBehaviour
         LogCommand("InsertCoin");
 
         bool skipLobby = cmd.Args.ContainsKey("-skipLobby") && Convert.ToBoolean(cmd.Args["-skipLobby"]);
-        int? maxPlayersPerRoom = cmd.Args.ContainsKey("-maxPlayers") ? Convert.ToInt32(cmd.Args["-maxPlayers"]) : null;
         bool discord = cmd.Args.ContainsKey("-discord") && Convert.ToBoolean(cmd.Args["-discord"]);
         bool streamMode = cmd.Args.ContainsKey("-streamMode") && Convert.ToBoolean(cmd.Args["-streamMode"]);
         bool allowGamepads = cmd.Args.ContainsKey("-allowGamepads") && Convert.ToBoolean(cmd.Args["-allowGamepads"]);
+        bool matchmaking = cmd.Args.ContainsKey("-matchmaking") && Convert.ToBoolean(cmd.Args["-matchmaking"]);
         string baseUrl = cmd.Args.ContainsKey("-baseUrl") ? Convert.ToString(cmd.Args["-baseUrl"]) : "";
         int reconnectGracePeriod = cmd.Args.ContainsKey("-reconnectGracePeriod") ? Convert.ToInt32(cmd.Args["-reconnectGracePeriod"]) : 0;
-        bool matchmaking = cmd.Args.ContainsKey("-matchmaking") && Convert.ToBoolean(cmd.Args["-matchmaking"]);
+        int? maxPlayersPerRoom = cmd.Args.ContainsKey("-maxPlayersPerRoom") ? Convert.ToInt32(cmd.Args["-maxPlayersPerRoom"]) : null;
         string[] avatars = cmd.Args.ContainsKey("-avatars") ? cmd.Args["-avatars"].ToString().Split(',') : null;
         string roomCode = cmd.Args.ContainsKey("-roomCode") ? cmd.Args["-roomCode"] : "";
         string gameId = cmd.Args.ContainsKey("-gameId") ? cmd.Args["-gameId"] : "";
