@@ -25,7 +25,7 @@ This beta version of the SDK might undergo changes that could break compatibilit
 
 <!-- End SDK Installation -->
 
-<!-- Start SDK Installation -->
+<!-- Start SDK Contribution -->
 ## Contribution
 
 ### Reporting issues
@@ -55,3 +55,5 @@ Read more about the PlayroomKit Unity integration and the design behind it.
 ### Examples
 
 Example(s) of the SDK are in the [Examples](https://github.com/asadm/playroom-unity/tree/main/Assets/PlayroomKit/Examples) folder
+
+<!-- End SDK Contribution -->
