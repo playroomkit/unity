@@ -1044,6 +1044,10 @@ PrefabInstance:
       propertyPath: insertCoinCaller
       value: 
       objectReference: {fileID: 1661243507}
+    - target: {fileID: 8987662522597341863, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: mockMode
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
