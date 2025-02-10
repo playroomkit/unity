@@ -18,9 +18,9 @@ public class CommandManager : MonoBehaviour
             IsFixed = false,
             Colours =
             {
-                InformationColor = new Color(0,0.5f,1),
-                TraceColour = new Color(0.5f,0.5f,0.5f),
-                DebugColor = new Color(0.5f,0.5f,0.5f),
+                InformationColor = new Color(0, 0.5f, 1),
+                TraceColour = new Color(0.5f, 0.5f, 0.5f),
+                DebugColor = new Color(0.5f, 0.5f, 0.5f),
             }
         });
         _prk = new PlayroomKit();
@@ -39,14 +39,34 @@ public class CommandManager : MonoBehaviour
             new() { Command = "SetState", Description = "Sets State", Callback = SetStateCommand },
             new() { Command = "GetState", Description = "Gets State", Callback = GetStateCommand },
             new() { Command = "GetRoomCode", Description = "Gets Room Code", Callback = GetRoomCodeCommand },
-            new() { Command = "StartMatchMaking", Description = "Starts matchmaking", Callback = StartMatchMakingCommand },
-            new() { Command = "IsHost", Description = "Returns true if current player is host", Callback = IsHostCommand },
-            new() { Command = "IsStreamScreen", Description = "Returns true if current screen is streamer screen", Callback = IsStreamScreenCommand },
+            new()
+            {
+                Command = "StartMatchMaking", Description = "Starts matchmaking", Callback = StartMatchMakingCommand
+            },
+            new()
+            {
+                Command = "IsHost", Description = "Returns true if current player is host", Callback = IsHostCommand
+            },
+            new()
+            {
+                Command = "IsStreamScreen", Description = "Returns true if current screen is streamer screen",
+                Callback = IsStreamScreenCommand
+            },
             new() { Command = "MyPlayer", Description = "Returns current player's object", Callback = MyPlayerCommand },
             new() { Command = "Me", Description = "Returns current player's object", Callback = MeCommand },
-            new() { Command = "OnPlayerJoin", Description = "Displays ID of player who joined", Callback = OnPlayerJoinCommand },
-            new() { Command = "WaitForState", Description = "Waits for state to finish", Callback = WaitForStateCommand },
-            new() { Command = "OnDisconnect", Description = "Callback on player disconnect", Callback = OnDisconnectCommand },
+            new()
+            {
+                Command = "OnPlayerJoin", Description = "Displays ID of player who joined",
+                Callback = OnPlayerJoinCommand
+            },
+            new()
+            {
+                Command = "WaitForState", Description = "Waits for state to finish", Callback = WaitForStateCommand
+            },
+            new()
+            {
+                Command = "OnDisconnect", Description = "Callback on player disconnect", Callback = OnDisconnectCommand
+            },
             new() { Command = "ResetState", Description = "Reset state to default", Callback = ResetStateCommand }
         };
 
@@ -90,10 +110,11 @@ public class CommandManager : MonoBehaviour
     private void SetStateCommand(CommandCallback cmd)
     {
         LogCommand("SetState");
+
         string key = Convert.ToString(cmd.Args["-key"]);
         string value = Convert.ToString(cmd.Args["-value"]);
-        bool reliable = Convert.ToBoolean(cmd.Args["-reliable"]);
-         
+        bool reliable = Convert.ToBoolean(cmd.Args["-reliable"]); 
+
         _prk.SetState(key, value, reliable);
     }
 
@@ -102,7 +123,10 @@ public class CommandManager : MonoBehaviour
         LogCommand("GetState");
         string key = Convert.ToString(cmd.Args["-key"]);
         string value = _prk.GetState<string>(key);
-        PowerConsole.Log(LogLevel.Information, !string.IsNullOrEmpty(value) ? $"State value for key '{key}': {value}" : $"No value found for key '{key}'.");
+        PowerConsole.Log(LogLevel.Information,
+            !string.IsNullOrEmpty(value)
+                ? $"State value for key '{key}': {value}"
+                : $"No value found for key '{key}'.");
     }
 
     private void GetRoomCodeCommand(CommandCallback cmd)
@@ -145,55 +169,45 @@ public class CommandManager : MonoBehaviour
     private void InsertCoinCommand(CommandCallback cmd)
     {
         LogCommand("InsertCoin");
-        
-        bool defaultSkipLobby = false;
-        int defaultMaxPlayer = 2;
-        bool defaultDiscordMode = false;
-        bool defaultStreamMode = false;
-        bool dAllowGamePad = false; 
-        string defaultUrl = "https://example.com"; 
-        int defaultReconnectGracePoint = 5; 
-        bool defaultMatchMaking = false;
-        string[] defaultAvatars = new string[]{ "avatar1.png", "avatar2.png" };
-        string romcd = "123";
-        string gameID = "111";
-        
-        bool lobby = cmd.Args.ContainsKey("-skipLobby") ? Convert.ToBoolean(cmd.Args["-skipLobby"]):defaultSkipLobby;
-        int? maxNumbersOfPlayer = cmd.Args.ContainsKey("-maxPlayers") ? Convert.ToInt32(cmd.Args["-maxPlayers"]):defaultMaxPlayer;
-        bool discord = cmd.Args.ContainsKey("-discord") ? Convert.ToBoolean(cmd.Args["-discord"]):defaultDiscordMode;
-        bool stmMode = cmd.Args.ContainsKey("-streamMode") ? Convert.ToBoolean(cmd.Args["-streamMode"]): defaultStreamMode;
-        bool agpad =  cmd.Args.ContainsKey("-allowGamePad") ? Convert.ToBoolean(cmd.Args["-allowGamePad"]): dAllowGamePad;
-        string burl =  cmd.Args.ContainsKey("-baseUrl") ? Convert.ToString(cmd.Args["-baseUrl"]):defaultUrl;
-        int rgp =  cmd.Args.ContainsKey("-reconnectGracePeriod") ? Convert.ToInt32(cmd.Args["-reconnectGracePeriod"]):defaultReconnectGracePoint;
-        bool mtchMkng =  cmd.Args.ContainsKey("-matchMaking") ? Convert.ToBoolean(cmd.Args["-matchMaking"]): defaultMatchMaking;
-        string[] _avatars = cmd.Args.ContainsKey("-avatars") ? cmd.Args["-avatars"].ToString().Split(',') : defaultAvatars;
-        string roomCode = cmd.Args.ContainsKey("-roomCode") ? cmd.Args["-roomCode"] : romcd;
-        string gmeID = cmd.Args.ContainsKey("-gameId") ? cmd.Args["-gameId"] : gameID;
-        
-        InitOptions io = new InitOptions
+
+        bool lobby = cmd.Args.ContainsKey("-skipLobby") && Convert.ToBoolean(cmd.Args["-skipLobby"]);
+        int? maxNumbersOfPlayer = cmd.Args.ContainsKey("-maxPlayers") ? Convert.ToInt32(cmd.Args["-maxPlayers"]) : null;
+        bool discord = cmd.Args.ContainsKey("-discord") && Convert.ToBoolean(cmd.Args["-discord"]);
+        bool streamMode = cmd.Args.ContainsKey("-streamMode") && Convert.ToBoolean(cmd.Args["-streamMode"]);
+        bool allowGamepads = cmd.Args.ContainsKey("-allowGamePad") && Convert.ToBoolean(cmd.Args["-allowGamePad"]);
+        string burl = cmd.Args.ContainsKey("-baseUrl") ? Convert.ToString(cmd.Args["-baseUrl"]) : "";
+        int reconnectGracePoint = cmd.Args.ContainsKey("-reconnectGracePeriod")
+            ? Convert.ToInt32(cmd.Args["-reconnectGracePeriod"])
+            : 0;
+        bool matchMaking = cmd.Args.ContainsKey("-matchMaking") && Convert.ToBoolean(cmd.Args["-matchMaking"]);
+        string[] _avatars = cmd.Args.ContainsKey("-avatars") ? cmd.Args["-avatars"].ToString().Split(',') : null;
+        string roomCode = cmd.Args.ContainsKey("-roomCode") ? cmd.Args["-roomCode"] : "";
+        string gmeID = cmd.Args.ContainsKey("-gameId") ? cmd.Args["-gameId"] : "";
+
+        InitOptions initOptions = new InitOptions
         {
             skipLobby = lobby,
             roomCode = roomCode,
             maxPlayersPerRoom = maxNumbersOfPlayer,
-            gameId = gmeID, 
+            gameId = gmeID,
             discord = discord,
-            streamMode = stmMode,
-            allowGamepads = agpad,
+            streamMode = streamMode,
+            allowGamepads = allowGamepads,
             baseUrl = burl,
-            reconnectGracePeriod = rgp,
+            reconnectGracePeriod = reconnectGracePoint,
             avatars = _avatars,
-            matchmaking = mtchMkng,
+            matchmaking = matchMaking,
         };
 
         // actually call playroom's api
         _prk.InsertCoin(
-            io,
+            initOptions,
             OnLaunchCallBack
         );
     }
+
     private void OnLaunchCallBack()
     {
         PowerConsole.Log(LogLevel.Trace, "OnLaunch Invoked");
     }
 }
-
