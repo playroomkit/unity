@@ -14,7 +14,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/PlayroomKit/Examples/package-showcase/showcase.unity
     guid: 85c9af77ae006408ab24500b953a9035
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/TurnBased.unity
     guid: 490247da3cf48784ab657a183ba059d1
   m_configObjects: {}
