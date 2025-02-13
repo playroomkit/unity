@@ -3,7 +3,7 @@
 ## Local Setup
 Setting up the project locally is similar to any other Unity project:
 1. Ensure you have [Unity 2022.3.23f1](https://unity.com/releases/editor/whats-new/2022.3.23) installed.
-2. Install NodeJS on your system.
+2. Install [NodeJS](https://nodejs.org/en) on your system.
 3. Fork the repository and clone it to your local drive.
 4. To build the plugin, run these commands in your terminal:
    ```shell
@@ -50,18 +50,39 @@ PlayroomKit
 ├── Prefabs/
 ├── src/
 └── Tests/
-   └── package.json    
-   └── package-lock.json
-   └── Playroom.asmdef 
-   └── PlayroomKit.cs  
-       └── vite.config.js 
+└── package.json    
+└── package-lock.json
+└── Playroom.asmdef 
+└── PlayroomKit.cs  
+└── vite.config.js 
 ```
 The package also includes a custom WebGL template for Discord activities located in `Assets/WebGLTemplates`.
 
-<!-- TODO explain the modules -->
+#### Modules
+Playroomkit comes with many [modules](https://docs.joinplayroom.com/components) which help with speeding up development. Unity SDK builds on top of that and adds its own modules such as MockMode.
+The folder structure is something like this:
+```
+modules
+├── Helpers/
+├── Interfaces/
+├── MockMode/
+├── Options/
+├── Player/
+└── RPC/
+├── Headers
+├── PlayroomBuildService
+└── PlayroomkitDevManager
+```
 
-## Fix
+- **Helpers**: Includes utilities such as CallbackManager, CommandManager, and a Helpers class used for serializing and deserializing data.
+- **Interfaces**: Contains all of the base interfaces from which other classes inherit.
+- **MockMode**: Holds files for editor-only modes, including Browser and Local mock modes.
+- **Options**: Contains classes for settings and options related to different modules, such as InitOptions.
+- **Player**: Contains classes related to Player features and functionality.
+- **RPC**: Contains classes for implementing Remote Procedure Calls (RPC) related features.
+- **Headers.cs**: Contains method declarations which are implemented in `src/index.src`
+- **PlayroomBuildService.cs**: Build mode of playroomkit which only runs in the compiled game.
+- **PlayroomkitDevManager.cs**: Manager script for choosing between local and browser mockmode, this is used in the `PlayroomMockManager` prefab.
+
+## Tests
 Tests are located in the `Playroomkit/Tests` folder and are currently editor-only. Install Unity Test Runner to execute tests via the `Window/General/Test Runner` menu.
-
-## Limitations
-Currently, there's no support for building native platforms. We'd love to hear ideas and plans to implement PlayroomKit for Unity on native platforms. Please join [this Discord](https://discord.gg/uDHxeRYhRe) to discuss!
