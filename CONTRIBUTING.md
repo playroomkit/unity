@@ -16,8 +16,12 @@ Setting up the project locally is similar to any other Unity project:
 ## Resources
 - User-facing Documentation: https://docs.joinplayroom.com/usage/unity
 - Join our developer chatroom: https://discord.gg/uDHxeRYhRe
-- See our blog on the topic: https://www.grayhat.studio/echo/building-a-unity-plugin-in-javascript/
 - Email our founder: [tabish@joinplayroom.com](mailto:tabish@joinplayroom.com)
+
+Read more about the PlayroomKit Unity integration and the design behind it.
+
+- [Official announcement blog](https://docs.joinplayroom.com/blog/unityweb)
+- [Deep dive into PlayroomKit Unity](https://www.linkedin.com/pulse/building-unity-plugin-javascript-grayhatpk-gynfc/?trackingId=kbv0oZVNT6aLh2TjQ%2FhuVw%3D%3D)
 
 ## Types of Tasks
 ### Upstream Sync - Feature

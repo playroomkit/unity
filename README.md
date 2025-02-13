@@ -45,12 +45,9 @@ git push origin --tags
 
 This will create a draft release [on GitHub](https://github.com/asadm/playroom-unity/releases). Edit the release to add release notes and publish it.
 
-### Learn more
+### Contribute code to this project
 
-Read more about the PlayroomKit Unity integration and the design behind it.
-
-- [Official announcement blog](https://docs.joinplayroom.com/blog/unityweb)
-- [Deep dive into PlayroomKit Unity](https://www.linkedin.com/pulse/building-unity-plugin-javascript-grayhatpk-gynfc/?trackingId=kbv0oZVNT6aLh2TjQ%2FhuVw%3D%3D)
+Read [CONTRIBUTING.md](./CONTRIBUTING.md) for more information on how to contribute code to this project.
 
 ### Examples
 
