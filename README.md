@@ -54,3 +54,6 @@ Read [CONTRIBUTING.md](./CONTRIBUTING.md) for more information on how to contrib
 Example(s) of the SDK are in the [Examples](https://github.com/asadm/playroom-unity/tree/main/Assets/PlayroomKit/Examples) folder
 
 <!-- End SDK Contribution -->
+
+### Limitations
+Currently, there's no support for using the native platforms. We'd love to hear ideas and plans to implement PlayroomKit for Unity on native platforms. Please join [this Discord](https://discord.gg/uDHxeRYhRe) to discuss!
