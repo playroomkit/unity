@@ -61,9 +61,9 @@ namespace Playroom
 
             public void SaveMyTurnData(object data);
 
-            public void GetMyTurnData(Action<string> callback);
+            public void GetMyTurnData(Action<TurnData> callback);
 
-            public void GetAllTurns(Action<string> callback);
+            public void GetAllTurns(Action<List<TurnData>> callback);
 
             public void ClearTurns(Action callback = null);
 

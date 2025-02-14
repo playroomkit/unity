@@ -90,6 +90,28 @@ namespace Playroom
             }
         }
 
+        public static void InvokeCallback(string key, TurnData turnData)
+        {
+            if (callbacks.TryGetValue(key, out Delegate callback))
+            {
+                if (callback is Action<TurnData> action) action?.Invoke(turnData);
+                else
+                    Debug.LogError(
+                        $"Callback with key {key} is of unsupported type or incorrect number of arguments: {turnData}!");
+            }
+        }
+
+        public static void InvokeCallback(string key, List<TurnData> turnData)
+        {
+            if (callbacks.TryGetValue(key, out Delegate callback))
+            {
+                if (callback is Action<List<TurnData>> action) action?.Invoke(turnData);
+                else
+                    Debug.LogError(
+                        $"Callback with key {key} is of unsupported type or incorrect number of arguments: {turnData}!");
+            }
+        }
+
         public static bool CheckCallback(string key)
         {
             return callbacks.TryGetValue(key, out Delegate callback);

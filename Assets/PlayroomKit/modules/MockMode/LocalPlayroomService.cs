@@ -194,12 +194,12 @@ namespace Playroom
             DebugLogger.LogWarning("[MockMode] Turn based API is currently not supported in local mode!");
         }
 
-        public void GetMyTurnData(Action<string> callback)
+        public void GetMyTurnData(Action<TurnData> callback)
         {
             DebugLogger.LogWarning("[MockMode] Turn based API is currently not supported in local mode!");
         }
 
-        public void GetAllTurns(Action<string> callback)
+        public void GetAllTurns(Action<List<TurnData>> callback)
         {
             DebugLogger.LogWarning("[MockMode] Turn based API is currently not supported in local mode!");
         }
