@@ -10,6 +10,9 @@ namespace Playroom
     /// </summary>
     public static class Helpers
     {
+        static List<TurnData> allTurns = new List<TurnData>();
+
+        
         public static string SerializeInitOptions(InitOptions options)
         {
             if (options == null) return null;
@@ -35,7 +38,7 @@ namespace Playroom
 
                 node["avatars"] = avatarsArray;
             }
-            
+
             if (options.matchmaking is bool booleanMatchmaking)
             {
                 node["matchmaking"] = booleanMatchmaking;
@@ -253,6 +256,37 @@ namespace Playroom
                     Debug.LogError($"{value.GetType()} requires manual serialization!");
                     return default;
             }
+        }
+
+        public static TurnData ParseTurnData(string json)
+        {
+            JSONNode jsonNode = JSON.Parse(json);
+            TurnData turnData = new TurnData
+            {
+                id = jsonNode["id"],
+                player = PlayroomKit.GetPlayerById(jsonNode["player"]["id"]),
+                data = jsonNode["data"]
+            };
+            return turnData;
+        }
+
+        public static List<TurnData> ParseAllTurnData(string json)
+        {
+            allTurns.Clear();
+            
+            JSONNode allData = JSON.Parse(json);
+            for (int i = 0; i < allData.Count; i++)
+            {
+                TurnData turnData = new TurnData
+                {
+                    id = allData[i]["id"],
+                    player = PlayroomKit.GetPlayerById(allData[i]["player"]["id"]),
+                    data = allData[i]["data"]
+                };
+                allTurns.Add(turnData);
+            }
+            
+            return allTurns;
         }
     }
 }

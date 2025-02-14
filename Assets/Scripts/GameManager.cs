@@ -44,20 +44,28 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.M))
         {
-            _kit.GetMyTurnData((data) => { Debug.Log($"Getting my turn data: {data}"); });
+            _kit.GetMyTurnData((data) =>
+            {
+                Debug.Log($"Getting my turn data: " + $"{data.id}, {data.player.GetProfile().name}, {data.data}");
+            });
         }
 
         if (Input.GetKeyDown(KeyCode.A))
         {
-            _kit.GetAllTurns((allData) => { Debug.Log($"Getting all turns data: {allData}"); });
+            _kit.GetAllTurns((allData) =>
+            {
+                Debug.Log($"Getting all turns data: {allData}");
+                for (var i = 0; i < allData.Count; i++)
+                {
+                    var data = allData[i];
+                    Debug.Log($"at index ${i}: {data.id}, {data.player.GetProfile().name}, {data.data}");
+                }
+            });
         }
 
         if (Input.GetKeyDown(KeyCode.L))
         {
-            _kit.ClearTurns(() =>
-            {
-                Debug.Log("Cleared all turns data!");
-            });
+            _kit.ClearTurns(() => { Debug.Log("Cleared all turns data!"); });
         }
     }
 }
