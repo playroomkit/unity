@@ -67,7 +67,37 @@ public class CommandManager : MonoBehaviour
             {
                 Command = "OnDisconnect", Description = "Callback on player disconnect", Callback = OnDisconnectCommand
             },
-            new() { Command = "ResetState", Description = "Reset state to default", Callback = ResetStateCommand }
+            new() { Command = "ResetState", Description = "Reset state to default", Callback = ResetStateCommand },
+
+            new()
+            {
+                Command = "PlayerGetProfile", Description = "Returns player profile", Callback = PlayerGetProfileCommand
+            },
+            
+            new()
+            {
+                Command = "PlayerGetState", Description = "Returns Playrooms Player State ", Callback = PlayerGetStateCommand
+            }, 
+            
+            new()
+            {
+                Command = "PlayerSetState", Description = "Sets Playrooms Player State ", Callback = PlayerSetStateCommand
+            },
+            
+            new ()
+            {
+                Command = "PlayerWaitForState ", Description = "Waits for state of Playrooms Player", Callback = PlayerWaitForStateCommand   
+            },
+            
+            new ()
+            {
+                Command = "KickPlayer", Description = "Kicks PLayer", Callback = KickPlayerCommand  
+            },
+            new ()
+            {
+                Command = "PlayerOnQuit", Description = "Registers a Call back when a player quits the room", Callback = PlayerOnQuitCommand  
+            },
+            
         };
 
         foreach (var command in commands)
@@ -113,7 +143,7 @@ public class CommandManager : MonoBehaviour
 
         string key = Convert.ToString(cmd.Args["-key"]);
         string value = Convert.ToString(cmd.Args["-value"]);
-        bool reliable = Convert.ToBoolean(cmd.Args["-reliable"]); 
+        bool reliable = Convert.ToBoolean(cmd.Args["-reliable"]);
 
         _prk.SetState(key, value, reliable);
     }
@@ -166,6 +196,56 @@ public class CommandManager : MonoBehaviour
         PowerConsole.Log(LogLevel.Information, $"My Player's Name: {_prk.MyPlayer().GetProfile().name}");
     }
 
+    private void PlayerGetProfileCommand(CommandCallback cmd)
+    {
+        PowerConsole.Log(LogLevel.Information, $"Name is : {_prk.MyPlayer().GetProfile().name }");
+        PowerConsole.Log(LogLevel.Information ,$"Color is :{_prk.MyPlayer().GetProfile().color }");
+    }
+    
+    private void PlayerGetStateCommand(CommandCallback cmd)
+    {
+        LogCommand("PlayerGetState");
+        string key = Convert.ToString(cmd.Args["-key"]);
+        string value = _prk.MyPlayer().GetState<string>(key);
+        PowerConsole.Log(LogLevel.Information,
+            !string.IsNullOrEmpty(value)
+                ? $"State value for key '{key}': {value}"
+                : $"No value found for key '{key}'.");
+    }
+
+    private void PlayerSetStateCommand(CommandCallback cmd)
+    {
+        LogCommand("PlayerSetState");
+
+        string key = Convert.ToString(cmd.Args["-key"]);
+        string value = Convert.ToString(cmd.Args["-value"]);
+        bool reliable = Convert.ToBoolean(cmd.Args["-reliable"]);
+
+        _prk.MyPlayer().SetState(key, value, reliable);
+    }
+
+    private void PlayerWaitForStateCommand(CommandCallback cmd)
+    {
+        LogCommand("PlayerWaitForState");
+        string key = Convert.ToString(cmd.Args["-stateKey"]);
+        _prk.MyPlayer().WaitForState(key, data => PowerConsole.Log(LogLevel.Information, data.ToString()));
+    }
+
+    private void KickPlayerCommand(CommandCallback cmd)
+    {
+        LogCommand("KickPlayer");
+        _prk.MyPlayer().Kick(); 
+        PowerConsole.Log(LogLevel.Information, $"Kicked the Player ");
+    }
+
+    private void PlayerOnQuitCommand(CommandCallback cmd)
+    {
+        LogCommand("PlayerOnQuit");
+        _prk.MyPlayer().OnQuit();
+        PowerConsole.Log(LogLevel.Information, $"A player has quited the match ");
+    }    
+    
+
     private void InsertCoinCommand(CommandCallback cmd)
     {
         LogCommand("InsertCoin");
@@ -176,8 +256,12 @@ public class CommandManager : MonoBehaviour
         bool allowGamepads = cmd.Args.ContainsKey("-allowGamepads") && Convert.ToBoolean(cmd.Args["-allowGamepads"]);
         bool matchmaking = cmd.Args.ContainsKey("-matchmaking") && Convert.ToBoolean(cmd.Args["-matchmaking"]);
         string baseUrl = cmd.Args.ContainsKey("-baseUrl") ? Convert.ToString(cmd.Args["-baseUrl"]) : "";
-        int reconnectGracePeriod = cmd.Args.ContainsKey("-reconnectGracePeriod") ? Convert.ToInt32(cmd.Args["-reconnectGracePeriod"]) : 0;
-        int? maxPlayersPerRoom = cmd.Args.ContainsKey("-maxPlayersPerRoom") ? Convert.ToInt32(cmd.Args["-maxPlayersPerRoom"]) : null;
+        int reconnectGracePeriod = cmd.Args.ContainsKey("-reconnectGracePeriod")
+            ? Convert.ToInt32(cmd.Args["-reconnectGracePeriod"])
+            : 0;
+        int? maxPlayersPerRoom = cmd.Args.ContainsKey("-maxPlayersPerRoom")
+            ? Convert.ToInt32(cmd.Args["-maxPlayersPerRoom"])
+            : null;
         string[] avatars = cmd.Args.ContainsKey("-avatars") ? cmd.Args["-avatars"].ToString().Split(',') : null;
         string roomCode = cmd.Args.ContainsKey("-roomCode") ? cmd.Args["-roomCode"] : "";
         string gameId = cmd.Args.ContainsKey("-gameId") ? cmd.Args["-gameId"] : "";
