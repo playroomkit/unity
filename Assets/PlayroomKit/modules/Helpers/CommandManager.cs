@@ -93,10 +93,10 @@ public class CommandManager : MonoBehaviour
             {
                 Command = "KickPlayer", Description = "Kicks PLayer", Callback = KickPlayerCommand  
             },
-            new ()
-            {
-                Command = "PlayerOnQuit", Description = "Registers a Call back when a player quits the room", Callback = PlayerOnQuitCommand  
-            },
+            // new ()
+            // {
+            //     Command = "PlayerOnQuit", Description = "Registers a Call back when a player quits the room", Callback = PlayerOnQuitCommand  
+            // },
             
         };
 
@@ -157,6 +157,7 @@ public class CommandManager : MonoBehaviour
             !string.IsNullOrEmpty(value)
                 ? $"State value for key '{key}': {value}"
                 : $"No value found for key '{key}'.");
+        
     }
 
     private void GetRoomCodeCommand(CommandCallback cmd)
@@ -201,6 +202,18 @@ public class CommandManager : MonoBehaviour
         PowerConsole.Log(LogLevel.Information, $"Name is : {_prk.MyPlayer().GetProfile().name }");
         PowerConsole.Log(LogLevel.Information ,$"Color is :{_prk.MyPlayer().GetProfile().color }");
     }
+
+    // private void RpcRegisterCommand(CommandCallback cmd)
+    // {
+    //     LogCommand("RpcRegister");
+    //     string name = Convert.ToString(cmd.Args["-name"]);
+    //     string action = Convert.ToString(cmd.Args["-action"]);
+    //     
+    //     
+    //     
+    //
+    //
+    // }
     
     private void PlayerGetStateCommand(CommandCallback cmd)
     {
@@ -238,15 +251,16 @@ public class CommandManager : MonoBehaviour
         PowerConsole.Log(LogLevel.Information, $"{_prk.MyPlayer().GetProfile().name} Kicked  ");
     }
 
-    private void PlayerOnQuitCommand(CommandCallback cmd)
-    {
-        LogCommand("PlayerOnQuit");
-        _prk.MyPlayer().OnQuit(() => {
-            Debug.Log($"{_prk.MyPlayer().GetProfile().name} quit!");
-        });
-        PowerConsole.Log(LogLevel.Information, $"{_prk.MyPlayer().GetProfile().name}  has quited the match ");
-    }    
-    
+    // private void PlayerOnQuitCommand(CommandCallback cmd)
+    // {
+    //     LogCommand("PlayerOnQuit");
+    //     
+    //     _prk.MyPlayer().OnQuit((quitMessage) => 
+    //     {
+    //         PowerConsole.Log(LogLevel.Information, $"{_prk.MyPlayer().GetProfile().name} has quit the match.{quitMessage}");
+    //     });
+    // }    
+    //
 
     private void InsertCoinCommand(CommandCallback cmd)
     {
