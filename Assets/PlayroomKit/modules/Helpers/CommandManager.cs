@@ -235,14 +235,16 @@ public class CommandManager : MonoBehaviour
     {
         LogCommand("KickPlayer");
         _prk.MyPlayer().Kick(); 
-        PowerConsole.Log(LogLevel.Information, $"Kicked the Player ");
+        PowerConsole.Log(LogLevel.Information, $"{_prk.MyPlayer().GetProfile().name} Kicked  ");
     }
 
     private void PlayerOnQuitCommand(CommandCallback cmd)
     {
         LogCommand("PlayerOnQuit");
-        _prk.MyPlayer().OnQuit();
-        PowerConsole.Log(LogLevel.Information, $"A player has quited the match ");
+        _prk.MyPlayer().OnQuit(() => {
+            Debug.Log($"{_prk.MyPlayer().GetProfile().name} quit!");
+        });
+        PowerConsole.Log(LogLevel.Information, $"{_prk.MyPlayer().GetProfile().name}  has quited the match ");
     }    
     
 
