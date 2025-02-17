@@ -12,7 +12,6 @@ namespace Playroom
     {
         static List<TurnData> allTurns = new List<TurnData>();
 
-        
         public static string SerializeInitOptions(InitOptions options)
         {
             if (options == null) return null;
@@ -273,19 +272,14 @@ namespace Playroom
         public static List<TurnData> ParseAllTurnData(string json)
         {
             allTurns.Clear();
-            
+
             JSONNode allData = JSON.Parse(json);
             for (int i = 0; i < allData.Count; i++)
             {
-                TurnData turnData = new TurnData
-                {
-                    id = allData[i]["id"],
-                    player = PlayroomKit.GetPlayerById(allData[i]["player"]["id"]),
-                    data = allData[i]["data"]
-                };
+                TurnData turnData = ParseTurnData(allData[i].ToString());
                 allTurns.Add(turnData);
             }
-            
+
             return allTurns;
         }
     }

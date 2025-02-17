@@ -54,7 +54,6 @@ public class GameManager : MonoBehaviour
         {
             _kit.GetAllTurns((allData) =>
             {
-                Debug.Log($"Getting all turns data: {allData}");
                 for (var i = 0; i < allData.Count; i++)
                 {
                     var data = allData[i];
