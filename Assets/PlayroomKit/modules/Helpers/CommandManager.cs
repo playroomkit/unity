@@ -138,7 +138,7 @@ public class CommandManager : MonoBehaviour
             new()
             {
                 Command = "ResetPlayerState", Description = "Resets MyPlayer states -excludeKeys(string)  ",
-                Callback = ResetPlayerStateCommand
+                Callback = ResetPlayerStatesCommand
             }
         };
 
@@ -298,13 +298,7 @@ public class CommandManager : MonoBehaviour
     {
         LogCommand("Player.Kick");
 
-        string playerId = cmd.Args.ContainsKey("-playerId") ? cmd.Args["-playerId"] : null;
-
-        if (string.IsNullOrEmpty(playerId))
-        {
-            PowerConsole.Log(LogLevel.Warning, "No player ID provided. Cannot kick.");
-            return;
-        }
+        string playerId = cmd.Args.ContainsKey("-playerId") ? cmd.Args["-playerId"] : _prk.MyPlayer().id;
 
         var playerToKick = _prk.GetPlayer(playerId);
         if (playerToKick == null)
@@ -329,12 +323,12 @@ public class CommandManager : MonoBehaviour
         });
     }
 
-    private void ResetPlayerStateCommand(CommandCallback cmd)
+    private void ResetPlayerStatesCommand(CommandCallback cmd)
     {
         LogCommand("ResetPlayerState");
 
         string[] keysToExclude = cmd.Args.ContainsKey("-excludeKeys")
-            ? Convert.ToString(cmd.Args["-excludeKeys"]).Split(',')
+            ? Convert.ToString(cmd.Args["-excludeKeys"]).Split(',') 
             : new string[] { "defaultKey" };
 
         _prk.ResetPlayersStates(keysToExclude,
