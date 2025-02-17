@@ -92,35 +92,35 @@ public class CommandManager : MonoBehaviour
 
             new()
             {
-                Command = "PlayerGetProfile", Description = "Returns player profile", Callback = PlayerGetProfileCommand
+                Command = "Player.GetProfile", Description = "Returns player profile", Callback = PlayerGetProfileCommand
             },
 
             new()
             {
-                Command = "PlayerGetState", Description = "Returns Playrooms Player State  -key(string)",
+                Command = "Player.GetState", Description = "Returns Playrooms Player State  -key(string)",
                 Callback = PlayerGetStateCommand
             },
 
             new()
             {
-                Command = "PlayerSetState",
+                Command = "Player.SetState",
                 Description = "Sets Playrooms Player State  -key(string) -value(string) -reliable(true/false)",
                 Callback = PlayerSetStateCommand
             },
 
             new()
             {
-                Command = "PlayerWaitForState ", Description = "Waits for state of Playrooms Player -stateKey(string) ",
+                Command = "Player.WaitForState ", Description = "Waits for state of Playrooms Player -stateKey(string) ",
                 Callback = PlayerWaitForStateCommand
             },
 
             new()
             {
-                Command = "KickPlayer", Description = "Kicks PLayer", Callback = KickPlayerCommand
+                Command = "Player.Kick", Description = "Kicks PLayer", Callback = KickPlayerCommand
             },
             new()
             {
-                Command = "PlayerOnQuit", Description = "Registers a Call back when a player quits the room",
+                Command = "Player.OnQuit", Description = "Registers a Call back when a player quits the room",
                 Callback = PlayerOnQuitCommand
             },
             new()
@@ -263,7 +263,7 @@ public class CommandManager : MonoBehaviour
 
     private void PlayerGetStateCommand(CommandCallback cmd)
     {
-        LogCommand("PlayerGetState");
+        LogCommand("Player.GetState");
         string key = Convert.ToString(cmd.Args["-key"]);
         string value = _prk.MyPlayer().GetState<string>(key);
         PowerConsole.Log(LogLevel.Information,
@@ -274,7 +274,7 @@ public class CommandManager : MonoBehaviour
 
     private void PlayerSetStateCommand(CommandCallback cmd)
     {
-        LogCommand("PlayerSetState");
+        LogCommand("Player.SetState");
 
         string key = cmd.Args.ContainsKey("-key") ? Convert.ToString(cmd.Args["-key"]) : "defaultKey";
         string value = cmd.Args.ContainsKey("-value") ? Convert.ToString(cmd.Args["-value"]) : "defaultValue";
@@ -285,21 +285,21 @@ public class CommandManager : MonoBehaviour
 
     private void PlayerWaitForStateCommand(CommandCallback cmd)
     {
-        LogCommand("PlayerWaitForState");
+        LogCommand("Player.WaitForState");
         string key = Convert.ToString(cmd.Args["-stateKey"]);
         _prk.MyPlayer().WaitForState(key, data => PowerConsole.Log(LogLevel.Information, data.ToString()));
     }
 
     private void KickPlayerCommand(CommandCallback cmd)
     {
-        LogCommand("KickPlayer");
+        LogCommand("Player.Kick");
         _prk.MyPlayer().Kick();
         PowerConsole.Log(LogLevel.Information, $"{_prk.MyPlayer().GetProfile().name} Kicked  ");
     }
 
     private void PlayerOnQuitCommand(CommandCallback cmd)
     {
-        LogCommand("PlayerOnQuit");
+        LogCommand("Player.OnQuit");
 
         _prk.MyPlayer().OnQuit(_ =>
         {
