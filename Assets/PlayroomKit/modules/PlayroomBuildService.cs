@@ -363,10 +363,13 @@ namespace Playroom
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void TurnBasedMyDataCallback(string data)
             {
-                CallbackManager.InvokeCallback("GetMyData", data);
+                // TODO Convert json data to object:
+                TurnData turnData = Helpers.ParseTurnData(data);
+            
+                CallbackManager.InvokeCallback("GetMyData", turnData);
             }
 
-            public void GetMyTurnData(Action<string> callback)
+            public void GetMyTurnData(Action<TurnData> callback)
             {
                 CheckPlayRoomInitialized();
                 CallbackManager.RegisterCallback(callback, "GetMyData");
@@ -376,10 +379,11 @@ namespace Playroom
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void turnBasedCallbackHandler(string data)
             {
-                CallbackManager.InvokeCallback("GetAllTurns", data);
+                List<TurnData> turnData = Helpers.ParseAllTurnData(data);
+                CallbackManager.InvokeCallback("GetAllTurns", turnData);
             }
 
-            public void GetAllTurns(Action<string> callback)
+            public void GetAllTurns(Action<List<TurnData>> callback)
             {
                 CheckPlayRoomInitialized();
                 CallbackManager.RegisterCallback(callback, "GetAllTurns");
