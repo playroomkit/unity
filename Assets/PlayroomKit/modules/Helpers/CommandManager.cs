@@ -230,7 +230,8 @@ public class CommandManager : MonoBehaviour
     private void MyPlayerCommand(CommandCallback cmd)
     {
         LogCommand("MyPlayer");
-        PowerConsole.Log(LogLevel.Information, $"Player Id {_prk.MyPlayer().id}, My Player's Name: {_prk.MyPlayer().GetProfile().name}");
+        PowerConsole.Log(LogLevel.Information,
+            $"Player Id {_prk.MyPlayer().id}, My Player's Name: {_prk.MyPlayer().GetProfile().name}");
     }
 
     private void MeCommand(CommandCallback cmd)
