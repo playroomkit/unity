@@ -92,7 +92,8 @@ public class CommandManager : MonoBehaviour
 
             new()
             {
-                Command = "Player.GetProfile", Description = "Returns player profile", Callback = PlayerGetProfileCommand
+                Command = "Player.GetProfile", Description = "Returns player profile",
+                Callback = PlayerGetProfileCommand
             },
 
             new()
@@ -110,13 +111,14 @@ public class CommandManager : MonoBehaviour
 
             new()
             {
-                Command = "Player.WaitForState ", Description = "Waits for state of Playrooms Player -stateKey(string) ",
+                Command = "Player.WaitForState ",
+                Description = "Waits for state of Playrooms Player -stateKey(string) ",
                 Callback = PlayerWaitForStateCommand
             },
 
             new()
             {
-                Command = "Player.Kick", Description = "Kicks PLayer", Callback = KickPlayerCommand
+                Command = "Player.Kick", Description = "Kicks PLayer -playerId(string)", Callback = KickPlayerCommand
             },
             new()
             {
@@ -228,7 +230,7 @@ public class CommandManager : MonoBehaviour
     private void MyPlayerCommand(CommandCallback cmd)
     {
         LogCommand("MyPlayer");
-        PowerConsole.Log(LogLevel.Information, $"My Player's Name: {_prk.MyPlayer().GetProfile().name}");
+        PowerConsole.Log(LogLevel.Information, $"Player Id {_prk.MyPlayer().id}, My Player's Name: {_prk.MyPlayer().GetProfile().name}");
     }
 
     private void MeCommand(CommandCallback cmd)
@@ -294,8 +296,25 @@ public class CommandManager : MonoBehaviour
     private void KickPlayerCommand(CommandCallback cmd)
     {
         LogCommand("Player.Kick");
-        _prk.MyPlayer().Kick();
-        PowerConsole.Log(LogLevel.Information, $"{_prk.MyPlayer().GetProfile().name} Kicked  ");
+
+        string playerId = cmd.Args.ContainsKey("-playerId") ? cmd.Args["-playerId"] : null;
+
+        if (string.IsNullOrEmpty(playerId))
+        {
+            PowerConsole.Log(LogLevel.Warning, "No player ID provided. Cannot kick.");
+            return;
+        }
+
+        var playerToKick = _prk.GetPlayer(playerId);
+        if (playerToKick == null)
+        {
+            PowerConsole.Log(LogLevel.Warning, $"Player with ID '{playerId}' not found.");
+            return;
+        }
+
+        playerToKick.Kick();
+
+        PowerConsole.Log(LogLevel.Information, $"{playerToKick.GetProfile().name} has been kicked.");
     }
 
     private void PlayerOnQuitCommand(CommandCallback cmd)
