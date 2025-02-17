@@ -35,10 +35,10 @@ public class CommandManager : MonoBehaviour
     {
         var commands = new List<CustomCommand>
         {
-            new() { Command = "InsertCoin", Description = "Starts multiplayer", Callback = InsertCoinCommand },
-            new() { Command = "SetState", Description = "Sets State", Callback = SetStateCommand },
-            new() { Command = "GetState", Description = "Gets State", Callback = GetStateCommand },
-            new() { Command = "GetRoomCode", Description = "Gets Room Code", Callback = GetRoomCodeCommand },
+            new() { Command = "InsertCoin", Description = "Starts multiplayer -skipLobby (true/false) -roomCode (roomCode for Current room(string)) -maxPlayers (Max number of players per room (int) -discord (discord mode (true/false)) -gameId (game id from dev portal(string)) -streamMode(true/false) -allowGamepads (allows gamepads (true/false)) -baseUrl (provides base URL (string) -avatars (Array of string(image.png) -reconnectGracePeriod (int) -matchmaking (matchmaking field)   )   ", Callback = InsertCoinCommand },
+            new() { Command = "SetState", Description = "Sets State  -key(Maps a value to key (string) -value (value assigned to a key (of type T)) -reliable (value assigned to a key (of type T))  ", Callback = SetStateCommand },
+            new() { Command = "GetState", Description = "Gets State  -key (Gets the value using a key (string))", Callback = GetStateCommand },
+            new() { Command = "GetRoomCode", Description = "Gets Room Code  - ", Callback = GetRoomCodeCommand },
             new()
             {
                 Command = "StartMatchMaking", Description = "Starts matchmaking", Callback = StartMatchMakingCommand
@@ -61,13 +61,13 @@ public class CommandManager : MonoBehaviour
             },
             new()
             {
-                Command = "WaitForState", Description = "Waits for state to finish", Callback = WaitForStateCommand
+                Command = "WaitForState", Description = "Waits for state to finish -statekey(string)", Callback = WaitForStateCommand
             },
             new()
             {
                 Command = "OnDisconnect", Description = "Callback on player disconnect", Callback = OnDisconnectCommand
             },
-            new() { Command = "ResetState", Description = "Reset state to default", Callback = ResetStateCommand },
+            new() { Command = "ResetState", Description = "Reset state to default -keyToExclude (string)", Callback = ResetStateCommand },
 
             new()
             {
@@ -76,17 +76,17 @@ public class CommandManager : MonoBehaviour
             
             new()
             {
-                Command = "PlayerGetState", Description = "Returns Playrooms Player State ", Callback = PlayerGetStateCommand
+                Command = "PlayerGetState", Description = "Returns Playrooms Player State  -key(string)", Callback = PlayerGetStateCommand
             }, 
             
             new()
             {
-                Command = "PlayerSetState", Description = "Sets Playrooms Player State ", Callback = PlayerSetStateCommand
+                Command = "PlayerSetState", Description = "Sets Playrooms Player State  -key(string) -value(string) -reliable(true/false)", Callback = PlayerSetStateCommand
             },
             
             new ()
             {
-                Command = "PlayerWaitForState ", Description = "Waits for state of Playrooms Player", Callback = PlayerWaitForStateCommand   
+                Command = "PlayerWaitForState ", Description = "Waits for state of Playrooms Player -stateKey(string) ", Callback = PlayerWaitForStateCommand   
             },
             
             new ()
@@ -99,11 +99,11 @@ public class CommandManager : MonoBehaviour
             },
             new ()
             {
-                Command = "RpcRegister", Description = "Registers a Remote Procedural Call", Callback = RpcRegisterCommand
+                Command = "RpcRegister", Description = "Registers a Remote Procedural Call -name(string)", Callback = RpcRegisterCommand
             },
             new ()
             {
-                Command = "RpcCall" ,Description = "Calls a Remote Procedural Call", Callback = RpcCallCommand
+                Command = "RpcCall" ,Description = "Calls a Remote Procedural Call -name(string) -data(string) ", Callback = RpcCallCommand
             }
         };
 
