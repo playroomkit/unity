@@ -86,7 +86,7 @@ public class CommandManager : MonoBehaviour
             },
             new()
             {
-                Command = "ResetState", Description = "Reset state to default -keyToExclude (string)",
+                Command = "ResetState", Description = "Reset state to default -keysToExclude (string)",
                 Callback = ResetStateCommand
             },
 
@@ -160,9 +160,10 @@ public class CommandManager : MonoBehaviour
     private void ResetStateCommand(CommandCallback cmd)
     {
         LogCommand("ResetState");
-        string[] keyToExclude = cmd.Args.ContainsKey("-keyToExclude")
-            ? cmd.Args["-keyToExclude"].ToString().Split(',')
+        string[] keysToExclude = cmd.Args.ContainsKey("-keysToExclude")
+            ? cmd.Args["-keysToExclude"].Split(',')
             : new string[] { "defaultKey" };
+        _prk.ResetStates(keysToExclude);
     }
 
     private void OnDisconnectCommand(CommandCallback cmd)
