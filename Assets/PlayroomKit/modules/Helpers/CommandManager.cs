@@ -35,9 +35,25 @@ public class CommandManager : MonoBehaviour
     {
         var commands = new List<CustomCommand>
         {
-            new() { Command = "InsertCoin", Description = "Starts multiplayer -skipLobby (true/false) -roomCode (roomCode for Current room(string)) -maxPlayers (Max number of players per room (int) -discord (discord mode (true/false)) -gameId (game id from dev portal(string)) -streamMode(true/false) -allowGamepads (allows gamepads (true/false)) -baseUrl (provides base URL (string) -avatars (Array of string(image.png) -reconnectGracePeriod (int) -matchmaking (matchmaking field)   )   ", Callback = InsertCoinCommand },
-            new() { Command = "SetState", Description = "Sets State  -key(Maps a value to key (string) -value (value assigned to a key (of type T)) -reliable (value assigned to a key (of type T))  ", Callback = SetStateCommand },
-            new() { Command = "GetState", Description = "Gets State  -key (Gets the value using a key (string))", Callback = GetStateCommand },
+            new()
+            {
+                Command = "InsertCoin",
+                Description =
+                    "Starts multiplayer -skipLobby (true/false) -roomCode (roomCode for Current room(string)) -maxPlayers (Max number of players per room (int) -discord (discord mode (true/false)) -gameId (game id from dev portal(string)) -streamMode(true/false) -allowGamepads (allows gamepads (true/false)) -baseUrl (provides base URL (string) -avatars (Array of string(image.png) -reconnectGracePeriod (int) -matchmaking (matchmaking field)   )   ",
+                Callback = InsertCoinCommand
+            },
+            new()
+            {
+                Command = "SetState",
+                Description =
+                    "Sets State  -key(Maps a value to key (string) -value (value assigned to a key (of type T)) -reliable (value assigned to a key (of type T))  ",
+                Callback = SetStateCommand
+            },
+            new()
+            {
+                Command = "GetState", Description = "Gets State  -key (Gets the value using a key (string))",
+                Callback = GetStateCommand
+            },
             new() { Command = "GetRoomCode", Description = "Gets Room Code  - ", Callback = GetRoomCodeCommand },
             new()
             {
@@ -61,53 +77,66 @@ public class CommandManager : MonoBehaviour
             },
             new()
             {
-                Command = "WaitForState", Description = "Waits for state to finish -statekey(string)", Callback = WaitForStateCommand
+                Command = "WaitForState", Description = "Waits for state to finish -statekey(string)",
+                Callback = WaitForStateCommand
             },
             new()
             {
                 Command = "OnDisconnect", Description = "Callback on player disconnect", Callback = OnDisconnectCommand
             },
-            new() { Command = "ResetState", Description = "Reset state to default -keyToExclude (string)", Callback = ResetStateCommand },
+            new()
+            {
+                Command = "ResetState", Description = "Reset state to default -keyToExclude (string)",
+                Callback = ResetStateCommand
+            },
 
             new()
             {
                 Command = "PlayerGetProfile", Description = "Returns player profile", Callback = PlayerGetProfileCommand
             },
-            
+
             new()
             {
-                Command = "PlayerGetState", Description = "Returns Playrooms Player State  -key(string)", Callback = PlayerGetStateCommand
-            }, 
-            
+                Command = "PlayerGetState", Description = "Returns Playrooms Player State  -key(string)",
+                Callback = PlayerGetStateCommand
+            },
+
             new()
             {
-                Command = "PlayerSetState", Description = "Sets Playrooms Player State  -key(string) -value(string) -reliable(true/false)", Callback = PlayerSetStateCommand
+                Command = "PlayerSetState",
+                Description = "Sets Playrooms Player State  -key(string) -value(string) -reliable(true/false)",
+                Callback = PlayerSetStateCommand
             },
-            
-            new ()
+
+            new()
             {
-                Command = "PlayerWaitForState ", Description = "Waits for state of Playrooms Player -stateKey(string) ", Callback = PlayerWaitForStateCommand   
+                Command = "PlayerWaitForState ", Description = "Waits for state of Playrooms Player -stateKey(string) ",
+                Callback = PlayerWaitForStateCommand
             },
-            
-            new ()
+
+            new()
             {
-                Command = "KickPlayer", Description = "Kicks PLayer", Callback = KickPlayerCommand  
+                Command = "KickPlayer", Description = "Kicks PLayer", Callback = KickPlayerCommand
             },
-            new ()
+            new()
             {
-                Command = "PlayerOnQuit", Description = "Registers a Call back when a player quits the room", Callback = PlayerOnQuitCommand  
+                Command = "PlayerOnQuit", Description = "Registers a Call back when a player quits the room",
+                Callback = PlayerOnQuitCommand
             },
-            new ()
+            new()
             {
-                Command = "RpcRegister", Description = "Registers a Remote Procedural Call -name(string)", Callback = RpcRegisterCommand
+                Command = "RpcRegister", Description = "Registers a Remote Procedural Call -name(string)",
+                Callback = RpcRegisterCommand
             },
-            new ()
+            new()
             {
-                Command = "RpcCall", Description = "Calls a Remote Procedural Call -name(string) -data(string) ", Callback = RpcCallCommand
+                Command = "RpcCall", Description = "Calls a Remote Procedural Call -name(string) -data(string) ",
+                Callback = RpcCallCommand
             },
-            new ()
+            new()
             {
-                Command = "ResetPlayerState", Description = "Resets MyPlayer states -excludeKeys(string)  ", Callback = ResetPlayerStateCommand
+                Command = "ResetPlayerState", Description = "Resets MyPlayer states -excludeKeys(string)  ",
+                Callback = ResetPlayerStateCommand
             }
         };
 
@@ -131,8 +160,8 @@ public class CommandManager : MonoBehaviour
     private void ResetStateCommand(CommandCallback cmd)
     {
         LogCommand("ResetState");
-        string[] keyToExclude = cmd.Args.ContainsKey("-keyToExclude") 
-            ? cmd.Args["-keyToExclude"].ToString().Split(',') 
+        string[] keyToExclude = cmd.Args.ContainsKey("-keyToExclude")
+            ? cmd.Args["-keyToExclude"].ToString().Split(',')
             : new string[] { "defaultKey" };
     }
 
@@ -169,7 +198,6 @@ public class CommandManager : MonoBehaviour
             !string.IsNullOrEmpty(value)
                 ? $"State value for key '{key}': {value}"
                 : $"No value found for key '{key}'.");
-        
     }
 
     private void GetRoomCodeCommand(CommandCallback cmd)
@@ -205,37 +233,34 @@ public class CommandManager : MonoBehaviour
     private void MeCommand(CommandCallback cmd)
     {
         LogCommand("Me");
-        MyPlayerCommand(cmd);
-        PowerConsole.Log(LogLevel.Information, $"My Player's Name: {_prk.MyPlayer().GetProfile().name}");
+        PowerConsole.Log(LogLevel.Information, $"My Player's Name: {_prk.Me().GetProfile().name}");
     }
 
     private void PlayerGetProfileCommand(CommandCallback cmd)
     {
-        PowerConsole.Log(LogLevel.Information, $"Name is : {_prk.MyPlayer().GetProfile().name }");
-        PowerConsole.Log(LogLevel.Information ,$"Color is :{_prk.MyPlayer().GetProfile().color }");
+        PowerConsole.Log(LogLevel.Information, $"Name is : {_prk.MyPlayer().GetProfile().name}");
+        PowerConsole.Log(LogLevel.Information, $"Color is :{_prk.MyPlayer().GetProfile().color}");
     }
 
     private void RpcRegisterCommand(CommandCallback cmd)
     {
         LogCommand("RpcRegister");
         string name = Convert.ToString(cmd.Args["-name"]);
-        _prk.RpcRegister(name, (data, sender) => 
+        _prk.RpcRegister(name, (data, sender) =>
             PowerConsole.Log(LogLevel.Information, $"Received RPC from {sender}: {data}"));
-
-
     }
 
     private void RpcCallCommand(CommandCallback cmd)
     {
         LogCommand("RpcCall");
-    
+
         string name = Convert.ToString(cmd.Args["-name"]);
-        string data = Convert.ToString(cmd.Args["-data"]); 
+        string data = Convert.ToString(cmd.Args["-data"]);
 
         _prk.RpcCall(name, data, () => PowerConsole.Log(LogLevel.Information, $"RPC Call '{name}' completed."));
     }
 
-    
+
     private void PlayerGetStateCommand(CommandCallback cmd)
     {
         LogCommand("PlayerGetState");
@@ -268,33 +293,31 @@ public class CommandManager : MonoBehaviour
     private void KickPlayerCommand(CommandCallback cmd)
     {
         LogCommand("KickPlayer");
-        _prk.MyPlayer().Kick(); 
+        _prk.MyPlayer().Kick();
         PowerConsole.Log(LogLevel.Information, $"{_prk.MyPlayer().GetProfile().name} Kicked  ");
     }
 
     private void PlayerOnQuitCommand(CommandCallback cmd)
     {
         LogCommand("PlayerOnQuit");
-        
+
         _prk.MyPlayer().OnQuit(_ =>
         {
             string playerName = _prk.MyPlayer().GetProfile().name;
-        PowerConsole.Log(LogLevel.Information, $"{playerName} has quit the match.");
+            PowerConsole.Log(LogLevel.Information, $"{playerName} has quit the match.");
         });
-    }    
-    
+    }
+
     private void ResetPlayerStateCommand(CommandCallback cmd)
     {
         LogCommand("ResetPlayerState");
 
-       
-        string[] keysToExclude = cmd.Args.ContainsKey("-excludeKeys") 
-            ? Convert.ToString(cmd.Args["-excludeKeys"]).Split(',') 
+        string[] keysToExclude = cmd.Args.ContainsKey("-excludeKeys")
+            ? Convert.ToString(cmd.Args["-excludeKeys"]).Split(',')
             : new string[] { "defaultKey" };
-        _prk.ResetPlayersStates(keysToExclude, () => 
-        {
-            PowerConsole.Log(LogLevel.Information, "Player states have been successfully reset.");
-        });
+
+        _prk.ResetPlayersStates(keysToExclude,
+            () => { PowerConsole.Log(LogLevel.Information, "Player states have been successfully reset."); });
     }
 
 
