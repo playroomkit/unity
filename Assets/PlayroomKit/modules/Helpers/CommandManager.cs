@@ -103,7 +103,11 @@ public class CommandManager : MonoBehaviour
             },
             new ()
             {
-                Command = "RpcCall" ,Description = "Calls a Remote Procedural Call -name(string) -data(string) ", Callback = RpcCallCommand
+                Command = "RpcCall", Description = "Calls a Remote Procedural Call -name(string) -data(string) ", Callback = RpcCallCommand
+            },
+            new ()
+            {
+                Command = "ResetPlayerState", Description = "Resets MyPlayer states -excludeKeys(string)  ", Callback = ResetPlayerStateCommand
             }
         };
 
@@ -127,8 +131,9 @@ public class CommandManager : MonoBehaviour
     private void ResetStateCommand(CommandCallback cmd)
     {
         LogCommand("ResetState");
-        string[] keyToExclude = cmd.Args["-keyToExclude"].ToString().Split(',');
-        _prk.ResetStates(keyToExclude);
+        string[] keyToExclude = cmd.Args.ContainsKey("-keyToExclude") 
+            ? cmd.Args["-keyToExclude"].ToString().Split(',') 
+            : new string[] { "defaultKey" };
     }
 
     private void OnDisconnectCommand(CommandCallback cmd)
@@ -246,9 +251,9 @@ public class CommandManager : MonoBehaviour
     {
         LogCommand("PlayerSetState");
 
-        string key = Convert.ToString(cmd.Args["-key"]);
-        string value = Convert.ToString(cmd.Args["-value"]);
-        bool reliable = Convert.ToBoolean(cmd.Args["-reliable"]);
+        string key = cmd.Args.ContainsKey("-key") ? Convert.ToString(cmd.Args["-key"]) : "defaultKey";
+        string value = cmd.Args.ContainsKey("-value") ? Convert.ToString(cmd.Args["-value"]) : "defaultValue";
+        bool reliable = cmd.Args.ContainsKey("-reliable") ? Convert.ToBoolean(cmd.Args["-reliable"]) : false;
 
         _prk.MyPlayer().SetState(key, value, reliable);
     }
@@ -278,6 +283,20 @@ public class CommandManager : MonoBehaviour
         });
     }    
     
+    private void ResetPlayerStateCommand(CommandCallback cmd)
+    {
+        LogCommand("ResetPlayerState");
+
+       
+        string[] keysToExclude = cmd.Args.ContainsKey("-excludeKeys") 
+            ? Convert.ToString(cmd.Args["-excludeKeys"]).Split(',') 
+            : new string[] { "defaultKey" };
+        _prk.ResetPlayersStates(keysToExclude, () => 
+        {
+            PowerConsole.Log(LogLevel.Information, "Player states have been successfully reset.");
+        });
+    }
+
 
     private void InsertCoinCommand(CommandCallback cmd)
     {
