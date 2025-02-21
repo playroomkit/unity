@@ -4,6 +4,7 @@ using UnityEngine;
 
 #if UNITY_EDITOR
 using ParrelSync;
+using UnityEditor;
 using UBB;
 #endif
 
@@ -18,14 +19,19 @@ namespace Playroom
             "InsertCoin() must be called in order to connect PlayroomKit server.\n\nChoose the gameObject (with the script) which calls InsertCoin.\n\nRead More in the docs")]
         [SerializeField]
         private GameObject insertCoinCaller;
-        
-        [SerializeField] private bool enableLogs = false;
+
+        [SerializeField]
+        private bool enableLogs = false;
         private static PlayroomkitDevManager Instance { get; set; }
 
 
 #if UNITY_EDITOR
         private void Awake()
         {
+            EditorApplication.playModeStateChanged +=  OnExitPlayMode;
+             
+                
+            
             if (Instance == null)
             {
                 Instance = this;
@@ -63,11 +69,24 @@ namespace Playroom
         {
             BrowserMockService.MockOnPlayerJoinWrapper(playerId);
         }
-        
-        
+
         private void OnQuitPlayer(string playerId)
         {
             PlayroomKit.IPlayroomBase.__OnQuitInternalHandler(playerId);
+        }
+
+        
+        private static void OnExitPlayMode(PlayModeStateChange state)
+        {
+            if(state == PlayModeStateChange.ExitingPlayMode)
+            {
+                Debug.Log("Exiting Play Mode!");
+
+                
+                // TODO: reset dev manager
+                Instance = null;
+                UnityBrowserBridge.Instance = null;
+            }
         }
 #endif
     }
