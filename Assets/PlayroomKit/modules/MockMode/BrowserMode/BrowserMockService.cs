@@ -152,7 +152,11 @@ namespace Playroom
         {
             return _ubb.CallJs<T>("GetState", null, null, false, key);
         }
-
+        
+        public T GetState<T>(Enum value)
+        {
+            return (T)Enum.Parse(typeof(T), value.ToString());
+        }
 
         public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
         {
@@ -190,7 +194,13 @@ namespace Playroom
             _ubb.CallJs("ResetPlayersStates", null, null, true, keysToExclude ?? Array.Empty<string>());
             onStatesReset?.Invoke();
         }
-
+        //
+        public void SetState(string key, Enum value, bool reliable = false)
+        {
+             value.ToString();
+             Debug.Log($"SetState_{key}_{value}");
+        }
+        
         #endregion
 
         #region Persistent API
