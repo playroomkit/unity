@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
 {
     private PlayroomKit _kit;
     
+    //enum test example 
     public enum  Gun
     {
         shoot,
