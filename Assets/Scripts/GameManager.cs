@@ -9,11 +9,12 @@ public class GameManager : MonoBehaviour
     //enum test example 
     public enum  Gun
     {
-        shoot,
+        idle,
+        shooting,
         reload
     }
 
-    public Gun Guns;
+    public Gun gunsAction;
     
         
 
@@ -43,11 +44,24 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        
+        
         if (Input.GetKeyDown(KeyCode.S))
         {
-            Guns = (Gun)(((int)Guns + 1) % System.Enum.GetValues(typeof(Gun)).Length);
-            Debug.Log(Guns);
+           
+            Gun nextGunState = (Gun)(((int)gunsAction + 1) % System.Enum.GetValues(typeof(Gun)).Length);
+
+            Debug.Log($"Current Gun State: {gunsAction}, Next Gun State: {nextGunState}");
+
+            gunsAction = nextGunState;
+            
+            _kit.SetState("gunState", nextGunState);
+            Debug.Log($"State set to: {nextGunState}");
+
+            Gun retrievedState = _kit.GetState<Gun>("gunState");
+            Debug.Log($"Retrieved Gun State: {retrievedState}");
         }
+
 
 
         if (Input.GetKeyDown(KeyCode.G))
