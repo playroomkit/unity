@@ -77,6 +77,17 @@ namespace Playroom
 
             CallbackManager.InvokeCallback(key, value as string);
         }
+        //
+        public void SetState(string key, Enum value, bool reliable = false)
+        {
+          value.ToString() ;
+        }
+
+        public T GetState<T>(Enum value)
+        {
+            return (T)Enum.Parse(typeof(T), value.ToString());
+        }
+
 
         public T GetState<T>(string key)
         {

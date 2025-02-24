@@ -1,9 +1,20 @@
+using System;
 using Playroom;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     private PlayroomKit _kit;
+    
+    public enum  Gun
+    {
+        shoot,
+        reload
+    }
+
+    public Gun Guns;
+    
+        
 
     private void Awake()
     {
@@ -31,40 +42,16 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.C))
+        if (Input.GetKeyDown(KeyCode.S))
         {
-            Debug.Log($"Challenge Id: {_kit.GetChallengeId()}");
+            Guns = (Gun)(((int)Guns + 1) % System.Enum.GetValues(typeof(Gun)).Length);
+            Debug.Log(Guns);
         }
 
-        if (Input.GetKeyDown(KeyCode.X))
+
+        if (Input.GetKeyDown(KeyCode.G))
         {
             Debug.Log($"Saving my turn data...");
-            _kit.SaveMyTurnData(_kit.Me().id);
-        }
-
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            _kit.GetMyTurnData((data) =>
-            {
-                Debug.Log($"Getting my turn data: " + $"{data.id}, {data.player.GetProfile().name}, {data.data}");
-            });
-        }
-
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            _kit.GetAllTurns((allData) =>
-            {
-                for (var i = 0; i < allData.Count; i++)
-                {
-                    var data = allData[i];
-                    Debug.Log($"at index ${i}: {data.id}, {data.player.GetProfile().name}, {data.data}");
-                }
-            });
-        }
-
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            _kit.ClearTurns(() => { Debug.Log("Cleared all turns data!"); });
         }
     }
 }

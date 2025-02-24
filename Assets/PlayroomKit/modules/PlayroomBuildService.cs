@@ -296,7 +296,15 @@ namespace Playroom
                 string keysJson = keysToExclude != null ? Helpers.CreateJsonArray(keysToExclude).ToString() : null;
                 _interop.ResetPlayersStatesWrapper(keysJson, InvokePlayersResetCallBack);
             }
-
+            
+            public void SetState(string key, Enum value, bool reliable = false)
+            {
+                _interop.SetStateStringWrapper(key, value.ToString(), reliable);
+            }
+            public T GetState<T>(Enum value)
+            {
+                return (T)Enum.Parse(typeof(T), value.ToString());
+            }
             #endregion
 
             #region Joystick
