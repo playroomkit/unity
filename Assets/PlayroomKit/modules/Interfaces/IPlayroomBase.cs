@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using AOT;
 using UnityEngine;
-
+using Playroom;
 namespace Playroom
 {
     public partial class PlayroomKit
@@ -29,15 +29,10 @@ namespace Playroom
             public void StartMatchmaking(Action callback = null);
 
             public void SetState<T>(string key, T value, bool reliable = false);
-            //
+            
             public void SetState(string key, Enum value, bool reliable = false);
 
             public T GetState<T>(string key);
-
-            public T GetState<T>(Enum value);
-           
-            
-           
 
             public void SetPersistentData(string key, object value);
             public void InsertPersistentData(string key, object value);

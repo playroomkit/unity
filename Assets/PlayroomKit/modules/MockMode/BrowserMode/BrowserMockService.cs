@@ -194,10 +194,11 @@ namespace Playroom
             _ubb.CallJs("ResetPlayersStates", null, null, true, keysToExclude ?? Array.Empty<string>());
             onStatesReset?.Invoke();
         }
-        //
+        
         public void SetState(string key, Enum value, bool reliable = false)
         {
-             value.ToString();
+            _ubb.CallJs("SetState", null, null, true,
+                key, value.ToString(), reliable.ToString().ToLower());
              Debug.Log($"SetState_{key}_{value}");
         }
         

@@ -261,6 +261,11 @@ namespace Playroom
                 else if (type == typeof(Vector3)) return JsonUtility.FromJson<T>(GetStateString(key));
                 else if (type == typeof(Vector4)) return JsonUtility.FromJson<T>(GetStateString(key));
                 else if (type == typeof(Quaternion)) return JsonUtility.FromJson<T>(GetStateString(key));
+                else if (type == typeof(Enum))
+                {
+                    string valueString = _interop.GetStateStringWrapper(key); 
+                    return (T)Enum.Parse(typeof(T), valueString); 
+                }
                 else
                 {
                     Debug.LogError($"GetState<{type}> is not supported.");
@@ -301,10 +306,8 @@ namespace Playroom
             {
                 _interop.SetStateStringWrapper(key, value.ToString(), reliable);
             }
-            public T GetState<T>(Enum value)
-            {
-                return (T)Enum.Parse(typeof(T), value.ToString());
-            }
+       
+
             #endregion
 
             #region Joystick

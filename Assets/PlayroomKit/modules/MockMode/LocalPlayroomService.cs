@@ -77,10 +77,16 @@ namespace Playroom
 
             CallbackManager.InvokeCallback(key, value as string);
         }
-        //
+        
         public void SetState(string key, Enum value, bool reliable = false)
         {
-          value.ToString() ;
+            
+            if (mockGlobalStates.ContainsKey(key))
+                mockGlobalStates[key] = value;
+            else
+                mockGlobalStates.Add(key, value);
+
+            CallbackManager.InvokeCallback(key, value.ToString());
         }
 
         public T GetState<T>(Enum value)
