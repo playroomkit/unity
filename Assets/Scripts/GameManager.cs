@@ -57,16 +57,12 @@ public class GameManager : MonoBehaviour
             
             _kit.SetState("gunState", nextGunState);
             Debug.Log($"State set to: {nextGunState}");
-
-            Gun retrievedState = _kit.GetState<Gun>("gunState");
-            Debug.Log($"Retrieved Gun State: {retrievedState}");
         }
-
-
 
         if (Input.GetKeyDown(KeyCode.G))
         {
-            Debug.Log($"Saving my turn data...");
+            Gun retrievedState = _kit.GetState<Gun>("gunState");
+            Debug.Log($"Retrieved Gun State: {retrievedState}");
         }
     }
 }
