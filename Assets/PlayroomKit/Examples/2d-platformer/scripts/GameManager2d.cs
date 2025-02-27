@@ -14,7 +14,15 @@ public class GameManager2d : MonoBehaviour
 
     [SerializeField]
     private string roomCode;
+    
+    public enum  Gun
+    {
+        idle,
+        shooting,
+        reload
+    }
 
+    public Gun gunsAction;
     /// <summary>
     /// player scores and UI to display score of the game.
     /// </summary>
@@ -132,6 +140,24 @@ public class GameManager2d : MonoBehaviour
                 {
                     Debug.Log($"Persistence data: {data}");
                 });
+            }
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+           
+                Gun nextGunState = (Gun)(((int)gunsAction + 1) % System.Enum.GetValues(typeof(Gun)).Length);
+
+                Debug.Log($"Current Gun State: {gunsAction}, Next Gun State: {nextGunState}");
+
+                gunsAction = nextGunState;
+            
+               _playroomKit.SetState("gunState", nextGunState);
+                Debug.Log($"State set to: {nextGunState}");
+            }
+
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                Gun retrievedState = _playroomKit.GetState<Gun>("gunState");
+                Debug.Log($"Retrieved Gun State: {retrievedState}");
             }
 
 

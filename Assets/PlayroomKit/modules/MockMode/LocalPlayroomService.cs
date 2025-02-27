@@ -89,12 +89,6 @@ namespace Playroom
             CallbackManager.InvokeCallback(key, value.ToString());
         }
 
-        public T GetState<T>(Enum value)
-        {
-            return (T)Enum.Parse(typeof(T), value.ToString());
-        }
-
-
         public T GetState<T>(string key)
         {
             if (mockGlobalStates.TryGetValue(key, out var value) && value is T typedValue)

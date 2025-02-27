@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc3a2b9cdc24aab40906ce4bcdee9943, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Guns: 0
+  gunsAction: 0
 --- !u!4 &1054460207
 Transform:
   m_ObjectHideFlags: 0
@@ -294,7 +294,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8987662522597341863, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
       propertyPath: mockMode
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8987662522597341863, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
       propertyPath: insertCoinCaller
