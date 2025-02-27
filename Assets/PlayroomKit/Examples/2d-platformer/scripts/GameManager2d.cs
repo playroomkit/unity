@@ -35,6 +35,8 @@ public class GameManager2d : MonoBehaviour
     private TextMeshProUGUI scoreTextPlayer2;
 
     private TextMeshProUGUI selectedScoreText;
+    
+    public TMP_Text StateTxt;
 
     private static bool playerJoined;
 
@@ -136,32 +138,32 @@ public class GameManager2d : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.M))
             {
-                _playroomKit.GetPersistentData("TEST", data =>
-                {
-                    Debug.Log($"Persistence data: {data}");
-                });
+                _playroomKit.GetPersistentData("TEST", data => { Debug.Log($"Persistence data: {data}"); });
             }
+
             if (Input.GetKeyDown(KeyCode.S))
             {
-           
                 Gun nextGunState = (Gun)(((int)gunsAction + 1) % System.Enum.GetValues(typeof(Gun)).Length);
 
-                Debug.Log($"Current Gun State: {gunsAction}, Next Gun State: {nextGunState}");
-
+                string message = $"Current Gun State: {gunsAction}, Next Gun State: {nextGunState}";
+                Debug.Log(message);
                 gunsAction = nextGunState;
-            
-               _playroomKit.SetState("gunState", nextGunState);
-                Debug.Log($"State set to: {nextGunState}");
+                _playroomKit.SetState("gunState", nextGunState);
+                StateTxt.text = $"State set to: {nextGunState}";
             }
-
+            
             if (Input.GetKeyDown(KeyCode.G))
             {
                 Gun retrievedState = _playroomKit.GetState<Gun>("gunState");
-                Debug.Log($"Retrieved Gun State: {retrievedState}");
+
+                string message = $"Retrieved Gun State: {retrievedState}";
+                Debug.Log(message);
+                StateTxt.text = message;
             }
+        
 
 
-            players[index].SetState("pos", playerGameObjects[index].transform.position);
+    players[index].SetState("pos", playerGameObjects[index].transform.position);
             ShootBullet(index);
 
             for (var i = 0; i < players.Count; i++)
