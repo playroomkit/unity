@@ -123,6 +123,51 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &667855123
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 667855125}
+  - component: {fileID: 667855124}
+  m_Layer: 0
+  m_Name: EnumTestGameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &667855124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 667855123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c26654afb35e664fd9b1f083ce35c749, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentGameState: 0
+--- !u!4 &667855125
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 667855123}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -19.180986, y: 1.6441135, z: -0.15665844}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &710978324
 GameObject:
   m_ObjectHideFlags: 0
@@ -988,6 +1033,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1992242805 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5009421390178731097, guid: 95e882b3553aa141d88d4b5bee60e779, type: 3}
+  m_PrefabInstance: {fileID: 1563295928}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1726365550300270312
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1044,10 +1094,22 @@ PrefabInstance:
       propertyPath: insertCoinCaller
       value: 
       objectReference: {fileID: 1661243507}
+    - target: {fileID: 8899696337967424923, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: webDriverDirectory
+      value: Assets/
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899696337967424923, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: includeJavaScriptFiles.Array.data[0]
+      value: Assets/PlayroomKit/modules/MockMode/BrowserMode/PlayroomMockBrowserBridge.js
+      objectReference: {fileID: 0}
     - target: {fileID: 8987662522597341863, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
       propertyPath: mockMode
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8987662522597341863, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
+      propertyPath: insertCoinCaller
+      value: 
+      objectReference: {fileID: 1992242805}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1063,3 +1125,4 @@ SceneRoots:
   - {fileID: 1661243509}
   - {fileID: 1726365550300270312}
   - {fileID: 1563295928}
+  - {fileID: 667855125}

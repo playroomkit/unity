@@ -630,8 +630,8 @@ mergeInto(LibraryManager.library, {
       try {
         var stateVal = playerState.getState(UTF8ToString(key));
 
-        if (stateVal === undefined) {
-          return null;
+        if (stateVal === undefined || stateVal === null) {
+          return;
         }
 
         var bufferSize = lengthBytesUTF8(stateVal) + 1;

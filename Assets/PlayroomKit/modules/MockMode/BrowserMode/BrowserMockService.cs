@@ -150,10 +150,32 @@ namespace Playroom
 
         public T GetState<T>(string key)
         {
-            return _ubb.CallJs<T>("GetState", null, null, false, key);
+            string result = _ubb.CallJs<string>("GetState", null, null, false, key);
+            
+            if (typeof(T).IsEnum)
+            {
+                try
+                {
+                    result = result.Trim('\"', ' ');
+                    return (T)Enum.Parse(typeof(T), result, true); 
+                }
+                catch (ArgumentException)
+                {
+                    Debug.LogError($"Failed to parse '{result}' to Enum of type {typeof(T)}");
+                    return default;  
+                }
+            }
+        
+            return (T)Convert.ChangeType(result, typeof(T));
         }
 
-
+        public void SetState(string key, Enum value, bool reliable = false)
+        {
+            _ubb.CallJs("SetState", null, null, true,
+                key, value.ToString(), reliable.ToString().ToLower());
+            Debug.Log($"SetState_{key}_{value}");
+        }
+      
         public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
         {
             string callbackKey = $"WaitForState_{stateKey}";
@@ -190,7 +212,9 @@ namespace Playroom
             _ubb.CallJs("ResetPlayersStates", null, null, true, keysToExclude ?? Array.Empty<string>());
             onStatesReset?.Invoke();
         }
-
+        
+       
+        
         #endregion
 
         #region Persistent API
