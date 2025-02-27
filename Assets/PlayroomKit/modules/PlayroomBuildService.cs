@@ -261,10 +261,16 @@ namespace Playroom
                 else if (type == typeof(Vector3)) return JsonUtility.FromJson<T>(GetStateString(key));
                 else if (type == typeof(Vector4)) return JsonUtility.FromJson<T>(GetStateString(key));
                 else if (type == typeof(Quaternion)) return JsonUtility.FromJson<T>(GetStateString(key));
-                else if (type == typeof(Enum))
+                else if (type.IsEnum)
                 {
-                    string valueString = _interop.GetStateStringWrapper(key); 
-                    return (T)Enum.Parse(typeof(T), valueString); 
+                    string valueString = _interop.GetStateStringWrapper(key);
+                    if (valueString.StartsWith("{") && valueString.Contains("value__"))
+                    {
+                        EnumWrapper enumWrapper = JsonUtility.FromJson<EnumWrapper>(valueString);
+                        return (T)Enum.ToObject(typeof(T), enumWrapper.value__);
+                    }
+
+                    return (T)Enum.Parse(typeof(T), valueString);
                 }
                 else
                 {
@@ -272,8 +278,11 @@ namespace Playroom
                     return default;
                 }
             }
-
-
+            private class EnumWrapper
+            {
+                public int value__;
+            }
+            
             public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
             {
                 CallbackManager.RegisterCallback(onStateSetCallback, stateKey);
