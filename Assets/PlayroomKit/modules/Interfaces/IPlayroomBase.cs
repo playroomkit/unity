@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using AOT;
-using Playroom;
 using UnityEngine;
-
+using Playroom;
 namespace Playroom
 {
     public partial class PlayroomKit
@@ -30,6 +29,8 @@ namespace Playroom
             public void StartMatchmaking(Action callback = null);
 
             public void SetState<T>(string key, T value, bool reliable = false);
+            
+            public void SetState(string key, Enum value, bool reliable = false);
 
             public T GetState<T>(string key);
 

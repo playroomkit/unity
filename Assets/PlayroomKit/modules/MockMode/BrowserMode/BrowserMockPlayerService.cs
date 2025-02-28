@@ -56,6 +56,13 @@ namespace Playroom
             _ubb.CallJs("SetPlayerStateByPlayerId", null, null, false, _id, key, json,
                 reliable.ToString().ToLower());
         }
+        
+        public void SetState(string key, Enum value, bool reliable = false)
+        {
+            _ubb.CallJs("SetState", null, null, true,
+                key, value.ToString(), reliable.ToString().ToLower());
+            Debug.Log($"SetState_{key}_{value}");
+        }
 
         public T GetState<T>(string key)
         {
@@ -88,6 +95,20 @@ namespace Playroom
                     return (T)(object)jsonNode.AsBool;
                 }
 
+                if (typeof(T).IsEnum)
+                {
+                    try
+                    {
+                        rawValue = rawValue.Trim('\"', ' ');
+                        return (T)Enum.Parse(typeof(T), rawValue, true);
+                    }
+                    catch (ArgumentException)
+                    {
+                        Debug.LogError($"Failed to parse '{rawValue}' to Enum of type {typeof(T)}");
+                        return default;  
+                    }
+                }
+
                 return JsonUtility.FromJson<T>(rawValue);
             }
             catch (Exception e)
@@ -95,6 +116,8 @@ namespace Playroom
                 Debug.LogError($"Failed to parse state for key '{key}': {e.Message}\nReceived value: {rawValue}");
                 return default;
             }
+            
+            
         }
 
         #endregion
