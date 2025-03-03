@@ -123,10 +123,12 @@ namespace Playroom
                     else if (type.IsEnum)
                     {
                         string valueString = _interop.GetStateStringWrapper(key);
-                        if (valueString.StartsWith("{") && valueString.Contains("value__"))
+                        var json = SimpleJSON.JSON.Parse(valueString);
+                        
+                        if (json != null && json.HasKey("value__"))
                         {
-                            EnumWrapper enumWrapper = JsonUtility.FromJson<EnumWrapper>(valueString);
-                            return (T)Enum.ToObject(typeof(T), enumWrapper.value__);
+                            int enumValue = json["value__"].AsInt;
+                            return (T)Enum.ToObject(typeof(T), enumValue);
                         }
 
                         return (T)Enum.Parse(typeof(T), valueString);
@@ -135,10 +137,6 @@ namespace Playroom
                     else throw new NotSupportedException($"Type {typeof(T)} is not supported by GetState");
                 }
                 
-                private class EnumWrapper
-                {
-                    public int value__;
-                }
 
                 public Profile GetProfile()
                 {

@@ -1,4 +1,3 @@
-using System;
 using Playroom;
 using UnityEngine;
 
@@ -14,8 +13,14 @@ public class GameManager : MonoBehaviour
         reload
     }
 
-    public Gun gunsAction = Gun.shooting;
+    public enum Player
+    {
+        idle,
+        walk,
+    }
 
+    public Gun gunsAction = Gun.shooting;
+    public Player playersAction = Player.walk;
 
     private void Awake()
     {
@@ -46,8 +51,9 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.S))
         {
             _kit.SetState("gunState", gunsAction);
+            _kit.MyPlayer().SetState("playerState", playersAction);
         }
-        
+
         if (Input.GetKeyDown(KeyCode.R))
         {
             gunsAction = Gun.reload;
@@ -57,7 +63,13 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.G))
         {
             Gun retrievedState = _kit.GetState<Gun>("gunState");
-            Debug.Log($"Retrieved Gun State: {retrievedState}");
+            Debug.LogWarning($"Retrieved Gun State: {retrievedState}");
+        }
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            Player retrievedState = _kit.MyPlayer().GetState<Player>("playerState");
+            Debug.LogWarning($"Retrieved Player State: {retrievedState}");
         }
     }
 }

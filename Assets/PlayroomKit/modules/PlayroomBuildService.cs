@@ -175,8 +175,8 @@ namespace Playroom
                 }
                 else if (value is object)
                 {
-                    Debug.Log("SetState " + key + ", value is " + value + "of type " + value.GetType());
                     string jsonString = JsonUtility.ToJson(value);
+                    Debug.Log("SetState " + key + ", value is " + value + "of type " + value.GetType());
                     _interop.SetStateStringWrapper(key, jsonString, reliable);
                 }
                 else

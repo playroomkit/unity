@@ -168,13 +168,6 @@ namespace Playroom
         
             return (T)Convert.ChangeType(result, typeof(T));
         }
-
-        public void SetState(string key, Enum value, bool reliable = false)
-        {
-            _ubb.CallJs("SetState", null, null, true,
-                key, value.ToString(), reliable.ToString().ToLower());
-            Debug.Log($"SetState_{key}_{value}");
-        }
       
         public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
         {
@@ -212,8 +205,6 @@ namespace Playroom
             _ubb.CallJs("ResetPlayersStates", null, null, true, keysToExclude ?? Array.Empty<string>());
             onStatesReset?.Invoke();
         }
-        
-       
         
         #endregion
 
