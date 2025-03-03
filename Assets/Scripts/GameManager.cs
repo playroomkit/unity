@@ -5,18 +5,17 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     private PlayroomKit _kit;
-    
-    //enum test example 
-    public enum  Gun
+
+    // Enum Test Example 
+    public enum Gun
     {
         idle,
         shooting,
         reload
     }
 
-    public Gun gunsAction;
-    
-        
+    public Gun gunsAction = Gun.shooting;
+
 
     private void Awake()
     {
@@ -44,19 +43,15 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        
-        
         if (Input.GetKeyDown(KeyCode.S))
         {
-           
-            Gun nextGunState = (Gun)(((int)gunsAction + 1) % System.Enum.GetValues(typeof(Gun)).Length);
-
-            Debug.Log($"Current Gun State: {gunsAction}, Next Gun State: {nextGunState}");
-
-            gunsAction = nextGunState;
-            
-            _kit.SetState("gunState", nextGunState);
-            Debug.Log($"State set to: {nextGunState}");
+            _kit.SetState("gunState", gunsAction);
+        }
+        
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            gunsAction = Gun.reload;
+            _kit.SetState("gunState", gunsAction);
         }
 
         if (Input.GetKeyDown(KeyCode.G))

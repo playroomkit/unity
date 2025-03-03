@@ -278,11 +278,12 @@ namespace Playroom
                     return default;
                 }
             }
+            
             private class EnumWrapper
             {
                 public int value__;
             }
-            
+
             public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
             {
                 CallbackManager.RegisterCallback(onStateSetCallback, stateKey);
@@ -310,12 +311,12 @@ namespace Playroom
                 string keysJson = keysToExclude != null ? Helpers.CreateJsonArray(keysToExclude).ToString() : null;
                 _interop.ResetPlayersStatesWrapper(keysJson, InvokePlayersResetCallBack);
             }
-            
+
             public void SetState(string key, Enum value, bool reliable = false)
             {
                 _interop.SetStateStringWrapper(key, value.ToString(), reliable);
             }
-       
+
 
             #endregion
 
@@ -385,7 +386,7 @@ namespace Playroom
             {
                 // TODO Convert json data to object:
                 TurnData turnData = Helpers.ParseTurnData(data);
-            
+
                 CallbackManager.InvokeCallback("GetMyData", turnData);
             }
 
