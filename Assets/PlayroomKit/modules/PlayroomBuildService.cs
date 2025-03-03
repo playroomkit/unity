@@ -173,10 +173,14 @@ namespace Playroom
                     var floatAsString = floatValue.ToString(CultureInfo.InvariantCulture);
                     _interop.SetStateFloatWrapper(key, floatAsString, reliable);
                 }
+                else if (value is Enum)
+                {
+                    _interop.SetStateStringWrapper(key, value.ToString(), reliable);
+                }
                 else if (value is object)
                 {
-                    Debug.Log("SetState " + key + ", value is " + value + "of type " + value.GetType());
                     string jsonString = JsonUtility.ToJson(value);
+                    Debug.Log("SetState " + key + ", value is " + value + "of type " + value.GetType());
                     _interop.SetStateStringWrapper(key, jsonString, reliable);
                 }
                 else
@@ -222,7 +226,6 @@ namespace Playroom
 
             public void SetState(string key, object value, bool reliable = false)
             {
-                Debug.Log("SetState " + key + ", value is " + value + " of type " + value.GetType());
                 string jsonString = JsonUtility.ToJson(value);
                 _interop.SetStateStringWrapper(key, jsonString, reliable);
             }
@@ -261,6 +264,25 @@ namespace Playroom
                 else if (type == typeof(Vector3)) return JsonUtility.FromJson<T>(GetStateString(key));
                 else if (type == typeof(Vector4)) return JsonUtility.FromJson<T>(GetStateString(key));
                 else if (type == typeof(Quaternion)) return JsonUtility.FromJson<T>(GetStateString(key));
+                else if (type.IsEnum)
+                {
+                    try
+                    {
+                        string valueString = _interop.GetStateStringWrapper(key);
+
+                        if (string.IsNullOrEmpty(valueString))
+                        {
+                            return default;
+                        }
+
+                        return (T)Enum.Parse(typeof(T), valueString.Trim('\"', ' '));
+                    }
+                    catch (ArgumentException)
+                    {
+                        Debug.LogError($"Failed to parse '{key}' to Enum of type {typeof(T)}");
+                        return default;
+                    }
+                }
                 else
                 {
                     Debug.LogError($"GetState<{type}> is not supported.");
@@ -365,7 +387,7 @@ namespace Playroom
             {
                 // TODO Convert json data to object:
                 TurnData turnData = Helpers.ParseTurnData(data);
-            
+
                 CallbackManager.InvokeCallback("GetMyData", turnData);
             }
 

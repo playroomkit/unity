@@ -5,6 +5,23 @@ public class GameManager : MonoBehaviour
 {
     private PlayroomKit _kit;
 
+    // Enum Test Example 
+    public enum Gun
+    {
+        idle,
+        shooting,
+        reload
+    }
+
+    public enum Player
+    {
+        idle,
+        walk,
+    }
+
+    public Gun gunsAction = Gun.shooting;
+    public Player playersAction = Player.walk;
+
     private void Awake()
     {
         _kit = new PlayroomKit();
@@ -14,7 +31,6 @@ public class GameManager : MonoBehaviour
     {
         _kit.InsertCoin(new InitOptions()
         {
-            turnBased = true,
             maxPlayersPerRoom = 2,
         }, OnLaunchCallBack);
     }
@@ -31,40 +47,29 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.C))
+        if (Input.GetKeyDown(KeyCode.S))
         {
-            Debug.Log($"Challenge Id: {_kit.GetChallengeId()}");
+            gunsAction = Gun.shooting;
+            _kit.SetState("gunState", gunsAction);
+            _kit.MyPlayer().SetState("playerState", playersAction);
         }
 
-        if (Input.GetKeyDown(KeyCode.X))
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            Debug.Log($"Saving my turn data...");
-            _kit.SaveMyTurnData(_kit.Me().id);
+            gunsAction = Gun.reload;
+            _kit.SetState("gunState", gunsAction);
         }
 
-        if (Input.GetKeyDown(KeyCode.M))
+        if (Input.GetKeyDown(KeyCode.G))
         {
-            _kit.GetMyTurnData((data) =>
-            {
-                Debug.Log($"Getting my turn data: " + $"{data.id}, {data.player.GetProfile().name}, {data.data}");
-            });
+            Gun retrievedState = _kit.GetState<Gun>("gunState");
+            Debug.LogWarning($"Retrieved Gun State: {retrievedState}");
         }
 
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.P))
         {
-            _kit.GetAllTurns((allData) =>
-            {
-                for (var i = 0; i < allData.Count; i++)
-                {
-                    var data = allData[i];
-                    Debug.Log($"at index ${i}: {data.id}, {data.player.GetProfile().name}, {data.data}");
-                }
-            });
-        }
-
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            _kit.ClearTurns(() => { Debug.Log("Cleared all turns data!"); });
+            Player retrievedState = _kit.MyPlayer().GetState<Player>("playerState");
+            Debug.LogWarning($"Retrieved Player State: {retrievedState}");
         }
     }
 }

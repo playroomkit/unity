@@ -49,14 +49,25 @@ namespace Playroom
             string json;
 
             // Check if the value is a primitive type and wrap it if necessary
-            json = JsonUtility.ToJson(value is int or float or bool or string
-                ? new PrimitiveWrapper<object>(value)
-                : value);
+            if (value is int or float or bool or string)
+            {
+                json = JsonUtility.ToJson(new PrimitiveWrapper<object>(value));
+            }
+            else if (value is Enum)
+            {
+                json = value.ToString();
+            }
+            else
+            {
+                json = JsonUtility.ToJson(value);
+            }
+
+            DebugLogger.Log($"SetState: {key} - {json}");
 
             _ubb.CallJs("SetPlayerStateByPlayerId", null, null, false, _id, key, json,
                 reliable.ToString().ToLower());
         }
-
+        
         public T GetState<T>(string key)
         {
             string rawValue = _ubb.CallJs<string>("GetPlayerStateByPlayerId", null, null, false, _id, key);
@@ -87,6 +98,19 @@ namespace Playroom
                 {
                     return (T)(object)jsonNode.AsBool;
                 }
+                if (typeof(T).IsEnum)
+                {
+                    try
+                    {
+                        rawValue = rawValue.Trim('\"', ' ');
+                        return (T)Enum.Parse(typeof(T), rawValue);
+                    }
+                    catch (ArgumentException)
+                    {
+                        Debug.LogError($"Failed to parse '{rawValue}' to Enum of type {typeof(T)}");
+                        return default;  
+                    }
+                }
 
                 return JsonUtility.FromJson<T>(rawValue);
             }
@@ -95,6 +119,8 @@ namespace Playroom
                 Debug.LogError($"Failed to parse state for key '{key}': {e.Message}\nReceived value: {rawValue}");
                 return default;
             }
+            
+            
         }
 
         #endregion

@@ -55,8 +55,23 @@ namespace Playroom
 
                 public void SetState(string key, object value, bool reliable = false)
                 {
-                    string jsonString = JsonUtility.ToJson(value);
+                    string jsonString;
+
+                    if (value is Enum)
+                    {
+                        jsonString = value.ToString();
+                    }
+                    else
+                    {
+                        jsonString = JsonUtility.ToJson(value);
+                    }
+
                     _interop.SetPlayerStateStringWrapper(_id, key, jsonString, reliable);
+                }
+
+                public void SetState(string key, Enum value, bool reliable = false)
+                {
+                    _interop.SetStateStringWrapper(key, value.ToString(), reliable);
                 }
 
                 public T GetState<T>(string key)
@@ -114,6 +129,26 @@ namespace Playroom
                             return default;
                         }
                     }
+                    else if (type.IsEnum)
+                    {
+                        try
+                        {
+                            string valueString = _interop.GetPlayerStateStringWrapper(_id, key);
+
+                            if (string.IsNullOrEmpty(valueString))
+                            {
+                                return default;
+                            }
+
+                            return (T)Enum.Parse(typeof(T), valueString.Trim('\"', ' '));
+                        }
+                        catch (ArgumentException)
+                        {
+                            Debug.LogError($"Failed to parse '{key}' to Enum of type {typeof(T)}");
+                            return default;
+                        }
+                    }
+
                     else throw new NotSupportedException($"Type {typeof(T)} is not supported by GetState");
                 }
 

@@ -15,6 +15,7 @@ public class GameManager2d : MonoBehaviour
     [SerializeField]
     private string roomCode;
 
+
     /// <summary>
     /// player scores and UI to display score of the game.
     /// </summary>
@@ -27,6 +28,7 @@ public class GameManager2d : MonoBehaviour
     private TextMeshProUGUI scoreTextPlayer2;
 
     private TextMeshProUGUI selectedScoreText;
+
 
     private static bool playerJoined;
 
@@ -115,25 +117,8 @@ public class GameManager2d : MonoBehaviour
             var myPlayer = _playroomKit.MyPlayer();
             var index = players.IndexOf(myPlayer);
 
-            if (Input.GetKeyDown(KeyCode.L)) _playroomKit.SetState("test", "yes");
-
             playerGameObjects[index].GetComponent<PlayerController2d>().Move();
             playerGameObjects[index].GetComponent<PlayerController2d>().Jump();
-
-
-            if (Input.GetKeyDown(KeyCode.N))
-            {
-                _playroomKit.SetPersistentData("TEST", new Vector3(1, 6, 4));
-            }
-
-            if (Input.GetKeyDown(KeyCode.M))
-            {
-                _playroomKit.GetPersistentData("TEST", data =>
-                {
-                    Debug.Log($"Persistence data: {data}");
-                });
-            }
-
 
             players[index].SetState("pos", playerGameObjects[index].transform.position);
             ShootBullet(index);
@@ -142,10 +127,7 @@ public class GameManager2d : MonoBehaviour
             {
                 if (players[i] != null && PlayerDict.TryGetValue(players[i].id, out GameObject playerObj))
                 {
-                    // Debug.Log("Getting state of: " + players[i].id);
                     var pos = players[i].GetState<Vector3>("pos");
-
-
                     var color = players[i].GetState<Color>("color");
                     if (playerGameObjects != null)
                     {

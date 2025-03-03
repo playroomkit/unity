@@ -9,7 +9,6 @@ namespace Playroom
     {
         private Dictionary<string, object> mockGlobalStates = new();
         private const string PlayerId = "mockplayerID123";
-
         private static bool mockIsStreamMode;
 
         public Action OnPlayerJoin(Action<PlayroomKit.Player> onPlayerJoinCallback)
