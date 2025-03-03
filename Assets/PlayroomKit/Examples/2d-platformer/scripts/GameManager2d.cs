@@ -56,8 +56,6 @@ public class GameManager2d : MonoBehaviour
     {
         _playroomKit.InsertCoin(new InitOptions()
         {
-            // roomCode = roomCode,
-            persistentMode = true,
             maxPlayersPerRoom = 2,
             defaultPlayerStates = new()
             {
