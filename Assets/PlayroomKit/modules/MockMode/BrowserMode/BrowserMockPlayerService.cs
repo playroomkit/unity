@@ -49,21 +49,25 @@ namespace Playroom
             string json;
 
             // Check if the value is a primitive type and wrap it if necessary
-            json = JsonUtility.ToJson(value is int or float or bool or string
-                ? new PrimitiveWrapper<object>(value)
-                : value);
+            if (value is int or float or bool or string)
+            {
+                json = JsonUtility.ToJson(new PrimitiveWrapper<object>(value));
+            }
+            else if (value is Enum)
+            {
+                json = value.ToString();
+            }
+            else
+            {
+                json = JsonUtility.ToJson(value);
+            }
+
+            Debug.LogWarning($"SetState: {key} - {json}");
 
             _ubb.CallJs("SetPlayerStateByPlayerId", null, null, false, _id, key, json,
                 reliable.ToString().ToLower());
         }
         
-        public void SetState(string key, Enum value, bool reliable = false)
-        {
-            _ubb.CallJs("SetState", null, null, true,
-                key, value.ToString(), reliable.ToString().ToLower());
-            Debug.Log($"SetState_{key}_{value}");
-        }
-
         public T GetState<T>(string key)
         {
             string rawValue = _ubb.CallJs<string>("GetPlayerStateByPlayerId", null, null, false, _id, key);
@@ -94,7 +98,6 @@ namespace Playroom
                 {
                     return (T)(object)jsonNode.AsBool;
                 }
-
                 if (typeof(T).IsEnum)
                 {
                     try

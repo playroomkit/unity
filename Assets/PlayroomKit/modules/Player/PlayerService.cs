@@ -58,12 +58,11 @@ namespace Playroom
                     string jsonString = JsonUtility.ToJson(value);
                     _interop.SetPlayerStateStringWrapper(_id, key, jsonString, reliable);
                 }
-                
+
                 public void SetState(string key, Enum value, bool reliable = false)
                 {
                     _interop.SetStateStringWrapper(key, value.ToString(), reliable);
                 }
-
 
                 public T GetState<T>(string key)
                 {
@@ -124,7 +123,7 @@ namespace Playroom
                     {
                         string valueString = _interop.GetStateStringWrapper(key);
                         var json = SimpleJSON.JSON.Parse(valueString);
-                        
+
                         if (json != null && json.HasKey("value__"))
                         {
                             int enumValue = json["value__"].AsInt;
@@ -133,10 +132,10 @@ namespace Playroom
 
                         return (T)Enum.Parse(typeof(T), valueString);
                     }
-                    
+
                     else throw new NotSupportedException($"Type {typeof(T)} is not supported by GetState");
                 }
-                
+
 
                 public Profile GetProfile()
                 {

@@ -14,7 +14,6 @@ namespace Playroom
                 void SetState(string key, bool value, bool reliable = false);
                 void SetState(string key, string value, bool reliable = false);
                 void SetState(string key, object value, bool reliable = false);
-                void SetState(string key, Enum value, bool reliable = false);
                 public T GetState<T>(string key);
                 public Profile GetProfile();
                 public Action OnQuit(Action<string> callback);

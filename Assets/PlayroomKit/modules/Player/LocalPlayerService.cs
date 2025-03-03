@@ -64,14 +64,10 @@ namespace Playroom
                 
                 public void SetState(string key, Enum value, bool reliable = false)
                 {
-            
-                    if (mockPlayerStatesDictionary.ContainsKey(key))
-                        mockPlayerStatesDictionary[key] = value;
-                    else
-                        mockPlayerStatesDictionary.Add(key, value);
-
-                    CallbackManager.InvokeCallback(key, value.ToString());
+                    SetStateHelper(key, value.ToString(), reliable);
                 }
+                
+                
 
                 public T GetState<T>(string key)
                 {

@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gunsAction: 0
+  playersAction: 1
 --- !u!4 &1054460207
 Transform:
   m_ObjectHideFlags: 0
