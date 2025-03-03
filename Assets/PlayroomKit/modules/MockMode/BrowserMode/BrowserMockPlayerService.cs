@@ -62,7 +62,7 @@ namespace Playroom
                 json = JsonUtility.ToJson(value);
             }
 
-            Debug.LogWarning($"SetState: {key} - {json}");
+            DebugLogger.Log($"SetState: {key} - {json}");
 
             _ubb.CallJs("SetPlayerStateByPlayerId", null, null, false, _id, key, json,
                 reliable.ToString().ToLower());
@@ -103,7 +103,7 @@ namespace Playroom
                     try
                     {
                         rawValue = rawValue.Trim('\"', ' ');
-                        return (T)Enum.Parse(typeof(T), rawValue, true);
+                        return (T)Enum.Parse(typeof(T), rawValue);
                     }
                     catch (ArgumentException)
                     {

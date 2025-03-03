@@ -55,7 +55,17 @@ namespace Playroom
 
                 public void SetState(string key, object value, bool reliable = false)
                 {
-                    string jsonString = JsonUtility.ToJson(value);
+                    string jsonString;
+
+                    if (value is Enum)
+                    {
+                        jsonString = value.ToString();
+                    }
+                    else
+                    {
+                        jsonString = JsonUtility.ToJson(value);
+                    }
+
                     _interop.SetPlayerStateStringWrapper(_id, key, jsonString, reliable);
                 }
 
@@ -121,16 +131,22 @@ namespace Playroom
                     }
                     else if (type.IsEnum)
                     {
-                        string valueString = _interop.GetStateStringWrapper(key);
-                        var json = SimpleJSON.JSON.Parse(valueString);
-
-                        if (json != null && json.HasKey("value__"))
+                        try
                         {
-                            int enumValue = json["value__"].AsInt;
-                            return (T)Enum.ToObject(typeof(T), enumValue);
-                        }
+                            string valueString = _interop.GetPlayerStateStringWrapper(_id, key);
 
-                        return (T)Enum.Parse(typeof(T), valueString);
+                            if (string.IsNullOrEmpty(valueString))
+                            {
+                                return default;
+                            }
+
+                            return (T)Enum.Parse(typeof(T), valueString.Trim('\"', ' '));
+                        }
+                        catch (ArgumentException)
+                        {
+                            Debug.LogError($"Failed to parse '{key}' to Enum of type {typeof(T)}");
+                            return default;
+                        }
                     }
 
                     else throw new NotSupportedException($"Type {typeof(T)} is not supported by GetState");

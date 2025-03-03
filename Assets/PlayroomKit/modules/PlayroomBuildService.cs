@@ -173,6 +173,10 @@ namespace Playroom
                     var floatAsString = floatValue.ToString(CultureInfo.InvariantCulture);
                     _interop.SetStateFloatWrapper(key, floatAsString, reliable);
                 }
+                else if (value is Enum)
+                {
+                    _interop.SetStateStringWrapper(key, value.ToString(), reliable);
+                }
                 else if (value is object)
                 {
                     string jsonString = JsonUtility.ToJson(value);
@@ -222,7 +226,6 @@ namespace Playroom
 
             public void SetState(string key, object value, bool reliable = false)
             {
-                Debug.Log("SetState " + key + ", value is " + value + " of type " + value.GetType());
                 string jsonString = JsonUtility.ToJson(value);
                 _interop.SetStateStringWrapper(key, jsonString, reliable);
             }
@@ -263,14 +266,22 @@ namespace Playroom
                 else if (type == typeof(Quaternion)) return JsonUtility.FromJson<T>(GetStateString(key));
                 else if (type.IsEnum)
                 {
-                    string valueString = _interop.GetStateStringWrapper(key);
-                    if (valueString.StartsWith("{") && valueString.Contains("value__"))
+                    try
                     {
-                        EnumWrapper enumWrapper = JsonUtility.FromJson<EnumWrapper>(valueString);
-                        return (T)Enum.ToObject(typeof(T), enumWrapper.value__);
-                    }
+                        string valueString = _interop.GetStateStringWrapper(key);
 
-                    return (T)Enum.Parse(typeof(T), valueString);
+                        if (string.IsNullOrEmpty(valueString))
+                        {
+                            return default;
+                        }
+
+                        return (T)Enum.Parse(typeof(T), valueString.Trim('\"', ' '));
+                    }
+                    catch (ArgumentException)
+                    {
+                        Debug.LogError($"Failed to parse '{key}' to Enum of type {typeof(T)}");
+                        return default;
+                    }
                 }
                 else
                 {
@@ -278,11 +289,7 @@ namespace Playroom
                     return default;
                 }
             }
-            
-            private class EnumWrapper
-            {
-                public int value__;
-            }
+
 
             public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
             {
@@ -311,12 +318,6 @@ namespace Playroom
                 string keysJson = keysToExclude != null ? Helpers.CreateJsonArray(keysToExclude).ToString() : null;
                 _interop.ResetPlayersStatesWrapper(keysJson, InvokePlayersResetCallBack);
             }
-
-            public void SetState(string key, Enum value, bool reliable = false)
-            {
-                _interop.SetStateStringWrapper(key, value.ToString(), reliable);
-            }
-
 
             #endregion
 
