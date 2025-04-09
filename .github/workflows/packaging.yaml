@@ -15,10 +15,11 @@ jobs:
 
       - run: |
           echo "Assets/PlayroomKit.meta" > metaList
-          echo "Assets/Plugins.meta" >> metaList
+          echo "Assets/Plugins/Playroom.meta" >> metaList
           echo "Assets/WebGLTemplates.meta" >> metaList
           find Assets/PlayroomKit/ -name \*.meta >> metaList
           find Assets/WebGLTemplates/ -name \*.meta >> metaList
+          find Assets/Plugins/Playroom -name \*.meta >> metaList
           echo metaList
 
       - run: mkdir output
