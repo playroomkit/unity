@@ -10,7 +10,8 @@
   },
   "scripts": {
     "postinstall": "npm run build",
-    "build": "vite build --emptyOutDir"
+    "build": "vite build --emptyOutDir",
+    "copy:prk": "vite build --config vite.copy.config.js"
   },
   "keywords": [],
   "author": "",
