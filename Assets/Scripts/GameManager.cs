@@ -1,26 +1,14 @@
 using Playroom;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     private PlayroomKit _kit;
 
-    // Enum Test Example 
-    public enum Gun
-    {
-        idle,
-        shooting,
-        reload
-    }
+    public TextMeshProUGUI text;
 
-    public enum Player
-    {
-        idle,
-        walk,
-    }
-
-    public Gun gunsAction = Gun.shooting;
-    public Player playersAction = Player.walk;
+    bool coinInserted = false;
 
     private void Awake()
     {
@@ -31,13 +19,16 @@ public class GameManager : MonoBehaviour
     {
         _kit.InsertCoin(new InitOptions()
         {
+            gameId = "cW0r8UJ1aXnZ8v5TPYmv",
             maxPlayersPerRoom = 2,
+            discord = true,
         }, OnLaunchCallBack);
     }
 
     private void OnLaunchCallBack()
     {
         _kit.OnPlayerJoin(CreatePlayer);
+        coinInserted = true;
     }
 
     private void CreatePlayer(PlayroomKit.Player player)
@@ -47,29 +38,10 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.T))
         {
-            gunsAction = Gun.shooting;
-            _kit.SetState("gunState", gunsAction);
-            _kit.MyPlayer().SetState("playerState", playersAction);
-        }
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            gunsAction = Gun.reload;
-            _kit.SetState("gunState", gunsAction);
-        }
-
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            Gun retrievedState = _kit.GetState<Gun>("gunState");
-            Debug.LogWarning($"Retrieved Gun State: {retrievedState}");
-        }
-
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            Player retrievedState = _kit.MyPlayer().GetState<Player>("playerState");
-            Debug.LogWarning($"Retrieved Player State: {retrievedState}");
+            Debug.Log("Token: " + _kit.GetPlayroomToken());
+            text.text = _kit.GetPlayroomToken();
         }
     }
 }
