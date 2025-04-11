@@ -151,24 +151,24 @@ namespace Playroom
         public T GetState<T>(string key)
         {
             string result = _ubb.CallJs<string>("GetState", null, null, false, key);
-            
+
             if (typeof(T).IsEnum)
             {
                 try
                 {
                     result = result.Trim('\"', ' ');
-                    return (T)Enum.Parse(typeof(T), result, true); 
+                    return (T)Enum.Parse(typeof(T), result, true);
                 }
                 catch (ArgumentException)
                 {
                     Debug.LogError($"Failed to parse '{result}' to Enum of type {typeof(T)}");
-                    return default;  
+                    return default;
                 }
             }
-        
+
             return (T)Convert.ChangeType(result, typeof(T));
         }
-      
+
         public void WaitForState(string stateKey, Action<string> onStateSetCallback = null)
         {
             string callbackKey = $"WaitForState_{stateKey}";
@@ -205,7 +205,7 @@ namespace Playroom
             _ubb.CallJs("ResetPlayersStates", null, null, true, keysToExclude ?? Array.Empty<string>());
             onStatesReset?.Invoke();
         }
-        
+
         #endregion
 
         #region Persistent API
@@ -305,6 +305,12 @@ namespace Playroom
         public static void MockOnPlayerJoinWrapper(string playerId)
         {
             PlayroomKit.IPlayroomBase.OnPlayerJoinWrapperCallback(playerId);
+        }
+
+        public string GetPlayroomToken()
+        {
+            DebugLogger.LogWarning("[MockMode] Playroom token is currently not supported in browser mock mode!");
+            return string.Empty;
         }
 
         #endregion

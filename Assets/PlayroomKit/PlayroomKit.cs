@@ -278,6 +278,12 @@ namespace Playroom
             return _playroomService.Me();
         }
 
+        public string GetPlayroomToken()
+        {
+            CheckPlayRoomInitialized();
+            return _playroomService.GetPlayroomToken();
+        }
+
         private void UnsubscribeOnQuit()
         {
             _playroomService.UnsubscribeOnQuit();

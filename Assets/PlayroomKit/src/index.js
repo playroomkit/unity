@@ -1072,6 +1072,28 @@ mergeInto(LibraryManager.library, {
   //#endregion
 
   //#region Utils
+  GetPlayroomTokenInternal: function () {
+    try {
+      var str = window.sessionStorage.getItem('pr_dcd_jwt');
+
+      if (!str) {
+        console.warn("[JSLIB]: No Playroom token found in session storage, it only works in discord.");
+        return null;
+      }
+      
+      console.log("Playroom token: ", str);
+      
+      var bufferSize = lengthBytesUTF8(str) + 1;
+      var buffer = _malloc(bufferSize);
+      stringToUTF8(str, buffer, bufferSize);
+      return buffer;
+    } catch (error) {
+      console.error(`[JSLIB:] Error getting Playroom token: ${str}`, error);
+      return null;
+    }
+  },
+
+
   /**
    * Converts a given string into a UTF-8 encoded string and stores it in memory.
    *

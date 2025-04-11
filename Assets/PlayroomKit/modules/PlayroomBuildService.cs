@@ -4,7 +4,6 @@ using AOT;
 using SimpleJSON;
 using System;
 using System.Collections.Generic;
-using OpenQA.Selenium.DevTools.V96.Browser;
 
 namespace Playroom
 {
@@ -94,6 +93,11 @@ namespace Playroom
             {
                 CallbackManager.RegisterCallback(callback);
                 _interop.OnDisconnectWrapper(OnDisconnectCallbackHandler);
+            }
+
+            public string GetPlayroomToken()
+            {
+                return GetPlayroomTokenInternal();
             }
 
             #endregion
