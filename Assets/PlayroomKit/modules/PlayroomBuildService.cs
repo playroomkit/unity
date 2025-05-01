@@ -431,7 +431,22 @@ namespace Playroom
 
             #endregion
 
+            #region Discord API
+            public void OpenDiscordInviteDialog(Action callback = null)
+            {
+                CheckPlayRoomInitialized();
+                CallbackManager.RegisterCallback(callback, "discordInviteDialog");
+                _interop.OpenDiscordInviteDialogInternalWrapper(OpenDiscordInviteDialogCallbackInvoker);
+            }
+            #endregion
+
             #region Callbacks
+
+            [MonoPInvokeCallback(typeof(Action))]
+            private static void OpenDiscordInviteDialogCallbackInvoker()
+            {
+                CallbackManager.InvokeCallback("discordInviteDialog");
+            }
 
             [MonoPInvokeCallback(typeof(Action))]
             private static void InvokeStartMatchmakingCallback()
@@ -479,7 +494,6 @@ namespace Playroom
                 _onError?.Invoke(error);
                 Debug.LogException(new Exception(error));
             }
-
             #endregion
         }
     }

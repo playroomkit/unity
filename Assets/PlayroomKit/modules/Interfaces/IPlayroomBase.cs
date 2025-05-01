@@ -70,6 +70,11 @@ namespace Playroom
 
             #endregion
 
+            #region Discord
+            public void OpenDiscordInviteDialog(Action callback = null);
+            #endregion
+
+
             #region Callbacks Wrappers
 
             [MonoPInvokeCallback(typeof(Action<string>))]
