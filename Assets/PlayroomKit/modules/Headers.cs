@@ -166,5 +166,10 @@ namespace Playroom
 
         #endregion
 
+        #region Discord
+        [DllImport("__Internal")]
+        private static extern void OpenDiscordInviteDialogInternal(Action callback = null);
+        #endregion
+
     }
 }

@@ -1071,6 +1071,27 @@ mergeInto(LibraryManager.library, {
   },
   //#endregion
 
+  //#region Discord
+  OpenDiscordInviteDialogInternal: function (callback) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    Playroom.openDiscordInviteDialog()
+      .then(() => {
+        console.log("Discord invite dialog opened successfully.");
+        {{{ makeDynCall('v', 'callback') }}}()
+      })
+      .catch((error) => {
+        console.error("Failed to open Discord invite dialog:", error);
+      });
+  },
+  //#endregion
+
+
   //#region Utils
   GetPlayroomTokenInternal: function () {
     try {
