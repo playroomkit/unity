@@ -313,6 +313,12 @@ namespace Playroom
             return string.Empty;
         }
 
+        public void OpenDiscordInviteDialog(Action callback = null)
+        {
+            DebugLogger.LogWarning("[MockMode] Discord invite dialog is currently not supported in browser mock mode!");
+            callback?.Invoke();
+        }
+
         #endregion
     }
 #endif

@@ -43,5 +43,13 @@ public class GameManager : MonoBehaviour
             Debug.Log("Token: " + _kit.GetPlayroomToken());
             text.text = _kit.GetPlayroomToken();
         }
+        
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            _kit.OpenDiscordInviteDialog(()=>
+            {
+                text.text = "Discord invite dialog opened!";
+            });
+        }
     }
 }

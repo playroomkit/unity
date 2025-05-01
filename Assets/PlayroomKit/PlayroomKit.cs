@@ -345,5 +345,13 @@ namespace Playroom
         }
 
         #endregion
+
+        #region Discord
+        public void OpenDiscordInviteDialog(Action callback = null)
+        {
+            CheckPlayRoomInitialized();
+            _playroomService.OpenDiscordInviteDialog(callback);
+        }
+        #endregion
     }
 }
