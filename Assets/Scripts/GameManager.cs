@@ -21,7 +21,11 @@ public class GameManager : MonoBehaviour
         {
             gameId = "cW0r8UJ1aXnZ8v5TPYmv",
             maxPlayersPerRoom = 2,
-            discord = true,
+            discord = new DiscordOptions()
+            {
+                prompt = "Join our Discord!",
+                scope = new string[] { "identify", "email", "connections", "application.entitlements" },
+            },
         }, OnLaunchCallBack);
     }
 
@@ -43,10 +47,10 @@ public class GameManager : MonoBehaviour
             Debug.Log("Token: " + _kit.GetPlayroomToken());
             text.text = _kit.GetPlayroomToken();
         }
-        
+
         if (Input.GetKeyDown(KeyCode.I))
         {
-            _kit.OpenDiscordInviteDialog(()=>
+            _kit.OpenDiscordInviteDialog(() =>
             {
                 text.text = "Discord invite dialog opened!";
             });

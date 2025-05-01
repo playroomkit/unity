@@ -15,10 +15,9 @@ namespace Playroom
         public bool skipLobby = false;
         public int reconnectGracePeriod = 0;
         public int? maxPlayersPerRoom;
-        
+
         [CanBeNull]
         public string gameId;
-        public bool discord = false;
         public bool persistentMode = false;
 
         public Dictionary<string, object> defaultStates = null;
@@ -26,6 +25,8 @@ namespace Playroom
 
         private object matchmakingField;
         private object turnBasedField;
+        private object discordField;
+
 
         public object matchmaking
         {
@@ -59,5 +60,22 @@ namespace Playroom
                 }
             }
         }
+
+        public object discord
+        {
+            get => discordField;
+            set
+            {
+                if (value is bool || value is DiscordOptions)
+                {
+                    discordField = value;
+                }
+                else
+                {
+                    throw new ArgumentException("Discord must be a boolean or a DiscordOptions object.");
+                }
+            }
+        }
+
     }
 }

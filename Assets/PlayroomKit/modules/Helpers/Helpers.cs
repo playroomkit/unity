@@ -24,7 +24,6 @@ namespace Playroom
             node["roomCode"] = options.roomCode;
             node["skipLobby"] = options.skipLobby;
             node["reconnectGracePeriod"] = options.reconnectGracePeriod;
-            node["discord"] = options.discord;
             node["persistentMode"] = options.persistentMode;
 
             if (options.avatars != null)
@@ -58,6 +57,22 @@ namespace Playroom
                 JSONNode turnBasedNode = new JSONObject();
                 turnBasedNode["challengeId"] = turnBasedOptions.challengeId;
                 node["turnBased"] = turnBasedNode;
+            }
+
+            if (options.discord is bool booleanDiscord)
+            {
+                node["discord"] = booleanDiscord;
+            }
+            else if (options.discord is DiscordOptions discordOptions)
+            {
+                JSONNode discordNode = new JSONObject();
+                if (discordOptions.prompt != null)
+                    discordNode["prompt"] = discordOptions.prompt;
+                if (discordOptions.scope != null)
+                    discordNode["scope"] = CreateJsonArray(discordOptions.scope);
+                if (discordOptions.state != null)
+                    discordNode["state"] = discordOptions.state;
+                node["discord"] = discordNode;
             }
 
             if (options.maxPlayersPerRoom.HasValue)
