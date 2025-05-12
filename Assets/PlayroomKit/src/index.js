@@ -1089,6 +1089,35 @@ mergeInto(LibraryManager.library, {
         console.error("Failed to open Discord invite dialog:", error);
       });
   },
+
+  StartDiscordPurchaseInternal: function (skuId, callback) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    try {
+      // startPurchase internal…
+      Playroom.getDiscordClient().commands.startPurchase({sku_id: UTF8ToString(skuId)}).then((response) => {
+        console.log("[JSLIB]: Purchase started successfully.");
+        var keyPtr = stringToNewUTF8(skuId);
+        var returnData = stringToNewUTF8(JSON.stringify(response));
+
+        console.log("[JSLIB]: Purchase response: ", response);
+        console.warn("[JSLIB]: Purchase data json: ", JSON.stringify(response));
+
+        {{{ makeDynCall('vii', 'callback') }}}(keyPtr, dataStrPtr);
+      })
+      .catch((error) => {
+        console.error("[JSLIB]: Failed to start purchase:", error);
+      });
+    } catch (error) {
+      console.error("[JSLIB]: Error starting purchase:", error);
+    }
+  },
+
   //#endregion
 
 

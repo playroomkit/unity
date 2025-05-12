@@ -100,6 +100,8 @@ namespace Playroom
                         $"Callback with key {key} is of unsupported type or incorrect number of arguments: {turnData}!");
             }
         }
+        
+
 
         public static void InvokeCallback(string key, List<TurnData> turnData)
         {
@@ -109,6 +111,17 @@ namespace Playroom
                 else
                     Debug.LogError(
                         $"Callback with key {key} is of unsupported type or incorrect number of arguments: {turnData}!");
+            }
+        }
+        
+        public static void InvokeCallback(string key, List<Entitlement> Entitlement)
+        {
+            if (callbacks.TryGetValue(key, out Delegate callback))
+            {
+                if (callback is Action<List<Entitlement>> action) action?.Invoke(Entitlement);
+                else
+                    Debug.LogError(
+                        $"Callback with key {key} is of unsupported type or incorrect number of arguments: {Entitlement}!");
             }
         }
 

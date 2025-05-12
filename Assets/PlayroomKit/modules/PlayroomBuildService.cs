@@ -438,6 +438,32 @@ namespace Playroom
                 CallbackManager.RegisterCallback(callback, "discordInviteDialog");
                 _interop.OpenDiscordInviteDialogInternalWrapper(OpenDiscordInviteDialogCallbackInvoker);
             }
+
+            [MonoPInvokeCallback(typeof(Action<string, string>))]
+            private static void DiscordPurchaseCallback(string skuId, string result)
+            {
+                JSONNode root = JSON.Parse(result);
+
+                List<Entitlement> entitlements = new List<Entitlement>();
+
+                if (root != null && root.IsArray)
+                {
+                    foreach (JSONNode item in root.AsArray)
+                    {
+                        Entitlement e = Entitlement.FromJSON(item);
+                        entitlements.Add(e);
+                    }
+                }
+
+                CallbackManager.InvokeCallback(skuId, entitlements);
+            }
+
+            public void StartDiscordPurchase(string skuId, Action<List<Entitlement>> callback)
+            {
+                CheckPlayRoomInitialized();
+                CallbackManager.RegisterCallback(callback, skuId);
+                _interop.StartDiscordPurchaseInternal(skuId, DiscordPurchaseCallback);
+            }
             #endregion
 
             #region Callbacks
