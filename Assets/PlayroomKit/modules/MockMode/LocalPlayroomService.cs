@@ -219,6 +219,12 @@ namespace Playroom
             DebugLogger.LogWarning("[MockMode] Discord invite dialog is currently not supported in local mode!");
             callback?.Invoke();
         }
+
+        public void StartDiscordPurchase(string skuId, Action<List<Entitlement>> callback)
+        {
+            DebugLogger.LogWarning("[MockMode] Discord purchase is currently not supported in local mode!");
+            callback?.Invoke(new List<Entitlement>());
+        }
         #endregion
     }
 }

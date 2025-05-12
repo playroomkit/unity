@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Playroom;
 using TMPro;
 using UnityEngine;
@@ -51,5 +53,13 @@ public class GameManager : MonoBehaviour
                 text.text = "Discord invite dialog opened!";
             });
         }
+
+        // if (Input.GetKeyDown(KeyCode.P) && coinInserted)
+        // {
+        //     _kit.StartDiscordPurchase("1234", (response) => {
+        //     });
+        // }
     }
+
+   
 }

@@ -462,7 +462,7 @@ namespace Playroom
             {
                 CheckPlayRoomInitialized();
                 CallbackManager.RegisterCallback(callback, skuId);
-                _interop.StartDiscordPurchaseInternal(skuId, DiscordPurchaseCallback);
+                StartDiscordPurchaseInternal(skuId, DiscordPurchaseCallback);
             }
             #endregion
 

@@ -116,7 +116,6 @@ namespace Playroom
             #region Discord
 
             void OpenDiscordInviteDialogInternalWrapper(Action callback = null);
-            void StartDiscordPurchaseInternal(string skuId, Action<string, string> callback);
             #endregion
         }
     }

@@ -288,6 +288,8 @@ namespace Playroom
             {
                 OpenDiscordInviteDialogInternal(callback);
             }
+
+           
             #endregion
         }
     }
