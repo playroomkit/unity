@@ -114,9 +114,9 @@ namespace Playroom
             #endregion
     
             #region Discord
+
             void OpenDiscordInviteDialogInternalWrapper(Action callback = null);
             #endregion
-    
         }
     }
 }
