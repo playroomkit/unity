@@ -72,7 +72,7 @@ namespace Playroom
 
             #region Discord
             public void OpenDiscordInviteDialog(Action callback = null);
-            public void StartDiscordPurchase(string skuId, Action<List<Entitlement>> callback);
+            public void StartDiscordPurchase(string skuId, Action<List<Entitlement>> callback = null);
             #endregion
 
 

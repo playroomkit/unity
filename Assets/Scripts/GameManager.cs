@@ -6,20 +6,22 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    private PlayroomKit _kit;
+    private PlayroomKit playroomKit;
 
     public TextMeshProUGUI text;
 
     bool coinInserted = false;
 
+    string skuId = "123456789";
+
     private void Awake()
     {
-        _kit = new PlayroomKit();
+        playroomKit = new PlayroomKit();
     }
 
     private void Start()
     {
-        _kit.InsertCoin(new InitOptions()
+        playroomKit.InsertCoin(new InitOptions()
         {
             gameId = "cW0r8UJ1aXnZ8v5TPYmv",
             maxPlayersPerRoom = 2,
@@ -29,7 +31,7 @@ public class GameManager : MonoBehaviour
 
     private void OnLaunchCallBack()
     {
-        _kit.OnPlayerJoin(CreatePlayer);
+        playroomKit.OnPlayerJoin(CreatePlayer);
         coinInserted = true;
     }
 
@@ -42,24 +44,29 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.T))
         {
-            Debug.Log("Token: " + _kit.GetPlayroomToken());
-            text.text = _kit.GetPlayroomToken();
+            Debug.Log("Token: " + playroomKit.GetPlayroomToken());
+            text.text = playroomKit.GetPlayroomToken();
         }
-        
+
         if (Input.GetKeyDown(KeyCode.I))
         {
-            _kit.OpenDiscordInviteDialog(()=>
+            playroomKit.OpenDiscordInviteDialog(() =>
             {
                 text.text = "Discord invite dialog opened!";
             });
         }
 
-        // if (Input.GetKeyDown(KeyCode.P) && coinInserted)
-        // {
-        //     _kit.StartDiscordPurchase("1234", (response) => {
-        //     });
-        // }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            // After InsertCoin has fully invoked
+            playroomKit.StartDiscordPurchase(skuId, (response) =>
+            {
+                foreach (var entitlement in response)
+                {
+                    Debug.Log($"Entitlement: {entitlement}");
+                    text.text += $"\nEntitlement: {entitlement}";
+                }
+            });
+        }
     }
-
-   
 }

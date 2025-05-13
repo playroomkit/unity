@@ -220,7 +220,7 @@ namespace Playroom
             callback?.Invoke();
         }
 
-        public void StartDiscordPurchase(string skuId, Action<List<Entitlement>> callback)
+        public void StartDiscordPurchase(string skuId, Action<List<Entitlement>> callback = null)
         {
             DebugLogger.LogWarning("[MockMode] Discord purchase is currently not supported in local mode!");
             callback?.Invoke(new List<Entitlement>());

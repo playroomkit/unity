@@ -458,7 +458,7 @@ namespace Playroom
                 CallbackManager.InvokeCallback(skuId, entitlements);
             }
 
-            public void StartDiscordPurchase(string skuId, Action<List<Entitlement>> callback)
+            public void StartDiscordPurchase(string skuId, Action<List<Entitlement>> callback = null)
             {
                 CheckPlayRoomInitialized();
                 CallbackManager.RegisterCallback(callback, skuId);
