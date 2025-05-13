@@ -61,11 +61,7 @@ public class GameManager : MonoBehaviour
             // After InsertCoin has fully invoked
             playroomKit.StartDiscordPurchase(skuId, (response) =>
             {
-                foreach (var entitlement in response)
-                {
-                    Debug.Log($"Entitlement: {entitlement}");
-                    text.text += $"\nEntitlement: {entitlement}";
-                }
+                Debug.Log($"Entitlement: {response}");
             });
         }
     }
