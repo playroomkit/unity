@@ -353,7 +353,7 @@ namespace Playroom
             _playroomService.OpenDiscordInviteDialog(callback);
         }
 
-        public void StartDiscordPurchase(string skuId, Action<List<Entitlement>> responseCallback = null)
+        public void StartDiscordPurchase(string skuId, Action<string> responseCallback = null)
         {
             CheckPlayRoomInitialized();
             _playroomService.StartDiscordPurchase(skuId, responseCallback);

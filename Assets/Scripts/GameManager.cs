@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
 
     bool coinInserted = false;
 
-    string skuId = "123456789";
+    string skuId = "1371921246031319121";
 
     private void Awake()
     {
@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
     {
         playroomKit.InsertCoin(new InitOptions()
         {
-            gameId = "cW0r8UJ1aXnZ8v5TPYmv",
+            gameId = "FmOBeUfQO2AOLNIrJNSJ",
             maxPlayersPerRoom = 2,
             discord = true,
         }, OnLaunchCallBack);
