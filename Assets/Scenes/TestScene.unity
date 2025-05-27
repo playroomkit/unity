@@ -287,7 +287,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseUrl: https://ws.joinplayroom.com/api/store
-  gameApiKey: 510a71af-3a69-4f5d-9b9b-296a1871e624
+  gameApiKey: 
   text: {fileID: 1547749}
   skus: []
   entitlements: []
