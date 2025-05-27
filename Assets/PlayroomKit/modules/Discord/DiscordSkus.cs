@@ -4,7 +4,7 @@ using SimpleJSON;
 
 namespace Discord
 {
-    public enum SkuType
+    public enum DiscordSkuType
     {
         UNHANDLED = -1,
         APPLICATION = 1,
@@ -15,14 +15,14 @@ namespace Discord
     }
 
     [Serializable]
-    public class SkuPrice
+    public class DiscordSkuPrice
     {
         public int Amount;
         public string Currency;
 
-        internal static SkuPrice FromJSONNode(JSONNode n)
+        internal static DiscordSkuPrice FromJSONNode(JSONNode n)
         {
-            return new SkuPrice
+            return new DiscordSkuPrice
             {
                 Amount = n["amount"].AsInt,
                 Currency = n["currency"].Value
@@ -31,31 +31,31 @@ namespace Discord
     }
 
     [Serializable]
-    public class Sku
+    public class DiscordSku
     {
         // Required
         public string Id;
         public string Name;
-        public SkuType Type;
-        public SkuPrice Price;
+        public DiscordSkuType Type;
+        public DiscordSkuPrice Price;
         public string ApplicationId;
         public int Flags;
 
         // Optional
         public string? ReleaseDate;   
 
-        internal static Sku FromJSONNode(JSONNode n)
+        internal static DiscordSku FromJSONNode(JSONNode n)
         {
             var rawType = n["type"].AsInt;
-            if (!Enum.IsDefined(typeof(SkuType), rawType))
+            if (!Enum.IsDefined(typeof(DiscordSkuType), rawType))
                 throw new FormatException($"Unknown SkuType code: {rawType}");
 
-            var sku = new Sku
+            var sku = new DiscordSku
             {
                 Id = n["id"].Value,
                 Name = n["name"].Value,
-                Type = (SkuType)rawType,
-                Price = SkuPrice.FromJSONNode(n["price"]),
+                Type = (DiscordSkuType)rawType,
+                Price = DiscordSkuPrice.FromJSONNode(n["price"]),
                 ApplicationId = n["application_id"].Value,
                 Flags = n["flags"].AsInt
             };
@@ -69,9 +69,9 @@ namespace Discord
             return sku;
         }
 
-        public static List<Sku> FromJSON(string jsonString)
+        public static List<DiscordSku> FromJSON(string jsonString)
         {
-            var list = new List<Sku>();
+            var list = new List<DiscordSku>();
             var root = JSON.Parse(jsonString);
 
             if (root.IsArray)
