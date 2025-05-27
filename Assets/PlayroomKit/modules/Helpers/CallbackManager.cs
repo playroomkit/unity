@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Discord;
 using UnityEngine;
 
 namespace Playroom
@@ -114,14 +115,14 @@ namespace Playroom
             }
         }
         
-        public static void InvokeCallback(string key, List<Entitlement> Entitlement)
+        public static void InvokeCallback(string key, List<DiscordEntitlement> entitlements)
         {
             if (callbacks.TryGetValue(key, out Delegate callback))
             {
-                if (callback is Action<List<Entitlement>> action) action?.Invoke(Entitlement);
+                if (callback is Action<List<DiscordEntitlement>> action) action?.Invoke(entitlements);
                 else
                     Debug.LogError(
-                        $"Callback with key {key} is of unsupported type or incorrect number of arguments: {Entitlement}!");
+                        $"Callback with key {key} is of unsupported type or incorrect number of arguments: {entitlements}!");
             }
         }
 
