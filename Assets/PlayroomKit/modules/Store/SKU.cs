@@ -54,7 +54,6 @@ namespace Playroom
             if (!root.IsArray)
                 Debug.LogWarning("Expected an array of SKUs");
 
-            skus.Clear();
 
             foreach (JSONNode item in root.AsArray)
             {
