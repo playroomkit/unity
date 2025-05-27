@@ -172,6 +172,16 @@ namespace Playroom
 
         [DllImport("__Internal")]
         private static extern void StartDiscordPurchaseInternal(string skuId, Action<string, string> callback);
+
+        [DllImport("__Internal")]
+        private static extern void GetDiscordSkusInternal(Action<string> callback);
+
+        [DllImport("__Internal")]
+        private static extern void GetDiscordEntitlementsInternal(Action<string> callback);
+
+        [DllImport("__Internal")]
+        private static extern string DiscordPriceFormatInternal(string price, string currency, string locale = "en-US");
+
         #endregion
     }
 }
