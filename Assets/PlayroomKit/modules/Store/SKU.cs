@@ -22,7 +22,7 @@ namespace Playroom
         public string price;
         public string productId;
 
-        private static SKU<TMetadata> ParseSKU(JSONNode node, Func<string, TMetadata> metadataParser)
+        private static SKU<TMetadata> FromJSONNode(JSONNode node, Func<string, TMetadata> metadataParser)
         {
             var rawMeta = node["metadata"]?.ToString() ?? "{}";
             
@@ -46,7 +46,7 @@ namespace Playroom
             return data;
         }
 
-        public static List<SKU<TMetadata>> ParseSKUS(string jsonString, Func<string, TMetadata> metadataParser)
+        public static List<SKU<TMetadata>> FromJSON(string jsonString, Func<string, TMetadata> metadataParser)
         {
             List<SKU<TMetadata>> skus = new();
             JSONNode root = JSON.Parse(jsonString);
@@ -54,10 +54,9 @@ namespace Playroom
             if (!root.IsArray)
                 Debug.LogWarning("Expected an array of SKUs");
 
-
             foreach (JSONNode item in root.AsArray)
             {
-                SKU<TMetadata> data = ParseSKU(item, metadataParser);
+                SKU<TMetadata> data = FromJSONNode(item, metadataParser);
                 skus.Add(data);
             }
 
