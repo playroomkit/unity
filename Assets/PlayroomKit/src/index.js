@@ -935,7 +935,7 @@ mergeInto(LibraryManager.library, {
       });
   },
   
-   //#region Persistence
+  //#region Persistence
    SetPersistentDataInternal: function (key, value) {
     if (!window.Playroom) {
       console.error(
@@ -1118,6 +1118,65 @@ mergeInto(LibraryManager.library, {
     }
   },
 
+  GetDiscordSkusInternal: function (callback) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return 0;
+    }
+
+      Playroom.getDiscordClient().commands.getSkus().then((response) => {
+        console.log("[JSLIB]: Discord Skus retrieved successfully: " + response);
+        var dataStrPtr = stringToNewUTF8(JSON.stringify(response));
+        {{{ makeDynCall('vi', 'callback') }}}(dataStrPtr);
+      })
+      .catch((error) => {
+        console.error("[JSLIB]: Failed to get skus:", error);
+      });
+    
+  },
+  
+  GetDiscordEntitlementsInternal: function (callback) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return 0;
+    }
+
+      Playroom.getDiscordClient().commands.getEntitlements().then((response) => {
+        console.log("[JSLIB]: Discord entitlements successfully: " + response);
+        var dataStrPtr = stringToNewUTF8(JSON.stringify(response));
+        {{{ makeDynCall('vi', 'callback') }}}(dataStrPtr);
+      })
+      .catch((error) => {
+        console.error("[JSLIB]: Failed to get discord entitlements:", error);
+      });
+  },
+
+  DiscordPriceFormatInternal: function (amount, currency, locale) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return 0;
+    }
+
+    Playroom.getDiscordSDK().then(discordSDK => {
+      var a = UTF8ToString(amount);
+      var c = UTF8ToString(currency);
+      var l =   UTF8ToString(locale);
+      var formatted = discordSDK.PriceUtils.formatPrice({price: a, currency: c}, l);
+      console.log(formatted);
+      var bufferSize = lengthBytesUTF8(str) + 1;
+      var buffer = _malloc(bufferSize);
+      stringToUTF8(str, buffer, bufferSize);
+      return buffer;
+    }).catch(err => {
+      console.error("Failed to load Discord SDK:", err);
+    });
+  },
   //#endregion
 
 
