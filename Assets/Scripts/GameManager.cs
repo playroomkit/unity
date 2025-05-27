@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Discord;
 using Playroom;
 using SimpleJSON;
 using TMPro;
@@ -173,6 +174,8 @@ public class GameManager : MonoBehaviour
             {
                 text.text = "Purchase started successfully!";
                 Debug.Log($"Entitlement: {response}");
+
+                var a = DiscordEntitlement.FromJSON(response);
             });
         }
     }
