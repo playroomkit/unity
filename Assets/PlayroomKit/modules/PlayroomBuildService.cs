@@ -4,6 +4,7 @@ using AOT;
 using SimpleJSON;
 using System;
 using System.Collections.Generic;
+using Discord;
 
 namespace Playroom
 {
@@ -450,6 +451,40 @@ namespace Playroom
                 CheckPlayRoomInitialized();
                 CallbackManager.RegisterCallback(callback, skuId);
                 StartDiscordPurchaseInternal(skuId, DiscordPurchaseCallback);
+            }
+
+            public void GetDiscordSkus(Action<List<DiscordSku>> callback)
+            {
+                CheckPlayRoomInitialized();
+                CallbackManager.RegisterCallback(callback, "discordSkus");
+                GetDiscordSkusInternal(DiscordSkusCallback);
+            }
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            private static void DiscordSkusCallback(string data)
+            {
+                List<DiscordSku> list = DiscordSku.FromJSON(data);
+                CallbackManager.InvokeCallback("discordSkus", list);
+            }
+
+            public void GetDiscordEntitlements(Action<List<DiscordEntitlement>> callback)
+            {
+                CheckPlayRoomInitialized();
+                CallbackManager.RegisterCallback(callback, "discordEntitlements");
+                GetDiscordEntitlementsInternal(DiscordEntitlementsCallback);
+            }
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            private static void DiscordEntitlementsCallback(string data)
+            {
+                List<DiscordEntitlement> list = DiscordEntitlement.FromJSON(data);
+                CallbackManager.InvokeCallback("discordEntitlements", list);
+            }
+
+            public string DiscordPriceFormat(float price, string currency, string locale = "en-US")
+            {
+                CheckPlayRoomInitialized();
+                return DiscordPriceFormatInternal(price, currency, locale);
             }
             #endregion
 

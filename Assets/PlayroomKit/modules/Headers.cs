@@ -180,7 +180,7 @@ namespace Playroom
         private static extern void GetDiscordEntitlementsInternal(Action<string> callback);
 
         [DllImport("__Internal")]
-        private static extern string DiscordPriceFormatInternal(string price, string currency, string locale = "en-US");
+        private static extern string DiscordPriceFormatInternal(float price, string currency, string locale = "en-US");
 
         #endregion
     }

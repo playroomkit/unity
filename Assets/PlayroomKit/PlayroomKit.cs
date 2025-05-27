@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using UBB;
+using Discord;
 
 
 namespace Playroom
@@ -357,6 +358,18 @@ namespace Playroom
         {
             CheckPlayRoomInitialized();
             _playroomService.StartDiscordPurchase(skuId, responseCallback);
+        }
+
+        public void GetDiscordSkus(Action<List<DiscordSku>> callback)
+        {
+            CheckPlayRoomInitialized();
+            _playroomService.GetDiscordSkus(callback);
+        }
+
+        public void GetDiscordEntitlements(Action<List<DiscordEntitlement>> callback)
+        {
+            CheckPlayRoomInitialized();
+            _playroomService.GetDiscordEntitlements(callback);
         }
         #endregion
     }

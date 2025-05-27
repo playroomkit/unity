@@ -126,6 +126,17 @@ namespace Playroom
             }
         }
 
+        public static void InvokeCallback(string key, List<DiscordSku> skus)
+        {
+            if (callbacks.TryGetValue(key, out Delegate callback))
+            {
+                if (callback is Action<List<DiscordSku>> action) action?.Invoke(skus);
+                else
+                    Debug.LogError(
+                        $"Callback with key {key} is of unsupported type or incorrect number of arguments: {skus}!");
+            }
+        }
+
         public static bool CheckCallback(string key)
         {
             return callbacks.TryGetValue(key, out Delegate callback);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Discord;
 using Playroom;
 using SimpleJSON;
 using TMPro;
@@ -12,6 +13,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private string baseUrl = "https://ws.joinplayroom.com/api/store";
     [SerializeField] private string gameApiKey;
 
+    [SerializeField]
+    private string token = "eyJhbGciOiJIUzI1NiJ9.eyJkaXNjb3JkSWQiOiI0NzY3MDk1MjQwMTE2MTQyMTkiLCJyb29tSWQiOiJEQ1JEX2ktMTM3NDY3NDQ2MDUyMjcxMzE1OS1nYy0xMjczNjA3Njg2ODE4MTA3NDAyLTEyNzQ5OTUxNDcyNjc4OTk0NTYiLCJnYW1lSWQiOiJGbU9CZVVmUU8yQU9MTklySk5TSiIsImd1aWxkSWQiOiIxMjczNjA3Njg2ODE4MTA3NDAyIiwiY2hhbm5lbElkIjoiMTI3NDk5NTE0NzI2Nzg5OTQ1NiIsImFjY2Vzc1Rva2VuIjoiV2FVNFV1RjJ6UEJOTzY1QWZISlNrR2RzaVBGOWpKIiwiYXV0aCI6ImRpc2NvcmQiLCJ0IjoxNzQ3ODE4MzYzfQ.bRvWY7SMafo0iQzfdp0N53Euu58eC35AZ6ruiCdgF0M";
+
     private PlayroomKit playroomKit;
 
     public TextMeshProUGUI text;
@@ -20,11 +24,12 @@ public class GameManager : MonoBehaviour
 
     string skuId = "1371921246031319121";
 
-    [Header("SKUs")]
+
+    [Header("HQ Entitlements")]
+
     [SerializeField]
     private List<SKU<CustomMetadataClass>> skus;
 
-    [Header("Entitlements")]
     [SerializeField]
     private List<PlayerEntitlement<CustomMetadataClass>> entitlements;
 
@@ -71,7 +76,6 @@ public class GameManager : MonoBehaviour
         using (var req = UnityWebRequest.Get(url))
         {
             //TODO: THIS IS FOR TESTING ONLY, REMOVE LATER
-            string token = "eyJhbGciOiJIUzI1NiJ9.eyJkaXNjb3JkSWQiOiI0NzY3MDk1MjQwMTE2MTQyMTkiLCJyb29tSWQiOiJEQ1JEX2ktMTM3NDY3NDQ2MDUyMjcxMzE1OS1nYy0xMjczNjA3Njg2ODE4MTA3NDAyLTEyNzQ5OTUxNDcyNjc4OTk0NTYiLCJnYW1lSWQiOiJGbU9CZVVmUU8yQU9MTklySk5TSiIsImd1aWxkSWQiOiIxMjczNjA3Njg2ODE4MTA3NDAyIiwiY2hhbm5lbElkIjoiMTI3NDk5NTE0NzI2Nzg5OTQ1NiIsImFjY2Vzc1Rva2VuIjoiV2FVNFV1RjJ6UEJOTzY1QWZISlNrR2RzaVBGOWpKIiwiYXV0aCI6ImRpc2NvcmQiLCJ0IjoxNzQ3ODE4MzYzfQ.bRvWY7SMafo0iQzfdp0N53Euu58eC35AZ6ruiCdgF0M";
             req.SetRequestHeader("Authorization", $"Bearer {token}");
             yield return req.SendWebRequest();
 
@@ -112,6 +116,21 @@ public class GameManager : MonoBehaviour
         Debug.Log($"{player.id} joined the room!");
     }
 
+    CustomMetadataClass ParseMetadata(string json)
+    {
+        JSONNode node = JSON.Parse(json);
+
+        return new CustomMetadataClass()
+        {
+            packId = node["packId"],
+        };
+    }
+
+    CustomMetadataClass ParseMetadataUnity(string json)
+    {
+        return JsonUtility.FromJson<CustomMetadataClass>(json);
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.T))
@@ -150,20 +169,6 @@ public class GameManager : MonoBehaviour
             });
         }
 
-        CustomMetadataClass ParseMetadata(string json)
-        {
-            JSONNode node = JSON.Parse(json);
-
-            return new CustomMetadataClass()
-            {
-                packId = node["packId"],
-            };
-        }
-
-        CustomMetadataClass ParseMetadataUnity(string json)
-        {
-            return JsonUtility.FromJson<CustomMetadataClass>(json);
-        }
 
 
         if (Input.GetKeyDown(KeyCode.P))
@@ -171,8 +176,7 @@ public class GameManager : MonoBehaviour
             // After InsertCoin has fully invoked
             playroomKit.StartDiscordPurchase(skuId, (response) =>
             {
-                text.text = "Purchase started successfully!";
-                Debug.Log($"Entitlement: {response}");
+                List<DiscordEntitlement> discordEntitlements = DiscordEntitlement.FromJSON(response);
             });
         }
     }
