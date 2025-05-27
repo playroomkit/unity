@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using AOT;
+using Discord;
 using UnityEngine;
 
 namespace Playroom
@@ -73,6 +74,9 @@ namespace Playroom
             #region Discord
             public void OpenDiscordInviteDialog(Action callback = null);
             public void StartDiscordPurchase(string skuId, Action<string> callback = null);
+            public void GetDiscordSkus(Action<List<DiscordSku>> callback);
+            public void GetDiscordEntitlements(Action<List<DiscordEntitlement>> callback);
+            public string DiscordPriceFormat(float price, string currency, string locale = "en-US");
             #endregion
 
 

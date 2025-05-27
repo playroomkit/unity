@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using UBB;
 using UnityEngine;
+using Discord;
+
 
 #if UNITY_EDITOR
 using ParrelSync;
@@ -322,6 +324,24 @@ namespace Playroom
         public void StartDiscordPurchase(string skuId, Action<string> callback = null)
         {
             DebugLogger.LogWarning("[MockMode] Discord purchase is currently not supported in browser mock mode!");
+        }
+
+        public void GetDiscordSkus(Action<List<DiscordSku>> callback)
+        {
+            DebugLogger.LogWarning("[MockMode] Discord SKUs are currently not supported in browser mock mode!");
+            callback?.Invoke(new List<DiscordSku>());
+        }
+
+        public void GetDiscordEntitlements(Action<List<DiscordEntitlement>> callback)
+        {
+            DebugLogger.LogWarning("[MockMode] Discord SKUs are currently not supported in browser mock mode!");
+            callback?.Invoke(new List<DiscordEntitlement>());
+        }
+
+        public string DiscordPriceFormat(float price, string currency, string locale = "en-US")
+        {
+            DebugLogger.LogWarning("[MockMode] Discord SKUs are currently not supported in browser mock mode!");
+            return default;
         }
         #endregion
     }
