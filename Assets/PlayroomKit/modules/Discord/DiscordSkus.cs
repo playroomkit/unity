@@ -42,7 +42,7 @@ namespace Discord
         public int Flags;
 
         // Optional
-        public string? ReleaseDate;   
+        public string? ReleaseDate;
 
         internal static DiscordSku FromJSONNode(JSONNode n)
         {
@@ -74,11 +74,20 @@ namespace Discord
             var list = new List<DiscordSku>();
             var root = JSON.Parse(jsonString);
 
-            if (root.IsArray)
+            if (root.HasKey("skus") && root["skus"].IsArray)
+            {
+                foreach (var item in root["skus"].AsArray)
+                    list.Add(FromJSONNode(item));
+            }
+            else if (root.IsArray)
+            {
                 foreach (var item in root.AsArray)
                     list.Add(FromJSONNode(item));
+            }
             else
+            {
                 list.Add(FromJSONNode(root));
+            }
 
             return list;
         }

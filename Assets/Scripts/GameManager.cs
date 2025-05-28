@@ -35,6 +35,18 @@ public class GameManager : MonoBehaviour
     private List<PlayerEntitlement<CustomMetadataClass>> entitlements;
     #endregion
 
+    #region Discord Data
+
+    [Header("DISORD STUFF")]
+    [SerializeField]
+    private List<DiscordSku> discordSkus = new List<DiscordSku>();
+    
+    [SerializeField]
+    private List<DiscordEntitlement> discordEntitlements = new List<DiscordEntitlement>();
+    
+    #endregion
+
+
     #region Debug UI
     [Header("Debug UI")]
     private bool showDebugWindow = false;
@@ -57,6 +69,9 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Unity Lifecycle
+
+
+
     void Awake()
     {
         if (Application.absoluteURL.Contains("discord"))
@@ -125,6 +140,12 @@ public class GameManager : MonoBehaviour
             playroomKit.GetDiscordSkus((data) =>
             {
                 text.text = "Discord SKUs fetched successfully!";
+
+                data.ForEach((data) =>
+                {
+                    Debug.Log($"UNITY: Discord Sku: {data.Id}, {data.Name}");
+                });
+
                 discordSkus = data;
             });
         }
@@ -137,6 +158,32 @@ public class GameManager : MonoBehaviour
                 discordEntitlements = entitlements;
             });
         }
+
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+
+            string json = @"
+        {
+        ""skus"": [
+            {
+            ""id"": ""1371921246031319121"",
+            ""name"": ""test"",
+            ""type"": 3,
+            ""price"": {
+                ""amount"": 0,
+                ""currency"": ""usd""
+            },
+            ""application_id"": ""1370416284688322682"",
+            ""flags"": 4,
+            ""release_date"": null
+            }
+        ]
+        }";
+
+            discordSkus = DiscordSku.FromJSON(json);
+        }
+
+
     }
     #endregion
 
@@ -364,8 +411,5 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
-    #region Discord Data
-    private List<DiscordEntitlement> discordEntitlements = new List<DiscordEntitlement>();
-    private List<DiscordSku> discordSkus = new List<DiscordSku>();
-    #endregion
+
 }

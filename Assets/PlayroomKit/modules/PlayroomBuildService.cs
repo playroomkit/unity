@@ -463,8 +463,19 @@ namespace Playroom
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void DiscordSkusCallback(string data)
             {
-                List<DiscordSku> list = DiscordSku.FromJSON(data);
-                CallbackManager.InvokeCallback("discordSkus", list);
+                Debug.LogWarning("[UNITY] SKUS JSON: " + data);
+
+                try
+                {
+                    List<DiscordSku> list = DiscordSku.FromJSON(data);
+                    list.ForEach(d => Debug.Log($"InternLIST: {d.Name}, {d.Price.Amount}"));
+                    CallbackManager.InvokeCallback("discordSkus", list);
+                }
+                catch (System.Exception e) 
+                {
+                    Debug.LogError($"ERROR IN UNITY: {e}");
+                    throw;
+                }
             }
 
             public void GetDiscordEntitlements(Action<List<DiscordEntitlement>> callback)
@@ -477,6 +488,8 @@ namespace Playroom
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void DiscordEntitlementsCallback(string data)
             {
+                Debug.LogWarning("[UNITY] Entitlements JSON: " + data);
+
                 List<DiscordEntitlement> list = DiscordEntitlement.FromJSON(data);
                 CallbackManager.InvokeCallback("discordEntitlements", list);
             }
