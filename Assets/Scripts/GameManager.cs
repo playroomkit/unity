@@ -198,7 +198,7 @@ public class GameManager : MonoBehaviour
             discordSkus.ForEach((sku) =>
             {
                 Debug.LogWarning($"{sku.Name}: {sku.Price.Amount}, {sku.Price.Currency}");
-                playroomKit.DiscordPriceFormat(sku.Price.Amount, sku.Price.Currency, "en-US", (formattedPrice) => text.text += $"{sku.Name} - {formattedPrice}");
+                playroomKit.DiscordFormatPrice(sku.Price.Amount, sku.Price.Currency, "en-US", (formattedPrice) => text.text += $"{sku.Name} - {formattedPrice}");
             });
         }
 

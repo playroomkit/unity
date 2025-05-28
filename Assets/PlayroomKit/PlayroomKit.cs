@@ -372,7 +372,7 @@ namespace Playroom
             _playroomService.GetDiscordEntitlements(callback);
         }
 
-        public void DiscordPriceFormat(float price, string currency, string locale, Action<string> callback)
+        public void DiscordFormatPrice(float price, string currency, string locale, Action<string> callback)
         {
             CheckPlayRoomInitialized();
             _playroomService.DiscordPriceFormat(price, currency, locale, callback);
