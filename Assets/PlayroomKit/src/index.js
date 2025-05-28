@@ -1139,24 +1139,21 @@ mergeInto(LibraryManager.library, {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
       );
-      return 0;
+      return;
     }
 
-    try {
-      Playroom.getDiscordClient().commands.getSkus().then((response) => {
-        console.log("[JSLIB]: Discord Skus retrieved successfully: " + response);
-        var dataStrPtr = stringToNewUTF8(JSON.stringify(response));
-        {{{ makeDynCall('vi', 'callback') }}}(dataStrPtr);
-      })
-      .catch((error) => {
-        console.error("[JSLIB]: Failed to get skus:", error);
-      });
-    
-    } catch (error) {
-      console.error("[JSLIB] getDiscordClient.commands.getSkus(): ", error);
-    }
-      
+    // First wait for the client to be available
+    Playroom.getDiscordClient().commands.getSkus()
+      .then((response) => {
+        console.log("[JSLIB]: Discord Skus retrieved successfully:", response);
+        dataJson = JSON.stringify(response);
+
+        {{{ makeDynCall('vi', 'callback') }}}(stringToNewUTF8(dataJson));
+      }).catch((error) => {
+        console.error("[JSLIB]: Failed to get discord skus:", error);
+      });;
   },
+
   
   GetDiscordEntitlementsInternal: function (callback) {
     if (!window.Playroom) {
@@ -1166,16 +1163,14 @@ mergeInto(LibraryManager.library, {
       return 0;
     }
 
-    try {
       Playroom.getDiscordClient().commands.getEntitlements().then((response) => {
-        console.log("[JSLIB]: Discord entitlements successfully: " + response);
         var dataStrPtr = stringToNewUTF8(JSON.stringify(response));
         {{{ makeDynCall('vi', 'callback') }}}(dataStrPtr);
-      }).catch((error) => console.error("[JSLIB]: Failed to get discord entitlements:", error));
-      }
-      catch(error) {
-        console.error("[JSLIB] getDiscordClient().commands.getEntitlements() failed: ", error);
-      }
+      })
+      .catch((error) => {
+        console.error("[JSLIB]: Failed to get discord entitlements:", error);
+      });
+      
   },
 
   DiscordPriceFormatInternal: function (amount, currency, locale) {
