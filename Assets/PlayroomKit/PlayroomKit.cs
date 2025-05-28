@@ -371,11 +371,11 @@ namespace Playroom
             CheckPlayRoomInitialized();
             _playroomService.GetDiscordEntitlements(callback);
         }
-      
-        public string DiscordPriceFormat(float price, string currency, string locale = "en-US")
+
+        public void DiscordPriceFormat(float price, string currency, string locale, Action<string> callback)
         {
             CheckPlayRoomInitialized();
-            return _playroomService.DiscordPriceFormat(price, currency, locale);
+            _playroomService.DiscordPriceFormat(price, currency, locale, callback);
         }
         #endregion
     }

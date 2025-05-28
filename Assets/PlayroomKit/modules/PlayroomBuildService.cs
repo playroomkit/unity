@@ -497,10 +497,22 @@ namespace Playroom
                 }
             }
 
-            public string DiscordPriceFormat(float price, string currency, string locale = "en-US")
+            public void DiscordPriceFormat(float price, string currency, string locale, Action<string> callback)
             {
                 CheckPlayRoomInitialized();
-                return DiscordPriceFormatInternal(price, currency, locale);
+
+                Debug.Log($"[Unity]: price {price}, currency {currency}, locale {locale}");
+
+                CallbackManager.RegisterCallback(callback, "formattedPrice");
+                DiscordPriceFormatInternal(price, currency, locale, DiscordPriceFormatCallbackInvoker);
+            }
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            private static void DiscordPriceFormatCallbackInvoker(string formattedPrice)
+            {
+                Debug.LogWarning($"UNITY: {formattedPrice}");
+
+                CallbackManager.InvokeCallback("formattedPrice", formattedPrice);
             }
             #endregion
 
