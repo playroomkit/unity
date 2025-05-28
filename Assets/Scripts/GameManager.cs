@@ -40,10 +40,10 @@ public class GameManager : MonoBehaviour
     [Header("DISORD STUFF")]
     [SerializeField]
     private List<DiscordSku> discordSkus = new List<DiscordSku>();
-    
+
     [SerializeField]
     private List<DiscordEntitlement> discordEntitlements = new List<DiscordEntitlement>();
-    
+
     #endregion
 
 
@@ -98,7 +98,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F1))
+        if (Input.GetKeyDown(KeyCode.F3))
         {
             showDebugWindow = !showDebugWindow;
         }
@@ -159,28 +159,26 @@ public class GameManager : MonoBehaviour
             });
         }
 
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            discordSkus.ForEach((sku) =>
+            {
+                Debug.LogWarning($"{sku.Name}: {playroomKit.DiscordPriceFormat(sku.Price.Amount, sku.Price.Currency)}");
+                text.text = playroomKit.DiscordPriceFormat(sku.Price.Amount, sku.Price.Currency);
+            });
+        }
+
         if (Input.GetKeyDown(KeyCode.Z))
         {
 
             string json = @"
         {
-        ""skus"": [
-            {
-            ""id"": ""1371921246031319121"",
-            ""name"": ""test"",
-            ""type"": 3,
-            ""price"": {
-                ""amount"": 0,
-                ""currency"": ""usd""
-            },
-            ""application_id"": ""1370416284688322682"",
-            ""flags"": 4,
-            ""release_date"": null
-            }
-        ]
+        ""entitlements"": [
+        {""id"":""123""}]
         }";
 
-            discordSkus = DiscordSku.FromJSON(json);
+            // discordSkus = DiscordSku.FromJSON(json);
+            discordEntitlements = DiscordEntitlement.FromJSON(json);
         }
 
 
@@ -279,8 +277,9 @@ public class GameManager : MonoBehaviour
             "Press P - Start Discord Purchase\n" +
             "Press T - Get Discord SKUs\n" +
             "Press D - Get Discord Entitlements\n" +
-            "Press F1 - Toggle Discord Debug Window\n" +
-            "Press F2 - Toggle HQ Debug Window");
+            "Press F3 - Toggle Discord Debug Window\n" +
+            "Press F2 - Toggle HQ Debug Window\n" +
+            "Press F - Format SKU Price");
 
         // Discord Debug Window
         if (showDebugWindow)

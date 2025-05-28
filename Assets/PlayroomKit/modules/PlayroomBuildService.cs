@@ -463,17 +463,14 @@ namespace Playroom
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void DiscordSkusCallback(string data)
             {
-                Debug.LogWarning("[UNITY] SKUS JSON: " + data);
-
                 try
                 {
                     List<DiscordSku> list = DiscordSku.FromJSON(data);
-                    list.ForEach(d => Debug.Log($"InternLIST: {d.Name}, {d.Price.Amount}"));
                     CallbackManager.InvokeCallback("discordSkus", list);
                 }
-                catch (System.Exception e) 
+                catch (Exception e)
                 {
-                    Debug.LogError($"ERROR IN UNITY: {e}");
+                    Debug.LogError($"[Unity]: Error in Discord SKU: {e}");
                     throw;
                 }
             }
@@ -488,10 +485,16 @@ namespace Playroom
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void DiscordEntitlementsCallback(string data)
             {
-                Debug.LogWarning("[UNITY] Entitlements JSON: " + data);
-
-                List<DiscordEntitlement> list = DiscordEntitlement.FromJSON(data);
-                CallbackManager.InvokeCallback("discordEntitlements", list);
+                try
+                {
+                    List<DiscordEntitlement> list = DiscordEntitlement.FromJSON(data);
+                    CallbackManager.InvokeCallback("discordEntitlements", list);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"[Unity]: Error in discord Entitlements: {e}");
+                    throw;
+                }
             }
 
             public string DiscordPriceFormat(float price, string currency, string locale = "en-US")
