@@ -83,6 +83,35 @@ public class GameManager : MonoBehaviour
             baseUrl = "https://ws.joinplayroom.com/api/store";
         }
 
+        // Initialize fake Discord SKUs
+        discordSkus = new List<DiscordSku>
+        {
+            new DiscordSku
+            {
+                Id = "premium_pack_1",
+                Name = "Premium Pack",
+                Type = DiscordSkuType.APPLICATION,
+                ApplicationId = "123456789",
+                Price = new DiscordSkuPrice { Amount = 999, Currency = "USD" }
+            },
+            new DiscordSku
+            {
+                Id = "starter_pack",
+                Name = "Starter Pack",
+                Type = DiscordSkuType.APPLICATION,
+                ApplicationId = "123456789",
+                Price = new DiscordSkuPrice { Amount = 499, Currency = "USD" }
+            },
+            new DiscordSku
+            {
+                Id = "deluxe_edition",
+                Name = "Deluxe Edition",
+                Type = DiscordSkuType.APPLICATION,
+                ApplicationId = "123456789",
+                Price = new DiscordSkuPrice { Amount = 1999, Currency = "USD" }
+            }
+        };
+
         playroomKit = new PlayroomKit();
     }
 
@@ -159,12 +188,17 @@ public class GameManager : MonoBehaviour
             });
         }
 
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            text.text = "";
+        }
+
         if (Input.GetKeyDown(KeyCode.F))
         {
             discordSkus.ForEach((sku) =>
             {
-                Debug.LogWarning($"{sku.Name}: {playroomKit.DiscordPriceFormat(sku.Price.Amount, sku.Price.Currency)}");
-                text.text = playroomKit.DiscordPriceFormat(sku.Price.Amount, sku.Price.Currency);
+                Debug.LogWarning($"{sku.Name}: {sku.Price.Amount}, {sku.Price.Currency}");
+                playroomKit.DiscordPriceFormat(sku.Price.Amount, sku.Price.Currency, "en-US", (formattedPrice) => text.text += $"{sku.Name} - {formattedPrice}");
             });
         }
 
@@ -323,7 +357,14 @@ public class GameManager : MonoBehaviour
                 GUILayout.BeginVertical(GUI.skin.box);
                 DrawInspectorField("Id", sku.Id);
                 DrawInspectorField("Name", sku.Name);
-                DrawInspectorField("Price", sku.Price.ToString());
+                if (sku.Price != null)
+                {
+                    GUILayout.Label("Price", EditorLabelBold());
+                    GUILayout.BeginVertical(GUI.skin.box);
+                    DrawInspectorField("Amount", sku.Price.Amount.ToString());
+                    DrawInspectorField("Currency", sku.Price.Currency);
+                    GUILayout.EndVertical();
+                }
                 DrawInspectorField("Type", sku.Type.ToString());
                 DrawInspectorField("Application Id", sku.ApplicationId);
                 GUILayout.EndVertical();

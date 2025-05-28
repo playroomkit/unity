@@ -1172,29 +1172,29 @@ mergeInto(LibraryManager.library, {
       });
       
   },
-
-  DiscordPriceFormatInternal: function (amount, currency, locale) {
-    if (!window.Playroom) {
-      console.error(
-        "Playroom library is not loaded. Please make sure to call InsertCoin first."
-      );
-      return 0;
-    }
-
+  
+  // callback variant
+    DiscordPriceFormatInternal: function(amount, currencyOrPtr, localeOrPtr, callbackPtr) {
+    var currency = (typeof currencyOrPtr === 'string')
+      ? currencyOrPtr
+      : UTF8ToString(currencyOrPtr);
+    var locale = (typeof localeOrPtr === 'string')
+      ? localeOrPtr
+      : UTF8ToString(localeOrPtr);
+    console.warn("[jslib] args received:", amount, currency, locale);
     Playroom.getDiscordSDK().then(discordSDK => {
-      var a = UTF8ToString(amount);
-      var c = UTF8ToString(currency);
-      var l =   UTF8ToString(locale);
-      var formatted = discordSDK.PriceUtils.formatPrice({price: a, currency: c}, l);
-      console.log(formatted);
-      var bufferSize = lengthBytesUTF8(str) + 1;
-      var buffer = _malloc(bufferSize);
-      stringToUTF8(str, buffer, bufferSize);
-      return buffer;
+      var formatted = discordSDK.PriceUtils.formatPrice(
+        { amount: amount, currency: currency },
+        locale
+      );
+      console.warn("[jslib] formatted:", formatted);
+      {{{ makeDynCall("vi", "callbackPtr") }}}(stringToNewUTF8(formatted));
     }).catch(err => {
-      console.error("Failed to load Discord SDK:", err);
+      console.error("Discord SDK load failed:", err);
+      {{{ makeDynCall("vi", "callbackPtr") }}}(0);
     });
   },
+ 
   //#endregion
 
 

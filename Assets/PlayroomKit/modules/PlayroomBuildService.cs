@@ -500,9 +500,6 @@ namespace Playroom
             public void DiscordPriceFormat(float price, string currency, string locale, Action<string> callback)
             {
                 CheckPlayRoomInitialized();
-
-                Debug.Log($"[Unity]: price {price}, currency {currency}, locale {locale}");
-
                 CallbackManager.RegisterCallback(callback, "formattedPrice");
                 DiscordPriceFormatInternal(price, currency, locale, DiscordPriceFormatCallbackInvoker);
             }
@@ -510,8 +507,6 @@ namespace Playroom
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void DiscordPriceFormatCallbackInvoker(string formattedPrice)
             {
-                Debug.LogWarning($"UNITY: {formattedPrice}");
-
                 CallbackManager.InvokeCallback("formattedPrice", formattedPrice);
             }
             #endregion
