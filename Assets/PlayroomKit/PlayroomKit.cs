@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UBB;
 using Discord;
+using System.Runtime.InteropServices;
 
 
 namespace Playroom
@@ -372,11 +373,19 @@ namespace Playroom
             _playroomService.GetDiscordEntitlements(callback);
         }
 
-        public void DiscordPriceFormat(float price, string currency, string locale, Action<string> callback)
+        // public void DiscordPriceFormat(DiscordSkuPrice skuPrice, string locale, Action<string> callback)
+        // {
+        //     CheckPlayRoomInitialized();
+        //     _playroomService.DiscordPriceFormat(skuPrice.Amount, skuPrice.Currency, locale, callback);
+        // }
+
+        public string DiscordFormatPrice(DiscordSkuPrice skuPrice, string locale = "en-US")
         {
             CheckPlayRoomInitialized();
-            _playroomService.DiscordPriceFormat(price, currency, locale, callback);
+            return DiscordPriceFormatInternal(skuPrice.Amount, skuPrice.Currency, locale);
         }
+
+
         #endregion
     }
 }
