@@ -238,10 +238,10 @@ namespace Playroom
             callback?.Invoke(new List<DiscordEntitlement>());
         }
 
-        public string DiscordFormatPrice(int price, string currency, string locale)
+        public void DiscordPriceFormat(float price, string currency, string locale, Action<string> callback)
         {
             DebugLogger.LogWarning("[MockMode] Discord SKUs are currently not supported in local mode!");
-            return $"${price}";
+            callback?.Invoke($"${price}");
         }
         #endregion
     }

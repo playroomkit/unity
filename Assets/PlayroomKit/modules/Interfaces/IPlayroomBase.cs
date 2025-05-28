@@ -76,7 +76,7 @@ namespace Playroom
             public void StartDiscordPurchase(string skuId, Action<string> callback = null);
             public void GetDiscordSkus(Action<List<DiscordSku>> callback);
             public void GetDiscordEntitlements(Action<List<DiscordEntitlement>> callback);
-            public string DiscordFormatPrice(int price, string currency, string locale);
+            public void DiscordPriceFormat(float price, string currency, string locale, Action<string> callback);
             #endregion
 
 

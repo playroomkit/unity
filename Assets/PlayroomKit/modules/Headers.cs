@@ -179,11 +179,9 @@ namespace Playroom
         [DllImport("__Internal")]
         private static extern void GetDiscordEntitlementsInternal(Action<string> callback);
 
-        // [DllImport("__Internal")]
-        // private static extern void DiscordPriceFormatInternal(float price, string currency, string locale, Action<string> callback);
-
         [DllImport("__Internal")]
-        private static extern string DiscordPriceFormatInternal(int price, string currency, string locale);
+        private static extern string DiscordPriceFormatInternal(float price, string currency, string locale, Action<string> callback);
+
         #endregion
     }
 }
