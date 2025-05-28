@@ -81,7 +81,15 @@ namespace Discord
             var list = new List<DiscordEntitlement>();
             var root = JSON.Parse(jsonString);
 
-            if (root.IsArray)
+            if (root == null)
+                throw new FormatException("Invalid JSON: root is null.");
+
+            if (root.HasKey("entitlements") && root["entitlements"].IsArray)
+            {
+                foreach (var item in root["entitlements"].AsArray)
+                    list.Add(FromJSONNode(item));
+            }
+            else if (root.IsArray)
             {
                 foreach (var item in root.AsArray)
                     list.Add(FromJSONNode(item));

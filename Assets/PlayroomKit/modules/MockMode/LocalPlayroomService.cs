@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Discord;
 using UnityEngine;
 
 namespace Playroom
@@ -223,6 +224,24 @@ namespace Playroom
         public void StartDiscordPurchase(string skuId, Action<string> callback = null)
         {
             DebugLogger.LogWarning("[MockMode] Discord purchase is currently not supported in local mode!");
+        }
+
+        public void GetDiscordSkus(Action<List<DiscordSku>> callback)
+        {
+            DebugLogger.LogWarning("[MockMode] Discord SKUs are currently not supported in local mode!");
+            callback?.Invoke(new List<DiscordSku>());
+        }
+
+        public void GetDiscordEntitlements(Action<List<DiscordEntitlement>> callback)
+        {
+            DebugLogger.LogWarning("[MockMode] Discord Entitlements are currently not supported in local mode!");
+            callback?.Invoke(new List<DiscordEntitlement>());
+        }
+
+        public void DiscordPriceFormat(float price, string currency, string locale, Action<string> callback)
+        {
+            DebugLogger.LogWarning("[MockMode] Discord SKUs are currently not supported in local mode!");
+            callback?.Invoke($"${price}");
         }
         #endregion
     }

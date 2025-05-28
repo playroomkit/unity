@@ -322,33 +322,33 @@ mergeInto(LibraryManager.library, {
    * @param {string} key - The key to retrieve the string value from the game state.
    * @returns {string | null} The string value associated with the key, or null if the key is not found.
    */
-  GetStateStringInternal: function (key) {
+  GetStateStringInternal: function (keyPtr) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
       );
+      return 0;
+    }
+    
+    if (typeof keyPtr !== 'number' || keyPtr === 0) {
+      console.error("[JSLIB] invalid key pointer:", keyPtr);
+      return 0;
     }
 
     try {
-      var returnStr = Playroom.getState(UTF8ToString(key));
+      var key = UTF8ToString(keyPtr);
+      var jsState = Playroom.getState(key);
+      if (jsState == null) jsState = ""; // null or undefined
 
-      if (returnStr == null) {
-        return "";
-      }
+      console.log("[JSLIB] getState(", key, ") =>", jsState);
 
-      if (typeof returnStr !== "string") {
-        return "";
-      }
-
-      var bufferSize = lengthBytesUTF8(returnStr) + 1;
-      var buffer = _malloc(bufferSize);
-      stringToUTF8(returnStr, buffer, bufferSize);
-      return buffer;
-    } catch (error) {
-      console.error(
-        "JavaScript Library: An error occurred in GetStateStringInternal: \n\n",
-        error
-      );
+      var bufSize = lengthBytesUTF8(jsState) + 1;
+      var buf = _malloc(bufSize);
+      stringToUTF8(jsState, buf, bufSize);
+      return buf; 
+    } catch (err) {
+      console.error("[JSLIB] error in GetStateStringInternal:", err);
+      return 0;
     }
   },
 
@@ -935,7 +935,7 @@ mergeInto(LibraryManager.library, {
       });
   },
   
-   //#region Persistence
+  //#region Persistence
    SetPersistentDataInternal: function (key, value) {
     if (!window.Playroom) {
       console.error(
@@ -1072,6 +1072,22 @@ mergeInto(LibraryManager.library, {
   //#endregion
 
   //#region Discord
+  // SubscribeDiscord: function () {
+  //   if (!window.Playroom) {
+  //     console.error(
+  //       "Playroom library is not loaded. Please make sure to call InsertCoin first."
+  //     );
+  //     return 0;
+  //   }
+
+  //   Playroom.getDiscordSDK().then(discordSDK => {
+  //     var formatted = discordSDK.subscribe();
+
+  //   }).catch(err => {
+  //     console.error("Failed to load Discord SDK:", err);
+  //   });
+  // },
+
   OpenDiscordInviteDialogInternal: function (callback) {
     if (!window.Playroom) {
       console.error(
@@ -1118,6 +1134,67 @@ mergeInto(LibraryManager.library, {
     }
   },
 
+  GetDiscordSkusInternal: function (callback) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+    // First wait for the client to be available
+    Playroom.getDiscordClient().commands.getSkus()
+      .then((response) => {
+        console.log("[JSLIB]: Discord Skus retrieved successfully:", response);
+        dataJson = JSON.stringify(response);
+
+        {{{ makeDynCall('vi', 'callback') }}}(stringToNewUTF8(dataJson));
+      }).catch((error) => {
+        console.error("[JSLIB]: Failed to get discord skus:", error);
+      });;
+  },
+
+  
+  GetDiscordEntitlementsInternal: function (callback) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return 0;
+    }
+
+      Playroom.getDiscordClient().commands.getEntitlements().then((response) => {
+        var dataStrPtr = stringToNewUTF8(JSON.stringify(response));
+        {{{ makeDynCall('vi', 'callback') }}}(dataStrPtr);
+      })
+      .catch((error) => {
+        console.error("[JSLIB]: Failed to get discord entitlements:", error);
+      });
+      
+  },
+  
+  // callback variant
+    DiscordPriceFormatInternal: function(amount, currencyOrPtr, localeOrPtr, callbackPtr) {
+    var currency = (typeof currencyOrPtr === 'string')
+      ? currencyOrPtr
+      : UTF8ToString(currencyOrPtr);
+    var locale = (typeof localeOrPtr === 'string')
+      ? localeOrPtr
+      : UTF8ToString(localeOrPtr);
+    console.warn("[jslib] args received:", amount, currency, locale);
+    Playroom.getDiscordSDK().then(discordSDK => {
+      var formatted = discordSDK.PriceUtils.formatPrice(
+        { amount: amount, currency: currency },
+        locale
+      );
+      console.warn("[jslib] formatted:", formatted);
+      {{{ makeDynCall("vi", "callbackPtr") }}}(stringToNewUTF8(formatted));
+    }).catch(err => {
+      console.error("Discord SDK load failed:", err);
+      {{{ makeDynCall("vi", "callbackPtr") }}}(0);
+    });
+  },
+ 
   //#endregion
 
 
