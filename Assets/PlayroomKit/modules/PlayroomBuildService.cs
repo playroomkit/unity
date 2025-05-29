@@ -441,16 +441,24 @@ namespace Playroom
             }
 
             [MonoPInvokeCallback(typeof(Action<string, string>))]
-            private static void DiscordPurchaseCallback(string skuId, string result)
+            private static void StartDiscordPurchaseCallback(string skuId, string result)
             {
                 CallbackManager.InvokeCallback(skuId, result);
             }
 
-            public void StartDiscordPurchase(string skuId, Action<string> callback = null)
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            private static void OnErrorStartPurchase(string errorLog)
+            {
+                CallbackManager.InvokeCallback("onError", errorLog);
+            }
+
+            public void StartDiscordPurchase(string skuId, Action<string> callback = null, Action<string> onError = null)
             {
                 CheckPlayRoomInitialized();
                 CallbackManager.RegisterCallback(callback, skuId);
-                StartDiscordPurchaseInternal(skuId, DiscordPurchaseCallback);
+                CallbackManager.RegisterCallback(onError, "onError");
+                
+                StartDiscordPurchaseInternal(skuId, StartDiscordPurchaseCallback, OnErrorStartPurchase);
             }
 
             public void GetDiscordSkus(Action<List<DiscordSku>> callback)

@@ -161,6 +161,9 @@ public class GameManager : MonoBehaviour
             {
                 discordEntitlements = DiscordEntitlement.FromJSON(response);
                 debugText = "Purchase completed!\n" + response;
+            }, (onErrorResponse) =>
+            {
+                text.text = onErrorResponse;
             });
         }
 
@@ -269,7 +272,7 @@ public class GameManager : MonoBehaviour
     {
         playroomKit.OnPlayerJoin(CreatePlayer);
         coinInserted = true;
-        playroomKit.SubscribeDiscordEvent(SDKEvent.ACTIVITY_INSTANCE_PARTICIPANTS_UPDATE, (data) =>
+        playroomKit.SubscribeDiscordEvent(SDKEvent.ENTITLEMENT_CREATE, (data) =>
         {
             Debug.LogWarning("DATA UNITY: " + data);
             text.text = data;

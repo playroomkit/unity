@@ -355,10 +355,10 @@ namespace Playroom
             _playroomService.OpenDiscordInviteDialog(callback);
         }
 
-        public void StartDiscordPurchase(string skuId, Action<string> responseCallback = null)
+        public void StartDiscordPurchase(string skuId, Action<string> responseCallback, Action<string> onError = null)
         {
             CheckPlayRoomInitialized();
-            _playroomService.StartDiscordPurchase(skuId, responseCallback);
+            _playroomService.StartDiscordPurchase(skuId, responseCallback, onError);
         }
 
         public void GetDiscordSkus(Action<List<DiscordSku>> callback)

@@ -321,7 +321,7 @@ namespace Playroom
             callback?.Invoke();
         }
 
-        public void StartDiscordPurchase(string skuId, Action<string> callback = null)
+        public void StartDiscordPurchase(string skuId, Action<string> callback, Action<string> onError = null)
         {
             DebugLogger.LogWarning("[MockMode] Discord purchase is currently not supported in browser mock mode!");
         }

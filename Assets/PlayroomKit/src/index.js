@@ -1071,22 +1071,30 @@ mergeInto(LibraryManager.library, {
   },
   //#endregion
 
+
+   
+
   //#region Discord
-  // SubscribeDiscord: function () {
-  //   if (!window.Playroom) {
-  //     console.error(
-  //       "Playroom library is not loaded. Please make sure to call InsertCoin first."
-  //     );
-  //     return 0;
-  //   }
+  SubscribeDiscordInternal: function (eventNamePtr, callbackPtr) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return 0;
+    }
 
-  //   Playroom.getDiscordSDK().then(discordSDK => {
-  //     var formatted = discordSDK.subscribe();
+    var eventName = UTF8ToString(eventNamePtr);
+    console.warn(`[JSLIB] Event Name: ${eventName}`)
 
-  //   }).catch(err => {
-  //     console.error("Failed to load Discord SDK:", err);
-  //   });
-  // },
+    function eventHandler(data) {
+      const dataJson = JSON.stringify(data);
+      var key = _ConvertString(eventName);
+
+      {{{ makeDynCall("vii", "callbackPtr") }}}(key, stringToNewUTF8(dataJson));
+    } 
+
+    Playroom.getDiscordClient().subscribe(eventName, eventHandler).catch((error) => console.error(`[JSLIB]: Error in subscribe`, error));  
+  },
 
   OpenDiscordInviteDialogInternal: function (callback) {
     if (!window.Playroom) {
@@ -1106,7 +1114,7 @@ mergeInto(LibraryManager.library, {
       });
   },
 
-  StartDiscordPurchaseInternal: function (skuId, callback) {
+  StartDiscordPurchaseInternal: function (skuId, callback, errorCallback) {
     if (!window.Playroom) {
       console.error(
         "Playroom library is not loaded. Please make sure to call InsertCoin first."
@@ -1115,19 +1123,24 @@ mergeInto(LibraryManager.library, {
     }
 
     try {
+
+      var skuIDStr = UTF8ToString(skuId)
+
       // startPurchase internal…
-      Playroom.getDiscordClient().commands.startPurchase({sku_id: UTF8ToString(skuId)}).then((response) => {
+      Playroom.getDiscordClient().commands.startPurchase({sku_id: skuIDStr}).then((response) => {
         console.log("[JSLIB]: Purchase started successfully.");
-        var keyPtr = stringToNewUTF8(skuId);
+        
+        var keyPtr = _ConvertString(skuIDStr);
+
         var returnData = stringToNewUTF8(JSON.stringify(response));
-
-        console.log("[JSLIB]: Purchase response: ", response);
-        console.warn("[JSLIB]: Purchase data json: ", JSON.stringify(response));
-
-        {{{ makeDynCall('vii', 'callback') }}}(keyPtr, dataStrPtr);
+        {{{ makeDynCall('vii', 'callback') }}}(keyPtr, returnData);
       })
       .catch((error) => {
         console.error("[JSLIB]: Failed to start purchase:", error);
+        var errorJson = JSON.stringify(error)
+        console.log("error: " + errorJson);
+
+        {{{ makeDynCall('vi', 'errorCallback') }}}(stringToNewUTF8(errorJson));
       });
     } catch (error) {
       console.error("[JSLIB]: Error starting purchase:", error);
