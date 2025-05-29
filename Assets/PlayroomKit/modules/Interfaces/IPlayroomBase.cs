@@ -77,6 +77,7 @@ namespace Playroom
             public void GetDiscordSkus(Action<List<DiscordSku>> callback);
             public void GetDiscordEntitlements(Action<List<DiscordEntitlement>> callback);
             public void DiscordPriceFormat(float price, string currency, string locale, Action<string> callback);
+            public void SubscribeDiscordEvent(SDKEvent eventName, Action<string> callback);
             #endregion
 
 

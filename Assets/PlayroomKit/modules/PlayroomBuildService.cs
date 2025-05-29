@@ -509,6 +509,18 @@ namespace Playroom
             {
                 CallbackManager.InvokeCallback("formattedPrice", formattedPrice);
             }
+
+            public void SubscribeDiscordEvent(SDKEvent eventName, Action<string> callback)
+            {
+                CallbackManager.RegisterCallback(callback, eventName.ToString());
+                SubscribeDiscordInternal(eventName.ToString(), InvokeSubscribeDiscord);
+            }
+
+            [MonoPInvokeCallback(typeof(Action<string, string>))]
+            private static void InvokeSubscribeDiscord(string eventName, string data)
+            {
+                CallbackManager.InvokeCallback(eventName, data);
+            }
             #endregion
 
             #region Callbacks
@@ -565,6 +577,7 @@ namespace Playroom
                 _onError?.Invoke(error);
                 Debug.LogException(new Exception(error));
             }
+
             #endregion
         }
     }

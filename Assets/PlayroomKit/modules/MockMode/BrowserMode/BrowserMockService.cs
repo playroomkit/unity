@@ -343,6 +343,11 @@ namespace Playroom
             DebugLogger.LogWarning("[MockMode] Discord SKUs are currently not supported in browser mock mode!");
             callback?.Invoke("");
         }
+
+        public void SubscribeDiscordEvent(SDKEvent eventName, Action<string> callback)
+        {
+            DebugLogger.LogWarning("[MockMode] Discord events only work inside discord!");
+        }
         #endregion
     }
 #endif
