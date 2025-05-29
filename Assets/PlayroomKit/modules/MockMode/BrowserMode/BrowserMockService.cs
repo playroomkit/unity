@@ -321,7 +321,7 @@ namespace Playroom
             callback?.Invoke();
         }
 
-        public void StartDiscordPurchase(string skuId, Action<string> callback = null)
+        public void StartDiscordPurchase(string skuId, Action<string> callback, Action<string> onError = null)
         {
             DebugLogger.LogWarning("[MockMode] Discord purchase is currently not supported in browser mock mode!");
         }
@@ -342,6 +342,11 @@ namespace Playroom
         {
             DebugLogger.LogWarning("[MockMode] Discord SKUs are currently not supported in browser mock mode!");
             callback?.Invoke("");
+        }
+
+        public void SubscribeDiscordEvent(SDKEvent eventName, Action<string> callback)
+        {
+            DebugLogger.LogWarning("[MockMode] Discord events only work inside discord!");
         }
         #endregion
     }

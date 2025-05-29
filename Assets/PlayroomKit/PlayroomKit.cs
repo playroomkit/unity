@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UBB;
 using Discord;
+using AOT;
 
 
 namespace Playroom
@@ -354,10 +355,10 @@ namespace Playroom
             _playroomService.OpenDiscordInviteDialog(callback);
         }
 
-        public void StartDiscordPurchase(string skuId, Action<string> responseCallback = null)
+        public void StartDiscordPurchase(string skuId, Action<string> responseCallback, Action<string> onError = null)
         {
             CheckPlayRoomInitialized();
-            _playroomService.StartDiscordPurchase(skuId, responseCallback);
+            _playroomService.StartDiscordPurchase(skuId, responseCallback, onError);
         }
 
         public void GetDiscordSkus(Action<List<DiscordSku>> callback)
@@ -372,11 +373,18 @@ namespace Playroom
             _playroomService.GetDiscordEntitlements(callback);
         }
 
-        public void DiscordFormatPrice(float price, string currency, string locale, Action<string> callback)
+        public void DiscordFormatPrice(DiscordSkuPrice price, string locale, Action<string> callback)
         {
             CheckPlayRoomInitialized();
-            _playroomService.DiscordPriceFormat(price, currency, locale, callback);
+            _playroomService.DiscordPriceFormat(price.Amount, price.Currency, locale, callback);
         }
+
+        public void SubscribeDiscordEvent(SDKEvent eventName, Action<string> callback)
+        {
+            CheckPlayRoomInitialized();
+            _playroomService.SubscribeDiscordEvent(eventName, callback);
+        }
+
         #endregion
     }
 }

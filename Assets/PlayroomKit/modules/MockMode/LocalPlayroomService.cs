@@ -221,7 +221,7 @@ namespace Playroom
             callback?.Invoke();
         }
 
-        public void StartDiscordPurchase(string skuId, Action<string> callback = null)
+        public void StartDiscordPurchase(string skuId, Action<string> callback, Action<string> onError = null)
         {
             DebugLogger.LogWarning("[MockMode] Discord purchase is currently not supported in local mode!");
         }
@@ -240,8 +240,13 @@ namespace Playroom
 
         public void DiscordPriceFormat(float price, string currency, string locale, Action<string> callback)
         {
-            DebugLogger.LogWarning("[MockMode] Discord SKUs are currently not supported in local mode!");
+            DebugLogger.LogWarning("[MockMode] Discord price formatting is currently not supported in local mode!");
             callback?.Invoke($"${price}");
+        }
+
+        public void SubscribeDiscordEvent(SDKEvent eventName, Action<string> callback)
+        {
+            DebugLogger.LogWarning("[MockMode] Discord events only work inside discord!");
         }
         #endregion
     }
