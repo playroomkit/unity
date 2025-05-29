@@ -198,21 +198,14 @@ public class GameManager : MonoBehaviour
             discordSkus.ForEach((sku) =>
             {
                 Debug.LogWarning($"{sku.Name}: {sku.Price.Amount}, {sku.Price.Currency}");
-                playroomKit.DiscordFormatPrice(sku.Price.Amount, sku.Price.Currency, "en-US", (formattedPrice) => text.text += $"{sku.Name} - {formattedPrice}");
+                playroomKit.DiscordFormatPrice(sku.Price, "en-US", (formattedPrice) => text.text += $"{sku.Name} - {formattedPrice}");
             });
         }
 
         if (Input.GetKeyDown(KeyCode.Z))
         {
-
-            string json = @"
-        {
-        ""entitlements"": [
-        {""id"":""123""}]
-        }";
-
-            // discordSkus = DiscordSku.FromJSON(json);
-            discordEntitlements = DiscordEntitlement.FromJSON(json);
+            string nullString = null;
+            int length = nullString.Length; // This will throw a NullReferenceException
         }
 
 
@@ -276,11 +269,17 @@ public class GameManager : MonoBehaviour
     {
         playroomKit.OnPlayerJoin(CreatePlayer);
         coinInserted = true;
+        playroomKit.SubscribeDiscordEvent(SDKEvent.ACTIVITY_INSTANCE_PARTICIPANTS_UPDATE, (data) =>
+        {
+            Debug.LogWarning("DATA UNITY: " + data);
+            text.text = data;
+        });
     }
 
     private void CreatePlayer(PlayroomKit.Player player)
     {
         Debug.Log($"{player.id} joined the room!");
+
     }
     #endregion
 
