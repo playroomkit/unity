@@ -440,6 +440,20 @@ namespace Playroom
                 _interop.OpenDiscordInviteDialogInternalWrapper(OpenDiscordInviteDialogCallbackInvoker);
             }
 
+            public void OpenDiscordExternalLink(string url, Action<bool> callback = null)
+            {
+                CheckPlayRoomInitialized();
+                CallbackManager.RegisterCallback(callback, "discordExternalLink");
+                OpenDiscordExternalLinkInternal(url, InvokeOpenDiscordExternalLinkCallback);
+            }
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            private static void InvokeOpenDiscordExternalLinkCallback(string openedString)
+            {
+                bool opened = bool.TryParse(openedString, out bool result) && result;
+                CallbackManager.InvokeCallback("discordExternalLink", opened);
+            }
+
             [MonoPInvokeCallback(typeof(Action<string, string>))]
             private static void StartDiscordPurchaseCallback(string skuId, string result)
             {
@@ -457,7 +471,7 @@ namespace Playroom
                 CheckPlayRoomInitialized();
                 CallbackManager.RegisterCallback(callback, skuId);
                 CallbackManager.RegisterCallback(onError, "onError");
-                
+
                 StartDiscordPurchaseInternal(skuId, StartDiscordPurchaseCallback, OnErrorStartPurchase);
             }
 

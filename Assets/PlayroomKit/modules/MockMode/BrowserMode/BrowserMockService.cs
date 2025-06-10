@@ -348,6 +348,12 @@ namespace Playroom
         {
             DebugLogger.LogWarning("[MockMode] Discord events only work inside discord!");
         }
+
+        public void OpenDiscordExternalLink(string url, Action<bool> callback = null)
+        {
+            DebugLogger.LogWarning("[MockMode] Discord external link is currently not supported in browser mock mode!");
+            callback?.Invoke(true);
+        }
         #endregion
     }
 #endif
