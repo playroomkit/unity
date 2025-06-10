@@ -1122,11 +1122,13 @@ mergeInto(LibraryManager.library, {
       return;
     }
 
-   Playroom.getDiscordClient().commands.openExternalLink(UTF8ToString(url))
+   Playroom.getDiscordClient().commands.openExternalLink({url: UTF8ToString(url)})
       .then((opened) => {
-        var returnData = _ConvertString(opened.toString());
-        console.log("Discord external link opened successfully: " + opened);
+        if (opened == null) {
+            opened = "" 
+        }
 
+        var returnData = _ConvertString(JSON.stringify(opened));
         {{{ makeDynCall('vi', 'callback') }}}(returnData)
       })
       .catch((error) => {

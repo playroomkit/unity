@@ -73,7 +73,7 @@ namespace Playroom
 
             #region Discord
             public void OpenDiscordInviteDialog(Action callback = null);
-            public void OpenDiscordExternalLink(string url, Action<bool> callback = null);
+            public void OpenDiscordExternalLink(string url, Action<string> callback = null);
             public void StartDiscordPurchase(string skuId, Action<string> callback, Action<string> onError = null);
             public void GetDiscordSkus(Action<List<DiscordSku>> callback);
             public void GetDiscordEntitlements(Action<List<DiscordEntitlement>> callback);

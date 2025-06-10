@@ -355,6 +355,12 @@ namespace Playroom
             _playroomService.OpenDiscordInviteDialog(callback);
         }
 
+        public void OpenDiscordExternalLink(string url, Action<string> callback = null)
+        {
+            CheckPlayRoomInitialized();
+            _playroomService.OpenDiscordExternalLink(url, callback);
+        }
+
         public void StartDiscordPurchase(string skuId, Action<string> responseCallback, Action<string> onError = null)
         {
             CheckPlayRoomInitialized();

@@ -440,7 +440,7 @@ namespace Playroom
                 _interop.OpenDiscordInviteDialogInternalWrapper(OpenDiscordInviteDialogCallbackInvoker);
             }
 
-            public void OpenDiscordExternalLink(string url, Action<bool> callback = null)
+            public void OpenDiscordExternalLink(string url, Action<string> callback = null)
             {
                 CheckPlayRoomInitialized();
                 CallbackManager.RegisterCallback(callback, "discordExternalLink");
@@ -450,8 +450,7 @@ namespace Playroom
             [MonoPInvokeCallback(typeof(Action<string>))]
             private static void InvokeOpenDiscordExternalLinkCallback(string openedString)
             {
-                bool opened = bool.TryParse(openedString, out bool result) && result;
-                CallbackManager.InvokeCallback("discordExternalLink", opened);
+                CallbackManager.InvokeCallback("discordExternalLink", openedString);
             }
 
             [MonoPInvokeCallback(typeof(Action<string, string>))]

@@ -249,10 +249,10 @@ namespace Playroom
             DebugLogger.LogWarning("[MockMode] Discord events only work inside discord!");
         }
 
-        public void OpenDiscordExternalLink(string url, Action<bool> callback = null)
+        public void OpenDiscordExternalLink(string url, Action<string> callback = null)
         {
             DebugLogger.LogWarning("[MockMode] Discord external link is currently not supported in local mode!");
-            callback?.Invoke(true);
+            callback?.Invoke("true");
         }
         #endregion
     }
