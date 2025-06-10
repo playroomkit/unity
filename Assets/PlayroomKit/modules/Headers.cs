@@ -171,6 +171,9 @@ namespace Playroom
         private static extern void OpenDiscordInviteDialogInternal(Action callback = null);
 
         [DllImport("__Internal")]
+        private static extern void OpenDiscordExternalLinkInternal(string url, Action<string> callback = null);
+
+        [DllImport("__Internal")]
         private static extern void StartDiscordPurchaseInternal(string skuId, Action<string, string> callback, Action<string> onError = null);
 
         [DllImport("__Internal")]

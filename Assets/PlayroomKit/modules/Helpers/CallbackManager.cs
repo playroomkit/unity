@@ -101,6 +101,17 @@ namespace Playroom
                         $"Callback with key {key} is of unsupported type or incorrect number of arguments: {turnData}!");
             }
         }
+
+        public static void InvokeCallback(string key, bool someBool)
+        {
+            if (callbacks.TryGetValue(key, out Delegate callback))
+            {
+                if (callback is Action<bool> action) action?.Invoke(someBool);
+                else
+                    Debug.LogError(
+                        $"Callback with key {key} is of unsupported type or incorrect number of arguments: {someBool}!");
+            }
+        }
         
 
 

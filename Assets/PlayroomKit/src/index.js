@@ -1110,7 +1110,29 @@ mergeInto(LibraryManager.library, {
         {{{ makeDynCall('v', 'callback') }}}()
       })
       .catch((error) => {
-        console.error("Failed to open Discord invite dialog:", error);
+        console.error("[JSLIB] Failed to open Discord invite dialog:", error);
+      });
+  },
+
+  OpenDiscordExternalLinkInternal: function (url, callback) {
+    if (!window.Playroom) {
+      console.error(
+        "Playroom library is not loaded. Please make sure to call InsertCoin first."
+      );
+      return;
+    }
+
+   Playroom.getDiscordClient().commands.openExternalLink({url: UTF8ToString(url)})
+      .then((opened) => {
+        if (opened == null) {
+            opened = "" 
+        }
+
+        var returnData = _ConvertString(JSON.stringify(opened));
+        {{{ makeDynCall('vi', 'callback') }}}(returnData)
+      })
+      .catch((error) => {
+        console.error("[JSLIB] Failed to open external link:", error);
       });
   },
 

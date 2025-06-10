@@ -207,10 +207,19 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            string nullString = null;
-            int length = nullString.Length; // This will throw a NullReferenceException
+            playroomKit.OpenDiscordExternalLink("https://github.com/momintlh", (success) =>
+            {
+                text.text = success;
+            });
         }
 
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            playroomKit.OpenDiscordExternalLink("https://discord.gg/9s5jfcgQ6P", (success) =>
+            {
+                text.text = success;
+            });
+        }
 
     }
     #endregion
