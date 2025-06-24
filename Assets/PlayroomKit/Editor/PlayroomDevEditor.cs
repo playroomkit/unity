@@ -17,7 +17,7 @@ namespace Playroom
 
         public void OnEnable()
         {
-            styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/PlayroomKit/Editor/PlayroomkitDevManagerEditor.uss");
+            styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("");
         }
 
         public override VisualElement CreateInspectorGUI()
