@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using System.IO;
 using System.Linq;
+
+#if UNITY_EDITOR
 public class PlayroomKitSetupWindow : EditorWindow
 {
     private const string defaultNodePath = @"C:\Program Files\nodejs";
@@ -277,3 +279,4 @@ public class PlayroomKitSetupWindow : EditorWindow
         return Directory.Exists(path);
     }
 }
+#endif // UNITY_EDITOR  
