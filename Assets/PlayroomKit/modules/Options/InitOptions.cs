@@ -15,7 +15,7 @@ namespace Playroom
         public bool skipLobby = false;
         public int reconnectGracePeriod = 0;
         public int? maxPlayersPerRoom;
-        
+
         [CanBeNull]
         public string gameId;
         public bool discord = false;
@@ -56,6 +56,21 @@ namespace Playroom
                 else
                 {
                     throw new ArgumentException("turnBased must be a boolean or a turnBasedOptions object.");
+                }
+            }
+        }
+        public object discordOptions
+        {
+            get => discord;
+            set
+            {
+                if (value is bool || value is DiscordOptions)
+                {
+                    discord = (bool)value;
+                }
+                else
+                {
+                    throw new ArgumentException("discordOptions must be a boolean or a DiscordOptions object.");
                 }
             }
         }
