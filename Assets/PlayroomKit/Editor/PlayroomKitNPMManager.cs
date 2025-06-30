@@ -70,47 +70,78 @@ public class PlayroomKitSetupWindow : EditorWindow
         };
 
         installButton.clicked += () =>
+{
+    string npmPath = FindNpmInGlobalPath(); // Or get from pathField.value if user provided
+
+    if (string.IsNullOrEmpty(npmPath) || !File.Exists(npmPath))
+    {
+        Debug.LogError("Cannot run npm install. npm not found.");
+        return;
+    }
+
+    // Find PlayroomKit package in PackageCache
+    string packagePrefix = "com.playroomkit.sdk@";
+    string packageCacheRoot = "Library/PackageCache";
+    string editorPath = null;
+
+    try
+    {
+        var matchingDir = Directory.GetDirectories(packageCacheRoot, $"{packagePrefix}*")
+                                   .FirstOrDefault(d => Directory.Exists(Path.Combine(d, "Editor")));
+
+        if (matchingDir == null)
         {
-            string npmPath = FindNpmInGlobalPath(); // Or from pathField if user selected one
-            if (string.IsNullOrEmpty(npmPath))
-            {
-                Debug.LogError("Cannot run npm install. npm not found.");
-                return;
-            }
+            Debug.LogError("PlayroomKit package not found in PackageCache.");
+            return;
+        }
 
-            string workingDir = Path.Combine("Packages", "PlayroomKit", "Editor");
+        editorPath = Path.Combine(matchingDir, "Editor");
+    }
+    catch (Exception ex)
+    {
+        Debug.LogException(ex);
+        return;
+    }
 
-            var process = new System.Diagnostics.Process();
-            process.StartInfo = new System.Diagnostics.ProcessStartInfo
-            {
-                FileName = npmPath,
-                Arguments = "install",
-                WorkingDirectory = workingDir,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
+    // Run npm install
+    var process = new System.Diagnostics.Process();
+    process.StartInfo = new System.Diagnostics.ProcessStartInfo
+    {
+        FileName = npmPath,
+        Arguments = "install",
+        WorkingDirectory = editorPath,
+        RedirectStandardOutput = true,
+        RedirectStandardError = true,
+        UseShellExecute = false,
+        CreateNoWindow = true
+    };
 
-            process.OutputDataReceived += (sender, e) =>
-            {
-                if (!string.IsNullOrEmpty(e.Data))
-                    Debug.Log("[npm] " + e.Data);
-            };
+    process.OutputDataReceived += (sender, e) =>
+    {
+        if (!string.IsNullOrEmpty(e.Data))
+            Debug.Log("[npm] " + e.Data);
+    };
 
-            process.ErrorDataReceived += (sender, e) =>
-            {
-                if (!string.IsNullOrEmpty(e.Data))
-                    Debug.LogWarning("[npm error] " + e.Data);
-            };
+    process.ErrorDataReceived += (sender, e) =>
+    {
+        if (!string.IsNullOrEmpty(e.Data))
+            Debug.LogWarning("[npm error] " + e.Data);
+    };
 
-            process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-            process.WaitForExit();
+    try
+    {
+        process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+        process.WaitForExit();
+        Debug.Log("npm install finished with exit code: " + process.ExitCode);
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError("Failed to run npm install: " + ex.Message);
+    }
+};
 
-            Debug.Log("npm install finished with exit code: " + process.ExitCode);
-        };
 
 
         // Open Node.js download page
