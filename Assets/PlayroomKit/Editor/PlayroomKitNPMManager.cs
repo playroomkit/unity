@@ -19,7 +19,7 @@ public class PlayroomKitSetupWindow : EditorWindow
     {
         // Load UXML
         var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
-            "Assets/Editor/PlayroomKitNPMManager.uxml"
+            "Packages/com.playroomkit.sdk/Editor/PlayroomKitNPMManager.uxml"
         );
 
         if (visualTree == null)
