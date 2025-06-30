@@ -18,7 +18,6 @@ namespace Playroom
 
         [CanBeNull]
         public string gameId;
-        public bool discord = false;
         public bool persistentMode = false;
 
         public Dictionary<string, object> defaultStates = null;
@@ -26,6 +25,9 @@ namespace Playroom
 
         private object matchmakingField;
         private object turnBasedField;
+
+        public object discord = false;
+
 
         public object matchmaking
         {
@@ -66,7 +68,7 @@ namespace Playroom
             {
                 if (value is bool || value is DiscordOptions)
                 {
-                    discord = (bool)value;
+                    discord = value;
                 }
                 else
                 {

@@ -121,7 +121,10 @@ public class GameManager : MonoBehaviour
         {
             gameId = "FmOBeUfQO2AOLNIrJNSJ",
             maxPlayersPerRoom = 2,
-            discord = true,
+            discord = new DiscordOptions()
+            {
+                Scope = new() { "applications.commands", "guilds" }
+            },
         }, OnLaunchCallBack);
     }
 
