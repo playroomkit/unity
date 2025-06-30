@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.IO;
-
+using System.Linq;
 public class PlayroomKitSetupWindow : EditorWindow
 {
     private const string defaultNodePath = @"C:\Program Files\nodejs";
@@ -71,18 +71,17 @@ public class PlayroomKitSetupWindow : EditorWindow
 
         installButton.clicked += () =>
 {
-    string npmPath = FindNpmInGlobalPath(); // Or get from pathField.value if user provided
-
+    string npmPath = FindNpmInGlobalPath();
     if (string.IsNullOrEmpty(npmPath) || !File.Exists(npmPath))
     {
         Debug.LogError("Cannot run npm install. npm not found.");
         return;
     }
 
-    // Find PlayroomKit package in PackageCache
+    // Locate PlayroomKit package in PackageCache
     string packagePrefix = "com.playroomkit.sdk@";
     string packageCacheRoot = "Library/PackageCache";
-    string editorPath = null;
+    string editorCachePath = null;
 
     try
     {
@@ -95,21 +94,21 @@ public class PlayroomKitSetupWindow : EditorWindow
             return;
         }
 
-        editorPath = Path.Combine(matchingDir, "Editor");
+        editorCachePath = Path.Combine(matchingDir, "Editor");
     }
-    catch (Exception ex)
+    catch (System.Exception ex)
     {
         Debug.LogException(ex);
         return;
     }
 
-    // Run npm install
+    // Run `npm install` in that editor path
     var process = new System.Diagnostics.Process();
     process.StartInfo = new System.Diagnostics.ProcessStartInfo
     {
         FileName = npmPath,
         Arguments = "install",
-        WorkingDirectory = editorPath,
+        WorkingDirectory = editorCachePath,
         RedirectStandardOutput = true,
         RedirectStandardError = true,
         UseShellExecute = false,
@@ -134,11 +133,42 @@ public class PlayroomKitSetupWindow : EditorWindow
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
         process.WaitForExit();
+
         Debug.Log("npm install finished with exit code: " + process.ExitCode);
+
+        if (process.ExitCode == 0)
+        {
+            string sourcePath = Path.Combine(editorCachePath, "node_modules");
+            string targetRoot = Path.Combine("Packages", "PlayroomKit");
+            string targetEditorPath = Path.Combine(targetRoot, "Editor");
+            string targetNodeModules = Path.Combine(targetEditorPath, "node_modules");
+
+            // Create destination folders if missing
+            if (!Directory.Exists(targetEditorPath))
+            {
+                Directory.CreateDirectory(targetEditorPath);
+                Debug.Log("Created directory: " + targetEditorPath);
+            }
+
+            // Remove old node_modules if already there
+            if (Directory.Exists(targetNodeModules))
+            {
+                Directory.Delete(targetNodeModules, true);
+                Debug.Log("Old node_modules deleted in target.");
+            }
+
+            // Move node_modules to the embedded package
+            Directory.Move(sourcePath, targetNodeModules);
+            Debug.Log("node_modules successfully moved to: " + targetNodeModules);
+        }
+        else
+        {
+            Debug.LogWarning("npm install failed.");
+        }
     }
-    catch (Exception ex)
+    catch (System.Exception ex)
     {
-        Debug.LogError("Failed to run npm install: " + ex.Message);
+        Debug.LogError("Failed during npm install or moving node_modules: " + ex.Message);
     }
 };
 

@@ -36,4 +36,10 @@ export default defineConfig({
     minify: false,
     rollupOptions: {}
   },
+  resolve: {
+    modules: [
+      resolve(__dirname, 'node_modules'), // try local node_modules first
+      'node_modules' // fallback
+    ]
+  }
 });
