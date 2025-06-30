@@ -11,7 +11,8 @@ using UnityEngine.Networking;
 public class GameManager : MonoBehaviour
 {
     #region Fields
-    [SerializeField] private string baseUrl = "https://ws.joinplayroom.com/api/store";
+    [SerializeField] private string gameId = "FmOBeUfQO2AOLNIrJNSJ";
+    [SerializeField] private string baseUrl = "https://ws.joinplayroom.com/api/";
     [SerializeField] private string gameApiKey;
 
     [SerializeField]
@@ -76,7 +77,7 @@ public class GameManager : MonoBehaviour
     {
         if (Application.absoluteURL.Contains("discord"))
         {
-            baseUrl = ".proxy/_ws/api/store";
+            baseUrl = ".proxy/_ws/api";
         }
         else
         {
@@ -125,8 +126,40 @@ public class GameManager : MonoBehaviour
             {
                 Scope = new() { "applications.commands", "guilds" }
             },
+
+            // discord = true
         }, OnLaunchCallBack);
     }
+    public IEnumerator GetActiveServerRewards(
+        string gameId,
+        string jwtToken,
+        string gameApiKey,
+        Action<string> onSuccess,
+        Action<string> onError
+    )
+    {
+        // Build full URL with query parameter
+        string url = $"{baseUrl}/discord/server-rewards?gameId={UnityWebRequest.EscapeURL(gameId)}";
+
+        using (UnityWebRequest request = UnityWebRequest.Get(url))
+        {
+            request.SetRequestHeader("Authorization", $"Bearer {jwtToken}");
+            request.SetRequestHeader("x-game-api", gameApiKey);
+
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.ConnectionError ||
+                request.result == UnityWebRequest.Result.ProtocolError)
+            {
+                onError?.Invoke($"Error fetching server rewards: {request.error}");
+            }
+            else
+            {
+                onSuccess?.Invoke(request.downloadHandler.text);
+            }
+        }
+    }
+
 
     private void Update()
     {
@@ -224,6 +257,11 @@ public class GameManager : MonoBehaviour
             });
         }
 
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            StartCoroutine(GetActiveServerRewards(gameId, "eyJhbGciOiJIUzI1NiJ9.eyJkaXNjb3JkSWQiOiI0NzY3MDk1MjQwMTE2MTQyMTkiLCJyb29tSWQiOiJEQ1JEX2ktMTM4NDA2NjA4NTY0MDQ3MDY0MS1nYy0xMjczNjA3Njg2ODE4MTA3NDAyLTEyNzQ5OTUxNDcyNjc4OTk0NTYiLCJnYW1lSWQiOiJGbU9CZVVmUU8yQU9MTklySk5TSiIsImd1aWxkSWQiOiIxMjczNjA3Njg2ODE4MTA3NDAyIiwiY2hhbm5lbElkIjoiMTI3NDk5NTE0NzI2Nzg5OTQ1NiIsImFjY2Vzc1Rva2VuIjoiTVRNM01EUXhOakk0TkRZNE9ETXlNalk0TWcuajAxREp0Wk9UY2xER0RweG45TlBmczVBODB0VThHIiwiYXV0aCI6ImRpc2NvcmQiLCJ0IjoxNzUwMDU3NDk1fQ.uE8NwXB2XCpnjD8TwYdSdEN11bHJ8DE3p1jNG-YPakQ", "510a71af-3a69-4f5d-9b9b-296a1871e624", (result) => text.text = result, (error) => text.text = error));
+        }
+
     }
     #endregion
 
@@ -235,7 +273,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator GetSKUS(Action<string> onRequestComplete = null)
     {
-        var url = $"{baseUrl}/sku?gameId={UnityWebRequest.EscapeURL("FmOBeUfQO2AOLNIrJNSJ")}&platform={UnityWebRequest.EscapeURL("discord")}";
+        var url = $"{baseUrl}/store/sku?gameId={UnityWebRequest.EscapeURL("FmOBeUfQO2AOLNIrJNSJ")}&platform={UnityWebRequest.EscapeURL("discord")}";
 
         using (var req = UnityWebRequest.Get(url))
         {
@@ -260,7 +298,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator GetEntitlements(Action<string> onRequestComplete)
     {
-        var url = $"{baseUrl}/entitlement?gameId={UnityWebRequest.EscapeURL("FmOBeUfQO2AOLNIrJNSJ")}";
+        var url = $"{baseUrl}/store/entitlement?gameId={UnityWebRequest.EscapeURL("FmOBeUfQO2AOLNIrJNSJ")}";
 
         using (var req = UnityWebRequest.Get(url))
         {
