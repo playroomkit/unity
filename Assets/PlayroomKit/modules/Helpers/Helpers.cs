@@ -11,7 +11,7 @@ namespace Playroom
     public static class Helpers
     {
         static List<TurnData> allTurns = new List<TurnData>();
-
+    
         public static string SerializeInitOptions(InitOptions options)
         {
             if (options == null) return null;
@@ -24,7 +24,7 @@ namespace Playroom
             node["roomCode"] = options.roomCode;
             node["skipLobby"] = options.skipLobby;
             node["reconnectGracePeriod"] = options.reconnectGracePeriod;
-            node["discord"] = options.discord;
+            node["discord"] = DiscordHelper.SerializeDiscordOptions(options.discord);   
             node["persistentMode"] = options.persistentMode;
 
             if (options.avatars != null)
