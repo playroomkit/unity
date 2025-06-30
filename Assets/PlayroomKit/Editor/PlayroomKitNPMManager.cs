@@ -1,0 +1,218 @@
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.UIElements;
+using System.IO;
+
+public class PlayroomKitSetupWindow : EditorWindow
+{
+    private const string defaultNodePath = @"C:\Program Files\nodejs";
+
+    [MenuItem("PlayroomKit/Run Setup")]
+    public static void ShowWindow()
+    {
+        var window = GetWindow<PlayroomKitSetupWindow>();
+        window.titleContent = new GUIContent("PlayroomKit Setup");
+        window.minSize = new Vector2(450, 300);
+    }
+
+    public void CreateGUI()
+    {
+        // Load UXML
+        var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+            "Assets/Editor/PlayroomKitNPMManager.uxml"
+        );
+
+        if (visualTree == null)
+        {
+            Debug.LogError("Could not find UXML file. Check the path.");
+            return;
+        }
+
+        VisualElement root = visualTree.CloneTree();
+        rootVisualElement.Add(root);
+
+        // Reference UI elements
+        Toggle npmCheck = root.Q<Toggle>("npmCheck");
+        Toggle modulesCheck = root.Q<Toggle>("modulesCheck");
+        TextField pathField = root.Q<TextField>("pathField");
+        Button inputPathButton = root.Q<Button>("inputPath");
+        Button downloadButton = root.Q<Button>("downloadButton");
+        Button refreshButton = root.Q<Button>("refreshButton");
+        Button installButton = root.Q<Button>("installButton");
+
+
+        // Set initial display values
+        npmCheck.SetEnabled(false);
+        modulesCheck.SetEnabled(false);
+        npmCheck.value = CheckIfNpmExists();
+        modulesCheck.value = CheckIfNodeModulesExist();
+        installButton.SetEnabled(false);
+        installButton.visible = false;
+
+        bool modulesExist = CheckIfNodeModulesExist();
+        installButton.SetEnabled(!modulesExist);
+        installButton.visible = !modulesExist;
+
+        if (string.IsNullOrWhiteSpace(pathField.value))
+        {
+            pathField.value = defaultNodePath;
+        }
+
+        // Let user select custom Node.js path
+        inputPathButton.clicked += () =>
+        {
+            string selectedPath = EditorUtility.OpenFolderPanel("Select Node.js directory", pathField.value, "");
+            if (!string.IsNullOrEmpty(selectedPath))
+            {
+                pathField.value = selectedPath;
+                Debug.Log("Custom Node path set to: " + selectedPath);
+            }
+        };
+
+        installButton.clicked += () =>
+        {
+            string npmPath = FindNpmInGlobalPath(); // Or from pathField if user selected one
+            if (string.IsNullOrEmpty(npmPath))
+            {
+                Debug.LogError("Cannot run npm install. npm not found.");
+                return;
+            }
+
+            string workingDir = Path.Combine("Packages", "PlayroomKit", "Editor");
+
+            var process = new System.Diagnostics.Process();
+            process.StartInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = npmPath,
+                Arguments = "install",
+                WorkingDirectory = workingDir,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            process.OutputDataReceived += (sender, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                    Debug.Log("[npm] " + e.Data);
+            };
+
+            process.ErrorDataReceived += (sender, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                    Debug.LogWarning("[npm error] " + e.Data);
+            };
+
+            process.Start();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            process.WaitForExit();
+
+            Debug.Log("npm install finished with exit code: " + process.ExitCode);
+        };
+
+
+        // Open Node.js download page
+        downloadButton.clicked += () =>
+        {
+            Application.OpenURL("https://nodejs.org/");
+        };
+
+        // Refresh environment check
+        refreshButton.clicked += () =>
+        {
+            string userNodePath = pathField.value.Trim();
+
+            bool npmInstalled = CheckIfNpmExists(userNodePath);
+            bool modulesInstalled = CheckIfNodeModulesExist();
+
+            npmCheck.value = npmInstalled;
+            modulesCheck.value = modulesInstalled;
+
+            Debug.Log("Environment refreshed.");
+        };
+
+        // Optional: validate path on change
+        pathField.RegisterValueChangedCallback(evt =>
+        {
+            string testPath = Path.Combine(evt.newValue.Trim(), "npm.cmd");
+            if (!File.Exists(testPath))
+            {
+                Debug.LogWarning("npm.cmd not found in: " + evt.newValue);
+            }
+        }
+        );
+    }
+
+    private bool CheckIfNpmExists(string userDefinedPath = null)
+    {
+        string npmPath = !string.IsNullOrWhiteSpace(userDefinedPath)
+            ? Path.Combine(userDefinedPath.Trim(), Application.platform == RuntimePlatform.WindowsEditor ? "npm.cmd" : "npm")
+            : FindNpmInGlobalPath();
+
+        if (string.IsNullOrEmpty(npmPath) || !File.Exists(npmPath))
+        {
+            Debug.LogWarning("npm not found.");
+            return false;
+        }
+
+        try
+        {
+            var process = new System.Diagnostics.Process();
+            process.StartInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = npmPath,
+                Arguments = "--version",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            process.Start();
+            string output = process.StandardOutput.ReadToEnd();
+            string error = process.StandardError.ReadToEnd();
+            process.WaitForExit();
+
+            if (!string.IsNullOrEmpty(error))
+                Debug.LogWarning("npm error: " + error);
+
+            Debug.Log("npm version: " + output.Trim());
+            return !string.IsNullOrEmpty(output);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning("Failed to run npm: " + ex.Message);
+            return false;
+        }
+    }
+
+    private string FindNpmInGlobalPath()
+    {
+        string envPath = System.Environment.GetEnvironmentVariable("PATH");
+        if (string.IsNullOrEmpty(envPath))
+            return null;
+
+        string[] pathDirs = envPath.Split(Path.PathSeparator);
+        string npmFile = Application.platform == RuntimePlatform.WindowsEditor ? "npm.cmd" : "npm";
+
+        foreach (string dir in pathDirs)
+        {
+            string fullPath = Path.Combine(dir.Trim(), npmFile);
+            if (File.Exists(fullPath))
+            {
+                return fullPath;
+            }
+        }
+
+        return null;
+    }
+
+
+    private bool CheckIfNodeModulesExist()
+    {
+        string path = "Packages/PlayroomKit/Editor/node_modules";
+        return Directory.Exists(path);
+    }
+}
