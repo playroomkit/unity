@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:VisualElement name="root" style="flex-grow: 1;">
-        <ui:Label text="This is the node and npm package installation window to prompt you to install node.js so we can add the required node_modules required for the PlayroomKit Unity SDK to work" style="height: 96px; width: 340px; -unity-text-align: upper-center; white-space: normal; text-overflow: clip;" />
+        <ui:Label text="This is the node and npm package installation window to prompt you to install node.js so we can add the required node_modules required for the PlayroomKit Unity SDK to work" style="height: 96px; width: 340px; -unity-text-align: upper-center; white-space: normal; text-overflow: clip; align-self: center;" />
         <ui:Toggle label="NPM Installed:" value="false" name="npmCheck" />
         <ui:Toggle label="Modules Installed:" name="modulesCheck" />
         <ui:VisualElement name="pathContainer" style="flex-grow: 1;">
@@ -8,6 +8,7 @@
             <ui:Button text="Set Custom Node Path" parse-escape-sequences="true" display-tooltip-when-elided="true" name="inputPath" style="width: 169px; -unity-text-align: middle-center; white-space: nowrap; align-self: flex-end;" />
         </ui:VisualElement>
         <ui:Button text="Download Node.js" parse-escape-sequences="true" display-tooltip-when-elided="true" name="downloadButton" />
+        <ui:Button text="Download Chrome Driver (For Mock Mode)" parse-escape-sequences="true" display-tooltip-when-elided="true" name="driverDownloadButton" />
         <ui:Button text="Install Node Modules" parse-escape-sequences="true" display-tooltip-when-elided="true" name="installButton" style="height: 41px;" />
         <ui:Button text="Refresh" parse-escape-sequences="true" display-tooltip-when-elided="true" name="refreshButton" />
     </ui:VisualElement>
