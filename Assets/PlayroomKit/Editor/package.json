@@ -1,0 +1,23 @@
+{
+  "name": "playroom-unity",
+  "version": "0.0.0",
+  "description": "This SDK is a wrapper over PlayroomKit JS. Currently, it only supports WebGL exported games. See [PlayroomKit Unity docs](https://docs.joinplayroom.com/usage/unity) for more information.",
+  "main": "index.js",
+  "type": "module",
+  "devDependencies": {
+    "vite": "^5.2.8",
+    "vite-plugin-static-copy": "^1.0.2"
+  },
+  "scripts": {
+    "postinstall": "npm run build",
+    "build": "vite build --emptyOutDir"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "playroomkit": "0.0.87",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

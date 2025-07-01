@@ -75,6 +75,7 @@ crashlytics-build.properties
 .idea/.idea.playroom-unity/.idea/workspace.xml
 .idea/.idea.playroom-unity/.idea/workspace.xml
 node_modules
+node_modules.meta
 metaList
 package-lock.json
 package-lock.json.meta
