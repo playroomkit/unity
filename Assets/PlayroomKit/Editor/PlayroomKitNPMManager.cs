@@ -49,11 +49,9 @@ public class PlayroomKitSetupWindow : EditorWindow
         npmCheck.value = CheckIfNpmExists();
         modulesCheck.value = CheckIfNodeModulesExist();
         installButton.SetEnabled(false);
-        installButton.visible = false;
 
         bool modulesExist = CheckIfNodeModulesExist();
         installButton.SetEnabled(!modulesExist);
-        installButton.visible = !modulesExist;
 
         if (string.IsNullOrWhiteSpace(pathField.value))
         {
@@ -67,7 +65,6 @@ public class PlayroomKitSetupWindow : EditorWindow
             if (!string.IsNullOrEmpty(selectedPath))
             {
                 pathField.value = selectedPath;
-                Debug.Log("Custom Node path set to: " + selectedPath);
             }
         };
 
@@ -141,7 +138,7 @@ public class PlayroomKitSetupWindow : EditorWindow
         if (process.ExitCode == 0)
         {
             string sourcePath = Path.Combine(editorCachePath, "node_modules");
-            string targetRoot = Path.Combine("Packages", "Playroom");
+            string targetRoot = Path.Combine("Assets", "Playroom");
             string targetEditorPath = Path.Combine(targetRoot, "Editor");
             string targetNodeModules = Path.Combine(targetEditorPath, "node_modules");
 
@@ -162,6 +159,7 @@ public class PlayroomKitSetupWindow : EditorWindow
             // Move node_modules to the embedded package
             Directory.Move(sourcePath, targetNodeModules);
             Debug.Log("node_modules successfully moved to: " + targetNodeModules);
+            refreshCheck(); 
         }
         else
         {
@@ -185,15 +183,7 @@ public class PlayroomKitSetupWindow : EditorWindow
         // Refresh environment check
         refreshButton.clicked += () =>
         {
-            string userNodePath = pathField.value.Trim();
-
-            bool npmInstalled = CheckIfNpmExists(userNodePath);
-            bool modulesInstalled = CheckIfNodeModulesExist();
-
-            npmCheck.value = npmInstalled;
-            modulesCheck.value = modulesInstalled;
-
-            Debug.Log("Environment refreshed.");
+            refreshCheck();
         };
 
         // Optional: validate path on change
@@ -241,7 +231,6 @@ public class PlayroomKitSetupWindow : EditorWindow
             if (!string.IsNullOrEmpty(error))
                 Debug.LogWarning("npm error: " + error);
 
-            Debug.Log("npm version: " + output.Trim());
             return !string.IsNullOrEmpty(output);
         }
         catch (System.Exception ex)
@@ -275,8 +264,20 @@ public class PlayroomKitSetupWindow : EditorWindow
 
     private bool CheckIfNodeModulesExist()
     {
-        string path = "Packages/Playroom/Editor/node_modules";
+        string path = "Assets/Playroom/Editor/node_modules";
         return Directory.Exists(path);
+    }
+
+    private null refreshCheck()
+    {
+        
+            bool npmInstalled = CheckIfNpmExists(userNodePath);
+            bool modulesInstalled = CheckIfNodeModulesExist();
+
+            npmCheck.value = npmInstalled;
+            modulesCheck.value = modulesInstalled;
+
+            Debug.Log("Environment refreshed.");
     }
 }
 #endif // UNITY_EDITOR  
