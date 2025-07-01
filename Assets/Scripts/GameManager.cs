@@ -45,6 +45,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private List<DiscordEntitlement> discordEntitlements = new List<DiscordEntitlement>();
 
+    [SerializeField]
+    private List<ServerReward> serverRewards = new();
+
     #endregion
 
 
@@ -81,7 +84,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            baseUrl = "https://ws.joinplayroom.com/api/store";
+            baseUrl = "https://ws.joinplayroom.com/api";
         }
 
         // Initialize fake Discord SKUs
@@ -259,7 +262,11 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.M))
         {
-            StartCoroutine(GetActiveServerRewards(gameId, "eyJhbGciOiJIUzI1NiJ9.eyJkaXNjb3JkSWQiOiI0NzY3MDk1MjQwMTE2MTQyMTkiLCJyb29tSWQiOiJEQ1JEX2ktMTM4NDA2NjA4NTY0MDQ3MDY0MS1nYy0xMjczNjA3Njg2ODE4MTA3NDAyLTEyNzQ5OTUxNDcyNjc4OTk0NTYiLCJnYW1lSWQiOiJGbU9CZVVmUU8yQU9MTklySk5TSiIsImd1aWxkSWQiOiIxMjczNjA3Njg2ODE4MTA3NDAyIiwiY2hhbm5lbElkIjoiMTI3NDk5NTE0NzI2Nzg5OTQ1NiIsImFjY2Vzc1Rva2VuIjoiTVRNM01EUXhOakk0TkRZNE9ETXlNalk0TWcuajAxREp0Wk9UY2xER0RweG45TlBmczVBODB0VThHIiwiYXV0aCI6ImRpc2NvcmQiLCJ0IjoxNzUwMDU3NDk1fQ.uE8NwXB2XCpnjD8TwYdSdEN11bHJ8DE3p1jNG-YPakQ", "510a71af-3a69-4f5d-9b9b-296a1871e624", (result) => text.text = result, (error) => text.text = error));
+            StartCoroutine(GetActiveServerRewards(gameId, "eyJhbGciOiJIUzI1NiJ9.eyJkaXNjb3JkSWQiOiI0NzY3MDk1MjQwMTE2MTQyMTkiLCJyb29tSWQiOiJEQ1JEX2ktMTM4OTUzMzUzNjg5NzIwNDMxNC1wYy0xMzcxOTI3NzM0MTY2NDg3MDkwIiwiZ2FtZUlkIjoiRm1PQmVVZlFPMkFPTE5JckpOU0oiLCJndWlsZElkIjpudWxsLCJjaGFubmVsSWQiOiIxMzcxOTI3NzM0MTY2NDg3MDkwIiwiYWNjZXNzVG9rZW4iOiJNVE0zTURReE5qSTRORFk0T0RNeU1qWTRNZy5XUVFnOFp5bjNHNnNuYVJTR21qQmZDM1A4bm5tcm4iLCJhdXRoIjoiZGlzY29yZCIsInQiOjE3NTEzNjEwNDJ9.wXL2lVdyCyXNbiNjQGrFV4bqoESt3eLyflAMt50evY8", "510a71af-3a69-4f5d-9b9b-296a1871e624", (result) =>
+            {
+                text.text = result;
+                serverRewards = ServerReward.FromJSON(result);
+            }, (error) => text.text = error));
         }
 
     }
