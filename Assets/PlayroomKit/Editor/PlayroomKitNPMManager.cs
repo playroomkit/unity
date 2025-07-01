@@ -141,7 +141,7 @@ public class PlayroomKitSetupWindow : EditorWindow
         if (process.ExitCode == 0)
         {
             string sourcePath = Path.Combine(editorCachePath, "node_modules");
-            string targetRoot = Path.Combine("Packages", "PlayroomKit");
+            string targetRoot = Path.Combine("Packages", "Playroom");
             string targetEditorPath = Path.Combine(targetRoot, "Editor");
             string targetNodeModules = Path.Combine(targetEditorPath, "node_modules");
 
@@ -275,7 +275,7 @@ public class PlayroomKitSetupWindow : EditorWindow
 
     private bool CheckIfNodeModulesExist()
     {
-        string path = "Packages/PlayroomKit/Editor/node_modules";
+        string path = "Packages/Playroom/Editor/node_modules";
         return Directory.Exists(path);
     }
 }
