@@ -1208,8 +1208,7 @@ mergeInto(LibraryManager.library, {
       
   },
   
-  // callback variant
-    DiscordPriceFormatInternal: function(amount, currencyOrPtr, localeOrPtr, callbackPtr) {
+  DiscordPriceFormatInternal: function(amount, currencyOrPtr, localeOrPtr, callbackPtr) {
     var currency = (typeof currencyOrPtr === 'string')
       ? currencyOrPtr
       : UTF8ToString(currencyOrPtr);
@@ -1229,9 +1228,24 @@ mergeInto(LibraryManager.library, {
       {{{ makeDynCall("vi", "callbackPtr") }}}(0);
     });
   },
- 
-  //#endregion
+  
+  PatchDiscordUrlMappingsInternal: function (prefix, target) {
+    prefix = UTF8ToString(prefix);
+    target = UTF8ToString(target);
 
+    console.log(`[JSLIB]: PatchingURL: ${prefix} and ${target}`);
+
+    try {
+      Playroom.getDiscordSDK().then(discordSDK => {
+        discordSDK.patchUrlMappings([{ prefix: prefix, target: target }]);
+      }).catch(err => {
+        console.error("Discord SDK load failed:", err);
+      });
+    } catch (error) {
+      console.error(`[JSLIB] error PatchUrlMappingsInternal: ${error}`);
+    }
+  },
+  //#endregion
 
   //#region Utils
   GetPlayroomTokenInternal: function () {
