@@ -11,6 +11,7 @@ namespace Playroom
     public partial class PlayroomKit
     {
         private readonly IPlayroomBase _playroomService;
+        private readonly IPlayroomBuildExtensions playroomBuildExtensions;
         private readonly IRPC _rpc;
 
         private static PlayroomKit _instance;
@@ -348,7 +349,24 @@ namespace Playroom
 
         #endregion
 
-        #region Discord
+        #region Discord Helpers
+        public static bool IsDicordContext()
+        {
+            return Application.absoluteURL.Contains("discord");
+        }
+
+        private static bool ValidateDiscord(string warningMessage)
+        {
+            if (!IsDicordContext())
+            {
+                UnityEngine.Debug.LogWarning($"[PlayroomDiscord] {warningMessage}");
+                return false;
+            }
+            return true;
+        }
+        #endregion
+
+        #region Discord    
         public void OpenDiscordInviteDialog(Action callback = null)
         {
             CheckPlayRoomInitialized();
@@ -391,6 +409,14 @@ namespace Playroom
             _playroomService.SubscribeDiscordEvent(eventName, callback);
         }
 
+        public void PatchDiscordUrlMappings(List<Mapping> mappings, PatchUrlMappingsConfig config = null)
+        {
+            if (!ValidateDiscord("PatchUrlMappings only works inside discord."))
+                return;
+
+            playroomBuildExtensions.PatchDiscordUrlMappings(mappings, config);
+        }
+        
         #endregion
     }
 }
