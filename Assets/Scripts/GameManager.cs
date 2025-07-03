@@ -179,7 +179,6 @@ public class GameManager : MonoBehaviour
 
         Debug.LogWarning($"body: {bodyJson}");
 
-
         byte[] bodyRaw = Encoding.UTF8.GetBytes(bodyJson);
         using (var request = new UnityWebRequest(url, "POST"))
         {
@@ -192,7 +191,6 @@ public class GameManager : MonoBehaviour
 
             yield return request.SendWebRequest();
 
-            // Network or protocol error?
             if (request.result == UnityWebRequest.Result.ConnectionError ||
                 request.result == UnityWebRequest.Result.DataProcessingError)
             {
@@ -200,14 +198,12 @@ public class GameManager : MonoBehaviour
                 yield break;
             }
 
-            // Handle HTTP response codes
             long code = request.responseCode;
             string text = request.downloadHandler.text;
 
             switch (code)
             {
                 case 200:
-                    // { "message": "..." }
                     onSuccess?.Invoke(text);
                     break;
 
@@ -332,16 +328,28 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.M))
         {
-            StartCoroutine(GetActiveServerRewards(gameId, playroomKit.GetPlayroomToken(), "510a71af-3a69-4f5d-9b9b-296a1871e624", (result) =>
+#if !UNITY_EDITOR && UNITY_WEBGL
+            StartCoroutine(GetActiveServerRewards(gameId, playroomKit.GetPlayroomToken(), gameApiKey, (result) =>
             {
                 serverRewards = ServerReward.FromJSON(result);
-                text.text = "id :" +serverRewards[0].id + " - server id: " + serverRewards[0].serverId;
+                text.text = "id :" + serverRewards[0].id + " - server id: " + serverRewards[0].serverId;
             }, (error) => text.text = error));
+#elif UNITY_EDITOR
+            StartCoroutine(GetActiveServerRewards(gameId, token, gameApiKey, (result) =>
+            {
+                serverRewards = ServerReward.FromJSON(result);
+                text.text = "id :" + serverRewards[0].id + " - server id: " + serverRewards[0].serverId;
+            }, (error) => text.text = error));
+#endif
         }
+
+
 
         if (Input.GetKeyDown(KeyCode.N))
         {
-            StartCoroutine(GrantServerReward(gameId, playroomKit.GetPlayroomToken(), "510a71af-3a69-4f5d-9b9b-296a1871e624", serverRewards[0].serverId, (result) =>
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+            StartCoroutine(GrantServerReward(gameId, playroomKit.GetPlayroomToken(), gameApiKey, serverRewards[0].serverId, (result) =>
             {
                 text.text = result;
             }, (error, response) =>
@@ -349,11 +357,22 @@ public class GameManager : MonoBehaviour
                 text.text = response;
                 Debug.LogError(error);
             }));
+#else
+            StartCoroutine(GrantServerReward(gameId, token, gameApiKey, serverRewards[0].serverId, (result) =>
+                        {
+                            text.text = result;
+                        }, (error, response) =>
+                        {
+                            text.text = response;
+                            Debug.LogError(error);
+                        }));
+#endif
         }
 
         if (Input.GetKeyDown(KeyCode.L))
         {
-            StartCoroutine(GrantServerReward(gameId, playroomKit.GetPlayroomToken(), "510a71af-3a69-4f5d-9b9b-296a1871e624", serverRewards[0].id, (result) =>
+#if !UNITY_EDITOR && UNITY_WEBGL
+            StartCoroutine(GrantServerReward(gameId, playroomKit.GetPlayroomToken(), gameApiKey, serverRewards[0].id, (result) =>
             {
                 text.text = result;
             }, (error, response) =>
@@ -361,6 +380,16 @@ public class GameManager : MonoBehaviour
                 text.text = response;
                 Debug.LogError(error);
             }));
+#elif UNITY_EDITOR
+            StartCoroutine(GrantServerReward(gameId, token, gameApiKey, serverRewards[0].id, (result) =>
+            {
+                text.text = result;
+            }, (error, response) =>
+            {
+                text.text = response;
+                Debug.LogError(error);
+            }));
+#endif
         }
     }
     #endregion

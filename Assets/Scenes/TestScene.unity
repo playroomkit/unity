@@ -286,11 +286,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc3a2b9cdc24aab40906ce4bcdee9943, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameId: FmOBeUfQO2AOLNIrJNSJ
   baseUrl: https://ws.joinplayroom.com/api/store
-  gameApiKey: 
+  gameApiKey: 510a71af-3a69-4f5d-9b9b-296a1871e624
+  token: eyJhbGciOiJIUzI1NiJ9.eyJkaXNjb3JkSWQiOiI0NzY3MDk1MjQwMTE2MTQyMTkiLCJyb29tSWQiOiJEQ1JEX2ktMTM4OTk1NjgzMTE0NDgzNzE0MC1wYy0xMzcxOTI3NzM0MTY2NDg3MDkwIiwiZ2FtZUlkIjoiRm1PQmVVZlFPMkFPTE5JckpOU0oiLCJndWlsZElkIjpudWxsLCJjaGFubmVsSWQiOiIxMzcxOTI3NzM0MTY2NDg3MDkwIiwiYWNjZXNzVG9rZW4iOiJNVE0zTURReE5qSTRORFk0T0RNeU1qWTRNZy5CNjdvckR6UjV1V0Q4dWE2TlZlUzNtczRpdEM2cGoiLCJhdXRoIjoiZGlzY29yZCIsInQiOjE3NTE0NjE5NzF9.Te4Fgg6KrSs9bqsxKPlyDYZotcumECoGCi_Q5cWCCAM
   text: {fileID: 1547749}
   skus: []
   entitlements: []
+  discordSkus: []
+  discordEntitlements: []
+  serverRewards: []
 --- !u!4 &1054460207
 Transform:
   m_ObjectHideFlags: 0
