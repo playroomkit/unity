@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using Discord;
 using Playroom;
 using SimpleJSON;
@@ -163,6 +164,75 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public IEnumerator GrantServerReward(
+    string gameId,
+    string jwtToken,
+    string gameApiKey,
+    string rewardId,
+    Action<string> onSuccess,
+    Action<string, string> onError
+)
+    {
+        string url = $"{baseUrl}/discord/server-rewards?gameId={UnityWebRequest.EscapeURL(gameId)}";
+
+        var bodyJson = $"{{\"rewardId\":\"{rewardId}\"}}";
+
+        Debug.LogWarning($"body: {bodyJson}");
+
+
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(bodyJson);
+        using (var request = new UnityWebRequest(url, "POST"))
+        {
+            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.downloadHandler = new DownloadHandlerBuffer();
+
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.SetRequestHeader("Authorization", $"Bearer {jwtToken}");
+            request.SetRequestHeader("x-game-api", gameApiKey);
+
+            yield return request.SendWebRequest();
+
+            // Network or protocol error?
+            if (request.result == UnityWebRequest.Result.ConnectionError ||
+                request.result == UnityWebRequest.Result.DataProcessingError)
+            {
+                onError?.Invoke($"Error granting reward: {request.error}", request.downloadHandler.text);
+                yield break;
+            }
+
+            // Handle HTTP response codes
+            long code = request.responseCode;
+            string text = request.downloadHandler.text;
+
+            switch (code)
+            {
+                case 200:
+                    // { "message": "..." }
+                    onSuccess?.Invoke(text);
+                    break;
+
+                case 409:
+                    onError?.Invoke("Reward already granted.", request.downloadHandler.text);
+                    break;
+
+                case 404:
+                    onError?.Invoke("Server not yet joined. Please direct the player to join the Discord server first.", request.downloadHandler.text);
+                    break;
+
+                case 400:
+                    onError?.Invoke("Invalid request. Check that gameId and rewardId are correct.", request.downloadHandler.text);
+                    break;
+
+                case 500:
+                    onError?.Invoke("Server-side error. Please retry or contact support: " + request.error, request.downloadHandler.text);
+                    break;
+
+                default:
+                    onError?.Invoke($"Unexpected response ({code}): {text}", request.downloadHandler.text);
+                    break;
+            }
+        }
+    }
 
     private void Update()
     {
@@ -262,13 +332,36 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.M))
         {
-            StartCoroutine(GetActiveServerRewards(gameId, "eyJhbGciOiJIUzI1NiJ9.eyJkaXNjb3JkSWQiOiI0NzY3MDk1MjQwMTE2MTQyMTkiLCJyb29tSWQiOiJEQ1JEX2ktMTM4OTUzMzUzNjg5NzIwNDMxNC1wYy0xMzcxOTI3NzM0MTY2NDg3MDkwIiwiZ2FtZUlkIjoiRm1PQmVVZlFPMkFPTE5JckpOU0oiLCJndWlsZElkIjpudWxsLCJjaGFubmVsSWQiOiIxMzcxOTI3NzM0MTY2NDg3MDkwIiwiYWNjZXNzVG9rZW4iOiJNVE0zTURReE5qSTRORFk0T0RNeU1qWTRNZy5XUVFnOFp5bjNHNnNuYVJTR21qQmZDM1A4bm5tcm4iLCJhdXRoIjoiZGlzY29yZCIsInQiOjE3NTEzNjEwNDJ9.wXL2lVdyCyXNbiNjQGrFV4bqoESt3eLyflAMt50evY8", "510a71af-3a69-4f5d-9b9b-296a1871e624", (result) =>
+            StartCoroutine(GetActiveServerRewards(gameId, playroomKit.GetPlayroomToken(), "510a71af-3a69-4f5d-9b9b-296a1871e624", (result) =>
             {
-                text.text = result;
                 serverRewards = ServerReward.FromJSON(result);
+                text.text = "id :" +serverRewards[0].id + " - server id: " + serverRewards[0].serverId;
             }, (error) => text.text = error));
         }
 
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            StartCoroutine(GrantServerReward(gameId, playroomKit.GetPlayroomToken(), "510a71af-3a69-4f5d-9b9b-296a1871e624", serverRewards[0].serverId, (result) =>
+            {
+                text.text = result;
+            }, (error, response) =>
+            {
+                text.text = response;
+                Debug.LogError(error);
+            }));
+        }
+
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            StartCoroutine(GrantServerReward(gameId, playroomKit.GetPlayroomToken(), "510a71af-3a69-4f5d-9b9b-296a1871e624", serverRewards[0].id, (result) =>
+            {
+                text.text = result;
+            }, (error, response) =>
+            {
+                text.text = response;
+                Debug.LogError(error);
+            }));
+        }
     }
     #endregion
 
