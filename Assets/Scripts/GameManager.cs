@@ -46,7 +46,6 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
-
     #region Debug UI
     [Header("Debug UI")]
     private bool showDebugWindow = false;
@@ -91,21 +90,6 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        // if (Application.absoluteURL.Contains("discord"))
-        // {
-        //     baseUrl = ".proxy/_ws/api/store";
-        // }
-        // else
-        // {
-        //     baseUrl = "https://ws.joinplayroom.com/api/store";
-        // }
-
-        playroomKit.PatchDiscordUrlMappings(new()
-        {
-            new Mapping() { Prefix = "json", Target = "jsonplaceholder.typicode.com", }
-        });
-
-
         // Initialize fake Discord SKUs
         discordSkus = new List<DiscordSku>
         {
@@ -246,7 +230,7 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.J))
         {
-            StartCoroutine(GetRequest("https://jsonplaceholder.typicode.com/todos/1", (response) =>
+            StartCoroutine(GetRequest("https://jsonplaceholder.typicode.com/todos/5", (response) =>
             {
                 text.text = "Response from JSON Placeholder: " + response;
                 Debug.Log("Response: " + response);
@@ -317,6 +301,12 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogWarning("DATA UNITY: " + data);
             text.text = data;
+        });
+
+        playroomKit.PatchDiscordUrlMappings(new()
+        {
+            new Mapping() { Prefix = "json", Target = "jsonplaceholder.typicode.com", },
+            new Mapping() { Prefix = "_ws", Target = baseUrl, }
         });
     }
 
@@ -493,6 +483,4 @@ public class GameManager : MonoBehaviour
         return style;
     }
     #endregion
-
-
 }
