@@ -1,3 +1,6 @@
+using Discord;
+using System.Collections.Generic;
+
 namespace Playroom
 {
     public interface IPlayroomBuildExtensions
@@ -7,5 +10,7 @@ namespace Playroom
         void SetState(string key, bool value, bool reliable = false);
         void SetState(string key, float value, bool reliable = false);
         void SetState(string key, object value, bool reliable = false);
+
+        void PatchDiscordUrlMappings(List<Mapping> mappings, PatchUrlMappingsConfig config = null);
     }
 }
