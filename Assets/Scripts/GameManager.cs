@@ -70,18 +70,41 @@ public class GameManager : MonoBehaviour
 
     #region Unity Lifecycle
 
+    IEnumerator GetRequest(string url, Action<string> onComplete)
+    {
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
+        {
+            yield return webRequest.SendWebRequest();
+            if (webRequest.result == UnityWebRequest.Result.Success)
+            {
+                Debug.Log("Response: " + webRequest.downloadHandler.text);
+                onComplete?.Invoke(webRequest.downloadHandler.text);
+            }
+            else
+            {
+                Debug.LogError("Error: " + webRequest.error);
+                onComplete?.Invoke(webRequest.downloadHandler.text);
+            }
+        }
+    }
 
 
     void Awake()
     {
-        if (Application.absoluteURL.Contains("discord"))
+        // if (Application.absoluteURL.Contains("discord"))
+        // {
+        //     baseUrl = ".proxy/_ws/api/store";
+        // }
+        // else
+        // {
+        //     baseUrl = "https://ws.joinplayroom.com/api/store";
+        // }
+
+        playroomKit.PatchDiscordUrlMappings(new()
         {
-            baseUrl = ".proxy/_ws/api/store";
-        }
-        else
-        {
-            baseUrl = "https://ws.joinplayroom.com/api/store";
-        }
+            new Mapping() { Prefix = "json", Target = "jsonplaceholder.typicode.com", }
+        });
+
 
         // Initialize fake Discord SKUs
         discordSkus = new List<DiscordSku>
@@ -219,6 +242,15 @@ public class GameManager : MonoBehaviour
             {
                 text.text = success;
             });
+        }
+
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            StartCoroutine(GetRequest("https://jsonplaceholder.typicode.com/todos/1", (response) =>
+            {
+                text.text = "Response from JSON Placeholder: " + response;
+                Debug.Log("Response: " + response);
+            }));
         }
 
     }
