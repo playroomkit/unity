@@ -24,7 +24,7 @@ namespace Playroom
             node["roomCode"] = options.roomCode;
             node["skipLobby"] = options.skipLobby;
             node["reconnectGracePeriod"] = options.reconnectGracePeriod;
-            node["discord"] = options.discord;
+            node["discord"] = SerializeDiscord(options.discord);
             node["persistentMode"] = options.persistentMode;
 
             if (options.avatars != null)
@@ -96,6 +96,27 @@ namespace Playroom
             DebugLogger.LogWarning(node.ToString());
 
             return node.ToString();
+        }
+
+        private static JSONNode SerializeDiscord(object discord)
+        {
+            if (discord is bool b)
+                return new JSONBool(b);
+
+            if (discord is DiscordOptions opts)
+            {
+                var discordNode = new JSONObject();
+                if (opts.Scope != null)
+                {
+                    var scopeArray = new JSONArray();
+                    foreach (var s in opts.Scope)
+                        scopeArray.Add(s);
+                    discordNode["scope"] = scopeArray;
+                }
+                return discordNode;
+            }
+
+            return JSONNull.CreateOrGet();
         }
 
         private static JSONNode ConvertValueToJSON(object value)

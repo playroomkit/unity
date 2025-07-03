@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using Discord;
 using Playroom;
 using SimpleJSON;
@@ -11,7 +12,8 @@ using UnityEngine.Networking;
 public class GameManager : MonoBehaviour
 {
     #region Fields
-    [SerializeField] private string baseUrl = "https://ws.joinplayroom.com/api/store";
+    [SerializeField] private string gameId = "FmOBeUfQO2AOLNIrJNSJ";
+    [SerializeField] private string baseUrl = "https://ws.joinplayroom.com/api/";
     [SerializeField] private string gameApiKey;
 
     [SerializeField]
@@ -43,6 +45,9 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     private List<DiscordEntitlement> discordEntitlements = new List<DiscordEntitlement>();
+
+    [SerializeField]
+    private List<ServerReward> serverRewards = new();
 
     #endregion
 
@@ -76,11 +81,11 @@ public class GameManager : MonoBehaviour
     {
         if (Application.absoluteURL.Contains("discord"))
         {
-            baseUrl = ".proxy/_ws/api/store";
+            baseUrl = ".proxy/_ws/api";
         }
         else
         {
-            baseUrl = "https://ws.joinplayroom.com/api/store";
+            baseUrl = "https://ws.joinplayroom.com/api";
         }
 
         // Initialize fake Discord SKUs
@@ -121,8 +126,108 @@ public class GameManager : MonoBehaviour
         {
             gameId = "FmOBeUfQO2AOLNIrJNSJ",
             maxPlayersPerRoom = 2,
-            discord = true,
+            discord = new DiscordOptions()
+            {
+                Scope = new() { "applications.commands", "guilds" }
+            },
+
+            // discord = true
         }, OnLaunchCallBack);
+    }
+    public IEnumerator GetActiveServerRewards(
+        string gameId,
+        string jwtToken,
+        string gameApiKey,
+        Action<string> onSuccess,
+        Action<string> onError
+    )
+    {
+        // Build full URL with query parameter
+        string url = $"{baseUrl}/discord/server-rewards?gameId={UnityWebRequest.EscapeURL(gameId)}";
+
+        using (UnityWebRequest request = UnityWebRequest.Get(url))
+        {
+            request.SetRequestHeader("Authorization", $"Bearer {jwtToken}");
+            request.SetRequestHeader("x-game-api", gameApiKey);
+
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.ConnectionError ||
+                request.result == UnityWebRequest.Result.ProtocolError)
+            {
+                onError?.Invoke($"Error fetching server rewards: {request.error}");
+            }
+            else
+            {
+                onSuccess?.Invoke(request.downloadHandler.text);
+            }
+        }
+    }
+
+    public IEnumerator GrantServerReward(
+    string gameId,
+    string jwtToken,
+    string gameApiKey,
+    string rewardId,
+    Action<string> onSuccess,
+    Action<string, string> onError
+)
+    {
+        string url = $"{baseUrl}/discord/server-rewards?gameId={UnityWebRequest.EscapeURL(gameId)}";
+
+        var bodyJson = $"{{\"rewardId\":\"{rewardId}\"}}";
+
+        Debug.LogWarning($"body: {bodyJson}");
+
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(bodyJson);
+        using (var request = new UnityWebRequest(url, "POST"))
+        {
+            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.downloadHandler = new DownloadHandlerBuffer();
+
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.SetRequestHeader("Authorization", $"Bearer {jwtToken}");
+            request.SetRequestHeader("x-game-api", gameApiKey);
+
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.ConnectionError ||
+                request.result == UnityWebRequest.Result.DataProcessingError)
+            {
+                onError?.Invoke($"Error granting reward: {request.error}", request.downloadHandler.text);
+                yield break;
+            }
+
+            long code = request.responseCode;
+            string text = request.downloadHandler.text;
+
+            switch (code)
+            {
+                case 200:
+                    onSuccess?.Invoke(text);
+                    break;
+
+                case 409:
+                    onError?.Invoke("Reward already granted.", request.downloadHandler.text);
+                    break;
+
+                case 404:
+                    onError?.Invoke("Server not yet joined. Please direct the player to join the Discord server first.", request.downloadHandler.text);
+                    break;
+
+                case 400:
+                    onError?.Invoke("Invalid request. Check that gameId and rewardId are correct.", request.downloadHandler.text);
+                    break;
+
+                case 500:
+                    onError?.Invoke("Server-side error. Please retry or contact support: " + request.error, request.downloadHandler.text);
+                    break;
+
+                default:
+                    onError?.Invoke($"Unexpected response ({code}): {text}", request.downloadHandler.text);
+                    break;
+            }
+        }
     }
 
     private void Update()
@@ -221,6 +326,71 @@ public class GameManager : MonoBehaviour
             });
         }
 
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            StartCoroutine(GetActiveServerRewards(gameId, playroomKit.GetPlayroomToken(), gameApiKey, (result) =>
+            {
+                serverRewards = ServerReward.FromJSON(result);
+                text.text = "id :" + serverRewards[0].id + " - server id: " + serverRewards[0].serverId;
+            }, (error) => text.text = error));
+#elif UNITY_EDITOR
+            StartCoroutine(GetActiveServerRewards(gameId, token, gameApiKey, (result) =>
+            {
+                serverRewards = ServerReward.FromJSON(result);
+                text.text = "id :" + serverRewards[0].id + " - server id: " + serverRewards[0].serverId;
+            }, (error) => text.text = error));
+#endif
+        }
+
+
+
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+            StartCoroutine(GrantServerReward(gameId, playroomKit.GetPlayroomToken(), gameApiKey, serverRewards[0].serverId, (result) =>
+            {
+                text.text = result;
+            }, (error, response) =>
+            {
+                text.text = response;
+                Debug.LogError(error);
+            }));
+#else
+            StartCoroutine(GrantServerReward(gameId, token, gameApiKey, serverRewards[0].serverId, (result) =>
+                        {
+                            text.text = result;
+                        }, (error, response) =>
+                        {
+                            text.text = response;
+                            Debug.LogError(error);
+                        }));
+#endif
+        }
+
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            StartCoroutine(GrantServerReward(gameId, playroomKit.GetPlayroomToken(), gameApiKey, serverRewards[0].id, (result) =>
+            {
+                text.text = result;
+            }, (error, response) =>
+            {
+                text.text = response;
+                Debug.LogError(error);
+            }));
+#elif UNITY_EDITOR
+            StartCoroutine(GrantServerReward(gameId, token, gameApiKey, serverRewards[0].id, (result) =>
+            {
+                text.text = result;
+            }, (error, response) =>
+            {
+                text.text = response;
+                Debug.LogError(error);
+            }));
+#endif
+        }
     }
     #endregion
 
@@ -232,7 +402,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator GetSKUS(Action<string> onRequestComplete = null)
     {
-        var url = $"{baseUrl}/sku?gameId={UnityWebRequest.EscapeURL("FmOBeUfQO2AOLNIrJNSJ")}&platform={UnityWebRequest.EscapeURL("discord")}";
+        var url = $"{baseUrl}/store/sku?gameId={UnityWebRequest.EscapeURL("FmOBeUfQO2AOLNIrJNSJ")}&platform={UnityWebRequest.EscapeURL("discord")}";
 
         using (var req = UnityWebRequest.Get(url))
         {
@@ -257,7 +427,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator GetEntitlements(Action<string> onRequestComplete)
     {
-        var url = $"{baseUrl}/entitlement?gameId={UnityWebRequest.EscapeURL("FmOBeUfQO2AOLNIrJNSJ")}";
+        var url = $"{baseUrl}/store/entitlement?gameId={UnityWebRequest.EscapeURL("FmOBeUfQO2AOLNIrJNSJ")}";
 
         using (var req = UnityWebRequest.Get(url))
         {
