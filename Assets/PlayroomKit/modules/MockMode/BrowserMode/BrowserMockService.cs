@@ -354,6 +354,11 @@ namespace Playroom
             DebugLogger.LogWarning("[MockMode] Discord external link is currently not supported in browser mock mode!");
             callback?.Invoke("true");
         }
+
+        public void PatchDiscordUrlMappings(List<Mapping> mappings, PatchUrlMappingsConfig config = null)
+        {
+            DebugLogger.LogWarning("[MockMode] Patch Discord URL Mappings is currently not supported in browser mock mode!");
+        }
         #endregion
     }
 #endif

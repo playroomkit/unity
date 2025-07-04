@@ -11,7 +11,6 @@ namespace Playroom
     public partial class PlayroomKit
     {
         private readonly IPlayroomBase _playroomService;
-        private readonly IPlayroomBuildExtensions playroomBuildExtensions;
         private readonly IRPC _rpc;
 
         private static PlayroomKit _instance;
@@ -414,9 +413,9 @@ namespace Playroom
             if (!ValidateDiscord("PatchUrlMappings only works inside discord."))
                 return;
 
-            playroomBuildExtensions.PatchDiscordUrlMappings(mappings, config);
+            _playroomService.PatchDiscordUrlMappings(mappings, config);
         }
-        
+
         #endregion
     }
 }

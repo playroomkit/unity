@@ -57,6 +57,13 @@ public class GameManager : MonoBehaviour
     private string discordSkusText = "";
     private string hqEntitlementsText = "";
     private string hqSkusText = "";
+
+
+    List<Mapping> mappings = new()
+    {
+            new Mapping() { Prefix = "json", Target = "jsonplaceholder.typicode.com", }
+    };
+
     #endregion
 
     #region Custom Classes
@@ -164,14 +171,22 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.P))
         {
-            playroomKit.StartDiscordPurchase(skuId, (response) =>
+
+            Debug.LogWarning("Patching Discord URL Mappings");
+
+            playroomKit.PatchDiscordUrlMappings(new()
             {
-                discordEntitlements = DiscordEntitlement.FromJSON(response);
-                debugText = "Purchase completed!\n" + response;
-            }, (onErrorResponse) =>
-            {
-                text.text = onErrorResponse;
+                new Mapping() { Prefix = "json", Target = "jsonplaceholder.typicode.com", },
             });
+
+            // playroomKit.StartDiscordPurchase(skuId, (response) =>
+            // {
+            //     discordEntitlements = DiscordEntitlement.FromJSON(response);
+            //     debugText = "Purchase completed!\n" + response;
+            // }, (onErrorResponse) =>
+            // {
+            //     text.text = onErrorResponse;
+            // });
         }
 
         if (Input.GetKeyDown(KeyCode.T))
@@ -230,7 +245,7 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.J))
         {
-            StartCoroutine(GetRequest("https://jsonplaceholder.typicode.com/todos/5", (response) =>
+            StartCoroutine(GetRequest("https://jsonplaceholder.typicode.com/todos/1", (response) =>
             {
                 text.text = "Response from JSON Placeholder: " + response;
                 Debug.Log("Response: " + response);
@@ -301,12 +316,6 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogWarning("DATA UNITY: " + data);
             text.text = data;
-        });
-
-        playroomKit.PatchDiscordUrlMappings(new()
-        {
-            new Mapping() { Prefix = "json", Target = "jsonplaceholder.typicode.com", },
-            new Mapping() { Prefix = "_ws", Target = baseUrl, }
         });
     }
 

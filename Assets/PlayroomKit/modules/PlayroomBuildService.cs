@@ -433,9 +433,6 @@ namespace Playroom
             #endregion
 
             #region Discord API
-
-           
-
             public void PatchDiscordUrlMappings(List<Mapping> mappings, PatchUrlMappingsConfig config = null)
             {
                 for (int i = 0; i < mappings.Count; i++)
@@ -443,7 +440,6 @@ namespace Playroom
                     PatchDiscordUrlMappingsInternal(mappings[i].Prefix, mappings[i].Target);
                 }
             }
-
 
             public void OpenDiscordInviteDialog(Action callback = null)
             {

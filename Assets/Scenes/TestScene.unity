@@ -266,7 +266,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1054460207}
-  - component: {fileID: 1054460206}
+  - component: {fileID: 1054460208}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -274,23 +274,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1054460206
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1054460205}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc3a2b9cdc24aab40906ce4bcdee9943, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  baseUrl: https://ws.joinplayroom.com/api/store
-  gameApiKey: 
-  text: {fileID: 1547749}
-  skus: []
-  entitlements: []
 --- !u!4 &1054460207
 Transform:
   m_ObjectHideFlags: 0
@@ -306,6 +289,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1054460208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1054460205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75cfd53c3bec10f4cbfc44d61b3f260c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  responseText: {fileID: 1547749}
 --- !u!1001 &1407290422
 PrefabInstance:
   m_ObjectHideFlags: 0
