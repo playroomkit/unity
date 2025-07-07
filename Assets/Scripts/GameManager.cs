@@ -176,17 +176,10 @@ public class GameManager : MonoBehaviour
 
             playroomKit.PatchDiscordUrlMappings(new()
             {
-                new Mapping() { Prefix = "json", Target = "jsonplaceholder.typicode.com", },
+                new Mapping() { Prefix = ".proxy/json", Target = "jsonplaceholder.typicode.com", },
             });
 
-            // playroomKit.StartDiscordPurchase(skuId, (response) =>
-            // {
-            //     discordEntitlements = DiscordEntitlement.FromJSON(response);
-            //     debugText = "Purchase completed!\n" + response;
-            // }, (onErrorResponse) =>
-            // {
-            //     text.text = onErrorResponse;
-            // });
+            
         }
 
         if (Input.GetKeyDown(KeyCode.T))
