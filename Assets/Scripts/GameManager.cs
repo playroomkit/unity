@@ -51,7 +51,6 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
-
     #region Debug UI
     [Header("Debug UI")]
     private bool showDebugWindow = false;
@@ -63,6 +62,13 @@ public class GameManager : MonoBehaviour
     private string discordSkusText = "";
     private string hqEntitlementsText = "";
     private string hqSkusText = "";
+
+
+    List<Mapping> mappings = new()
+    {
+            new Mapping() { Prefix = "json", Target = "jsonplaceholder.typicode.com", }
+    };
+
     #endregion
 
     #region Custom Classes
@@ -75,19 +81,27 @@ public class GameManager : MonoBehaviour
 
     #region Unity Lifecycle
 
+    IEnumerator GetRequest(string url, Action<string> onComplete)
+    {
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
+        {
+            yield return webRequest.SendWebRequest();
+            if (webRequest.result == UnityWebRequest.Result.Success)
+            {
+                Debug.Log("Response: " + webRequest.downloadHandler.text);
+                onComplete?.Invoke(webRequest.downloadHandler.text);
+            }
+            else
+            {
+                Debug.LogError("Error: " + webRequest.error);
+                onComplete?.Invoke(webRequest.downloadHandler.text);
+            }
+        }
+    }
 
 
     void Awake()
     {
-        if (Application.absoluteURL.Contains("discord"))
-        {
-            baseUrl = ".proxy/_ws/api";
-        }
-        else
-        {
-            baseUrl = "https://ws.joinplayroom.com/api";
-        }
-
         // Initialize fake Discord SKUs
         discordSkus = new List<DiscordSku>
         {
@@ -262,14 +276,15 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.P))
         {
-            playroomKit.StartDiscordPurchase(skuId, (response) =>
+
+            Debug.LogWarning("Patching Discord URL Mappings");
+
+            playroomKit.PatchDiscordUrlMappings(new()
             {
-                discordEntitlements = DiscordEntitlement.FromJSON(response);
-                debugText = "Purchase completed!\n" + response;
-            }, (onErrorResponse) =>
-            {
-                text.text = onErrorResponse;
+                new Mapping() { Prefix = ".proxy/json", Target = "jsonplaceholder.typicode.com", },
             });
+
+            
         }
 
         if (Input.GetKeyDown(KeyCode.T))
@@ -326,71 +341,15 @@ public class GameManager : MonoBehaviour
             });
         }
 
-        if (Input.GetKeyDown(KeyCode.M))
+        if (Input.GetKeyDown(KeyCode.J))
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            StartCoroutine(GetActiveServerRewards(gameId, playroomKit.GetPlayroomToken(), gameApiKey, (result) =>
+            StartCoroutine(GetRequest("https://jsonplaceholder.typicode.com/todos/1", (response) =>
             {
-                serverRewards = ServerReward.FromJSON(result);
-                text.text = "id :" + serverRewards[0].id + " - server id: " + serverRewards[0].serverId;
-            }, (error) => text.text = error));
-#elif UNITY_EDITOR
-            StartCoroutine(GetActiveServerRewards(gameId, token, gameApiKey, (result) =>
-            {
-                serverRewards = ServerReward.FromJSON(result);
-                text.text = "id :" + serverRewards[0].id + " - server id: " + serverRewards[0].serverId;
-            }, (error) => text.text = error));
-#endif
+                text.text = "Response from JSON Placeholder: " + response;
+                Debug.Log("Response: " + response);
+            }));
         }
 
-
-
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-
-#if !UNITY_EDITOR && UNITY_WEBGL
-            StartCoroutine(GrantServerReward(gameId, playroomKit.GetPlayroomToken(), gameApiKey, serverRewards[0].serverId, (result) =>
-            {
-                text.text = result;
-            }, (error, response) =>
-            {
-                text.text = response;
-                Debug.LogError(error);
-            }));
-#else
-            StartCoroutine(GrantServerReward(gameId, token, gameApiKey, serverRewards[0].serverId, (result) =>
-                        {
-                            text.text = result;
-                        }, (error, response) =>
-                        {
-                            text.text = response;
-                            Debug.LogError(error);
-                        }));
-#endif
-        }
-
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-#if !UNITY_EDITOR && UNITY_WEBGL
-            StartCoroutine(GrantServerReward(gameId, playroomKit.GetPlayroomToken(), gameApiKey, serverRewards[0].id, (result) =>
-            {
-                text.text = result;
-            }, (error, response) =>
-            {
-                text.text = response;
-                Debug.LogError(error);
-            }));
-#elif UNITY_EDITOR
-            StartCoroutine(GrantServerReward(gameId, token, gameApiKey, serverRewards[0].id, (result) =>
-            {
-                text.text = result;
-            }, (error, response) =>
-            {
-                text.text = response;
-                Debug.LogError(error);
-            }));
-#endif
-        }
     }
     #endregion
 
@@ -631,6 +590,4 @@ public class GameManager : MonoBehaviour
         return style;
     }
     #endregion
-
-
 }

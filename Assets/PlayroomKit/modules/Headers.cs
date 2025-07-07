@@ -187,6 +187,9 @@ namespace Playroom
 
         [DllImport("__Internal")]
         private static extern void SubscribeDiscordInternal(string eventName, Action<string, string> callback);
+
+        [DllImport("__Internal")]
+        private static extern void PatchDiscordUrlMappingsInternal(string prefix, string target);
         #endregion
     }
 }
