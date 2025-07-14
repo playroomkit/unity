@@ -349,14 +349,14 @@ namespace Playroom
         #endregion
 
         #region Discord Helpers
-        public static bool IsDicordContext()
+        public static bool IsDiscordContext()
         {
             return Application.absoluteURL.Contains("discord");
         }
 
         private static bool ValidateDiscord(string warningMessage)
         {
-            if (!IsDicordContext())
+            if (!IsDiscordContext())
             {
                 UnityEngine.Debug.LogWarning($"[PlayroomDiscord] {warningMessage}");
                 return false;
