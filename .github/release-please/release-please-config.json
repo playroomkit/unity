@@ -1,0 +1,39 @@
+{
+  "include-component-in-tag": false,
+  "include-v-in-tag": true,
+  "release-as": "1.5.5",
+  "pull-request-title-pattern": "chore${scope}: release${component} ${version} [release-please]",
+  "packages": {
+    ".": {
+      "release-type": "simple",
+      "package-name": "playroom-unity",
+      "changelog-path": "CHANGELOG.md",
+      "changelog-sections": [
+        {
+          "type": "feat",
+          "section": "Features"
+        },
+        {
+          "type": "fix",
+          "section": "Bug Fixes"
+        },
+        {
+          "type": "perf",
+          "section": "Performance"
+        },
+        {
+          "type": "refactor",
+          "section": "Refactors"
+        },
+        {
+          "type": "revert",
+          "section": "Reverts"
+        }
+      ],
+      "extra-files": [
+        "Packages/com.playroomkit.sdk/package.json",
+        "Tools/playroomkit-js/package.json"
+      ]
+    }
+  }
+}

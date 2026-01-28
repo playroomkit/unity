@@ -1,0 +1,26 @@
+name: Release + Changelog Automation [release-please]
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: .github/release-please/release-please-config.json
+          manifest-file: .github/release-please/release-please-manifest.json
