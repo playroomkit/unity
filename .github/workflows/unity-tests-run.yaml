@@ -1,0 +1,325 @@
+name: Unity EditMode Tests
+
+on:
+  issue_comment:
+    types: [created]
+  push:
+    branches: [main]
+    paths:
+      - "Packages/com.playroomkit.sdk/**/*.cs"
+      - "Packages/com.playroomkit.sdk/**/*.asmdef"
+      - "Packages/com.playroomkit.sdk/**/*.asmref"
+      - "Packages/com.playroomkit.sdk/**/*.unity"
+      - "Packages/com.playroomkit.sdk/package.json"
+
+concurrency:
+  group: unity-tests-${{ github.event.issue.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  resolve-pr:
+    if: github.event_name == 'issue_comment'
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.resolve.outputs.should_run }}
+      pr_number: ${{ steps.resolve.outputs.pr_number }}
+      sha: ${{ steps.resolve.outputs.sha }}
+      head_repo: ${{ steps.resolve.outputs.head_repo }}
+      comment_id: ${{ steps.resolve.outputs.comment_id }}
+    steps:
+      - name: Resolve PR from comment
+        id: resolve
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.comment.body || "";
+            const command = "/run-unity-tests";
+            if (!body.trim().startsWith(command)) {
+              core.setOutput("should_run", "false");
+              return;
+            }
+
+            if (!context.payload.issue.pull_request) {
+              core.setOutput("should_run", "false");
+              return;
+            }
+
+            const allowed = ["OWNER", "MEMBER", "COLLABORATOR"];
+            if (!allowed.includes(context.payload.comment.author_association)) {
+              core.setOutput("should_run", "false");
+              return;
+            }
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const prNumber = context.payload.issue.number;
+            const { data: pr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: prNumber,
+            });
+
+            core.setOutput("should_run", "true");
+            core.setOutput("pr_number", String(prNumber));
+            core.setOutput("sha", pr.head.sha);
+            core.setOutput("head_repo", pr.head.repo.full_name);
+            core.setOutput("comment_id", String(context.payload.comment.id));
+
+  unity-tests-pr:
+    if: github.event_name == 'issue_comment' && needs.resolve-pr.outputs.should_run == 'true'
+    needs: resolve-pr
+    runs-on: ubuntu-latest
+    environment: unity-ci
+    steps:
+      - name: Mark Unity tests as running
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const sha = "${{ needs.resolve-pr.outputs.sha }}";
+            const prNumber = Number("${{ needs.resolve-pr.outputs.pr_number }}");
+            const commentId = Number("${{ needs.resolve-pr.outputs.comment_id }}");
+
+            const labelPending = "unity-test: pending";
+            const labelPassed = "unity-test: passed";
+            const labelFailed = "unity-test: failed";
+            const commentTag = "<!-- unity-tests-gate -->";
+            const body = [
+              commentTag,
+              "### Unity EditMode Tests",
+              "**Status:** running",
+              "Triggered by a member/collaborator.",
+            ].join("\n");
+
+            await github.rest.reactions.createForIssueComment({
+              owner,
+              repo,
+              comment_id: commentId,
+              content: "eyes",
+            });
+
+            for (const label of [labelPassed, labelFailed]) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner,
+                  repo,
+                  issue_number: prNumber,
+                  name: label,
+                });
+              } catch (error) {
+                if (error.status !== 404) {
+                  throw error;
+                }
+              }
+            }
+
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: prNumber,
+              labels: [labelPending],
+            });
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+
+            const existing = comments.find((comment) =>
+              comment.body && comment.body.includes(commentTag)
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: prNumber,
+                body,
+              });
+            }
+
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+          repository: ${{ needs.resolve-pr.outputs.head_repo }}
+          ref: ${{ needs.resolve-pr.outputs.sha }}
+
+      - name: Run EditMode tests
+        uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: Packages/com.playroomkit.sdk
+          packageMode: true
+          unityVersion: 2022.3.62f3
+          testMode: editmode
+          artifactsPath: Assets/test-results
+          githubToken: ${{ github.token }}
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-test-results
+          path: Assets/test-results
+
+      - name: Publish test report
+        id: report
+        if: always() && hashFiles('Assets/test-results/editmode-results.xml') != ''
+        uses: dorny/test-reporter@v2
+        continue-on-error: true
+        with:
+          name: EditMode Test Results
+          path: Assets/test-results/editmode-results.xml
+          reporter: dotnet-nunit
+          fail-on-error: true
+
+      - name: Update PR status
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const sha = "${{ needs.resolve-pr.outputs.sha }}";
+            const prNumber = Number("${{ needs.resolve-pr.outputs.pr_number }}");
+            const commentId = Number("${{ needs.resolve-pr.outputs.comment_id }}");
+            const conclusion = "${{ job.status }}";
+            const reportOutcome = "${{ steps.report.outcome }}";
+
+            const labelPending = "unity-test: pending";
+            const labelPassed = "unity-test: passed";
+            const labelFailed = "unity-test: failed";
+            const commentTag = "<!-- unity-tests-gate -->";
+            const statusLine =
+              conclusion === "success"
+                ? "Unity EditMode tests passed."
+                : "Unity EditMode tests failed.";
+            const runLink = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const reportLine =
+              reportOutcome && reportOutcome !== "success"
+                ? "Test report failed to publish."
+                : "";
+            const body = [
+              commentTag,
+              "### Unity EditMode Tests",
+              `**Status:** ${conclusion === "success" ? "passed" : "failed"}`,
+              statusLine,
+              reportLine,
+              `Run: ${runLink}`,
+              "Manual rerun: `/run-unity-tests`",
+            ].filter(Boolean).join("\n");
+
+            await github.rest.reactions.createForIssueComment({
+              owner,
+              repo,
+              comment_id: commentId,
+              content: conclusion === "success" ? "hooray" : "confused",
+            });
+
+            try {
+              await github.rest.issues.removeLabel({
+                owner,
+                repo,
+                issue_number: prNumber,
+                name: labelPending,
+              });
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+            }
+
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: prNumber,
+              labels: [conclusion === "success" ? labelPassed : labelFailed],
+            });
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+
+            const existing = comments.find((comment) =>
+              comment.body && comment.body.includes(commentTag)
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: prNumber,
+                body,
+              });
+            }
+
+
+  unity-tests-main:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: unity-ci
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Run EditMode tests
+        uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: Packages/com.playroomkit.sdk
+          packageMode: true
+          unityVersion: 2022.3.62f3
+          testMode: editmode
+          artifactsPath: Assets/test-results
+          githubToken: ${{ github.token }}
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-test-results
+          path: Assets/test-results
+
+      - name: Publish test report
+        id: report
+        if: always() && hashFiles('Assets/test-results/editmode-results.xml') != ''
+        uses: dorny/test-reporter@v2
+        continue-on-error: true
+        with:
+          name: EditMode Test Results
+          path: Assets/test-results/editmode-results.xml
+          reporter: dotnet-nunit
+          fail-on-error: true
