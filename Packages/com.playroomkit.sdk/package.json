@@ -1,0 +1,46 @@
+{
+  "name": "com.playroomkit.sdk",
+  "displayName": "PlayroomKit",
+  "version": "1.5.4",
+  "unity": "2022.3",
+  "description": "This SDK is a wrapper over PlayroomKit JS. Currently, it only supports WebGL exported games.",
+  "documentationUrl": "https://docs.joinplayroom.com/usage/unity",
+  "changelogUrl": "https://github.com/playroomkit/unity/blob/main/CHANGELOG.md",
+  "keywords": [
+    "playroom",
+    "multiplayer",
+    "webgl"
+  ],
+  "files": [
+    "Assets/",
+    "Editor/",
+    "Runtime/",
+    "Samples~/",
+    "Tests/",
+    "*.meta"
+  ],
+  "dependencies": {
+    "com.unity.textmeshpro": "3.0.9"
+  },
+  "samples": [
+    {
+      "displayName": "2D Platformer",
+      "description": "Example project demonstrating multiplayer gameplay.",
+      "path": "Samples~/2d-platformer"
+    },
+    {
+      "displayName": "Discord Activity",
+      "description": "Example project showcasing Discord activity integration.",
+      "path": "Samples~/discord-activity"
+    },
+    {
+      "displayName": "Package Showcase",
+      "description": "Example project demonstrating package features.",
+      "path": "Samples~/package-showcase"
+    }
+  ],
+  "author": {
+    "name": "Playroom",
+    "url" : "https://joinplayroom.com"
+  }
+}

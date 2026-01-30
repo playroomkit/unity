@@ -1,7 +1,6 @@
 {
   "include-component-in-tag": false,
   "include-v-in-tag": true,
-  "release-as": "1.5.5",
   "pull-request-title-pattern": "chore${scope}: release${component} ${version} [release-please]",
   "packages": {
     ".": {
