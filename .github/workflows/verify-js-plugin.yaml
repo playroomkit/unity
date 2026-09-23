@@ -1,0 +1,41 @@
+name: Verify JS Plugin (PlayroomKit JS Wrapper) change synced to Unity Package
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "Tools/playroomkit-js/**"
+      - "Packages/com.playroomkit.sdk/Runtime/Plugins/Playroom/**"
+  pull_request:
+    paths:
+      - "Tools/playroomkit-js/**"
+      - "Packages/com.playroomkit.sdk/Runtime/Plugins/Playroom/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-js-plugin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build JS plugin
+        run: npm ci
+        working-directory: Tools/playroomkit-js
+
+      - name: Verify plugin output is up to date
+        run: |
+          git diff --name-only -- Packages/com.playroomkit.sdk/Runtime/Plugins/Playroom \
+            | grep -v '\.meta$' \
+            | tee /tmp/js-plugin-diff.txt
+          if [ -s /tmp/js-plugin-diff.txt ]; then
+            echo "JS plugin output is out of date."
+            exit 1
+          fi
