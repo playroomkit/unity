@@ -1,17 +1,22 @@
 # How to Contribute
 
 ## Local Setup
-Setting up the project locally is similar to any other Unity project:
+
+### Unity-only (most contributors)
+Use this if you are only editing C# code, assets, samples, or tests.
 1. Ensure you have [Unity 2022.3.23f1](https://unity.com/releases/editor/whats-new/2022.3.23) installed.
-2. Install [NodeJS](https://nodejs.org/en) on your system.
-3. Fork the repository and clone it to your local drive.
-4. To build the plugin, run these commands in your terminal:
+2. Fork the repository and clone it to your local drive.
+
+### JS bridge (only if you change the PlayroomKit JS plugin)
+Node.js is only required to rebuild the PlayroomKit JS plugin. The build step installs the upstream JS SDK and generates the `.jslib`/`.jspre` files used by Unity.
+1. Install [NodeJS](https://nodejs.org/en) on your system.
+2. Build the JS bridge:
    ```shell
-   cd Assets/Playroomkit
+   cd Tools/playroomkit-js
    npm install
    ```
-   This command will install the `upstream.sdk` and its dependencies. It also creates a `Playroom` folder inside `Assets/Plugins`, containing two files: a `.JSLIB` file and a `.JSPRE` file.
-5. Complete your setup by running `npm install` whenever changes are made to `Playroomkit/src/index.js`.
+   This installs the upstream SDK and builds the plugin into `Packages/com.playroomkit.sdk/Runtime/Plugins/Playroom` (the `.jslib` and `.jspre` files).
+3. Re-run `npm install` only when `Tools/playroomkit-js/src/index.js` changes.
 
 ## Resources
 - User-facing Documentation: https://docs.joinplayroom.com/usage/unity
@@ -39,30 +44,25 @@ To implement a new feature available in the upstream SDK:
 The process for implementing fixes from the upstream SDK mirrors other feature implementations, typically done within the `index.js` file.
 
 ### Architecture
-This package follows this folder structure:
+This package follows this folder structure (UPM layout):
 ```
-PlayroomKit
-├── dependencies/
+Packages/com.playroomkit.sdk
+├── Assets/
 ├── Editor/
-├── Examples/
-├── modules/
-├── node_modules/
-├── Prefabs/
-├── src/
-└── Tests/
-└── package.json    
-└── package-lock.json
-└── Playroom.asmdef 
-└── PlayroomKit.cs  
-└── vite.config.js 
+├── Runtime/
+├── Samples~/
+├── Tests/
+├── package.json
+├── Playroom.asmdef
+└── PlayroomKit.cs
 ```
-The package also includes a custom WebGL template for Discord activities located in `Assets/WebGLTemplates`.
+The package also includes a custom WebGL template for Discord activities located in `Packages/com.playroomkit.sdk/Assets/WebGLTemplates`. This can be uploaded to project using the provided menu.
 
 #### Modules
 Playroomkit comes with many [modules](https://docs.joinplayroom.com/components) which help with speeding up development. Unity SDK builds on top of that and adds its own modules such as MockMode.
 The folder structure is something like this:
 ```
-modules
+Packages/com.playroomkit.sdk/Runtime/modules
 ├── Helpers/
 ├── Interfaces/
 ├── MockMode/
@@ -85,4 +85,22 @@ modules
 - **PlayroomkitDevManager.cs**: Manager script for choosing between local and browser mockmode, this is used in the `PlayroomMockManager` prefab.
 
 ## Tests
-Tests are located in the `Playroomkit/Tests` folder and are currently editor-only. Install Unity Test Runner to execute tests via the `Window/General/Test Runner` menu.
+Tests are located in `Packages/com.playroomkit.sdk/Tests/Editor` and are currently editor-only. Install Unity Test Runner to execute tests via the `Window/General/Test Runner` menu.
+
+## Samples
+Samples are distributed via the package and must be imported into your project to run them.
+1. Open `Window > Package Manager`.
+2. Select `PlayroomKit` in the list.
+3. In the `Samples` section, click `Import` on the sample you want to run.
+4. Open the imported sample scene from your project `Assets/` folder.
+
+## Editor Menu Options
+Menu options are available to help setup the Unity Editor:
+1. `PlayroomKit > Dev > Apply Playroom Mock Mode to Scene` adds the mock mode prefab to active scene
+2. `PlayroomKit > WebGL > ...` allow setting up editor support for WebGL/discord builds
+
+### Syncing sample changes
+If the package sample content changes, re-import the sample from the same Package Manager screen (`Samples` section > `Reimport`).
+
+Do not edit the imported sample directly in `Assets/` if you want changes to persist upstream. The imported copy is not merged back into the package. If you must tweak something in an imported sample, also apply the same changes to the source sample under `Packages/com.playroomkit.sdk/Samples~` (or manually replace the updated files in the package sample).
+

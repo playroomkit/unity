@@ -74,16 +74,14 @@ crashlytics-build.properties
 .DS_Store
 .idea/.idea.playroom-unity/.idea/workspace.xml
 .idea/.idea.playroom-unity/.idea/workspace.xml
-node_modules
 metaList
-package-lock.json
-package-lock.json.meta
-Assets/Plugins
-Assets/PlayroomKit/node_modules.meta
+Tools/playroomkit-js/node_modules/
 /.idea
 Assets/chromedriver*
 Assets/msedgedriver.exe
 Assets/msedgedriver.exe.meta
+Assets/Samples
+Assets/Samples.meta
 Assets/PlayroomKit/src/frameworks copy.ts
 Assets/PlayroomKit/src/frameworks copy.ts.meta
 /.vsconfig

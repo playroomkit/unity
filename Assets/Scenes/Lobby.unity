@@ -1100,7 +1100,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8899696337967424923, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
       propertyPath: includeJavaScriptFiles.Array.data[0]
-      value: Assets/PlayroomKit/modules/MockMode/BrowserMode/PlayroomMockBrowserBridge.js
+      value: Packages/com.playroomkit.sdk/Runtime/modules/MockMode/BrowserMode/PlayroomMockBrowserBridge.js
       objectReference: {fileID: 0}
     - target: {fileID: 8987662522597341863, guid: 1b30fa3a265114a45a7e23165a20aecc, type: 3}
       propertyPath: mockMode
@@ -1126,3 +1126,4 @@ SceneRoots:
   - {fileID: 1726365550300270312}
   - {fileID: 1563295928}
   - {fileID: 667855125}
+
